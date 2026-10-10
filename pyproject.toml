@@ -11,6 +11,7 @@ dependencies = ["fipy", "numpy", "scipy", "xarray", "netcdf4", "pandas", "matplo
 
 [project.optional-dependencies]
 widgets = ["ipywidgets"]
+geo = ["geopandas", "shapely", "pyproj", "rasterio", "osmnx", "requests"]
 dev = ["pytest", "pyright", "nbformat", "nbclient"]
 
 [tool.setuptools.packages.find]

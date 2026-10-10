@@ -705,7 +705,7 @@ def plot_selected_sites(res: BenchmarkResult, budget: int | None = None) -> Figu
     for ax, m in zip(axes[0], methods):
         lay = res.layouts[m][b][0]
         ax.plot(res.candidates.x, res.candidates.y, ".", c="0.75", label="candidate sites")
-        ax.plot([s.x for s in res.base.sources], [s.y for s in res.base.sources], "b*", ms=12, label="sources")
+        ax.plot([s.x for s in res.base.sources if isinstance(s, GaussianSource)], [s.y for s in res.base.sources if isinstance(s, GaussianSource)], "b*", ms=12, label="sources")
         ax.plot(res.candidates.x[list(lay)], res.candidates.y[list(lay)], "ro", label="selected")
         if m in res.greedy_orders:
             for rank, i in enumerate(res.greedy_orders[m][:b], 1):
@@ -968,7 +968,7 @@ def plot_poor_layout(diag: pd.DataFrame, summary: pd.DataFrame, cands: Candidate
     """Left: sites of the poor / greedy / spread layouts at the poor layout's budget; right: matched mean RMSE."""
     b = int(diag["budget"].iloc[0])
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(10, 4.3))
-    a1.plot([s.x for s in base.sources], [s.y for s in base.sources], "b*", ms=12, label="sources")
+    a1.plot([s.x for s in base.sources if isinstance(s, GaussianSource)], [s.y for s in base.sources if isinstance(s, GaussianSource)], "b*", ms=12, label="sources")
     for mth in diag["method"].unique():
         lay = layouts[mth][b][0]
         a1.plot(cands.x[list(lay)], cands.y[list(lay)], _STYLE[mth][1] if mth != "poor" else "x", ms=9,
