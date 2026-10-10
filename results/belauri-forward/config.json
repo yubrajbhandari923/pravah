@@ -1,0 +1,144 @@
+{
+  "name": "belauri_forward",
+  "experiment": "belauri_forward",
+  "notes": "Real geography; synthetic emissions and meteorology. Forward simulations on the prepared Belauri region (data/belauri/manifest.json, UTM 32644, 33.0 x 32.5 km domain, 500 m / 250 m grids). REAL: municipality polygon (area-fraction mask), road / built-up / facility geometry (source shapes clipped to the polygon), external patch position. SYNTHETIC: every emission rate, the external onset, all winds (prescribed, NOT terrain physics); K, lam, H are nominal values. DEM/hillshade/slope are plotting-only context. Courant: u*dt/dx <= 0.3 (100 s at 500 m, 50 s at 250 m, u = 1.5 m/s). T = 8 h: u*T = 43 km exceeds the 33 km domain; diffusion length sqrt(2 K T) = 2.4 km (physical, nominal); removal lifetime 1/lam = 6 h.",
+  "region": {
+    "manifest": "data/belauri/manifest.json",
+    "standard_buffer_m": null,
+    "small_buffer_m": 2000.0
+  },
+  "mesh": {
+    "resolution_m": 500.0,
+    "dt_s": 100.0
+  },
+  "physics": {
+    "K": 100.0,
+    "lam": 4.6296296296296294e-05,
+    "H": 500.0,
+    "T": 28800.0,
+    "output_interval": 900.0,
+    "t_exclude": 7200.0
+  },
+  "sources": {
+    "groups": [
+      "road",
+      "builtup",
+      "external"
+    ],
+    "amplitudes_ug_s": {
+      "road": 1500000.0,
+      "builtup": 1000000.0,
+      "external": 500000.0
+    },
+    "external_profile": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        7200.0,
+        1.0
+      ]
+    ],
+    "comment": "SYNTHETIC emission rates (micrograms per second; 1.5, 1.0, 0.5 g/s) chosen so that the study-region peak of the combined field is of order 0.1-0.4 microgram/m3 at the default wind. Not measured emissions."
+  },
+  "wind": {
+    "speed": 1.5,
+    "reference": "from_west_southwest",
+    "run": [
+      "from_west_southwest",
+      "from_north",
+      "from_east",
+      "reversal",
+      "channelled_demo"
+    ],
+    "scenarios": {
+      "from_west_southwest": {
+        "kind": "uniform",
+        "from_deg": 247.5,
+        "comment": "toward the municipality from the border side (SYNTHETIC)"
+      },
+      "from_north": {
+        "kind": "uniform",
+        "from_deg": 0.0
+      },
+      "from_east": {
+        "kind": "uniform",
+        "from_deg": 90.0
+      },
+      "reversal": {
+        "kind": "reversal",
+        "from_deg": 247.5,
+        "second_from_deg": 67.5,
+        "comment": "reverses at T/2"
+      },
+      "channelled_demo": {
+        "kind": "streamfunction",
+        "from_deg": 247.5,
+        "speed": 1.2,
+        "eddy_sigma_m": 4000.0,
+        "eddy_amplitude_m2_s": 1500.0,
+        "comment": "SYNTHETIC divergence-free flow (uniform wind + Gaussian eddy at the municipality centroid); NOT derived from the DEM. Mean speed 1.2 keeps the peak face speed near 1.5 m/s"
+      }
+    }
+  },
+  "arrival": {
+    "level_ug_m3": 0.005
+  },
+  "outer_domain": {
+    "enabled": true,
+    "winds": [
+      "from_west_southwest",
+      "from_north",
+      "from_east",
+      "reversal",
+      "channelled_demo"
+    ]
+  },
+  "mesh_sensitivity": {
+    "enabled": true,
+    "wind": "from_west_southwest",
+    "reference": "250m_dt50",
+    "runs": [
+      {
+        "label": "500m_dt100",
+        "resolution_m": 500.0,
+        "dt_s": 100.0
+      },
+      {
+        "label": "500m_dt50",
+        "resolution_m": 500.0,
+        "dt_s": 50.0
+      },
+      {
+        "label": "250m_dt50",
+        "resolution_m": 250.0,
+        "dt_s": 50.0
+      }
+    ]
+  },
+  "sensitivity": {
+    "enabled": true,
+    "K_factors": [
+      0.5,
+      2.0
+    ],
+    "lam_factors": [
+      0.5,
+      2.0
+    ],
+    "amplitude_factor": 2.0
+  },
+  "plotting_only": {
+    "enabled": true
+  },
+  "figures": {
+    "enabled": true,
+    "snapshot_times_s": [
+      10800.0,
+      18000.0,
+      28800.0
+    ]
+  },
+  "solver": {}
+}

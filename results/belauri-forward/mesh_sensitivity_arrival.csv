@@ -1,0 +1,16 @@
+run,point,arrival_ref_s,arrival_s,difference_s
+500m_dt100,polygon_nearest_to_patch,8063.233150522967,7988.814700138865,-74.41845038410156
+500m_dt100,polygon_farthest_from_patch,,,
+500m_dt100,facility_nearest_to_patch,9590.79733957184,9220.224870149583,-370.5724694222572
+500m_dt100,facility_farthest_from_patch,,,
+500m_dt100,polygon_centroid,10088.542833231437,9826.821568440764,-261.72126479067265
+500m_dt50,polygon_nearest_to_patch,8063.233150522967,8044.950161571913,-18.282988951053994
+500m_dt50,polygon_farthest_from_patch,,,
+500m_dt50,facility_nearest_to_patch,9590.79733957184,9223.546114802404,-367.2512247694358
+500m_dt50,facility_farthest_from_patch,,,
+500m_dt50,polygon_centroid,10088.542833231437,9933.28030390063,-155.2625293308065
+250m_dt50,polygon_nearest_to_patch,8063.233150522967,8063.233150522967,0.0
+250m_dt50,polygon_farthest_from_patch,,,
+250m_dt50,facility_nearest_to_patch,9590.79733957184,9590.79733957184,0.0
+250m_dt50,facility_farthest_from_patch,,,
+250m_dt50,polygon_centroid,10088.542833231437,10088.542833231437,0.0

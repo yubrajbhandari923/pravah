@@ -1,0 +1,235 @@
+{
+  "rows": [
+    {
+      "input": "baseline",
+      "variation": "from_west_southwest, K=100, lam=1/21600 s",
+      "mean": 0.1245369661684363,
+      "peak": 0.30098708848657746,
+      "external_fraction": 0.22067165304326208,
+      "mean_change_pct": 0.0,
+      "peak_change_pct": 0.0,
+      "external_fraction_change": 0.0,
+      "solves": "0",
+      "note": ""
+    },
+    {
+      "input": "wind",
+      "variation": "from_north",
+      "mean": 0.10982600565334182,
+      "peak": 0.2613551599757386,
+      "external_fraction": 6.951109120549321e-05,
+      "mean_change_pct": -11.8125252025153,
+      "peak_change_pct": -13.16731847539242,
+      "external_fraction_change": -0.2206021419520566,
+      "solves": "from wind runs",
+      "note": "synthetic wind direction/segments"
+    },
+    {
+      "input": "wind",
+      "variation": "from_east",
+      "mean": 0.11006783879144205,
+      "peak": 0.28231244881781387,
+      "external_fraction": 0.00020087275557392704,
+      "mean_change_pct": -11.618339375173758,
+      "peak_change_pct": -6.204465368485856,
+      "external_fraction_change": -0.22047078028768816,
+      "solves": "from wind runs",
+      "note": "synthetic wind direction/segments"
+    },
+    {
+      "input": "wind",
+      "variation": "reversal",
+      "mean": 0.14574855166703804,
+      "peak": 0.3949994212875236,
+      "external_fraction": 0.05065918665401187,
+      "mean_change_pct": 17.032360873407715,
+      "peak_change_pct": 31.234672980046653,
+      "external_fraction_change": -0.17001246638925022,
+      "solves": "from wind runs",
+      "note": "synthetic wind direction/segments"
+    },
+    {
+      "input": "wind",
+      "variation": "channelled_demo",
+      "mean": 0.15235664896464785,
+      "peak": 0.3699685343549955,
+      "external_fraction": 0.1940491242160524,
+      "mean_change_pct": 22.338494064955295,
+      "peak_change_pct": 22.918406970634653,
+      "external_fraction_change": -0.026622528827209696,
+      "solves": "from wind runs",
+      "note": "synthetic wind direction/segments"
+    },
+    {
+      "input": "K (physical diffusivity)",
+      "variation": "x0.5",
+      "mean": 0.1245105833214375,
+      "peak": 0.3042117802891433,
+      "external_fraction": 0.22118186991642394,
+      "mean_change_pct": -0.021184751652880696,
+      "peak_change_pct": 1.0713721371837792,
+      "external_fraction_change": 0.0005102168731618562,
+      "solves": "2",
+      "note": ""
+    },
+    {
+      "input": "K (physical diffusivity)",
+      "variation": "x2",
+      "mean": 0.1247201484990883,
+      "peak": 0.2887457254913448,
+      "external_fraction": 0.21807754081207356,
+      "mean_change_pct": 0.14709072839003134,
+      "peak_change_pct": -4.067072463734123,
+      "external_fraction_change": -0.0025941122311885223,
+      "solves": "2",
+      "note": ""
+    },
+    {
+      "input": "lam (removal rate)",
+      "variation": "x0.5",
+      "mean": 0.1326095463382274,
+      "peak": 0.3320919937894712,
+      "external_fraction": 0.23309545818119268,
+      "mean_change_pct": 6.48207549786699,
+      "peak_change_pct": 10.33429887617283,
+      "external_fraction_change": 0.012423805137930594,
+      "solves": "2",
+      "note": ""
+    },
+    {
+      "input": "lam (removal rate)",
+      "variation": "x2",
+      "mean": 0.11065375424675265,
+      "peak": 0.25231101014238355,
+      "external_fraction": 0.19774870560135818,
+      "mean_change_pct": -11.147864243703031,
+      "peak_change_pct": -16.172148310064337,
+      "external_fraction_change": -0.0229229474419039,
+      "solves": "2",
+      "note": ""
+    },
+    {
+      "input": "source amplitude",
+      "variation": "external patch amplitude x2",
+      "mean": 0.15201874435781795,
+      "peak": 0.3841787014498057,
+      "external_fraction": 0.3615577579656324,
+      "mean_change_pct": 22.06716530432622,
+      "peak_change_pct": 27.639595233646762,
+      "external_fraction_change": 0.1408861049223703,
+      "solves": "0 (linear superposition)",
+      "note": ""
+    },
+    {
+      "input": "source amplitude",
+      "variation": "road amplitude x2",
+      "mean": 0.18241559198378338,
+      "peak": 0.42212313357037257,
+      "external_fraction": 0.1506547652561671,
+      "mean_change_pct": 46.475056841409,
+      "peak_change_pct": 40.24625962957118,
+      "external_fraction_change": -0.07001688778709497,
+      "solves": "0 (linear superposition)",
+      "note": ""
+    },
+    {
+      "input": "source geometry",
+      "variation": "all local emission (2.5e+06 ug/s) on the road layer only",
+      "mean": 0.12394615454829344,
+      "peak": 0.27626780840381093,
+      "external_fraction": 0.2217235241346181,
+      "mean_change_pct": -0.4744066266587743,
+      "peak_change_pct": -8.21273769817169,
+      "external_fraction_change": 0.0010518710913560159,
+      "solves": "0 (linear superposition)",
+      "note": "same total local emission, different real geometry"
+    },
+    {
+      "input": "source geometry",
+      "variation": "all local emission (2.5e+06 ug/s) on the builtup layer only",
+      "mean": 0.1254231835986506,
+      "peak": 0.3380660086107272,
+      "external_fraction": 0.21911242723133456,
+      "mean_change_pct": 0.7116099399881559,
+      "peak_change_pct": 12.319106547257519,
+      "external_fraction_change": -0.0015592258119275226,
+      "solves": "0 (linear superposition)",
+      "note": "same total local emission, different real geometry"
+    },
+    {
+      "input": "outer domain",
+      "variation": "2 km buffer instead of the standard one",
+      "mean": 0.12453690402343327,
+      "peak": 0.3009870827754434,
+      "external_fraction": 0.22067126416873092,
+      "mean_change_pct": -4.9900848675399345e-05,
+      "peak_change_pct": -1.8974681270655935e-06,
+      "external_fraction_change": -3.8887453115976633e-07,
+      "solves": "2 (outer-domain study)",
+      "note": ""
+    },
+    {
+      "input": "mesh / time step",
+      "variation": "500m_dt50",
+      "mean": 0.1245888416166393,
+      "peak": 0.3009870894952827,
+      "external_fraction": 0.2209197844922036,
+      "mean_change_pct": 0.041654658692125146,
+      "peak_change_pct": 3.351323885070201e-07,
+      "external_fraction_change": 0.0002481314489415076,
+      "solves": "2 (mesh study)",
+      "note": "block-averaged to the baseline mesh"
+    },
+    {
+      "input": "mesh / time step",
+      "variation": "250m_dt50",
+      "mean": 0.12326945467100983,
+      "peak": 0.3111281965462397,
+      "external_fraction": 0.22773240646057116,
+      "mean_change_pct": -1.0177793280367609,
+      "peak_change_pct": 3.369283416990987,
+      "external_fraction_change": 0.007060753417309079,
+      "solves": "2 (mesh study)",
+      "note": "block-averaged to the baseline mesh"
+    },
+    {
+      "input": "DEM / hillshade / slope (plotting-only)",
+      "variation": "layers replaced by constants",
+      "mean": 0.12453696616843642,
+      "peak": 0.30098708848657796,
+      "external_fraction": 0.2206716530432619,
+      "mean_change_pct": 8.881784197001252e-14,
+      "peak_change_pct": 1.5543122344752192e-13,
+      "external_fraction_change": -1.942890293094024e-16,
+      "solves": "1",
+      "note": "scenario identical: True; max |change| = 0"
+    }
+  ],
+  "plotting_only_layers": {
+    "layers": [
+      "dem_mean",
+      "dem_valid_fraction",
+      "slope_deg",
+      "hillshade",
+      "profile_ns_z",
+      "profile_ew_z"
+    ],
+    "changes_any_number": false,
+    "check": {
+      "mean": 0.12453696616843642,
+      "peak": 0.30098708848657796,
+      "ext_fraction": 0.2206716530432619,
+      "scenario_identical": true,
+      "max_abs_change": 0.0,
+      "layers": [
+        "dem_mean",
+        "dem_valid_fraction",
+        "slope_deg",
+        "hillshade",
+        "profile_ns_z",
+        "profile_ew_z"
+      ]
+    },
+    "meaning": "DEM, hillshade, slope and the elevation profiles are drawn on maps only; no solver input reads them"
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "alpha_by_noise_fraction": {
+    "0.02": 1.0,
+    "0.1": 1.0
+  },
+  "criterion": "mean over validation cases, layouts and noise reps of the total-field regional RMSE (study-region area weights, time window [t_exclude, T]); lowest wins, exact tie -> smaller alpha",
+  "alpha_grid": [
+    0.0,
+    0.0001,
+    0.001,
+    0.01,
+    0.1,
+    1.0,
+    10.0,
+    100.0,
+    1000.0
+  ],
+  "alpha_units": "ridge strength in scaled units (alpha * ||theta/q_scale||^2 on whitened residuals)",
+  "prior": "zeros (prior mean 0, no truth)",
+  "tables": {
+    "0.02": [
+      {
+        "alpha": 0.0,
+        "criterion_mean_rmse_total": 0.000912832900184943,
+        "median_rmse_total": 0.00036725306517218005,
+        "n_rows": 36
+      },
+      {
+        "alpha": 0.0001,
+        "criterion_mean_rmse_total": 0.0009128254982073953,
+        "median_rmse_total": 0.00036725304673951656,
+        "n_rows": 36
+      },
+      {
+        "alpha": 0.001,
+        "criterion_mean_rmse_total": 0.0009127588931805837,
+        "median_rmse_total": 0.00036725288088792964,
+        "n_rows": 36
+      },
+      {
+        "alpha": 0.01,
+        "criterion_mean_rmse_total": 0.0009120941004961146,
+        "median_rmse_total": 0.00036725122654449765,
+        "n_rows": 36
+      },
+      {
+        "alpha": 0.1,
+        "criterion_mean_rmse_total": 0.0009055661638728734,
+        "median_rmse_total": 0.00036723510032806957,
+        "n_rows": 36
+      },
+      {
+        "alpha": 1.0,
+        "criterion_mean_rmse_total": 0.0008510407492307571,
+        "median_rmse_total": 0.00035918459408722367,
+        "n_rows": 36
+      },
+      {
+        "alpha": 10.0,
+        "criterion_mean_rmse_total": 0.0010782995233559077,
+        "median_rmse_total": 0.00037003171950690235,
+        "n_rows": 36
+      },
+      {
+        "alpha": 100.0,
+        "criterion_mean_rmse_total": 0.0021100925234818144,
+        "median_rmse_total": 0.0007322128809732016,
+        "n_rows": 36
+      },
+      {
+        "alpha": 1000.0,
+        "criterion_mean_rmse_total": 0.005710181745012092,
+        "median_rmse_total": 0.004560774778104123,
+        "n_rows": 36
+      }
+    ],
+    "0.1": [
+      {
+        "alpha": 0.0,
+        "criterion_mean_rmse_total": 0.0041902336320376625,
+        "median_rmse_total": 0.0018362653258608968,
+        "n_rows": 36
+      },
+      {
+        "alpha": 0.0001,
+        "criterion_mean_rmse_total": 0.0041894260880738785,
+        "median_rmse_total": 0.0018362638839752956,
+        "n_rows": 36
+      },
+      {
+        "alpha": 0.001,
+        "criterion_mean_rmse_total": 0.004182185147368198,
+        "median_rmse_total": 0.001836250911997402,
+        "n_rows": 36
+      },
+      {
+        "alpha": 0.01,
+        "criterion_mean_rmse_total": 0.004112348077198188,
+        "median_rmse_total": 0.0018361216864195397,
+        "n_rows": 36
+      },
+      {
+        "alpha": 0.1,
+        "criterion_mean_rmse_total": 0.003601807759628683,
+        "median_rmse_total": 0.0018348788014478715,
+        "n_rows": 36
+      },
+      {
+        "alpha": 1.0,
+        "criterion_mean_rmse_total": 0.0027990949769490566,
+        "median_rmse_total": 0.0017755601383046766,
+        "n_rows": 36
+      },
+      {
+        "alpha": 10.0,
+        "criterion_mean_rmse_total": 0.0037224015843600276,
+        "median_rmse_total": 0.002369220416094577,
+        "n_rows": 36
+      },
+      {
+        "alpha": 100.0,
+        "criterion_mean_rmse_total": 0.009405860298119247,
+        "median_rmse_total": 0.008555100408440366,
+        "n_rows": 36
+      },
+      {
+        "alpha": 1000.0,
+        "criterion_mean_rmse_total": 0.026614031630269,
+        "median_rmse_total": 0.024506028950141576,
+        "n_rows": 36
+      }
+    ]
+  },
+  "validation_cases": [
+    "val0",
+    "val1",
+    "val2",
+    "val3"
+  ],
+  "validation_signal_scale_ug_m3": 0.09946399149304941,
+  "seeds": {
+    "validation_seed": 202,
+    "test_seed": 303,
+    "validation_noise_seed": 20200,
+    "test_noise_seed": 30300
+  },
+  "noise_reps": 3,
+  "scenario": "mixed",
+  "layouts": [
+    "interior",
+    "interior+upwind",
+    "interior8"
+  ],
+  "note": "chosen on validation cases only; the test ensemble was not built yet"
+}

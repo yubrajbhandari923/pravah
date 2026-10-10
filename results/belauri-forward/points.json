@@ -1,0 +1,32 @@
+[
+  {
+    "label": "polygon_nearest_to_patch",
+    "x": 12250.0,
+    "y": 17250.0,
+    "distance_to_patch_m": 3275.1885208870913
+  },
+  {
+    "label": "polygon_farthest_from_patch",
+    "x": 24750.0,
+    "y": 10250.0,
+    "distance_to_patch_m": 14741.74753226886
+  },
+  {
+    "label": "facility_nearest_to_patch",
+    "x": 11750.0,
+    "y": 18250.0,
+    "distance_to_patch_m": 4000.595449777743
+  },
+  {
+    "label": "facility_farthest_from_patch",
+    "x": 23250.0,
+    "y": 11250.0,
+    "distance_to_patch_m": 13031.311141074599
+  },
+  {
+    "label": "polygon_centroid",
+    "x": 17750.0,
+    "y": 16250.0,
+    "distance_to_patch_m": 7372.837141655734
+  }
+]

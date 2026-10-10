@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1396 tokens.
-> Generated 2026-10-10T13:36:09-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1526 tokens.
+> Generated 2026-10-10T14:12:28-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `4450830c4e` (uncommitted changes)
+Git: `master` @ `f29f96b941` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -25,6 +25,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Active & open questions
 
+- Q-006 [investigating] How does the Belauri flow field respond to wind direction, outer-domain size and mesh/time-step choices when emissions and meteorology are synthetic, and how large is numerical diffusion relative to the nominal K?
 - Q-005 [investigating] Can total synthetic concentration observations separate local from external contributions, when is the decomposition unidentifiable, and does an upwind/background site help?
 - Q-004 [investigating] Is the Belauri Municipality boundary, DEM and feature set acquired from public sources verifiable, and what does it show about the surrounding terrain and national border?
 - Q-003 [investigating] Does routing every workflow through one ForwardSolver interface leave all FiPy results bit-identical, and do injected solvers reach every call?
@@ -33,6 +34,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Established findings (what we believe)
 
+- F-011 [preliminary, high] Belauri forward simulations: wind direction and numerical diffusion dominate; terrain layers are context only (real geography, synthetic emissions and meteorology) — evidence: EXP-012, RUN-0025
 - F-010 [preliminary, medium] External vs local decomposition from total observations: recoverable when well conditioned, flagged when not; boundary input cannot mimic a localised plume (synthetic) — evidence: EXP-010, RUN-0017
 - F-009 [preliminary, high] Solver routing refactor preserves every deterministic FiPy output bit-for-bit — evidence: EXP-008, RUN-0012, RUN-0013
 - F-008 [preliminary, medium] Greedy layouts optimised for the matched model are not robust to model error at small budgets — evidence: EXP-007, RUN-0011
@@ -47,20 +49,19 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Current experiments
 
-_none_
+- EXP-011 [running] EXP external vs local identifiability RERUN (after independent review fixes) — runs 1
 
 ## Active plans
 
-- PLAN-002 PRAVAH phase 2: solver interchange, external/local, Belauri geography, geographic design — 6/11 tasks done · objective: Solver interchangeability; synthetic external vs local identifiability + indoor box; real Belauri geography and forward sims; geographic sensor design
+- PLAN-002 PRAVAH phase 2: solver interchange, external/local, Belauri geography, geographic design — 7/11 tasks done · objective: Solver interchangeability; synthetic external vs local identifiability + indoor box; real Belauri geography and forward sims; geographic sensor design
   - next ready: T-017 B2: generalised inverse, attribution, indoor box, notebook 04, transboundary study (`research task context T-017`)
-  - running: T-020 E: Belauri forward scenarios, domain/mesh sensitivity, notebook 05 (claimed by claude-code)
 - PLAN-001 PRAVAH v0 baseline — 11/11 tasks done · objective: Runnable v0: forward model, inverse, sensor design, notebooks, CLI
 
 ## Needs attention (verification)
 
+- [awaiting review] F-011 Belauri forward simulations: wind direction and numerical diffusion dominate; terrain layers are context only (real geography, synthetic emissions and meteorology): Agent finding awaiting an independent review
 - [awaiting review] F-010 External vs local decomposition from total observations: recoverable when well conditioned, flagged when not; boundary input cannot mimic a localised plume (synthetic): Agent finding awaiting an independent review
 - [awaiting review] F-009 Solver routing refactor preserves every deterministic FiPy output bit-for-bit: Agent finding awaiting an independent review
-- [awaiting review] F-008 Greedy layouts optimised for the matched model are not robust to model error at small budgets: Agent finding awaiting an independent review
 
 ## Active decisions
 

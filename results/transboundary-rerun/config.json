@@ -1,0 +1,543 @@
+{
+  "name": "transboundary",
+  "experiment": "transboundary",
+  "notes": "SYNTHETIC demonstration of EXTERNAL vs LOCAL pollution. Every number below is a demonstration value, NOT an estimate for any place. local = emitted inside the study region; external = outside it (explicit source or outer-inflow-boundary input). The study region is only a reporting mask / weight, never a PDE wall; it is not a national border, so the words 'international transboundary' are not used. All source and sensor coordinates are STUDY-RELATIVE metres (origin = south-west corner of the study region); the simulation domain adds a buffer on every side, so domains A and B hold the same physical problem. Profiles are piecewise-constant steps: [[t_start, value], ...].",
+  "geometry": {
+    "study_size": 10000.0,
+    "domains": {
+      "A": {
+        "buffer": 5000.0,
+        "dx": 250.0
+      },
+      "B": {
+        "buffer": 10000.0,
+        "dx": 250.0
+      }
+    }
+  },
+  "physics": {
+    "K": 100.0,
+    "H": 500.0,
+    "lam": 4.6296296296296294e-05,
+    "T": 21600.0,
+    "output_interval": 600.0,
+    "dt": 60.0,
+    "t_exclude": 3600.0
+  },
+  "wind": {
+    "speed": 1.0,
+    "toward_deg": 22.5,
+    "comment": "toward_deg = direction the air moves TOWARD, counter-clockwise from +x (east); 22.5 deg = wind from the west-south-west"
+  },
+  "sources": {
+    "L1": {
+      "group": "local",
+      "x": 3000.0,
+      "y": 3500.0,
+      "q": 100000.0,
+      "sigma": 500.0
+    },
+    "L2": {
+      "group": "local",
+      "x": 7000.0,
+      "y": 6000.0,
+      "q": 70000.0,
+      "sigma": 500.0
+    },
+    "E1": {
+      "group": "external",
+      "x": -4000.0,
+      "y": 4000.0,
+      "q": 200000.0,
+      "sigma": 1000.0,
+      "onset": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          3600.0,
+          1.0
+        ]
+      ]
+    },
+    "E1c": {
+      "group": "external",
+      "upwind_of": "L1",
+      "distance": 3800.0,
+      "q": 200000.0,
+      "sigma": 300.0,
+      "comment": "confounded case: placed on the wind line through L1, `distance` metres upwind, constant in time"
+    }
+  },
+  "bases": {
+    "uniform": {
+      "sides": [
+        "west",
+        "east",
+        "south",
+        "north"
+      ],
+      "amplitude": 0.03,
+      "profile": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          7200.0,
+          1.0
+        ]
+      ]
+    },
+    "west": {
+      "sides": [
+        "west"
+      ],
+      "amplitude": 0.03,
+      "profile": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          7200.0,
+          1.0
+        ]
+      ]
+    },
+    "south": {
+      "sides": [
+        "south"
+      ],
+      "amplitude": 0.02,
+      "profile": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          7200.0,
+          1.0
+        ]
+      ]
+    },
+    "east": {
+      "sides": [
+        "east"
+      ],
+      "amplitude": 0.01,
+      "profile": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          7200.0,
+          1.0
+        ]
+      ]
+    },
+    "north": {
+      "sides": [
+        "north"
+      ],
+      "amplitude": 0.01,
+      "profile": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          7200.0,
+          1.0
+        ]
+      ]
+    }
+  },
+  "scenarios": {
+    "local_only": {
+      "sources": [
+        "L1",
+        "L2"
+      ],
+      "bases": []
+    },
+    "external_sources": {
+      "sources": [
+        "L1",
+        "L2",
+        "E1"
+      ],
+      "bases": []
+    },
+    "boundary_only": {
+      "sources": [
+        "L1",
+        "L2"
+      ],
+      "bases": [
+        "uniform"
+      ]
+    },
+    "mixed": {
+      "sources": [
+        "L1",
+        "L2",
+        "E1"
+      ],
+      "bases": [
+        "uniform"
+      ],
+      "amplitudes": {
+        "uniform": 0.02
+      },
+      "comment": "E1 explicit AND a uniform boundary basis; the basis stands for OTHER, distant sources beyond the domain (represents = null), never for E1. Distinct amplitude 0.02 ug/m3."
+    },
+    "sector": {
+      "sources": [
+        "L1",
+        "L2"
+      ],
+      "bases": [
+        "west",
+        "south",
+        "east",
+        "north"
+      ]
+    },
+    "confounded": {
+      "sources": [
+        "L1",
+        "L2",
+        "E1c"
+      ],
+      "bases": [],
+      "wind_toward_deg": 0.0,
+      "wind_speed": 5.0,
+      "comment": "E1c lies on the wind line through L1; the fast wind (5 m/s, a demonstration value) shortens the 3.8 km arrival delay between the two plumes so that their downwind responses are nearly collinear (|cos| > 0.99)"
+    },
+    "no_arrival": {
+      "sources": [
+        "L1",
+        "L2",
+        "E1"
+      ],
+      "bases": [],
+      "wind_toward_deg": 180.0,
+      "comment": "wind blows away from the study region; arrival is verified with the model, not assumed"
+    }
+  },
+  "ensemble": {
+    "speed_range": [
+      0.6,
+      1.6
+    ],
+    "direction_spread_deg": 35.0,
+    "q_factor_range": [
+      0.5,
+      1.5
+    ]
+  },
+  "seeds": {
+    "design": 101,
+    "validation": 202,
+    "test": 303
+  },
+  "fields": {
+    "enabled": true,
+    "scenarios": [
+      "local_only",
+      "external_sources",
+      "boundary_only",
+      "mixed",
+      "sector",
+      "confounded",
+      "no_arrival"
+    ],
+    "snapshot_scenario": "mixed",
+    "snapshot_times_s": [
+      7200.0,
+      14400.0,
+      21600.0
+    ],
+    "arrival_points": [
+      [
+        1000.0,
+        4000.0
+      ],
+      [
+        5000.0,
+        4000.0
+      ],
+      [
+        9000.0,
+        6000.0
+      ]
+    ],
+    "arrival_threshold": 0.05,
+    "sweep_scenarios": [
+      "external_sources",
+      "mixed"
+    ],
+    "sweep_n_directions": 8
+  },
+  "recovery": {
+    "enabled": true,
+    "scenario": "mixed",
+    "n_validation": 4,
+    "n_test": 6,
+    "noise_reps": 3,
+    "validation_seed": 202,
+    "test_seed": 303,
+    "validation_noise_seed": 20200,
+    "test_noise_seed": 30300,
+    "noise_fractions": [
+      0.02,
+      0.1
+    ],
+    "scale_layout": "interior",
+    "obs_interval": 600.0,
+    "alpha_grid": [
+      0.0,
+      0.0001,
+      0.001,
+      0.01,
+      0.1,
+      1.0,
+      10.0,
+      100.0,
+      1000.0
+    ],
+    "alpha_strong": 100000.0,
+    "layouts": {
+      "interior": [
+        [
+          2000,
+          2500
+        ],
+        [
+          5000,
+          1500
+        ],
+        [
+          8000,
+          3000
+        ],
+        [
+          2000,
+          7000
+        ],
+        [
+          5000,
+          5500
+        ],
+        [
+          8000,
+          8000
+        ]
+      ],
+      "interior+upwind": [
+        [
+          2000,
+          2500
+        ],
+        [
+          5000,
+          1500
+        ],
+        [
+          8000,
+          3000
+        ],
+        [
+          2000,
+          7000
+        ],
+        [
+          5000,
+          5500
+        ],
+        [
+          8000,
+          8000
+        ],
+        [
+          -4500,
+          1500
+        ],
+        [
+          -4500,
+          6500
+        ]
+      ],
+      "interior8": [
+        [
+          2000,
+          2500
+        ],
+        [
+          5000,
+          1500
+        ],
+        [
+          8000,
+          3000
+        ],
+        [
+          2000,
+          7000
+        ],
+        [
+          5000,
+          5500
+        ],
+        [
+          8000,
+          8000
+        ],
+        [
+          3500,
+          4500
+        ],
+        [
+          6500,
+          6500
+        ]
+      ]
+    },
+    "paired": [
+      [
+        "interior8",
+        "interior+upwind"
+      ],
+      [
+        "interior",
+        "interior+upwind"
+      ]
+    ],
+    "scale_sensitivity": {
+      "enabled": true,
+      "layout": "interior8",
+      "factors": [
+        0.1,
+        10.0
+      ]
+    }
+  },
+  "special": {
+    "enabled": true,
+    "layout": "interior",
+    "confounded_layout": [
+      [
+        5500,
+        3500
+      ],
+      [
+        7000,
+        3500
+      ],
+      [
+        8500,
+        3500
+      ],
+      [
+        8500,
+        6000
+      ]
+    ],
+    "noise_fraction": 0.02,
+    "confounded_noise_fractions": [
+      0.02,
+      0.3
+    ],
+    "noise_reps": 5,
+    "noise_seed": 40400,
+    "alpha_default": 0.0,
+    "alpha_strong": 100000.0,
+    "prior_alphas": [
+      0.0,
+      0.01,
+      1.0,
+      100.0,
+      10000.0,
+      1000000.0
+    ],
+    "prior_scenarios": [
+      "mixed",
+      "confounded"
+    ],
+    "no_arrival_max_ratio": 0.001,
+    "wind_mismatch": {
+      "scenario": "mixed",
+      "rotation_deg": 20.0,
+      "speed_error": 0.2
+    },
+    "omitted": [
+      {
+        "truth": "external_sources",
+        "model": "local_only"
+      },
+      {
+        "truth": "mixed",
+        "model": "boundary_only"
+      }
+    ]
+  },
+  "domain_size": {
+    "enabled": true,
+    "scenarios": [
+      "external_sources",
+      "mixed"
+    ],
+    "equivalence": {
+      "enabled": true,
+      "truth_scenario": "external_sources",
+      "layout": "interior8",
+      "noise_fraction": 0.02,
+      "noise_reps": 3,
+      "noise_seed": 50500,
+      "fallback_alpha": 0.0,
+      "represents": [
+        -7000.0,
+        1000.0,
+        -1000.0,
+        7000.0
+      ],
+      "models": {
+        "A_local_only": {
+          "sources": [
+            "L1",
+            "L2"
+          ],
+          "bases": []
+        },
+        "A_uniform_basis": {
+          "sources": [
+            "L1",
+            "L2"
+          ],
+          "bases": [
+            "uniform"
+          ]
+        },
+        "A_sector_bases": {
+          "sources": [
+            "L1",
+            "L2"
+          ],
+          "bases": [
+            "west",
+            "south",
+            "east",
+            "north"
+          ]
+        }
+      },
+      "basis_onsets_s": [
+        3600.0,
+        7200.0
+      ]
+    }
+  }
+}

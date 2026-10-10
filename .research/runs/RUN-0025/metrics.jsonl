@@ -1,0 +1,8 @@
+{"author_type": "agent", "name": "wsw_external_fraction", "ts": "2026-10-10T14:12:07-04:00", "value": 0.2207}
+{"author_type": "agent", "name": "reversal_outer_domain_mean_change_pct", "ts": "2026-10-10T14:12:07-04:00", "value": -10.5}
+{"author_type": "agent", "name": "mesh500_vs_250_mean_change_pct", "ts": "2026-10-10T14:12:08-04:00", "value": 1.03}
+{"author_type": "agent", "name": "mesh500_vs_250_peak_change_pct", "ts": "2026-10-10T14:12:08-04:00", "value": -3.26}
+{"author_type": "agent", "name": "Keff_over_K_500m_dt100", "ts": "2026-10-10T14:12:09-04:00", "value": 4.88}
+{"author_type": "agent", "name": "Keff_over_K_250m_dt50", "ts": "2026-10-10T14:12:09-04:00", "value": 2.53}
+{"author_type": "agent", "name": "arrival_polygon_nearest_after_onset_s", "ts": "2026-10-10T14:12:09-04:00", "value": 788.8}
+{"author_type": "agent", "name": "arrival_centroid_after_onset_s", "ts": "2026-10-10T14:12:10-04:00", "value": 2627.0}
