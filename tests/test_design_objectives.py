@@ -85,7 +85,7 @@ def test_parameter_match_by_name_and_kind(cache):
     with pytest.raises(ValueError, match="at least as many"):
         build_case("x", "design", scen(bases=BASES[:1]), resp_q[:4], INF, CANDS, OPT, 1, 1, cache)
     with pytest.raises(ValueError, match="at least as many"):
-        build_case("x", "design", scen(sources=SRC[:2]), resp_q[1:4], INF, CANDS, OPT, 1, 1, cache)
+        build_case("x", "design", scen(sources=SRC[:2]), resp_q[[0, 1, 3, 4]], INF, CANDS, OPT, 1, 1, cache)
 
 
 def test_extra_emission_source_with_inflow_bases_omitted_source(cache):
@@ -94,7 +94,7 @@ def test_extra_emission_source_with_inflow_bases_omitted_source(cache):
     th = np.array([1e5, 1.2e5, 1.1e5, 5e4, 0.03, 0.02])  # [L1, L2, E1, X, west, south]
     c, _ = make(cache, "om", "test", truth, th, 8)
     assert c.n_params == 5 and list(c.truth_index) == [0, 1, 2, 4, 5]
-    assert c.unmodelled_mass == pytest.approx(5e4 / 4.7e5)
+    assert c.unmodelled_mass == pytest.approx(5e4 / 3.8e5)
     f = fit_layout(c, (0, 4, 8), 0, OPT)
     assert set(f["inflow_abs_err"]) == {"west", "south"}
     assert f["inflow_abs_err"]["west"] == pytest.approx(f["q_hat"][3] - 0.03)

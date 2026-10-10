@@ -1,0 +1,14 @@
+{
+  "fields_s": 830.662926250021,
+  "recovery_validation_build_s": 181.25767066702247,
+  "seconds_per_ensemble_case": 45.31441766675562,
+  "recovery_validation_fits_s": 3.1619895410258323,
+  "recovery_test_build_s": 295.84436883288436,
+  "recovery_test_fits_s": 6.592572124907747,
+  "recovery_s": 490.9316256669117,
+  "special_s": 111.93920083297417,
+  "domain_size_s": 231.78603304200806,
+  "total_s": 1665.320550709148,
+  "response_cache_hits": 2009.0,
+  "response_cache_misses": 22.0
+}

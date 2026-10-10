@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1526 tokens.
-> Generated 2026-10-10T14:12:28-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1512 tokens.
+> Generated 2026-10-10T14:14:15-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `f29f96b941` (uncommitted changes)
+Git: `master` @ `b27027627c`
 
 ## Latest checkpoint
 
@@ -53,8 +53,8 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Active plans
 
-- PLAN-002 PRAVAH phase 2: solver interchange, external/local, Belauri geography, geographic design — 7/11 tasks done · objective: Solver interchangeability; synthetic external vs local identifiability + indoor box; real Belauri geography and forward sims; geographic sensor design
-  - next ready: T-017 B2: generalised inverse, attribution, indoor box, notebook 04, transboundary study (`research task context T-017`)
+- PLAN-002 PRAVAH phase 2: solver interchange, external/local, Belauri geography, geographic design — 9/11 tasks done · objective: Solver interchangeability; synthetic external vs local identifiability + indoor box; real Belauri geography and forward sims; geographic sensor design
+  - running: T-021 F: geographic candidates, objectives, designs, notebook 06 (claimed by claude-code)
 - PLAN-001 PRAVAH v0 baseline — 11/11 tasks done · objective: Runnable v0: forward model, inverse, sensor design, notebooks, CLI
 
 ## Needs attention (verification)

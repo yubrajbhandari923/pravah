@@ -1,0 +1,3 @@
+scenario,rmse_total_A_vs_B,peak_B_study_ug_m3,rmse_total_rel_to_peak,rmse_external_A_vs_B,external_fraction_A,external_fraction_B,note
+external_sources,0.0012949871042596934,0.13997393326835567,0.009251630457343554,0.0012949871042596932,0.42887741582724637,0.42410331228868225,same sources and study region; the open boundary is 5 km (A) vs 10 km (B) from it: pure domain truncation
+mixed,0.004682026129913344,0.140296644519299,0.03337233150483005,0.004682026129913344,0.4842122729769328,0.4350050995157123,"same sources and study region, but the boundary basis sits at the domain edge (5 km vs 10 km away): truncation mixed with a moved forcing"

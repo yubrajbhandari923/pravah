@@ -1,0 +1,166 @@
+{
+  "alphas": {
+    "none": 0.0,
+    "selected": 1.0,
+    "strong": 100000.0
+  },
+  "noise_fraction": 0.02,
+  "layout": "interior",
+  "alpha_default": 0.0,
+  "confounded": {
+    "by_noise_fraction": {
+      "0.02": {
+        "signal_scale_ug_m3": 0.07638447248575106,
+        "sigma_ug_m3": 0.0015276894497150211,
+        "noise_seed": 40400,
+        "identifiability_alpha0": {
+          "singular_values": [
+            219.88819538338052,
+            106.78596728962214,
+            14.775594798652161
+          ],
+          "rank": 3,
+          "effective_rank": 3,
+          "condition": 14.881850671990467,
+          "params": [
+            {
+              "name": "L1",
+              "kind": "emission",
+              "units": "microgram/s",
+              "q_hat": 101989.95911482365,
+              "q_std": 4714.826896645756,
+              "q_scale": 100000.0,
+              "q_std_over_scale": 0.04714826896645756,
+              "column_norm": 158.44200193757948
+            },
+            {
+              "name": "L2",
+              "kind": "emission",
+              "units": "microgram/s",
+              "q_hat": 70458.57589934298,
+              "q_std": 936.452384818361,
+              "q_scale": 100000.0,
+              "q_std_over_scale": 0.00936452384818361,
+              "column_norm": 106.78608861920314
+            },
+            {
+              "name": "E1c",
+              "kind": "emission",
+              "units": "microgram/s",
+              "q_hat": 199192.12337552736,
+              "q_std": 4876.67209864747,
+              "q_scale": 100000.0,
+              "q_std_over_scale": 0.0487667209864747,
+              "column_norm": 153.18368966707152
+            }
+          ],
+          "flags": [
+            "confounded:L1,E1c"
+          ]
+        },
+        "column_cosines": [
+          [
+            0.9999999999999996,
+            0.001308412168572509,
+            0.990999706813115
+          ],
+          [
+            0.001308412168572509,
+            0.9999999999999996,
+            0.0013217200888388568
+          ],
+          [
+            0.990999706813115,
+            0.0013217200888388568,
+            0.9999999999999993
+          ]
+        ],
+        "param_names": [
+          "L1",
+          "L2",
+          "E1c"
+        ]
+      },
+      "0.3": {
+        "signal_scale_ug_m3": 0.07638447248575106,
+        "sigma_ug_m3": 0.022915341745725317,
+        "noise_seed": 40405,
+        "identifiability_alpha0": {
+          "singular_values": [
+            14.659213025558694,
+            7.119064485974808,
+            0.9850396532434822
+          ],
+          "rank": 3,
+          "effective_rank": 2,
+          "condition": 14.881850671990389,
+          "params": [
+            {
+              "name": "L1",
+              "kind": "emission",
+              "units": "microgram/s",
+              "q_hat": 19393.88406493463,
+              "q_std": 70722.40344968597,
+              "q_scale": 100000.0,
+              "q_std_over_scale": 0.7072240344968597,
+              "column_norm": 10.56280012917197
+            },
+            {
+              "name": "L2",
+              "kind": "emission",
+              "units": "microgram/s",
+              "q_hat": 66786.36531255426,
+              "q_std": 14046.78577227541,
+              "q_scale": 100000.0,
+              "q_std_over_scale": 0.1404678577227541,
+              "column_norm": 7.119072574613542
+            },
+            {
+              "name": "E1c",
+              "kind": "emission",
+              "units": "microgram/s",
+              "q_hat": 284095.2510889543,
+              "q_std": 73150.08147971175,
+              "q_scale": 100000.0,
+              "q_std_over_scale": 0.7315008147971175,
+              "column_norm": 10.212245977804763
+            }
+          ],
+          "flags": [
+            "weakly_constrained",
+            "confounded:L1,E1c"
+          ]
+        },
+        "column_cosines": [
+          [
+            0.9999999999999987,
+            0.001308412168572509,
+            0.990999706813115
+          ],
+          [
+            0.001308412168572509,
+            1.0,
+            0.001321720088838858
+          ],
+          [
+            0.990999706813115,
+            0.001321720088838858,
+            1.0000000000000007
+          ]
+        ],
+        "param_names": [
+          "L1",
+          "L2",
+          "E1c"
+        ]
+      }
+    }
+  },
+  "no_arrival": {
+    "signal_scale_ug_m3": 0.05040823312491087,
+    "sigma_ug_m3": 0.0010081646624982175,
+    "external_to_local_study_mean_ratio": 4.088289494582188e-06,
+    "max_allowed_ratio": 0.001,
+    "verified_by": "forward model (unit-source responses), not by assertion"
+  }
+}

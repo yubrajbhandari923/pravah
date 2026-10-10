@@ -159,6 +159,9 @@ def cmd_benchmark(args: argparse.Namespace) -> int:
     if kind == "transboundary":
         from .transboundary import run_transboundary
         run_transboundary(cfg, out, overwrite=args.overwrite, progress=print)
+    elif kind == "geodesign":
+        from .geodesign import run_geodesign
+        run_geodesign(cfg, out, overwrite=args.overwrite, progress=print)
     elif kind == "belauri_forward":
         from .belauri import run_belauri_forward
         run_belauri_forward(cfg, out, overwrite=args.overwrite, progress=print)
