@@ -3,9 +3,7 @@ from __future__ import annotations
 
 from typing import Any, Sequence
 
-import matplotlib
 
-matplotlib.use("Agg", force=False)  # headless-safe default; a notebook backend already chosen is kept
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402

@@ -1,0 +1,13 @@
+{
+  "extends": "reference.json",
+  "name": "wind_change",
+  "scenario": {
+    "transport": {
+      "wind": [
+        {"t_start": 0.0, "u": 1.0, "v": 0.3},
+        {"t_start": 5400.0, "u": -0.6, "v": 0.8},
+        {"t_start": 10200.0, "u": 0.9, "v": -0.4}
+      ]
+    }
+  }
+}

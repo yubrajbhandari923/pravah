@@ -25,3 +25,10 @@
 {"action": "updated", "author_name": "claude-code", "author_type": "agent", "entity_id": "T-002", "entity_type": "task", "summary": "Task T-002 updated", "ts": "2026-10-10T01:16:41-04:00"}
 {"action": "updated", "author_name": "claude-code", "author_type": "agent", "entity_id": "T-004", "entity_type": "task", "summary": "Task T-004 updated", "ts": "2026-10-10T01:16:41-04:00"}
 {"action": "updated", "author_name": "claude-code", "author_type": "agent", "entity_id": "T-005", "entity_type": "task", "summary": "Task T-005 updated", "ts": "2026-10-10T01:16:41-04:00"}
+{"action": "progress", "author_name": "claude-code", "author_type": "agent", "entity_id": "T-004", "entity_type": "task", "summary": "Coordinator ran verify_notebooks on 01: PASS 17.9s, outputs cleared, no abs paths", "ts": "2026-10-10T01:20:16-04:00"}
+{"action": "verified", "author_name": "claude-code", "author_type": "agent", "entity_id": "T-004", "entity_type": "task", "summary": "T-004/V1 pass: 1/1 checks passed", "ts": "2026-10-10T01:20:16-04:00"}
+{"action": "updated", "author_name": "claude-code", "author_type": "agent", "entity_id": "T-004", "entity_type": "task", "summary": "Task T-004 updated", "ts": "2026-10-10T01:20:16-04:00"}
+{"action": "progress", "author_name": "claude-code", "author_type": "agent", "entity_id": "T-005", "entity_type": "task", "summary": "Coordinator: 91 tests, pyright 0, both notebooks run. Fixed: plotting no longer sets backend (tests/conftest.py does); reference noise_std 0.5->0.005 (field peak ~0.2).", "ts": "2026-10-10T01:24:53-04:00"}
+{"action": "verified", "author_name": "claude-code", "author_type": "agent", "entity_id": "T-005", "entity_type": "task", "summary": "T-005/V1 pass: 1/1 checks passed", "ts": "2026-10-10T01:25:05-04:00"}
+{"action": "updated", "author_name": "claude-code", "author_type": "agent", "entity_id": "T-005", "entity_type": "task", "summary": "Task T-005 updated", "ts": "2026-10-10T01:25:05-04:00"}
+{"action": "updated", "author_name": "claude-code", "author_type": "agent", "entity_id": "T-006", "entity_type": "task", "summary": "Task T-006 updated", "ts": "2026-10-10T01:25:05-04:00"}
