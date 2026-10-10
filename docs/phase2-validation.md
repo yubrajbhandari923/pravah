@@ -143,7 +143,7 @@ Halving dt at 500 m changes the mean by 0.04 percentage points. Doubling the phy
 -0.02 %, because the scheme's numerical spreading is several times K. The DEM, hillshade, slope and profiles are plotting-only: replacing
 them by constants leaves the `Scenario` identical and the concentration change exactly 0 (`plotting_only_check`).
 
-### c5. Geographic design (EXP-013, F-013; `results/geodesign/`, 708 s, peak 354 MB)
+### c5. Geographic design (EXP-013, F-020; `results/geodesign/`, 708 s, peak 354 MB)
 
 Setup: 6 design (seed 101), 6 validation (202), 6 test (303) scenarios; noise 5 % and 15 % of a documented signal scale (test:
 sigma 0.0158 and 0.0475 ug/m^3, from `noise_levels.csv`), 3 noise reps; 54 interior candidates (1.5 km lattice in the polygon),
@@ -292,7 +292,7 @@ Run `geodesign-robust` (fixed design-stage layouts re-evaluated, never reselecte
 ## (d) Requirement / status table
 
 Status: **done** = implemented, tested and a result file exists; **partial** = part of the requirement is met, the caveat says what
-is not; **blocked** = could not be done. Findings F-009, F-011, F-012, F-013 were `preliminary` when this was written (independent
+is not; **blocked** = could not be done. Findings F-009, F-011, F-012, F-013 were `preliminary` when this section was first written (see REVIEW STATUS for their independent verdicts and replacements) (independent
 review status is in the slot below). "Pending" means a result is expected from the coordinator and nothing is claimed.
 
 | Requirement | Status | Evidence | Caveat |
@@ -336,13 +336,25 @@ review status is in the slot below). "Pending" means a result is expected from t
 | D9 Exports with provenance | done | `layouts.{csv,geojson}` with objective, alpha, seeds, config hash and the provisional label | not field-validated |
 | **Cross-cutting** | | | |
 | Empirical validation against measurements | **not done** | none | no measurement data of any kind was used |
-| Independent finding reviews | pending | F-009, F-011, F-012, F-013 `preliminary` at writing | see `REVIEW_STATUS` |
+| Independent finding reviews | partial | 5 supported, 5 needs_work (replaced by F-016..F-021, preliminary) | see REVIEW STATUS above |
 
-REVIEW_STATUS: <to be filled by coordinator>
+**Independent review status (Research Panel, reviewer agent `scientific-reviewer`, Opus; not the author of the findings).**
+Recorded verdicts: *supported* F-002 (high), F-006 (medium), F-007 (medium), F-009 (high), F-012 (medium); *needs_work* F-001, F-008, F-011,
+F-014, F-015. Each `needs_work` finding was replaced by a corrected, still **preliminary** finding: F-016 (forward scheme; observed spatial order
+about 1.4 in the periodic test), F-017 (v0 mismatch; per-case counts mixed), F-018 (Belauri forward; the plume also arrives under the
+reversal and channelled winds), F-019 (boundary bases; values in the right order), F-020 (geographic design; ranking depends on noise level and on
+the design noise used for selection; reference-site use depends on it too), F-021 (robustness; flags saturated by construction, ranking metric
+unresolved against noise). F-005 (failure-kind) and F-016-F-021 are `preliminary`: no independent verdict has been recorded for them. Decisions:
+D-002 stands (v0 baseline); D-003 records this phase's baseline. The reviewer found **no blocker**, no leakage of the test ensemble into alpha,
+layouts or attribution scales, and no mismatch between the doc tables and the result CSVs.
 
-FINAL_TEST_RESULT: <to be filled by coordinator>
+Final run on the committed tree (coordinator, 2026-10-10, macOS, Python 3.12.7): `.venv/bin/pytest -q` -> **447 passed**, 15 warnings in 783.5 s
+(13 min 3 s); `.venv/bin/pyright` -> **0 errors, 0 warnings, 0 informations**; legacy FiPy regression (`scripts/compare_runs.py` before/after the
+solver refactor and after every later physics/inverse/design change) -> **21 files compared, 0 differ**, re-run independently by the reviewer.
 
-FINAL_NOTEBOOK_RESULT: <to be filled by coordinator>
+Clean-kernel execution (`scripts/verify_notebooks.py`, all six): 01_transport PASS 21.5 s; 02_inverse PASS 20.6 s; 03_sensor_design PASS 59.2 s;
+04_transboundary_pollution PASS 62.5 s; 05_belauri_forward PASS 188.8 s; 06_belauri_sensor_design PASS 179.3 s. The stored notebooks are no longer
+output-free in the working tree because they were executed and saved from the VS Code Jupyter extension; those saved versions were not committed.
 
 ## (e) Known limitations and what this does not claim
 
@@ -364,3 +376,56 @@ FINAL_NOTEBOOK_RESULT: <to be filled by coordinator>
 * **Known profiles and scales.** The inversion is given the true temporal profiles and wind history; scale choices act as prior
   widths when alpha > 0.
 * **Not tested:** bit-for-bit reproduction on other machines or library versions.
+
+
+## Wrap-up log: what works, what does not, what was deliberately left
+
+**Works (executed, verified, recorded).**
+* Solver interchangeability: one `ForwardSolver`/`BackendInfo` interface used by simulate, direct fit, response bases, greedy case building,
+  benchmark/mismatch (separate truth and inference solvers), alpha selection and the CLI; backend identity is part of every cache key; a replacement
+  solver must declare `linear`, `boundary_bases`, `wind_field` (enforced). FiPy outputs are bit-identical before and after (21 files, 0 differ; the
+  comparison detects a real alternate FiPy configuration).
+* External vs local study (synthetic): inflow-concentration bases (µg/m³) and explicit external sources (µg/s) as separate parameter kinds, origin tags by
+  linear superposition, concentration-derived external fraction, identifiability diagnostics, no-arrival and confounded cases, outer-domain study,
+  literal indoor box (exact ODE solution, separate from the outdoor problem), notebook 04.
+* Real Belauri geography: bounded fetch with cache and fallback endpoint, manifest with sha256/licences, boundary `verified` with the evidence and caveats
+  listed in `docs/geography.md`, DEM/relief, OSM features, UTM 32644, 46 geo tests including real-data integrity tests, notebook 05.
+* Belauri forward simulations and geographic sensor design with held-out evaluation, mismatch/robustness and a refinement study, notebook 06.
+* Tests, types, notebooks as recorded above.
+
+**Does not work / not established (stated, not hidden).**
+* No terrain-coupled flow: relief begins about 20 km north of the polygon and the model is flat 2-D with prescribed synthetic winds. No empirical
+  validation, no real emissions, no identification of real emitters.
+* The authoritative survey-department boundary was not obtained: geoBoundaries ADM3 (government-derived) cross-checked against OpenStreetMap; the Indian
+  outline in geoBoundaries is coarse, so country classification near the border is uncertain.
+* Numerical diffusion dominates the nominal K at the Belauri meshes (K_eff/K about 2.4-9.4 at the design mesh over the drawn winds, higher at the unseen
+  winds). Sensor-design results describe this numerically diffusive model; specific sites and the "differences beyond 5 sensors are within noise"
+  statement are mesh-dependent.
+* Layout rankings at small budgets are not resolved with 6 test scenarios: they depend on the noise level, and under unknown wind errors method
+  contrasts are close to chance.
+
+**Known issues from the final independent review that were NOT fixed (judged not worth another hour of reruns; each is a limitation of the shipped results).**
+1. *Test noise level.* The sigma told to the estimator on the test ensemble is fraction x the test ensemble's own signal scale (0.0158 versus 0.0154 for
+   design, 2.6% higher). A mild independence leak. Fix if needed: take sigma from the validation or design scale and rerun `geodesign` and `geodesign_robust`
+   (about 12 + 45 minutes of compute).
+2. *Identifiability flags are saturated.* `weakly_constrained` fires on every row because the emission scale (1e5 µg/s) is small next to the true
+   emissions (0.75-2.25e6 µg/s), and "flags equal matched" holds by construction (flags depend only on the sensitivity matrix and sigma). They carry no
+   information in the geodesign runs. A data-based check (weighted-residual chi-square per degree of freedom) is the proposed replacement.
+3. *Ranking-stability metric.* It counts contrasts whose matched difference is exactly zero as "kept" (30 of 240 rows per condition) and has no noise
+   baseline; excluding those rows lowers hidden/unseen-wind agreement from 0.72 to 0.68. Read it as "rankings were never resolved", not "wind error flips them".
+4. *Selection stability under refinement.* The 250 m re-selection used 3 fine design cases against 6, with no 500 m resampling baseline, so Jaccard 0-0.2
+   cannot be separated from ordinary greedy instability.
+5. *Held-out sites.* The "random" held-out points are only guaranteed more than 1 m from a candidate (measured minimum 220 m, median 614 m); the block regime
+   holds out sensor locations, but the greedy objective still integrates the block area on design cases. The "per added sensor" rows for `random` compare
+   non-nested layouts.
+6. *Geography wording.* The OSM relation and the Nominatim hierarchy are the same source (OpenStreetMap), so the independence is between geoBoundaries and
+   OpenStreetMap, not between two open sources; the "no other district overlaps" test is weak because 28% of the polygon lies outside every ADM2 polygon;
+   14 of the candidate sites lie inside the coarse Indian outline but are not flagged per candidate.
+7. *Provenance.* The two geodesign production runs record `git_dirty` with a 12-character diff hash but the patch itself is not archived; I checked that
+   only files outside the executed code path changed between the run revision and HEAD.
+8. *Unexecuted work.* A worker's attempt to fix items 1-7 (including a data-based chi-square check, candidate flags, a patch archive and two offline analysis
+   scripts) is preserved in the git stash named `G2-unshipped` and was not merged or rerun.
+
+**One evidence-motivated next experiment.** Add a data-based model check (chi-square per degree of freedom of the weighted residual) to the robustness study
+and re-run it with the test noise level fixed from the validation scale: the robustness results say the dominant risk to any sensor design here is the
+meteorology the estimator is told, and nothing the pipeline currently reports detects a wrong wind.

@@ -86,7 +86,7 @@ true hold-out only in the `block_holdout` regime.
 ```
 # smoke (about 40 s, cropped 2 km buffer, T = 7200 s, 2+2+2 cases; plumbing only)
 .venv/bin/python -m pravah benchmark --config configs/geodesign_smoke.json --out <empty dir>
-# production (about 25 min estimated; 18 cases x ~8 solves of ~4-5 s, then fits)
+# production (measured 11.8 min on the laptop: 18 cases x ~8 solves of ~4-5 s, then fits)
 .venv/bin/python -m pravah benchmark --config configs/geodesign.json --out results/geodesign
 ```
 Outputs: `config.json`, `provenance.json` (manifest sha256, seeds, alpha_selected sha256, git dirty hash), `timings.json` (stage

@@ -110,7 +110,7 @@ terrain). At 500 m cells:
   domain the Nepal border points lie on average 5.2 km (max 11.0 km) from the Indian outline, and 12.2 % of the Belauri
   polygon falls inside that Indian outline. It cannot be used to decide which country a point near the border lies in.
 * Origin classes: a point is "international" only if it lies inside a neighbour ADM0 polygon. The external patch centre
-  (80.2836 E, 28.6836 N, 2.92 km from the municipality edge) lies in **no** ADM0 polygon: outside the verified Nepal outline, but the
+  (80.2836 E, 28.6836 N, 2.92 km from the municipality edge) lies in **no** ADM0 polygon: outside the Nepal ADM0 polygon (whose agreement with the true border is not independently verified), but the
   coarse Indian outline does not contain it either. `prepare` therefore labels it `external_outside_home` (outside the
   home country, near the shared border, containment in a neighbour not asserted). This is deliberately not a claim that any emitter is Indian.
 
@@ -149,7 +149,7 @@ conservation law (depth-integrated form with h(x, y, t)), not just a new input a
 * **No official survey-department polygon was obtained.** The study polygon is geoBoundaries ADM3, derived from Open Data
   Nepal / MoFAGA 2019 government data. The independent check is the OSM administrative relation (IoU 0.9384, Hausdorff
   238 m). If the requirement is read as "authoritative boundary from the Survey Department of Nepal", it is only **partly met**:
-  the boundary is verified against two independent open sources, not against an official survey product.
+  the boundary is verified by agreement between geoBoundaries (government-derived) and OpenStreetMap (one independent source; the OSM relation and the Nominatim hierarchy are both OpenStreetMap), not against an official survey product.
 * The ADM2 geometric coverage check fails (71.7 %); explained in 3, not resolved.
 * Indian boundary geometry is coarse (see 7); the external patch cannot be classified as inside India.
 * OSM completeness is unknown (8); the OSM layers come from an Overpass mirror (5).
