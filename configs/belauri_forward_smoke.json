@@ -1,0 +1,11 @@
+{
+  "extends": "belauri_forward.json",
+  "name": "belauri_forward_smoke",
+  "notes": "Plumbing check: the standard outer domain is a 3 km buffer crop, the small one a 1.5 km crop, T = 7200 s with the external onset at 1800 s. Not for scientific conclusions. Real geography; synthetic emissions and meteorology.",
+  "region": {"standard_buffer_m": 3000.0, "small_buffer_m": 1500.0},
+  "physics": {"T": 7200.0, "t_exclude": 1800.0},
+  "sources": {"external_profile": [[0.0, 0.0], [1800.0, 1.0]]},
+  "wind": {"run": ["from_west_southwest", "reversal", "channelled_demo"]},
+  "outer_domain": {"winds": ["from_west_southwest", "reversal"]},
+  "figures": {"snapshot_times_s": [3600.0, 7200.0]}
+}

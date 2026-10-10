@@ -159,6 +159,9 @@ def cmd_benchmark(args: argparse.Namespace) -> int:
     if kind == "transboundary":
         from .transboundary import run_transboundary
         run_transboundary(cfg, out, overwrite=args.overwrite, progress=print)
+    elif kind == "belauri_forward":
+        from .belauri import run_belauri_forward
+        run_belauri_forward(cfg, out, overwrite=args.overwrite, progress=print)
     elif kind == "alpha_selection":
         sel = run_alpha_selection(cfg, out, overwrite=args.overwrite, progress=print, truth_forward=truth_fwd,
                   inference_forward=inf_fwd)
