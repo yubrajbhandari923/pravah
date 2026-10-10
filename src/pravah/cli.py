@@ -156,7 +156,10 @@ def cmd_benchmark(args: argparse.Namespace) -> int:
     out = Path(args.out)
     truth_fwd, inf_fwd = _forwards(args, cfg)
     kind = cfg.get("experiment", "benchmark")
-    if kind == "alpha_selection":
+    if kind == "transboundary":
+        from .transboundary import run_transboundary
+        run_transboundary(cfg, out, overwrite=args.overwrite, progress=print)
+    elif kind == "alpha_selection":
         sel = run_alpha_selection(cfg, out, overwrite=args.overwrite, progress=print, truth_forward=truth_fwd,
                   inference_forward=inf_fwd)
         print(f"selected alpha = {sel.alpha:g} (criterion {sel.selected['selected_criterion']:.4g})")

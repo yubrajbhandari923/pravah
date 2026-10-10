@@ -6,7 +6,7 @@
   "backend": "local",
   "command": ".venv/bin/python -m pravah geo fetch --config configs/belauri_geo.json",
   "created_at": "2026-10-10T11:53:15-04:00",
-  "ended_at": null,
+  "ended_at": "2026-10-10T12:00:13-04:00",
   "env": {
     "user": "yubraj"
   },
@@ -28,9 +28,9 @@
   "slurm": null,
   "slurm_job_id": null,
   "started_at": "2026-10-10T11:53:16-04:00",
-  "status": "running",
+  "status": "cancelled",
   "stderr_path": ".research/runs/RUN-0015/stderr.log",
   "stdout_path": ".research/runs/RUN-0015/stdout.log",
-  "updated_at": "2026-10-10T11:53:16-04:00",
+  "updated_at": "2026-10-10T12:00:13-04:00",
   "working_dir": "."
 }

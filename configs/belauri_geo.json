@@ -35,6 +35,8 @@
   "dem": {"product": "Copernicus GLO-30", "buffer_deg": 0.02, "max_window_pixels": 25000000, "min_valid_fraction": 0.95},
   "grid": {"buffer_m": 8000, "resolutions_m": [500, 250], "pad_to_m": 500},
   "osm": {
+    "margin_m": 2000,
+    "overpass_urls": ["https://overpass-api.de/api", "https://maps.mail.ru/osm/tools/overpass/api"],
     "tags": {
       "buildings": {"building": true},
       "landuse": {"landuse": "residential"},

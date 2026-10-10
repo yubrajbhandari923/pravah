@@ -1,0 +1,93 @@
+diff --git a/configs/belauri_geo.json b/configs/belauri_geo.json
+index 40d6d3f..458ba74 100644
+--- a/configs/belauri_geo.json
++++ b/configs/belauri_geo.json
+@@ -35,6 +35,8 @@
+   "dem": {"product": "Copernicus GLO-30", "buffer_deg": 0.02, "max_window_pixels": 25000000, "min_valid_fraction": 0.95},
+   "grid": {"buffer_m": 8000, "resolutions_m": [500, 250], "pad_to_m": 500},
+   "osm": {
++    "margin_m": 2000,
++    "overpass_urls": ["https://overpass-api.de/api", "https://maps.mail.ru/osm/tools/overpass/api"],
+     "tags": {
+       "buildings": {"building": true},
+       "landuse": {"landuse": "residential"},
+diff --git a/src/pravah/geo/fetch.py b/src/pravah/geo/fetch.py
+index 1da50f8..7a5ee3b 100644
+--- a/src/pravah/geo/fetch.py
++++ b/src/pravah/geo/fetch.py
+@@ -252,8 +252,11 @@ def _retry(fn: Any, what: str, attempts: int = 5, base_sleep: float = 20.0) -> A
+     raise RuntimeError(f"{what}: gave up after {attempts} attempts") from last
+ 
+ 
++DEFAULT_OVERPASS = ("https://overpass-api.de/api", "https://maps.mail.ru/osm/tools/overpass/api")
++
++
+ def osm_features(polygon_wgs84: Any, tags: dict[str, Any], cache_dir: str | Path, *, max_features: int = 500_000,
+-                 timeout: int = 120) -> dict[str, dict[str, Any]]:
++                 timeout: int = 120, overpass_urls: Sequence[str] = DEFAULT_OVERPASS) -> dict[str, dict[str, Any]]:
+     """Fetch OSM layers inside ``polygon_wgs84`` through osmnx (Overpass), caching each as GeoJSON in ``cache_dir`` and
+     returning {role: record} with feature counts. ``tags`` = {'buildings': {'building': True}, 'landuse':
+     {'landuse': 'residential'}, 'amenity': {'amenity': [...]}}; roads are always fetched as the 'all' street network.
+@@ -267,6 +270,21 @@ def osm_features(polygon_wgs84: Any, tags: dict[str, Any], cache_dir: str | Path
+     setattr(s, "overpass_rate_limit", True)
+     now = _now()
+     out: dict[str, dict[str, Any]] = {}
++    used = {"url": overpass_urls[0]}
++
++    def on_endpoints(fn: Any, what: str) -> Any:
++        """Try each Overpass endpoint in order (bounded retries each); the endpoint that answered is recorded."""
++        errors = []
++        for url in overpass_urls:
++            setattr(ox.settings, "overpass_url", url)
++            try:
++                res = _retry(fn, f"{what}@{url}", attempts=2, base_sleep=15.0)
++                used["url"] = url
++                return res
++            except Exception as e:  # connection/timeout exhausted or an HTTP error status from this endpoint
++                errors.append(f"{url}: {type(e).__name__}: {str(e)[:120]}")
++                print(f"  {what}: endpoint {url} failed; trying next", flush=True)
++        raise RuntimeError(f"{what}: all Overpass endpoints failed: {errors}")
+ 
+     def save(role: str, gdf: Any, keep: Sequence[str], query: str) -> None:
+         if len(gdf) > max_features:
+@@ -277,22 +295,22 @@ def osm_features(polygon_wgs84: Any, tags: dict[str, Any], cache_dir: str | Path
+             g[c] = g[c].map(lambda v: v if isinstance(v, (str, int, float, bool)) or v is None else str(v))
+         path = cache / f"{role}.geojson"
+         g.to_file(path, driver="GeoJSON")
+-        out[role] = _record(OVERPASS_URL, path, cache, rec_id=f"overpass:{role}", retrieved_utc=now, license=OSM_LICENSE,
++        out[role] = _record(used["url"], path, cache, rec_id=f"overpass:{role}", retrieved_utc=now, license=OSM_LICENSE,
+                             attribution=OSM_ATTRIBUTION,
+                             extra={"query": query, "feature_count": int(len(g)),
+                                    "geometry_types": sorted(map(str, g.geom_type.unique()))})
+ 
+     print("  OSM roads (Overpass via osmnx) ...", flush=True)
+-    graph = _retry(lambda: ox.graph.graph_from_polygon(polygon_wgs84, network_type="all", simplify=True), "osm_roads")
++    graph = on_endpoints(lambda: ox.graph.graph_from_polygon(polygon_wgs84, network_type="all", simplify=True), "osm_roads")
+     save("osm_roads", ox.convert.graph_to_gdfs(graph, nodes=False), ("highway", "name", "length"), "network_type=all")
+     for role, key in (("osm_buildings", "buildings"), ("osm_landuse", "landuse"), ("osm_amenity", "amenity")):
+         if key not in tags:
+             continue
+         print(f"  OSM {role} (Overpass via osmnx) ...", flush=True)
+         try:
+-            gdf = _retry(lambda k=key: ox.features.features_from_polygon(polygon_wgs84, tags[k]), role)
++            gdf = on_endpoints(lambda k=key: ox.features.features_from_polygon(polygon_wgs84, tags[k]), role)
+         except Exception as e:  # osmnx raises InsufficientResponseError when nothing matches
+-            if type(e).__name__ != "InsufficientResponseError":
++            if "InsufficientResponseError" not in repr(e) and type(e).__name__ != "InsufficientResponseError":
+                 raise
+             import geopandas as gpd
+             gdf = gpd.GeoDataFrame({"geometry": []}, geometry="geometry", crs="EPSG:4326")
+@@ -398,7 +416,12 @@ def fetch_all(cfg: dict[str, Any], cache_dir: str | Path, *, session: Any = None
+     epsg = utm_epsg(poly.centroid.x, poly.centroid.y)
+     dom_m = domain_bounds_m(project_geom(poly, 4326, epsg), float(cfg["grid"]["buffer_m"]))
+     west, south, east, north = lonlat_box(dom_m, epsg)
+-    for role, rec in osm_features(shapely.box(west, south, east, north), cfg["osm"]["tags"], cache).items():
++    # OSM layers only feed LOCAL source hypotheses and candidate sites (inside the municipality), so request the
++    # municipality plus a margin, not the whole simulation domain (keeps the Overpass load small and polite).
++    poly_m = project_geom(poly, 4326, epsg)
++    ow, os_, oe, on = lonlat_box(domain_bounds_m(poly_m, float(cfg["osm"].get("margin_m", 2000))), epsg)
++    for role, rec in osm_features(shapely.box(ow, os_, oe, on), cfg["osm"]["tags"], cache,
++                                        overpass_urls=cfg["osm"].get("overpass_urls", DEFAULT_OVERPASS)).items():
+         save(role, rec)
+     dem = cfg["dem"]
+     save("dem", fetch_dem((west, south, east, north), cache, buffer_deg=float(dem.get("buffer_deg", 0.02)),
