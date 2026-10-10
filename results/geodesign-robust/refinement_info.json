@@ -1,0 +1,28 @@
+{
+  "n_design_fine": 3,
+  "n_test_fine": 3,
+  "budgets": [
+    3,
+    5
+  ],
+  "settings": [
+    "interior_only",
+    "with_reference"
+  ],
+  "fine_response_sets_design": 3,
+  "fine_response_sets_test": 3,
+  "seconds_per_fine_case_including_solves": {
+    "design": 224.24830927769653,
+    "test": 242.31831001404984
+  },
+  "seconds_per_fine_response_set_approx": 224.24830927769653,
+  "fine_mesh": {
+    "resolution_m": 250.0,
+    "dt_s": 50.0
+  },
+  "attribution_scales_fine_design": [
+    0.021528886403883382,
+    0.0030720717162909307
+  ],
+  "note": "attr_err of the refinement tables uses the FINE design cases' attribution scales; it is not comparable with attr_err of the 500 m tables"
+}

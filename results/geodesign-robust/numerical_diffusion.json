@@ -1,0 +1,37 @@
+{
+  "K_physical_m2_s": 100.0,
+  "tuned": false,
+  "note": "The physical K is not tuned.  The baseline scheme (exponential convection + backward Euler) adds numerical spreading estimated by geo.scenarios.numerical_diffusion_estimate (K_eff/K = 1 + excess, wind along a grid axis, a scalar-speed approximation for oblique winds); it is reported separately from K and is part of every forward model, truth and inference alike in the matched experiments.",
+  "design_mesh": {
+    "dx_m": 500.0,
+    "dt_s": 100.0
+  },
+  "drawn_speed_range_m_s": [
+    0.8118422339350536,
+    3.410958079338664
+  ],
+  "K_eff_over_K_at_design_mesh_over_drawn_speeds": {
+    "at_min_speed": 2.4304530428467794,
+    "at_max_speed": 14.344713376262757
+  },
+  "K_eff_over_K_at_design_mesh_all_labelled_speeds": [
+    2.3946294414550966,
+    14.875000439424863
+  ],
+  "speeds_m_s": {
+    "design_min": 0.8938448517102573,
+    "design_mean": 1.6959899248771513,
+    "design_max": 2.448735637616596,
+    "validation_min": 0.9516602231244732,
+    "validation_mean": 1.5270126593959952,
+    "validation_max": 1.988959110773578,
+    "test_min": 0.8118422339350536,
+    "test_mean": 1.810741172369118,
+    "test_max": 2.4115754175733026,
+    "reference_0.8": 0.8,
+    "reference_1.5": 1.5,
+    "reference_2.5": 2.5,
+    "reference_3.5": 3.5,
+    "unseen_wind_max": 3.410958079338664
+  }
+}

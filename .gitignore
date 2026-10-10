@@ -9,3 +9,5 @@ data/belauri/raw/
 # large regenerable raw per-case rows (checksums recorded in RAW_FILES.json next to them)
 results/geodesign/test_raw.csv
 results/geodesign/validation_raw.csv
+results/geodesign-robust/test_raw.csv
+results/geodesign-robust/paired_rows.csv

@@ -1,0 +1,8 @@
+{"author_type": "agent", "name": "greedy_total_b5_matched_rmse", "ts": "2026-10-10T18:53:43-04:00", "value": 0.00353}
+{"author_type": "agent", "name": "greedy_total_b5_hidden_wind_rmse", "ts": "2026-10-10T18:53:43-04:00", "value": 0.0462}
+{"author_type": "agent", "name": "greedy_total_b5_unseen_wind_rmse", "ts": "2026-10-10T18:53:43-04:00", "value": 0.0413}
+{"author_type": "agent", "name": "greedy_total_b5_unseen_wind_declared_rmse", "ts": "2026-10-10T18:53:44-04:00", "value": 0.0033}
+{"author_type": "agent", "name": "greedy_total_b8_refined_truth_rmse", "ts": "2026-10-10T18:53:44-04:00", "value": 0.00662}
+{"author_type": "agent", "name": "greedy_total_b8_matched_rmse", "ts": "2026-10-10T18:53:44-04:00", "value": 0.00272}
+{"author_type": "agent", "name": "jaccard_500_vs_250_greedy_total_b3", "ts": "2026-10-10T18:53:44-04:00", "value": 0.2}
+{"author_type": "agent", "name": "compute_minutes", "ts": "2026-10-10T18:53:44-04:00", "value": 44.8}

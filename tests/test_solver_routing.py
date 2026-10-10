@@ -393,3 +393,32 @@ def test_cli_solver_errors(tmp_path):
         cli.main(["simulate", "--config", cfg, "--out", str(tmp_path / "e2"), "--solver-kwargs", "{bad"])
     with pytest.raises(ValueError, match="JSON object"):
         cli.main(["simulate", "--config", cfg, "--out", str(tmp_path / "e3"), "--solver-kwargs", "[1]"])
+
+
+# ---------------------------------------------------------------------------------------------
+# Capability declarations are enforced (INTERFACE tests, not physics)
+# ---------------------------------------------------------------------------------------------
+def test_backend_without_boundary_bases_is_refused_for_a_scenario_with_bases():
+    from pravah.config import Boundary, InflowBasis, Scenario as Sc
+    from pravah.inverse import run_forward
+    sc = Sc(domain=Domain(lx=4000.0, ly=4000.0, nx=8, ny=8), sources=(GaussianSource("a", 2000, 2000, 400),),
+            boundary=Boundary(bases=(InflowBasis("W", ("west",)),)),
+            times=Times(duration=1200.0, dt=120.0, output_interval=600.0))
+    rec = H.RecordingForward("nobases")  # declares boundary_bases False
+    with pytest.raises(ValueError, match="boundary_bases"):
+        run_forward(rec, sc, [1e5, 0.01], SolverOptions())
+    assert rec.calls == []  # refused before the solver was called
+    assert run_forward(forward_mod.FIPY, sc, [1e5, 0.01], SolverOptions()).status == "ok"
+
+
+def test_backend_without_wind_field_is_refused_for_a_stream_function_wind():
+    import numpy as np
+    from pravah.config import Transport, WindSegment, Scenario as Sc
+    from pravah.inverse import run_forward
+    d = Domain(lx=4000.0, ly=4000.0, nx=8, ny=8)
+    psi = np.zeros((9, 9))
+    sc = Sc(domain=d, sources=(GaussianSource("a", 2000, 2000, 400),),
+            transport=Transport(wind=(WindSegment.from_streamfunction(0.0, psi, 0.0, 0.0),)),
+            times=Times(duration=1200.0, dt=120.0, output_interval=600.0))
+    with pytest.raises(ValueError, match="wind_field"):
+        run_forward(H.RecordingForward("nowind"), sc, [1e5], SolverOptions())

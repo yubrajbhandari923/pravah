@@ -492,3 +492,10 @@ Also available: `results/benchmark-final/figures/error_vs_sensors_population.png
   mismatch condition do not hold for the final runs (see above).
 * The test and notebook status lines at the top were measured before the alpha-selection change and are marked for
   re-verification by the coordinator.
+
+## Phase 2
+
+This file is the v0 record and is unchanged by phase 2. The phase-2 record (reproduce commands, tolerances by test class, measured
+results for solver regression, the external-versus-local study, geography verification, Belauri forward simulations and geographic
+design, the requirement / status table and the known limitations) is `docs/phase2-validation.md`. As in v0, it is synthetic
+verification and a geography acquisition check, not empirical validation: **Real geography; synthetic emissions and meteorology.**

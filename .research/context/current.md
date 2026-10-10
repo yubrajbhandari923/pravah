@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1651 tokens.
-> Generated 2026-10-10T15:35:37-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1712 tokens.
+> Generated 2026-10-10T18:53:45-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `4618e16556` (uncommitted changes)
+Git: `master` @ `c80ae95098` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -35,7 +35,8 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Established findings (what we believe)
 
-- F-013 [preliminary, medium] Geographic sensor design on Belauri: greedy layouts help most at 1-3 sensors; attribution-objective layouts are not worse on total error at small budgets; external reference sites are not a clear win at equal budget (synthetic, matched) — evidence: EXP-013, RUN-0026
+- F-015 [preliminary, medium] Geographic design robustness: an unknown wind error dominates sensor-count effects, no flag detects it, layout rankings flip, and 250 m re-selection picks different sites (synthetic) — evidence: EXP-014, RUN-0027
+- F-014 [preliminary, medium] Geographic sensor design on Belauri: small-budget layout rankings depend on the noise level; differences beyond 5 sensors are within noise; external reference sites are not a clear win (synthetic, matched) — evidence: EXP-013, RUN-0026
 - F-012 [preliminary, medium] Boundary-condition input (whole-side bases) removes only part of the error from an omitted localised external plume (synthetic) — evidence: EXP-011, RUN-0024
 - F-011 [preliminary, high] Belauri forward simulations: wind direction and numerical diffusion dominate; terrain layers are context only (real geography, synthetic emissions and meteorology) — evidence: EXP-012, RUN-0025
 - F-009 [preliminary, high] Solver routing refactor preserves every deterministic FiPy output bit-for-bit — evidence: EXP-008, RUN-0012, RUN-0013
@@ -55,15 +56,15 @@ _none_
 
 ## Active plans
 
-- PLAN-002 PRAVAH phase 2: solver interchange, external/local, Belauri geography, geographic design — 9/11 tasks done · objective: Solver interchangeability; synthetic external vs local identifiability + indoor box; real Belauri geography and forward sims; geographic sensor design
-  - running: T-021 F: geographic candidates, objectives, designs, notebook 06 (claimed by claude-code)
+- PLAN-002 PRAVAH phase 2: solver interchange, external/local, Belauri geography, geographic design — 10/11 tasks done · objective: Solver interchangeability; synthetic external vs local identifiability + indoor box; real Belauri geography and forward sims; geographic sensor design
+  - next ready: T-022 G: Opus review of geographic deployment; integration, docs, reviews, synthesis, checkpoint (`research task context T-022`)
 - PLAN-001 PRAVAH v0 baseline — 11/11 tasks done · objective: Runnable v0: forward model, inverse, sensor design, notebooks, CLI
 
 ## Needs attention (verification)
 
-- [awaiting review] F-013 Geographic sensor design on Belauri: greedy layouts help most at 1-3 sensors; attribution-objective layouts are not worse on total error at small budgets; external reference sites are not a clear win at equal budget (synthetic, matched): Agent finding awaiting an independent review
+- [awaiting review] F-015 Geographic design robustness: an unknown wind error dominates sensor-count effects, no flag detects it, layout rankings flip, and 250 m re-selection picks different sites (synthetic): Agent finding awaiting an independent review
+- [awaiting review] F-014 Geographic sensor design on Belauri: small-budget layout rankings depend on the noise level; differences beyond 5 sensors are within noise; external reference sites are not a clear win (synthetic, matched): Agent finding awaiting an independent review
 - [awaiting review] F-012 Boundary-condition input (whole-side bases) removes only part of the error from an omitted localised external plume (synthetic): Agent finding awaiting an independent review
-- [awaiting review] F-011 Belauri forward simulations: wind direction and numerical diffusion dominate; terrain layers are context only (real geography, synthetic emissions and meteorology): Agent finding awaiting an independent review
 
 ## Active decisions
 

@@ -158,3 +158,35 @@ authoritative. Results and tolerances: `docs/validation.md`. Differences found b
   default grid and dt = 60 s is +61% (space +0.31, backward-Euler time term +0.30).
 - Still not done: a solver other than FiPy (the interface exists, nothing implements it), 2-D oblique-wind numerical-diffusion
   measurement, CLI/`run_benchmark` support for `forward=`.
+
+## Phase 2 status / deviations
+
+Plan: `docs/phase2-plan.md`. Results, tolerances and the requirement table: `docs/phase2-validation.md`. Where the implementation
+differs from the plan, the code and the phase-2 docs are authoritative. Deviations and events:
+
+- **Implementer agent.** The `implementer` agent type was not discoverable in the session; the plan's fallback was used
+  (`general-purpose` with the Sonnet model and the implementer rules).
+- **Usage-limit interruption.** One worker was interrupted by a usage limit.
+- **Overpass outage and mirror.** The main Overpass endpoint (`overpass-api.de`) refused connections or returned 504; two `geo fetch` runs
+  (RUN-0014, RUN-0015) were cancelled. The fetch step now retries with backoff, takes a list of endpoints, and limits OSM requests to the
+  municipality plus a 2 km margin; all four OSM layers come from the `maps.mail.ru` mirror (RUN-0016). The mirror may lag the main database.
+- **Boundary status logic.** The first `geo prepare` marked the boundary `approximate`: only 71.7 % of the ADM3 polygon lies inside the
+  coarse (36-vertex, 2006) ADM2 district polygon. The 90 % threshold was not loosened. The parent-district requirement is now met by
+  documented independent evidence (OSM relation IoU >= 0.9, hierarchy names the district, no other district overlaps by more than 1 %),
+  and the ADM2 coverage stays in the manifest as an informational failed check. The result is `boundary_status: verified`, but an
+  authoritative survey-department polygon was not obtained (`docs/geography.md`, section 11).
+- **Review-driven fixes in the external-versus-local study** (independent review, then rerun EXP-011): an equivalence-study layout bug (the
+  truth was sampled at domain-A coordinates, which read the wrong place; F-010 is superseded by F-012); round-off in tangential boundary
+  faces (`|u.n| < 1e-12` m/s is neither inflow nor outflow); the per-kind scale is a prior width when alpha > 0, so a scale-sensitivity
+  study was added and the text corrected; the inversion is given the true temporal profiles (wind, onset, basis profile), which is now
+  disclosed and probed with a mismatched basis onset; diagnostics are reported per noise level.
+- **Courant number.** The geographic-design wind range (0.8-2.5 m/s) gives u dt / dx up to 0.49 at 500 m and dt = 100 s, above the 0.3
+  guideline of the forward study; the value is recorded per case (`cases.csv`), and unseen robustness winds reach 0.7.
+- **Numerical diffusion.** The effective diffusivity of the baseline scheme is several times the nominal K at the Belauri meshes
+  (K_eff / K 4.88 at 500 m / dt 100 s, 2.53 at 250 m / dt 50 s) and about 2.4-9.4 at the design winds. K is reported as nominal, never
+  tuned; matched results share the diffusion between truth and inference and are optimistic.
+- **Items listed as "not done" in the v0 status above that phase 2 changed:** `forward=` support in the CLI, `run_benchmark`,
+  `run_alpha_selection` and `run_mismatch` now exists (`--solver`, `--truth-solver`, `--inference-solver`, config `backends`); a solver
+  other than FiPy still does not exist (FipyForward variants and test wrappers only).
+- **Still open:** authoritative survey-department boundary; terrain-resolved wind; empirical validation; independent finding reviews
+  unless recorded in `docs/phase2-validation.md`.

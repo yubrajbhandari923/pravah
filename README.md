@@ -4,8 +4,10 @@ An **idealised, synthetic** testbed for regional air-quality work: a 2-D advecti
 a source-amplitude inverse problem, and a sensor-placement benchmark. The region we eventually care about is
 Belauri (Nepal), but **nothing in this repository is a Belauri estimate**: domain size, wind, diffusivity, removal
 rate, source positions and amplitudes are demonstration values chosen to make plumes visible on a 10 km x 10 km box.
-There is no real geography, no observations, no chemistry and no forecasting. Everything is verified against
-mathematics (exact solutions, conservation, refinement), not against measurements.
+There are no observations, no chemistry and no forecasting. Everything is verified against
+mathematics (exact solutions, conservation, refinement), not against measurements. The text above and the v0 sections
+below describe the synthetic baseline; **Phase 2** (section below) adds real Belauri *geography* (polygon, roads, buildings,
+DEM context) under **synthetic emissions and meteorology**, still with no real data.
 
 ## Install
 
@@ -123,8 +125,9 @@ Full definitions: `docs/specification.md`; discretisation and design: `docs/impl
 * **Numerical diffusion:** at the default 50 x 50 grid and dt = 60 s the scheme's effective diffusivity is about
   K x 1.61 (+0.61 K: +0.31 from space, +0.30 from the backward-Euler time term; measured, see
   `docs/specification.md`). Treat K as a *nominal* value. Time stepping is first order.
-* No real geography or terrain, no observations, no chemistry, no forecasting, no neural solver (the
-  `ForwardSolver` interface for plugging one in is described in `docs/extending.md`; nothing implements it yet).
+* v0 itself has no geography or terrain (phase 2 adds geography, with terrain as plotting context only), no observations, no
+  chemistry, no forecasting, no neural solver (the `ForwardSolver` interface for plugging one in is described in
+  `docs/extending.md`; nothing implements it yet; phase 2 adds FiPy variants and test wrappers only).
 * Wind and K are uniform in space; the layer depth H is fixed.
 
 ## Change one assumption and compare
@@ -147,6 +150,100 @@ print('max |change| %.3f ug/m3; final peak %.3f -> %.3f' % (abs(new - ref).max()
 When we ran this: max |change| 0.166 ug/m^3, final peak 0.161 -> 0.226. In a notebook, `(new - ref).isel(time=-1).plot()`
 shows where the plume moved. Notebook 01 has the same idea as ready-made demos. More worked examples: `docs/extending.md`.
 
+## Phase 2: solvers, external vs local, Belauri geography, geographic design
+
+Everything below is a **synthetic or provisional simulation study**. **Real geography; synthetic emissions and meteorology.**
+Nothing here is validated against measurements, none of it identifies a real emitter, and nothing is a field-ready deployment.
+
+**What is new**
+
+* **Solver interchangeability.** Every workflow runs through one injected forward-solver object (FiPy by default; its results are
+  bit-identical to v0, see `docs/solver-interchangeability.md`). Truth and inference can use different solvers.
+* **External vs local study.** Explicit external sources versus boundary (inflow) bases, origin tags, an external-fraction quantity,
+  identifiability flags, and an **indoor box** (one-way coupled): `docs/transboundary.md`, notebook 04.
+* **Belauri geography.** Municipality polygon, roads, buildings, facilities, DEM context, national outlines, prepared offline
+  with a sha256/licence manifest: `docs/geography.md`. Forward simulations on it: `docs/belauri-forward.md`, notebook 05.
+* **Geographic sensor design.** Candidate sites, random / spread / greedy-total / greedy-attribution layouts, with and without
+  reference sites outside the polygon, held-out blocks, robustness: `docs/geodesign.md`, notebook 06.
+
+Terms (used literally): *local* = emitted inside the study polygon; *external* = outside it (an explicit source or an input through
+the outer boundary); *international transboundary* = crossing a verified national border (not asserted anywhere here); *indoor* = inside
+a building. The study polygon is only a reporting mask, never a wall. See `docs/architecture.md`.
+
+**Install the optional extra** (core code never needs it):
+
+```bash
+uv pip install -e ".[dev,geo]"          # geopandas, shapely, pyproj, rasterio, osmnx, requests
+# exact tested versions: requirements-lock-geo.txt (drop its machine-specific "-e file://..." line, as above)
+```
+
+**Select a solver** (all of `simulate`, `inverse`, `benchmark`; defaults stay FiPy; in a config, `"backends": {"truth": {"spec": ..., "kwargs": {...}}, "inference": {...}}`):
+
+```bash
+python -m pravah benchmark --config configs/smoke.json --out results/my-up --inference-solver fipy --inference-solver-kwargs '{"convection":"upwind"}'
+python -m pravah simulate  --config configs/smoke.json --out results/my-up2 --solver fipy --solver-kwargs '{"convection":"upwind"}'
+python -m pravah inverse   --config configs/reference.json --out results/my-inv --solver mypkg.mod:make_solver --solver-kwargs '{"k":1}'
+#   --solver SPEC (both roles)  --truth-solver SPEC  --inference-solver SPEC  --solver-kwargs JSON  (also --truth-/--inference-solver-kwargs)
+```
+
+`module:callable` is a factory called once; the solver must declare `capabilities["linear"]` to be used by the cached route. A worked, run
+example is in `docs/extending.md` (examples 9-10).
+
+**Fetch and prepare the geography** (network once, then offline):
+
+```bash
+python -m pravah geo fetch   --config configs/belauri_geo.json   # bounded, cached under data/belauri/raw/, sha256-recorded
+python -m pravah geo prepare --config configs/belauri_geo.json   # offline: writes data/belauri/processed/ and manifest.json
+python scripts/geo_report.py --manifest data/belauri/manifest.json --out results/geography   # offline figures + report
+```
+
+The OSM step tries a list of Overpass endpoints; in our acquisition the main endpoint (`overpass-api.de`) was unavailable and all four OSM
+layers came from the `maps.mail.ru` mirror, which may lag the main database. After `prepare`, **the notebooks run offline**.
+
+**Notebooks** (`scripts/verify_notebooks.py` runs one in a clean kernel; run times are single measurements, not benchmarks):
+
+| Notebook | What it does | Run time |
+|---|---|---|
+| `04_transboundary_pollution.ipynb` | external vs local, identifiability, indoor box (smoke-sized grids) | about one minute (`docs/transboundary.md`) |
+| `05_belauri_forward.ipynb` | Belauri forward simulations: winds, outer domain, mesh | not yet recorded here; see `docs/phase2-validation.md` |
+| `06_belauri_sensor_design.ipynb` | candidate sites, layouts, robustness (runs both smoke profiles; shows saved production tables if present) | about 2.5 minutes (`docs/geodesign.md`) |
+
+**Reproduce the studies** (fresh `--out` each time; frozen outputs are not to be overwritten):
+
+```bash
+python -m pravah benchmark --config configs/transboundary.json     --out results/<name>   # external vs local, production (27.8 min recorded)
+python -m pravah benchmark --config configs/belauri_forward.json   --out results/<name>   # Belauri forward (285 s recorded)
+python -m pravah benchmark --config configs/geodesign.json         --out results/<name>   # geographic design (708 s recorded)
+python -m pravah benchmark --config configs/geodesign_robust.json  --out results/<name>   # needs robust.layouts_from = the geodesign run
+# smoke profiles (plumbing only): configs/transboundary_smoke.json, belauri_forward_smoke.json, geodesign_smoke.json, geodesign_robust_smoke.json
+```
+
+**Inspect provenance.** Every run directory has `provenance.json` (git revision and dirty flag with a diff hash and dirty-file list,
+library versions, seeds, the config, and in `extra` the backend infos, the sha256 of `data/belauri/manifest.json`, of the raw
+geography files, of `alpha_selected.json` and the config hash) and `timings.json`. `data/belauri/manifest.json` lists every dataset (URL, release or commit,
+retrieved UTC, licence and attribution, sha256, CRS, resampling), the boundary checks, counts and assumptions;
+`tests/test_geo_real.py` re-hashes all files. `results/geodesign/alpha_selected.json` holds the alpha table chosen on validation
+cases only. `provenance.json` flags a run made from a dirty tree.
+
+**Caveats that travel with every figure and table:** "Real geography; synthetic emissions and meteorology." The DEM, hillshade and slope are plotting
+context (no solver reads them); terrain-driven flow is not modelled. The scheme is numerically diffusive (effective diffusivity several times the nominal K at the
+Belauri meshes), and layouts are greedy heuristics, not optima.
+
+**What phase 2 does NOT establish**
+
+* Any agreement with real concentrations, real emissions or real winds (no empirical validation).
+* Identification of any real foreign or distant emitter, or any statement about a real border emission. The external patch is not asserted
+  to be international.
+* An authoritative boundary: the Belauri polygon is geoBoundaries ADM3 cross-checked against an OSM relation (IoU 0.9384), not a Survey
+  Department product; the ADM2 coverage check fails (71.7 %) and is reported as informational.
+* Terrain-resolved wind or mixing: relief inside the domain is a few tens of metres, the first substantial relief begins roughly 20 km
+  beyond the municipality's northern edge, and terrain dynamics are unresolved.
+* That boundary bases reproduce a localised external plume (they removed part, not all, of its error), or that sensor layouts chosen here
+  beat simple ones by a clear margin (differences are modest and mixed; reference sites were not a clear win).
+* That a mapped candidate site is permitted, powered, secure or connected.
+
+Status of each requirement and measured results: `docs/phase2-validation.md`.
+
 ## Optional: Research Panel
 
 The repo is also tracked with Research OS (`.research/`, see `AGENTS.md`). This is optional and the `pravah`
@@ -157,12 +254,18 @@ package never imports it. To register a finished run directory as artifacts and 
 
 ```
 src/pravah/   config forward sources observations inverse metrics design experiments io plotting cli
+              attribution transboundary indoor belauri geodesign geodesign_robust geo/(fetch prepare regionio scenarios)   [phase 2]
 configs/      reference smoke smoke_alpha_selection alpha_selection benchmark benchmark_unregularized mismatch wind_change (JSON, "extends" supported)
-notebooks/    01_transport 02_inverse 03_sensor_design
-scripts/      verification.py  verify_notebooks.py  register_research.py
+              transboundary(_smoke) belauri_geo belauri_forward(_smoke) geodesign(_smoke) geodesign_robust(_smoke)   [phase 2]
+notebooks/    01_transport 02_inverse 03_sensor_design   04_transboundary_pollution 05_belauri_forward 06_belauri_sensor_design
+scripts/      verification.py  verify_notebooks.py  register_research.py  capture_regression.py compare_runs.py geo_report.py
+              geo_relief_profile.py transboundary_tables.py
 tests/        pytest suite (scientific checks, no mocks of the solver)
-docs/         specification  architecture  implementation-plan  extending  validation
-results/      frozen outputs (see docs/validation.md; benchmark, benchmark-unregularized, mismatch are exploratory/superseded)
+docs/         specification  architecture  implementation-plan  extending  validation  phase2-plan  solver-interchangeability
+              transboundary  geography  belauri-forward  geodesign  phase2-validation
+results/      frozen outputs (see docs/validation.md and docs/phase2-validation.md; benchmark, benchmark-unregularized, mismatch are
+              exploratory/superseded)
+data/belauri  prepared geography (manifest.json tracked; raw downloads git-ignored)
 ```
 
 Checks: `pytest -q`, `pyright`, `python scripts/verify_notebooks.py` (status in `docs/validation.md`).

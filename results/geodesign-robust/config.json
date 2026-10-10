@@ -1,0 +1,263 @@
+{
+  "name": "geodesign_robust",
+  "experiment": "geodesign_robust",
+  "notes": "Stage F2b robustness of the FIXED geographic layouts. Real geography; synthetic emissions and meteorology. The layouts and frozen alphas of a finished geodesign run (robust.layouts_from) are re-used verbatim and evaluated on the regenerated TEST ensemble (same seeds, noise and sigma, so matched rows are the main run's rows) under: unseen winds (declared nominal / declared true), a hidden wind error, a different boundary time profile, an omitted local facility source and an omitted external Gaussian, and a 250 m / 50 s truth block-averaged to the 500 m inference grid. Refinement stability re-selects greedy layouts on the 250 m model. Provisional simulation design, not field-validated.",
+  "region": {
+    "manifest": "data/belauri/manifest.json",
+    "crop_buffer_m": null,
+    "study": {
+      "shapeName": "Belauri",
+      "shapeID": "92635248B27542858320702"
+    }
+  },
+  "mesh": {
+    "resolution_m": 500.0,
+    "dt_s": 100.0
+  },
+  "physics": {
+    "K": 100.0,
+    "lam": 4.6296296296296294e-05,
+    "H": 500.0,
+    "T": 28800.0,
+    "output_interval": 900.0,
+    "t_exclude": 7200.0
+  },
+  "model": {
+    "groups": [
+      "road",
+      "builtup",
+      "external"
+    ],
+    "base_amplitudes_ug_s": {
+      "road": 1500000.0,
+      "builtup": 1000000.0,
+      "external": 500000.0
+    },
+    "external_profile": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        7200.0,
+        1.0
+      ]
+    ],
+    "bg": {
+      "sides": [
+        "west",
+        "east",
+        "south",
+        "north"
+      ],
+      "profile": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          7200.0,
+          1.0
+        ]
+      ]
+    }
+  },
+  "ensemble": {
+    "amplitude_factor_range": [
+      0.5,
+      1.5
+    ],
+    "patch_factor_range": [
+      0.0,
+      2.0
+    ],
+    "bg_range": [
+      0.0,
+      0.05
+    ],
+    "speed_range": [
+      0.8,
+      2.5
+    ],
+    "n_sectors": 8,
+    "sector_half_width_deg": 15.0,
+    "two_segment_every": 3,
+    "switch_step_s": 3600.0
+  },
+  "ensembles": {
+    "design": {
+      "n_cases": 6,
+      "seed": 101,
+      "noise_seed": 1000
+    },
+    "validation": {
+      "n_cases": 6,
+      "seed": 202,
+      "noise_seed": 2000
+    },
+    "test": {
+      "n_cases": 6,
+      "seed": 303,
+      "noise_seed": 3000
+    }
+  },
+  "noise": {
+    "fractions": [
+      0.05,
+      0.15
+    ],
+    "reps": 3,
+    "obs_interval_s": 1800.0
+  },
+  "candidates": {
+    "interior_spacing_m": 1500.0,
+    "reference_spacing_m": 3000.0,
+    "reference_inset_m": 500.0,
+    "road_near_m": 100.0,
+    "facility_amenities": [
+      "school",
+      "college",
+      "kindergarten",
+      "university",
+      "hospital",
+      "clinic",
+      "doctors",
+      "health_post"
+    ]
+  },
+  "settings": {
+    "max_reference": 2,
+    "hypothetical": false
+  },
+  "methods": {
+    "budgets": [
+      1,
+      2,
+      3,
+      5,
+      8
+    ],
+    "n_random": 20,
+    "layout_seed": 7
+  },
+  "alpha": {
+    "grid": [
+      0.0,
+      0.0001,
+      0.001,
+      0.01,
+      0.1,
+      1.0,
+      10.0,
+      100.0,
+      1000.0
+    ],
+    "strong_prior": 1000.0
+  },
+  "heldout": {
+    "n_random_points": 20,
+    "random_seed": 404,
+    "block": {
+      "n_blocks_x": 3,
+      "n_blocks_y": 1,
+      "which": 2,
+      "spacing_m": 1000.0,
+      "lattice_offset_m": [
+        333.0,
+        217.0
+      ],
+      "exclusion_radius_m": 2000.0
+    }
+  },
+  "figures": {
+    "enabled": true
+  },
+  "solver": {},
+  "robust": {
+    "layouts_from": "results/geodesign",
+    "regimes": [
+      "standard"
+    ],
+    "alpha_labels": [
+      "selected"
+    ],
+    "conditions": [
+      "matched",
+      "unseen_wind",
+      "unseen_wind_declared",
+      "hidden_wind_error",
+      "boundary_time_profile",
+      "omitted_facility",
+      "omitted_external",
+      "refined_truth"
+    ],
+    "unseen_wind": {
+      "speed_range": [
+        2.6,
+        3.5
+      ],
+      "sector_offset_deg": 22.5,
+      "seed": 909
+    },
+    "hidden_wind_error": {
+      "speed_error": 0.2,
+      "rotation_deg": 15.0
+    },
+    "boundary_time_profile": {
+      "bg_profile": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          14400.0,
+          0.5
+        ],
+        [
+          21600.0,
+          1.0
+        ]
+      ],
+      "external_profile": null
+    },
+    "omitted_source": {
+      "facility_ug_s": 500000.0,
+      "external_ug_s": 500000.0,
+      "external_sigma_m": 1000.0,
+      "external_position_frac": [
+        0.12,
+        0.88
+      ],
+      "external_profile": null
+    },
+    "refined_truth": {
+      "factor": 2,
+      "dt_factor": 0.5
+    },
+    "refinement": {
+      "enabled": true,
+      "reselect": true,
+      "n_design_fine": 3,
+      "n_test_fine": 3,
+      "budgets": [
+        3,
+        5
+      ],
+      "settings": [
+        "interior_only",
+        "with_reference"
+      ],
+      "resolution_m": 250.0,
+      "dt_s": 50.0
+    },
+    "numerical_diffusion": {
+      "speeds_m_s": [
+        0.8,
+        1.5,
+        2.5,
+        3.5
+      ]
+    },
+    "figures": true
+  }
+}

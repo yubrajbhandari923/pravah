@@ -57,7 +57,7 @@ unless declared:
   and `compute_responses` raise `ValueError` otherwise (this includes the cached operator used for the diagnostics of
   `method="direct"`).
 * `budget`: the result carries a mass budget.
-* `boundary_bases`: supports boundary-inflow basis parameters. `False` for FiPy until the phase-2 physics lands.
+* `boundary_bases`: supports boundary-inflow basis parameters (`InflowBasis`, theta entries of kind `inflow`). `True` for the FiPy reference since the phase-2 physics landed; a replacement solver that does not set it is refused for scenarios with bases.
 
 `FipyForward(convection=None, tolerance=None)` applies these overrides on top of the `SolverOptions` of each call and
 records them in `info.settings`; `FIPY.info.version` is `"fipy <ver>; pravah <ver>"`. FiPy results carry
@@ -88,7 +88,7 @@ those written before this change (old `.npz` entries are simply not found and ar
 
 * A replacement only needs to support the scenarios it was built for; unsupported ones should raise.
 * No automatic differentiation; `method="direct"` uses finite-difference Jacobians of the injected solver.
-* `boundary_bases` is `False` for FiPy: boundary-basis parameters arrive with the phase-2 physics.
+* `boundary_bases` and `wind_field` (stream-function winds) are `True` for FiPy; a replacement solver declares what it supports in its `BackendInfo`.
 * Declaring `linear=True` is the author's claim; the framework does not test linearity.
 * Test doubles in `tests/helpers_solver.py` (recording / +1 ug/m^3 marker wrappers around FiPy) are interface tests,
   not physics benchmarks.

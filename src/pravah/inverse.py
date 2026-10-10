@@ -106,7 +106,14 @@ class Responses:
 
 def run_forward(forward: ForwardSolver, scenario: Scenario, q: Sequence[float] | np.ndarray,
                 solver: SolverOptions) -> FieldResult:
-    """Call ``forward`` and check its result against the ForwardSolver contract (every backend, FiPy included)."""
+    """Call ``forward`` and check its result against the ForwardSolver contract (every backend, FiPy included).
+    A backend must DECLARE the capabilities a scenario needs (inflow bases -> ``boundary_bases``, stream-function
+    winds -> ``wind_field``); one that does not is refused instead of silently ignoring that part of the scenario."""
+    caps = forward_info(forward).capabilities
+    if scenario.boundary.bases and not caps.get("boundary_bases", False):
+        raise ValueError("scenario has inflow-basis parameters but the solver does not declare the 'boundary_bases' capability")
+    if any(w.psi is not None for w in scenario.transport.wind) and not caps.get("wind_field", False):
+        raise ValueError("scenario has a stream-function wind but the solver does not declare the 'wind_field' capability")
     res = forward(scenario, q, solver)
     check_field_result(res, scenario)
     return res

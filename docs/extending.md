@@ -179,8 +179,8 @@ What changes at a switch:
 
 `pravah.forward.ForwardSolver` is a `Protocol`: any callable `solver(scenario, q, solver_options) -> FieldResult`.
 The inverse and design code take an optional keyword `forward=simulate` (`ResponseCache.get`,
-`compute_responses`, `fit_sources`, `reconstruct`, `design.build_case`). The CLI and `run_benchmark` /
-`run_mismatch` do not take it yet; call the library functions as below.
+`compute_responses`, `fit_sources`, `reconstruct`, `design.build_case`). *(Phase 2: the CLI and `run_benchmark` /
+`run_mismatch` now take a solver too, see examples 9 and 10 below; the library calls here still work.)*
 
 **What it must return** (`check_field_result(res, scenario)` raises `ValueError` with a specific message otherwise;
 the inverse code calls it for every non-default solver):
@@ -396,3 +396,417 @@ A naive "far from the sources" rule is worst because it puts sensors where the p
 To get paired statistics, pass several methods and use `design.paired_comparison(df, "greedy", "row_y5000")`.
 To respect separation or exclusion zones use `Constraints(allowed=mask, min_separation=...)` and
 `design.feasible_sites`; custom strategies must apply such constraints themselves.
+
+---
+
+# Phase 2 worked examples
+
+Every Python block below was run in `.venv` from the repository root on the code in this repository, and the output shown
+is what it printed (each block takes a few seconds; the small grids are for speed, not for science). Everything is
+**synthetic** except example 13, which uses the prepared Belauri geography ("Real geography; synthetic emissions and
+meteorology."). Two corrections to the sections above: the CLI **does** take a solver now (`--solver`, example 9/10), and the
+response-cache key now contains the full `BackendInfo` of the solver (example 10), not only `module.qualname`/`forward_id`;
+`docs/solver-interchangeability.md` describes the current behaviour.
+
+Phase-2 conventions: the parameter vector is `theta` = emission amplitudes (ug/s, one per source) followed by inflow-basis
+amplitudes (ug/m^3, one per basis); `scenario.param_table()` lists name, kind, group and units. A *local* source is
+emitted inside the study region, an *external* one outside it (explicit source, or a boundary basis for unresolved distant
+sources). The study region is a reporting mask, never a wall of the PDE.
+
+## 7. Add an inflow basis (boundary input as a parameter)
+
+An `InflowBasis(name, sides, profile)` prescribes the concentration `a * profile(t)` on the listed outer faces **only where
+the wind is inflow (u.n < 0)**. The amplitude `a` is a fitted parameter in ug/m^3, appended after the emissions in `theta`.
+A face with |u.n| < 1e-12 m/s is exactly tangential (neither inflow nor outflow). Bases need `Boundary("open", ...)`;
+do not use a basis for a plume that you also represent by an explicit source (`transboundary.check_no_double_count`).
+
+```python
+# example 7
+import dataclasses as dc
+import numpy as np
+from pravah.config import (Boundary, Domain, GaussianSource, InflowBasis, Scenario, StudyRegion, Times, Transport,
+                           WindSegment)
+from pravah.forward import simulate
+
+def make(u, basis):
+    return Scenario(domain=Domain(10_000.0, 10_000.0, 25, 25),
+                    sources=(GaussianSource("L1", 5000.0, 5000.0, 600.0),),
+                    transport=Transport(wind=(WindSegment(0.0, u, 0.0),)),
+                    boundary=Boundary("open", 0.0, (basis,)),
+                    times=Times(duration=7200.0, dt=120.0, output_interval=1200.0),
+                    study=StudyRegion(2500.0, 2500.0, 7500.0, 7500.0))
+
+# a west-side basis that switches on at 3600 s: profile = ((t_start, factor), ...), amplitude is a PARAMETER in ug/m^3
+west = InflowBasis("west", ("west",), profile=((0.0, 0.0), (3600.0, 1.0)))
+for u in (1.0, -1.0):
+    sc = make(u, west)
+    tab = sc.param_table()
+    print("wind u =", u, "->", [(p.name, p.kind, p.units) for p in tab])
+    r_off = simulate(sc, [0.0, 0.0])                     # theta = [q_L1 (ug/s), a_west (ug/m^3)]
+    r_on = simulate(sc, [0.0, 0.05])
+    d = r_on.concentration - r_off.concentration
+    print(f"   basis effect: max {float(d.max()):.4f} ug/m3 (west column mean {float(d.isel(time=-1, x=0).mean()):.4f}); "
+          f"budget residual {r_on.diagnostics['max_rel_budget_residual']:.1e}")
+```
+
+Output when run:
+
+```
+wind u = 1.0 -> [('L1', 'emission', 'microgram/s'), ('west', 'inflow', 'microgram/m^3')]
+   basis effect: max 0.0494 ug/m3 (west column mean 0.0494); budget residual 3.2e-15
+wind u = -1.0 -> [('L1', 'emission', 'microgram/s'), ('west', 'inflow', 'microgram/m^3')]
+   basis effect: max 0.0000 ug/m3 (west column mean 0.0000); budget residual 0.0e+00
+```
+
+Reading it: with the wind blowing from the west the west face is inflow and the basis lifts the first cell column by about its
+amplitude (0.05 ug/m^3 requested; 0.0494 seen in that column at the final output time, after transport and removal); with the wind reversed the same face
+is outflow and the basis has no effect. The budget closes in both cases because the budget uses the same boundary
+coefficients as the equation. A new *kind* of parameter (not just a new basis) would additionally need a row in
+`Scenario.param_table`, a reference amplitude in `inverse.REF_BY_KIND` and a default scale in `inverse.SCALE_BY_KIND` (not
+tried here); the tests that exercise bases are `tests/test_bases.py` and `tests/test_attribution.py`.
+
+## 8. Add a raster source group
+
+`RasterSource.from_array(name, group, weights, profile)` takes any non-negative (ny, nx) array on the simulation grid, e.g. a
+rasterised road length, and `source_fields` normalises it so `sum(f * cell_area) = 1`, exactly as for a Gaussian. The emission
+rate is then the usual `theta` entry in ug/s. Only the array's sha256 enters `to_dict` and the cache keys. The weights are a
+**spatial prior you chose**, not data (the Belauri hypotheses are labelled synthetic spatial priors). `group` is
+`"local"` or `"external"` and is checked against the study region (`sources.check_origin_tags`) when you ask for it.
+
+```python
+# example 8
+import dataclasses as dc
+import numpy as np
+from pravah.config import (Boundary, Domain, GaussianSource, RasterSource, Scenario, StudyRegion, Times, Transport,
+                           WindSegment)
+from pravah.forward import simulate
+from pravah.sources import source_fields
+from pravah.attribution import TAGS
+
+dom = Domain(10_000.0, 10_000.0, 25, 25)                     # 400 m cells
+w = np.zeros((25, 25)); w[12, 0:10] = 1.0; w[12, 10:] = 0.2   # an "arterial road" along y = 5 km, weights >= 0, any scale
+road = RasterSource.from_array("road", "local", w)            # group tag: local | external
+sc = Scenario(domain=dom, sources=(road, GaussianSource("patch", 800.0, 5000.0, 700.0, group="external")),
+              transport=Transport(wind=(WindSegment(0.0, 1.0, 0.0),)),
+              times=Times(duration=7200.0, dt=120.0, output_interval=1200.0),
+              study=StudyRegion(3000.0, 3000.0, 9000.0, 9000.0))
+f = source_fields(sc)
+print("sum f*dA per source:", (f * dom.dx * dom.dy).sum(axis=(1, 2)).round(12))
+print("config stores only the hash:", sc.sources[0].sha256[:12], "| table:", [(p.name, p.group) for p in sc.param_table()])
+r = simulate(sc, [1.0e5, 1.0e5])
+print(f"max c {float(r.concentration.max()):.4f} ug/m3, budget residual {r.diagnostics['max_rel_budget_residual']:.1e}")
+```
+
+Output when run:
+
+```
+sum f*dA per source: [1. 1.]
+config stores only the hash: 4caaac74d4d7 | table: [('road', 'local'), ('patch', 'external')]
+max c 0.1833 ug/m3, budget residual 6.0e-15
+```
+
+## 9. Run an alternate FiPy configuration through the CLI
+
+`FipyForward(convection=..., tolerance=...)` overrides `SolverOptions` for a whole run and is recorded in the backend info, so
+results and caches of different configurations never mix. From the command line (`--solver-kwargs` is a JSON object):
+
+```bash
+python -m pravah simulate --config configs/smoke.json --out runs/default
+python -m pravah simulate --config configs/smoke.json --out runs/upwind --solver fipy --solver-kwargs '{"convection":"upwind"}'
+```
+
+Both ran in about 3 s each. Comparing the saved fields and the recorded `provenance.json["extra"]["backend"]`:
+
+```
+max concentration (ug/m3): default 0.1615, upwind 0.1476, recsolver 0.1615
+max |upwind - default| = 0.0189 ug/m3; max |recsolver - default| = 0.0e+00
+default backend settings: {'convection': None, 'tolerance': None}
+upwind backend settings: {'convection': 'upwind', 'tolerance': None}
+```
+
+The upwind scheme lowers the peak (0.1615 -> 0.1476 here) because it is more diffusive; this is a statement about the two
+numerical schemes on one coarse grid, not about which is right. For `benchmark` the flags also work per role:
+`--truth-solver`, `--inference-solver`, `--truth-solver-kwargs`, `--inference-solver-kwargs`.
+
+## 10. A tiny solver factory and `--solver module:callable`
+
+The spec after `--solver` is `module:callable`. The callable is a **factory**: it is called once with the `--solver-kwargs`
+and must return the solver object. The solver needs `__call__(scenario, q, solver=...) -> FieldResult` and, to be usable by
+the cached-response route, an `info` attribute (`BackendInfo`) that **declares `capabilities["linear"] = True`** (the
+framework never assumes it, and does not test it). This one wraps FiPy and counts calls; save it as `recsolver.py` in the
+directory you run from (`python -m pravah` has the current directory on `sys.path`).
+
+```python
+"""A tiny solver factory: wraps the FiPy reference, counts calls, declares itself linear."""
+from pravah.forward import FIPY, BackendInfo
+
+
+class Recording:
+    def __init__(self, tag: str = "rec") -> None:
+        self.tag, self.calls = tag, 0
+
+    @property
+    def info(self) -> BackendInfo:                      # part of every cache key and of provenance.json
+        return BackendInfo(f"recording-{self.tag}", "1", {"tag": self.tag},
+                           {"linear": True, "budget": True, "boundary_bases": True, "wind_field": True})
+
+    def __call__(self, scenario, q, solver=None):
+        self.calls += 1
+        return FIPY(scenario, q) if solver is None else FIPY(scenario, q, solver)
+
+
+def make_solver(tag: str = "rec") -> Recording:         # the FACTORY that --solver module:callable points to
+    return Recording(tag)
+```
+
+Through the CLI (run from the directory that holds `recsolver.py`; this was run with `configs/smoke.json`; the result is
+bit-identical to the default because the wrapper calls FiPy, and `provenance.json` records the wrapper as the backend):
+
+```bash
+python -m pravah simulate --config configs/smoke.json --out runs/rec --solver recsolver:make_solver --solver-kwargs '{"tag":"cli"}'
+```
+
+```
+simulate: 72 steps, 0.5 s, max budget residual 2.26e-15, 0 negative cells -> out_rec
+```
+
+And from Python, showing the cache key change, the call count and the linearity gate:
+
+```python
+# example 10
+import numpy as np
+from pravah.config import SolverOptions, load_config, scenario_from_dict
+from pravah.forward import FIPY, forward_info, get_forward
+from pravah.inverse import cache_key, compute_responses
+
+cfg = load_config("configs/reference.json")
+cfg["scenario"]["domain"].update(nx=20, ny=20)
+cfg["scenario"]["times"].update(duration=3600.0, dt=120.0)
+sc = scenario_from_dict(cfg["scenario"])
+
+rec = get_forward("recsolver:make_solver", {"tag": "demo"})        # same resolver the CLI uses for --solver
+print("info:", forward_info(rec).name, "| linear declared:", forward_info(rec).capabilities["linear"])
+keys = {n: cache_key(sc, SolverOptions(), 1e5, f)[:12] for n, f in
+        [("FIPY", FIPY), ("recording demo", rec), ("recording other", get_forward("recsolver:make_solver", {"tag": "other"}))]}
+print("cache keys:", keys, "-> all different:", len(set(keys.values())) == 3)
+resp = compute_responses(sc, forward=rec)                           # n_src + 1 solves, all through the wrapper
+print("solver calls:", rec.calls, "(= n_src + 1 =", len(sc.sources) + 1, ")")
+ref = compute_responses(sc)
+print("identical to FiPy responses:", bool(np.array_equal(resp.g, ref.g)))
+
+class NotDeclared:                                                  # no capabilities -> linear is never assumed
+    def __call__(self, scenario, q, solver=SolverOptions()): return FIPY(scenario, q, solver)
+try:
+    compute_responses(sc, forward=NotDeclared())
+except ValueError as e:
+    print("refused:", str(e)[:110])
+```
+
+Output when run:
+
+```
+info: recording-demo | linear declared: True
+cache keys: {'FIPY': '6d0cbfc3d329', 'recording demo': '983257e2d34d', 'recording other': 'a880afc9c7e3'} -> all different: True
+solver calls: 4 (= n_src + 1 = 4 )
+identical to FiPy responses: True
+refused: forward solver '__main__.NotDeclared' does not declare capabilities['linear'] = True: the cached-response (sup
+```
+
+Keys differ between FiPy and the wrapper and between two tags of the same wrapper, so no cache entry is shared. The wrapper
+made exactly n_src + 1 = 4 calls for the responses. A solver without a declared capability is refused. These wrappers are
+**interface tests, not physics**: a real alternative solver must be judged against FiPy on held-out scenarios first.
+
+## 11. Attribution tools: `contributions` and `external_fraction` on a 2-source example
+
+`attribution.contributions(resp, theta, parts)` splits the field by *origin tag* into `local`, `external_sources`, `boundary`,
+`background`, `initial`; the tags sum to the total (check it against a direct run). `external_fraction` and `origin_fractions`
+give the **concentration-derived** share over the study mask and the times `>= t_exclude` (trapezoid weights); they return
+`None` when the total is negligible. Tags are for evaluating synthetic truths; `fit_sources` never receives them.
+
+```python
+# example 11
+import dataclasses as dc
+import numpy as np
+from pravah.attribution import (base_parts, contributions, external_fraction, external_part, origin_fractions,
+                                total_field)
+from pravah.config import (Boundary, Domain, GaussianSource, Scenario, StudyRegion, Times, Transport, WindSegment)
+from pravah.forward import simulate
+from pravah.inverse import ResponseCache
+
+sc = Scenario(domain=Domain(12_000.0, 12_000.0, 24, 24),
+              sources=(GaussianSource("L", 7000.0, 6000.0, 600.0, group="local"),
+                       GaussianSource("E", 1500.0, 6000.0, 700.0, group="external")),
+              transport=Transport(wind=(WindSegment(0.0, 1.0, 0.0),)),
+              boundary=Boundary("open", 0.0),
+              times=Times(duration=7200.0, dt=120.0, output_interval=600.0),
+              study=StudyRegion(4000.0, 4000.0, 10000.0, 8000.0))      # reporting mask only, not a wall
+theta = np.array([1.0e5, 2.0e5])                                      # ug/s
+cache = ResponseCache()
+resp = cache.get(sc)                                                  # n_src + 1 solves
+parts = base_parts(sc, cache=cache)                                   # split of the base field (zero here)
+c = contributions(resp, theta, parts)                                 # {local, external_sources, boundary, background, initial}
+direct = simulate(sc, theta).concentration
+print("tags:", list(c))
+print("sum of tags vs direct simulate, max abs diff: %.1e ug/m3" % float(abs(total_field(c) - direct).max()))
+print("L-only and E-only add up:", bool(np.allclose(c["local"] + c["external_sources"], direct, atol=1e-9)))
+print(f"external_fraction (t >= 3600 s): {external_fraction(c, sc, t_exclude=3600.0):.3f}")
+print("origin_fractions:", {k: (None if v is None else round(v, 3)) for k, v in origin_fractions(c, sc, 3600.0).items()})
+# a concentration share depends on the wind history: reversed wind carries E's plume away from the study region
+sc_rev = dc.replace(sc, transport=Transport(wind=(WindSegment(0.0, -1.0, 0.0),)))
+c2 = contributions(cache.get(sc_rev), theta, base_parts(sc_rev, cache=cache))
+print(f"same sources, wind reversed: external_fraction = {external_fraction(c2, sc_rev, t_exclude=3600.0):.3f}")
+```
+
+Output when run:
+
+```
+tags: ['local', 'external_sources', 'boundary', 'background', 'initial']
+sum of tags vs direct simulate, max abs diff: 1.4e-16 ug/m3
+L-only and E-only add up: True
+external_fraction (t >= 3600 s): 0.592
+origin_fractions: {'local': 0.408, 'external': 0.592, 'initial': 0.0}
+same sources, wind reversed: external_fraction = 0.000
+```
+
+The share is a property of the sources **and the wind history**: the same sources with reversed wind give an external share of
+0. An inward mass-flux fraction would be a different quantity and is not substituted.
+
+## 12. Add a placement objective (the `QuadForm` contract)
+
+Every `DesignCase` holds named quadratic forms in `case.objectives`: `total` always, and `local` / `external` when the case was
+built with `truth_components`. A `QuadForm(c0, h, G)` evaluates `E(theta) = c0 + 2 theta.h + theta' G theta`, the exact weighted
+mean-square error (ug^2/m^6) of the estimated field against the case truth. This only works because the field is *affine* in
+`theta`; so the **contract** is: the objective must be a (non-negative) combination of weighted squared field errors, and it
+must not mix raw emission (ug/s) and inflow (ug/m^3) amplitudes (theta enters only through the fields `g_j theta_j`). Sums
+of QuadForms with non-negative weights are QuadForms, which is how the built-in `attribution` objective is formed (with the
+scales from `design.attribution_scales`, computed from DESIGN cases only). The names `design.OBJECTIVES` are a fixed tuple
+that `greedy_trace` validates, so the example below adds the form to the case and runs its own tiny greedy loop; to make a name
+selectable by `greedy_trace`/`select_layout`, add it to `OBJECTIVES` and to `objective_value` (and test it).
+
+```python
+# example 12
+import dataclasses as dc
+import numpy as np
+from pravah.attribution import base_parts, contributions, external_part
+from pravah.config import (Boundary, Domain, GaussianSource, InflowBasis, Initial, Scenario, StudyRegion, Times,
+                           Transport, WindSegment)
+from pravah.design import (DesignOptions, QuadForm, build_case, candidate_grid, evaluate_layouts,
+                           fit_layout)
+from pravah.inverse import ResponseCache
+
+dom = Domain(10_000.0, 10_000.0, 20, 20)
+srcs = (GaussianSource("L1", 4500.0, 5000.0, 700.0), GaussianSource("L2", 6500.0, 6500.0, 700.0),
+        GaussianSource("E1", 700.0, 2500.0, 700.0, group="external"))
+def scen(u, v):
+    return Scenario(domain=dom, sources=srcs, transport=Transport(wind=(WindSegment(0.0, u, v),)),
+                    boundary=Boundary("open", 0.02, (InflowBasis("west", ("west",)),)), initial=Initial("uniform", 0.01),
+                    times=Times(duration=3600.0, dt=120.0, output_interval=600.0),
+                    study=StudyRegion(3000.0, 3000.0, 9000.0, 9000.0))
+inf, cands, cache = scen(1.0, 0.3), candidate_grid(dom, 3), ResponseCache()      # 9 candidate sites
+opt = DesignOptions(noise_std=0.05, alpha=0.01, t_exclude=1200.0)
+
+def case(name, role, sc, theta, seed):
+    resp = cache.get(sc)
+    tc = contributions(resp, theta, base_parts(sc, cache=cache))
+    return build_case(name, role, sc, theta, inf, cands, opt, seed, 2, cache, truth_field=resp.field(theta),
+                      truth_components={"local": tc["local"], "external": external_part(tc)})
+
+design = [case("d1", "design", inf, np.array([1.0e5, 1.4e5, 1.2e5, 0.03]), 11),
+          case("d2", "design", scen(0.7, 0.6), np.array([1.5e5, 0.8e5, 0.9e5, 0.02]), 12)]
+test = [case("t1", "test", scen(1.2, 0.0), np.array([0.8e5, 1.1e5, 1.6e5, 0.05]), 101)]
+print("objectives of a case:", list(design[0].objectives))                      # total, local, external: QuadForm each
+
+# THE CONTRACT: a QuadForm is E(theta) = c0 + 2 theta.h + theta'G theta, the weighted MSE (ug^2/m^6) of a field that is
+# AFFINE in theta.  Non-negative combinations of QuadForms are QuadForms, so "external errors count 100x" is just:
+def reweighted(c, w_local=1.0, w_ext=100.0):
+    a, b = c.objectives["local"], c.objectives["external"]
+    return QuadForm(w_local * a.c0 + w_ext * b.c0, w_local * a.h + w_ext * b.h, w_local * a.G + w_ext * b.G)
+
+design = [dc.replace(c, objectives={**c.objectives, "ext100": reweighted(c)}) for c in design]
+th = design[0].q_true
+print("ext100 == local + 100 external:", bool(np.isclose(design[0].objectives["ext100"](th), design[0].objectives["local"](th) + 100 * design[0].objectives["external"](th))))
+
+def mean_obj(layout, name):                                # fit with the layout's noisy readings, score the QuadForm
+    return float(np.mean([c.objectives[name](fit_layout(c, layout, r, opt)["q_hat"])
+                          for c in design for r in range(c.n_noise)]))
+
+def greedy(name, budget):                                  # same logic as design.greedy_trace, for a custom objective
+    chosen = []
+    for _ in range(budget):
+        free = [i for i in range(len(cands.ids)) if i not in chosen]
+        chosen.append(min(free, key=lambda i: mean_obj(tuple(sorted(chosen + [i])), name)))
+    return tuple(sorted(chosen))
+
+layouts = {"greedy_total": [greedy("total", 3)], "greedy_ext100": [greedy("ext100", 3)]}
+print({m: [cands.ids[i] for i in l[0]] for m, l in layouts.items()})
+df = evaluate_layouts(layouts, test, opt)                  # test cases only
+print(df.groupby("method")[["rmse", "mse_local", "mse_external"]].mean().round(6))
+```
+
+Output when run:
+
+```
+objectives of a case: ['total', 'local', 'external']
+ext100 == local + 100 external: True
+{'greedy_total': ['c005', 'c006', 'c008'], 'greedy_ext100': ['c002', 'c005', 'c006']}
+                   rmse  mse_local  mse_external
+method                                          
+greedy_ext100  0.042150   0.001285      0.000659
+greedy_total   0.042329   0.001234      0.000735
+```
+
+With external errors weighted 100x the greedy layout changes (`c002, c005, c006` instead of `c005, c006, c008`) and the external MSE on the
+one test case is lower (0.000659 against 0.000735) at a higher local MSE (0.001285 against 0.001234). That is one test case with
+two design cases: it demonstrates the mechanism, it is not evidence that the reweighted layout is better. Layouts are greedy
+heuristics, never called optimal.
+
+## 13. Build a Belauri scenario from the prepared region
+
+Needs `data/belauri/manifest.json` (from `python -m pravah geo fetch` and `geo prepare`, see the README). If it is missing the
+script exits with a message and does nothing. Offline once prepared; the 2 km crop keeps it to seconds.
+
+```python
+# example 13
+import json
+from pathlib import Path
+import numpy as np
+from pravah.geo.prepare import load_region
+from pravah.geo.scenarios import belauri_scenario, study_weights_of, uniform_wind
+from pravah.attribution import base_parts, contributions, external_fraction, external_part
+from pravah.inverse import ResponseCache
+
+MANIFEST = Path("data/belauri/manifest.json")
+if not MANIFEST.exists():
+    raise SystemExit("data/belauri/manifest.json is missing: run `python -m pravah geo fetch/prepare` first; skipping.")
+region = load_region(MANIFEST)                                         # offline: reads data/belauri/processed/*.npy
+print("boundary_status:", json.loads(MANIFEST.read_text())["boundary_status"])
+case = belauri_scenario(region, 500.0, uniform_wind([(0.0, 247.5)], 1.5),     # 247.5 deg = wind FROM west-south-west
+                        duration_s=7200.0, dt_s=100.0, output_interval_s=900.0, K=100.0, lam=1 / 21600.0, H=500.0,
+                        amplitudes={"road": 1.5e6, "builtup": 1.0e6, "external": 5.0e5},      # SYNTHETIC ug/s
+                        external_profile=((0.0, 0.0), (1800.0, 1.0)), crop_buffer_m=2000.0)  # small buffer: fast
+sc = case.scenario
+print("grid", sc.domain.ny, "x", sc.domain.nx, "cells of", sc.domain.dx, "m; sources:", [(s.name, s.group) for s in sc.sources])
+w = study_weights_of(case)
+print(f"study mask area {w.sum() * sc.domain.dx * sc.domain.dy / 1e6:.2f} km2 (the polygon is 122.96 km2, so the 2 km crop keeps all of it)")
+cache = ResponseCache()
+resp = cache.get(sc)
+c = contributions(resp, case.theta, base_parts(sc, cache=cache))
+print("max local %.3f, max external %.3f ug/m3" % (float(c["local"].max()), float(external_part(c).max())))
+print("external fraction over the study mask (t >= 1800 s): %s" % external_fraction(c, sc, t_exclude=1800.0, weights=w))
+print("Real geography; synthetic emissions and meteorology.")
+```
+
+Output when run:
+
+```
+boundary_status: verified
+grid 41 x 42 cells of 500.0 m; sources: [('road', 'local'), ('builtup', 'local'), ('external_patch', 'external')]
+study mask area 122.96 km2 (the polygon is 122.96 km2, so the 2 km crop keeps all of it)
+max local 0.223, max external 0.199 ug/m3
+external fraction over the study mask (t >= 1800 s): 0.07329628563724463
+Real geography; synthetic emissions and meteorology.
+```
+
+`belauri_scenario` returns a `BelauriCase` (`scenario`, `theta`, `labels`, `georef`, `region`). Sources are `RasterSource`s from the
+prepared `w_road`, `w_builtup` and the external patch, normalised so sum f dA = 1; the study region is a `StudyMask` of
+polygon-cell area fractions. The emission rates and the wind are synthetic values you choose; the DEM is not read.

@@ -102,7 +102,85 @@ are descriptive.  Uniform winds only; the DEM and hillshade are plotting context
 layouts, so it is not tuned to the greedy layouts.  Greedy sites depend on the design cases drawn; layouts are heuristics.
 Distances to roads and facilities use OSM, which is incomplete.  Reference sites are only as realistic as the ADM0 outline.
 
-GEODESIGN_RESULTS: <to be filled by coordinator>
+<!-- GEODESIGN_BEGIN -->
+Run `geodesign`; alpha selected on validation cases only: {'0.05': 0.01, '0.15': 0.01} (frozen before the test ensemble); interior-only setting, standard regime, selected alpha; means over 6 test scenarios x 3 noise draws; budgets in sensors.
+
+**total regional RMSE (ug/m3), noise 5% of the signal scale**
+
+| method | 1 sensors | 2 sensors | 3 sensors | 5 sensors | 8 sensors |
+|---|---|---|---|---|---|
+| greedy_attribution | 0.0105 | 0.0065 | 0.0054 | 0.0037 | 0.0033 |
+| greedy_total | 0.0223 | 0.0093 | 0.0052 | 0.0035 | 0.0027 |
+| random | 0.0250 | 0.0135 | 0.0103 | 0.0067 | 0.0033 |
+| spread | 0.0148 | 0.0117 | 0.0058 | 0.0051 | 0.0032 |
+
+**attribution error (dimensionless), noise 5% of the signal scale**
+
+| method | 1 sensors | 2 sensors | 3 sensors | 5 sensors | 8 sensors |
+|---|---|---|---|---|---|
+| greedy_attribution | 0.1321 | 0.0871 | 0.0719 | 0.0485 | 0.0415 |
+| greedy_total | 0.2853 | 0.1067 | 0.0714 | 0.0452 | 0.0350 |
+| random | 0.2826 | 0.1724 | 0.1322 | 0.0857 | 0.0389 |
+| spread | 0.1924 | 0.1689 | 0.0760 | 0.0487 | 0.0379 |
+
+**total regional RMSE (ug/m3), noise 15% of the signal scale**
+
+| method | 1 sensors | 2 sensors | 3 sensors | 5 sensors | 8 sensors |
+|---|---|---|---|---|---|
+| greedy_attribution | 0.0625 | 0.0298 | 0.0212 | 0.0086 | 0.0079 |
+| greedy_total | 0.0366 | 0.0174 | 0.0156 | 0.0108 | 0.0083 |
+| random | 0.0422 | 0.0227 | 0.0182 | 0.0128 | 0.0083 |
+| spread | 0.0285 | 0.0214 | 0.0158 | 0.0116 | 0.0082 |
+
+**attribution error (dimensionless), noise 15% of the signal scale**
+
+| method | 1 sensors | 2 sensors | 3 sensors | 5 sensors | 8 sensors |
+|---|---|---|---|---|---|
+| greedy_attribution | 0.5526 | 0.3480 | 0.2694 | 0.1035 | 0.0877 |
+| greedy_total | 0.4358 | 0.2265 | 0.1895 | 0.1333 | 0.1060 |
+| random | 0.4390 | 0.2820 | 0.2281 | 0.1563 | 0.0962 |
+| spread | 0.3801 | 0.3106 | 0.2110 | 0.1302 | 0.1075 |
+
+**Paired total-RMSE comparisons, noise 5% (A is the first-named method)**
+
+| comparison | budget | mean (A minus B), total RMSE | sd | cases where A is lower | n_cases |
+|---|---|---|---|---|---|
+| greedy_total vs spread | 1 | 0.0075 | 0.0247 | 3 | 6 |
+| greedy_total vs spread | 2 | -0.0024 | 0.0093 | 2 | 6 |
+| greedy_total vs spread | 3 | -5.54e-04 | 0.0039 | 4 | 6 |
+| greedy_total vs spread | 5 | -0.0016 | 0.0032 | 5 | 6 |
+| greedy_total vs spread | 8 | -5.14e-04 | 0.0018 | 5 | 6 |
+| greedy_total vs random_mean | 1 | -0.0027 | 0.0168 | 5 | 6 |
+| greedy_total vs random_mean | 2 | -0.0042 | 0.0074 | 4 | 6 |
+| greedy_total vs random_mean | 3 | -0.0051 | 0.0077 | 5 | 6 |
+| greedy_total vs random_mean | 5 | -0.0031 | 0.0044 | 6 | 6 |
+| greedy_total vs random_mean | 8 | -5.60e-04 | 0.0015 | 4 | 6 |
+| greedy_attribution vs greedy_total | 1 | -0.0118 | 0.0247 | 5 | 6 |
+| greedy_attribution vs greedy_total | 2 | -0.0028 | 0.0040 | 5 | 6 |
+| greedy_attribution vs greedy_total | 3 | 1.75e-04 | 0.0025 | 3 | 6 |
+| greedy_attribution vs greedy_total | 5 | 1.72e-04 | 0.0021 | 3 | 6 |
+| greedy_attribution vs greedy_total | 8 | 5.52e-04 | 0.0017 | 1 | 6 |
+
+**Paired total-RMSE comparisons, noise 15% (A is the first-named method)**
+
+| comparison | budget | mean (A minus B), total RMSE | sd | cases where A is lower | n_cases |
+|---|---|---|---|---|---|
+| greedy_total vs spread | 1 | 0.0082 | 0.0225 | 2 | 6 |
+| greedy_total vs spread | 2 | -0.0040 | 0.0099 | 5 | 6 |
+| greedy_total vs spread | 3 | -2.49e-04 | 0.0064 | 4 | 6 |
+| greedy_total vs spread | 5 | -8.52e-04 | 0.0062 | 3 | 6 |
+| greedy_total vs spread | 8 | 1.27e-04 | 0.0049 | 3 | 6 |
+| greedy_total vs random_mean | 1 | -0.0055 | 0.0195 | 5 | 6 |
+| greedy_total vs random_mean | 2 | -0.0053 | 0.0096 | 5 | 6 |
+| greedy_total vs random_mean | 3 | -0.0026 | 0.0118 | 3 | 6 |
+| greedy_total vs random_mean | 5 | -0.0020 | 0.0059 | 3 | 6 |
+| greedy_total vs random_mean | 8 | 6.85e-05 | 0.0036 | 3 | 6 |
+| greedy_attribution vs greedy_total | 1 | 0.0259 | 0.0433 | 2 | 6 |
+| greedy_attribution vs greedy_total | 2 | 0.0124 | 0.0284 | 3 | 6 |
+| greedy_attribution vs greedy_total | 3 | 0.0056 | 0.0188 | 2 | 6 |
+| greedy_attribution vs greedy_total | 5 | -0.0022 | 0.0055 | 3 | 6 |
+| greedy_attribution vs greedy_total | 8 | -4.18e-04 | 0.0033 | 4 | 6 |
+<!-- GEODESIGN_END -->
 
 
 # Stage F2b: robustness of the fixed layouts, numerical refinement, exports
@@ -218,4 +296,84 @@ present, shows the saved production tables and figures.
 - The 250 m re-selection uses at most 6 design cases; greedy layouts are heuristics and can change with the cases drawn.
 - Still synthetic: uniform winds, no terrain-driven flow, no instrument bias, no source-shape uncertainty beyond the above.
 
-GEODESIGN_ROBUST_RESULTS: <to be filled by coordinator>
+<!-- ROBUST_BEGIN -->
+Run `geodesign-robust` (fixed design-stage layouts re-evaluated, never reselected); interior-only, 5% noise, selected alpha, mean total RMSE (ug/m3) of `greedy_total`.
+
+| condition | 1 sensors | 2 sensors | 3 sensors | 5 sensors | 8 sensors |
+|---|---|---|---|---|---|
+| boundary_time_profile | 0.0221 | 0.0092 | 0.0055 | 0.0043 | 0.0036 |
+| hidden_wind_error | 0.0436 | 0.0385 | 0.0442 | 0.0462 | 0.0312 |
+| matched | 0.0223 | 0.0093 | 0.0052 | 0.0035 | 0.0027 |
+| omitted_external | 0.0233 | 0.0108 | 0.0071 | 0.0048 | 0.0041 |
+| omitted_facility | 0.0303 | 0.0170 | 0.0144 | 0.0156 | 0.0145 |
+| refined_truth | 0.0245 | 0.0110 | 0.0082 | 0.0081 | 0.0066 |
+| unseen_wind | 0.0446 | 0.0418 | 0.0412 | 0.0413 | 0.0294 |
+| unseen_wind_declared | 0.0174 | 0.0128 | 0.0047 | 0.0033 | 0.0028 |
+
+**Identifiability flags versus error (all methods and budgets)**: fraction of rows whose flags equal the matched rows, and the median error ratio to matched.
+
+| condition | frac_flags_equal_matched | rmse_ratio |
+|---|---|---|
+| boundary_time_profile | 1.000 | 1.019 |
+| hidden_wind_error | 1.000 | 3.504 |
+| matched | 1.000 | 1.000 |
+| omitted_external | 1.000 | 1.130 |
+| omitted_facility | 1.000 | 1.679 |
+| refined_truth | 1.000 | 1.213 |
+| unseen_wind | 1.000 | 3.557 |
+| unseen_wind_declared | 0.4065 | 0.8465 |
+
+**Do method rankings survive the condition?**
+
+| condition | fraction of method contrasts keeping their matched sign |
+|---|---|
+| boundary_time_profile | 0.9708 |
+| hidden_wind_error | 0.7208 |
+| omitted_external | 0.9292 |
+| omitted_facility | 0.9083 |
+| refined_truth | 0.9125 |
+| unseen_wind | 0.7208 |
+| unseen_wind_declared | 0.7417 |
+
+**Numerical diffusion at the design mesh (K = 100 m2/s is the nominal physical value; not tuned)**
+
+| mesh | speed_label | speed_m_s | peclet | courant | K_eff_over_K |
+|---|---|---|---|---|---|
+| design | design_min | 0.894 | 4.47 | 0.179 | 2.69 |
+| design | design_mean | 1.7 | 8.48 | 0.339 | 5.68 |
+| design | design_max | 2.45 | 12.2 | 0.49 | 9.12 |
+| design | validation_min | 0.952 | 4.76 | 0.19 | 2.87 |
+| design | validation_mean | 1.53 | 7.64 | 0.305 | 4.99 |
+| design | validation_max | 1.99 | 9.94 | 0.398 | 6.95 |
+| design | test_min | 0.812 | 4.06 | 0.162 | 2.43 |
+| design | test_mean | 1.81 | 9.05 | 0.362 | 6.17 |
+| design | test_max | 2.41 | 12.1 | 0.482 | 8.94 |
+| design | reference_0.8 | 0.8 | 4 | 0.16 | 2.39 |
+| design | reference_1.5 | 1.5 | 7.5 | 0.3 | 4.88 |
+| design | reference_2.5 | 2.5 | 12.5 | 0.5 | 9.38 |
+| design | reference_3.5 | 3.5 | 17.5 | 0.7 | 14.9 |
+| design | unseen_wind_max | 3.41 | 17.1 | 0.682 | 14.3 |
+| refined | design_min | 0.894 | 2.23 | 0.179 | 1.58 |
+| refined | design_mean | 1.7 | 4.24 | 0.339 | 2.9 |
+| refined | design_max | 2.45 | 6.12 | 0.49 | 4.57 |
+| refined | validation_min | 0.952 | 2.38 | 0.19 | 1.66 |
+| refined | validation_mean | 1.53 | 3.82 | 0.305 | 2.58 |
+| refined | validation_max | 1.99 | 4.97 | 0.398 | 3.51 |
+| refined | test_min | 0.812 | 2.03 | 0.162 | 1.49 |
+| refined | test_mean | 1.81 | 4.53 | 0.362 | 3.13 |
+| refined | test_max | 2.41 | 6.03 | 0.482 | 4.48 |
+| refined | reference_0.8 | 0.8 | 2 | 0.16 | 1.47 |
+| refined | reference_1.5 | 1.5 | 3.75 | 0.3 | 2.53 |
+| refined | reference_2.5 | 2.5 | 6.25 | 0.5 | 4.7 |
+| refined | reference_3.5 | 3.5 | 8.75 | 0.7 | 7.44 |
+| refined | unseen_wind_max | 3.41 | 8.53 | 0.682 | 7.17 |
+
+**250 m re-selection versus 500 m layouts (3 design cases, 5% noise)**
+
+| method | budget | jaccard | n_shared_sites | mean_nearest_site_distance_m |
+|---|---|---|---|---|
+| greedy_total | 3 | 0.2000 | 1 | 1500 |
+| greedy_total | 5 | 0.1111 | 1 | 1412 |
+| greedy_attribution | 3 | 0.00e+00 | 0 | 3004 |
+| greedy_attribution | 5 | 0.00e+00 | 0 | 2588 |
+<!-- ROBUST_END -->
