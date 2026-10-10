@@ -139,10 +139,13 @@ def international_border_info(country_polygons: dict[str, Any], study_polygon: A
     }
 
 
-def classify_point(point: Any, study_polygon: Any, country_polygons: dict[str, Any], home: str = "NPL") -> dict[str, Any]:
+def classify_point(point: Any, study_polygon: Any, country_polygons: dict[str, Any], home: str = "NPL",
+                   near_m: float = 10_000.0) -> dict[str, Any]:
     """Origin class of a projected point: 'local' (inside the study polygon), 'external_domestic' (inside the home ADM0 but
-    outside the study), 'external_international' (inside another country's ADM0), or 'unclassified' (in no ADM0 polygon
-    or in several)."""
+    outside the study), 'external_international' (inside exactly one other country's ADM0), 'external_outside_home'
+    (inside NO ADM0 polygon but within ``near_m`` of the home boundary: outside the home country as drawn, while a coarse
+    neighbour outline cannot confirm containment; this is NOT a claim that any emitter is international) or
+    'unclassified' (in several ADM0 polygons, or in none and farther than ``near_m`` from the home boundary)."""
     if study_polygon.contains(point):
         return {"class": "local", "country": home}
     inside = [iso for iso, g in country_polygons.items() if g.contains(point)]
@@ -150,6 +153,12 @@ def classify_point(point: Any, study_polygon: Any, country_polygons: dict[str, A
         return {"class": "external_domestic", "country": home}
     if len(inside) == 1:
         return {"class": "external_international", "country": inside[0]}
+    if not inside:
+        d = float(country_polygons[home].boundary.distance(point))
+        if d <= near_m:
+            return {"class": "external_outside_home", "country": None, "distance_to_home_boundary_m": d,
+                    "note": "outside the home ADM0 polygon near the shared boundary; the neighbour outline is too coarse to "
+                            "assert containment, so 'international' is not claimed"}
     return {"class": "unclassified", "country": None, "countries_containing": inside}
 
 
@@ -419,8 +428,12 @@ def prepare_region(cfg: dict[str, Any], raw_dir: str | Path, out_dir: str | Path
     patch = {"hypothesis": SYNTHETIC_PRIOR, "group": "external", "centre_xy_m": [px, py], "centre_local_m": [px - g0.x0, py - g0.y0],
              "centre_lonlat": [plon, plat], "sigma_m": sigma, "distance_to_polygon_km": float(study_m.distance(pt)) / 1000.0,
              "origin": patch_class}
-    if patch_class["class"] == "unclassified":
-        warnings.append("external patch centre is in no (or several) ADM0 polygons: 'international' not asserted")
+    if patch_class["class"] == "external_outside_home":
+        warnings.append("external patch centre lies outside the home ADM0 polygon near the shared boundary but inside no "
+                        "neighbour ADM0 polygon (the neighbour outline is coarse): class 'external_outside_home'; "
+                        "'international' is not asserted")
+    elif patch_class["class"] == "unclassified":
+        warnings.append("external patch centre is in several ADM0 polygons or far from the home boundary: 'international' not asserted")
 
     # --- per-resolution arrays
     wgs_bbox = list(poly_ll.bounds)

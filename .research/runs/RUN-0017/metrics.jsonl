@@ -1,0 +1,8 @@
+{"author_type": "agent", "name": "cos_L1_E1c_confounded", "ts": "2026-10-10T13:10:38-04:00", "value": 0.991}
+{"author_type": "agent", "name": "no_arrival_ext_to_local_ratio", "ts": "2026-10-10T13:10:38-04:00", "value": 4.09e-06}
+{"author_type": "agent", "name": "domain_AvsB_rmse_rel_peak_external_sources", "ts": "2026-10-10T13:10:38-04:00", "value": 0.009}
+{"author_type": "agent", "name": "domain_AvsB_rmse_rel_peak_mixed", "ts": "2026-10-10T13:10:38-04:00", "value": 0.033}
+{"author_type": "agent", "name": "bbasis_rmse_rel_peak_uniform", "ts": "2026-10-10T13:10:38-04:00", "value": 0.25}
+{"author_type": "agent", "name": "localonly_rmse_rel_peak", "ts": "2026-10-10T13:10:38-04:00", "value": 0.257}
+{"author_type": "agent", "name": "interior8_total_rmse_2pct", "ts": "2026-10-10T13:10:39-04:00", "value": 0.000294}
+{"author_type": "agent", "name": "interior_up8_total_rmse_2pct", "ts": "2026-10-10T13:10:39-04:00", "value": 0.00264}

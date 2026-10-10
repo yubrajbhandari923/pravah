@@ -126,7 +126,66 @@ piecewise-linear `c_out` (Taylor series for the small-argument phi functions, no
 
 ## RESULTS (production run EXP-010)
 
-PRODUCTION_RESULTS: <to be filled by coordinator>
+Production run EXP-010 / RUN-0017 (`results/transboundary`, 26.5 min wall, domains A 20 km / B 30 km, validation 4 + test 6 cases, 3 noise reps; alpha selected on VALIDATION cases only: {'0.02': 1.0, '0.1': 1.0}; sd is a standard deviation, not a confidence interval).
+
+**Recovery on the test ensemble (selected alpha; means over cases x reps)**
+
+| layout | noise (% of signal scale) | total RMSE | local RMSE | external RMSE | |F_ext error| | local amp. rel. err | external amp. rel. err |
+|---|---|---|---|---|---|---|---|
+| interior | 2% | 2.64e-03 | 2.59e-03 | 1.91e-04 | 0.015 | 0.147 | 8.10e-03 |
+| interior | 10% | 4.21e-03 | 3.95e-03 | 9.43e-04 | 0.026 | 0.189 | 0.039 |
+| interior+upwind | 2% | 2.64e-03 | 2.62e-03 | 1.12e-04 | 0.015 | 0.140 | 4.31e-03 |
+| interior+upwind | 10% | 4.72e-03 | 4.63e-03 | 5.48e-04 | 0.026 | 0.237 | 0.021 |
+| interior8 | 2% | 2.94e-04 | 2.19e-04 | 1.68e-04 | 1.62e-03 | 0.011 | 5.95e-03 |
+| interior8 | 10% | 1.47e-03 | 1.11e-03 | 8.17e-04 | 7.94e-03 | 0.053 | 0.028 |
+
+**Prior sensitivity (test ensemble)**
+
+| layout | noise | prior | total RMSE | local amp. rel. err | external amp. rel. err |
+|---|---|---|---|---|---|
+| interior | 2% | none (alpha=0) | 3.31e-03 | 0.193 | 8.20e-03 |
+| interior | 2% | strong (alpha=1e5) | 0.037 | 0.806 | 0.916 |
+| interior | 10% | none (alpha=0) | 0.013 | 0.735 | 0.041 |
+| interior | 10% | strong (alpha=1e5) | 0.045 | 0.990 | 0.996 |
+| interior+upwind | 2% | none (alpha=0) | 2.62e-03 | 0.137 | 4.33e-03 |
+| interior+upwind | 2% | strong (alpha=1e5) | 0.036 | 0.807 | 0.917 |
+| interior+upwind | 10% | none (alpha=0) | 6.59e-03 | 0.306 | 0.021 |
+| interior+upwind | 10% | strong (alpha=1e5) | 0.045 | 0.990 | 0.996 |
+| interior8 | 2% | none (alpha=0) | 2.94e-04 | 0.010 | 6.02e-03 |
+| interior8 | 2% | strong (alpha=1e5) | 0.033 | 0.697 | 0.893 |
+| interior8 | 10% | none (alpha=0) | 1.47e-03 | 0.052 | 0.030 |
+| interior8 | 10% | strong (alpha=1e5) | 0.045 | 0.979 | 0.994 |
+
+**Equal-budget comparison, 8 sensors (paired by case and noise draw; selected alpha)**
+
+| noise | metric (interior8 minus interior+upwind) | mean diff | sd of diff | pairs where interior+upwind is lower |
+|---|---|---|---|---|
+| 2% | total RMSE | 2.34e-03 | 3.68e-03 | 4/18 |
+| 2% | local RMSE | 2.40e-03 | 3.67e-03 | 1/18 |
+| 2% | external RMSE | -5.54e-05 | 9.82e-05 | 10/18 |
+| 2% | external-fraction error | 0.013 | 0.023 | 6/18 |
+| 10% | total RMSE | 3.26e-03 | 3.70e-03 | 3/18 |
+| 10% | local RMSE | 3.53e-03 | 3.61e-03 | 1/18 |
+| 10% | external RMSE | -2.69e-04 | 4.83e-04 | 10/18 |
+| 10% | external-fraction error | 0.018 | 0.026 | 5/18 |
+
+**Boundary input versus a localised plume (E1 explicit in A is the truth; fitted models omit E1)**
+
+| model (study-region field vs explicit-E1 truth) | RMSE / peak |
+|---|---|
+| A_E1_explicit_true_theta | 0.009 |
+| A_local_only | 0.257 |
+| A_sector_bases | 0.250 |
+| A_uniform_basis | 0.250 |
+
+**Outer-domain size (same physical problem; open boundary 5 km vs 10 km from the study region)**
+
+| scenario | A vs B RMSE / peak | external fraction A | external fraction B |
+|---|---|---|---|
+| external_sources | 0.009 | 0.429 | 0.424 |
+| mixed | 0.033 | 0.484 | 0.435 |
+
+**Special cases.** Confounded: column cosine between L1 and E1c = 0.991, flags ['rank_deficient', 'confounded:L1,E1c'], effective rank 2, condition number 14.9. No-arrival: external-to-local study-mean ratio 4.09e-06 (verified by the forward model; threshold 0.001). Details: `results/transboundary/special/`.
 
 ## Reproduced with the smoke profile (not production numbers)
 

@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1465 tokens.
-> Generated 2026-10-10T13:09:38-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1484 tokens.
+> Generated 2026-10-10T13:16:40-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `e7c6bf1746` (uncommitted changes)
+Git: `master` @ `54b4fb07e2` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -33,6 +33,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Established findings (what we believe)
 
+- F-010 [preliminary, medium] External vs local decomposition from total observations: recoverable when well conditioned, flagged when not; boundary input cannot mimic a localised plume (synthetic) — evidence: EXP-010, RUN-0017
 - F-009 [preliminary, high] Solver routing refactor preserves every deterministic FiPy output bit-for-bit — evidence: EXP-008, RUN-0012, RUN-0013
 - F-008 [preliminary, medium] Greedy layouts optimised for the matched model are not robust to model error at small budgets — evidence: EXP-007, RUN-0011
 - F-006 [preliminary, medium] FINAL: greedy layouts beat spread/random on fresh test scenarios with alpha frozen on validation (matched, synthetic) — evidence: EXP-005, EXP-006, RUN-0008, RUN-0009
@@ -46,8 +47,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Current experiments
 
-- EXP-009 [needs_review] EXP geography acquisition and verification (Belauri) — runs 6, ⚠ 2 unsynthesized
-- EXP-010 [needs_review] EXP external vs local identifiability (synthetic, domains A/B) — runs 1, ⚠ 1 unsynthesized
+- EXP-009 [needs_review] EXP geography acquisition and verification (Belauri) — runs 7, ⚠ 3 unsynthesized
 
 ## Active plans
 
@@ -59,14 +59,13 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Needs attention (verification)
 
+- [awaiting review] F-010 External vs local decomposition from total observations: recoverable when well conditioned, flagged when not; boundary input cannot mimic a localised plume (synthetic): Agent finding awaiting an independent review
 - [awaiting review] F-009 Solver routing refactor preserves every deterministic FiPy output bit-for-bit: Agent finding awaiting an independent review
 - [awaiting review] F-008 Greedy layouts optimised for the matched model are not robust to model error at small budgets: Agent finding awaiting an independent review
-- [awaiting review] F-007 FINAL: hidden wind error and unmodelled source dominate discretisation mismatch; poor layout unidentifiable: Agent finding awaiting an independent review
 
 ## ⚠ Needs synthesis before new experiments
 
-- EXP-009 EXP geography acquisition and verification (Belauri) (2 unsynthesized runs)
-- EXP-010 EXP external vs local identifiability (synthetic, domains A/B) (1 unsynthesized runs)
+- EXP-009 EXP geography acquisition and verification (Belauri) (3 unsynthesized runs)
 
 ## Active decisions
 

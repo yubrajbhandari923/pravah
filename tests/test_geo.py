@@ -315,7 +315,12 @@ def test_classify_point_international_only_across_adm0() -> None:
     assert prepare.classify_point(Point(50, 50), study, c, "HOM")["class"] == "local"
     assert prepare.classify_point(Point(70, 50), study, c, "HOM")["class"] == "external_domestic"  # municipality edge only
     assert prepare.classify_point(Point(50, -20), study, c, "HOM") == {"class": "external_international", "country": "NEI"}
-    assert prepare.classify_point(Point(500, 500), study, c, "HOM")["class"] == "unclassified"
+    # inside no ADM0 polygon: near the home boundary -> 'external_outside_home' (no international claim); far -> unclassified
+    out = prepare.classify_point(Point(50, 105), study, c, "HOM", near_m=10.0)
+    assert out["class"] == "external_outside_home" and out["country"] is None and out["distance_to_home_boundary_m"] == pytest.approx(5.0)
+    assert prepare.classify_point(Point(500, 500), study, c, "HOM", near_m=10.0)["class"] == "unclassified"
+    assert prepare.classify_point(Point(50, 50), study, {"HOM": home, "NEI": box(0, 0, 100, 100)}, "HOM")["class"] == "local"
+    assert prepare.classify_point(Point(70, 50), study, {"HOM": home, "NEI": box(0, 0, 100, 100)}, "HOM")["class"] == "unclassified"
 
 
 # ---------------------------------------------------------------- prepare_region on a synthetic dataset

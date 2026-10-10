@@ -1,0 +1,152 @@
+diff --git a/docs/transboundary.md b/docs/transboundary.md
+index d39a478..dec5a75 100644
+--- a/docs/transboundary.md
++++ b/docs/transboundary.md
+@@ -126,7 +126,66 @@ piecewise-linear `c_out` (Taylor series for the small-argument phi functions, no
+ 
+ ## RESULTS (production run EXP-010)
+ 
+-PRODUCTION_RESULTS: <to be filled by coordinator>
++Production run EXP-010 / RUN-0017 (`results/transboundary`, 26.5 min wall, domains A 20 km / B 30 km, validation 4 + test 6 cases, 3 noise reps; alpha selected on VALIDATION cases only: {'0.02': 1.0, '0.1': 1.0}; sd is a standard deviation, not a confidence interval).
++
++**Recovery on the test ensemble (selected alpha; means over cases x reps)**
++
++| layout | noise (% of signal scale) | total RMSE | local RMSE | external RMSE | |F_ext error| | local amp. rel. err | external amp. rel. err |
++|---|---|---|---|---|---|---|---|
++| interior | 2% | 2.64e-03 | 2.59e-03 | 1.91e-04 | 0.015 | 0.147 | 8.10e-03 |
++| interior | 10% | 4.21e-03 | 3.95e-03 | 9.43e-04 | 0.026 | 0.189 | 0.039 |
++| interior+upwind | 2% | 2.64e-03 | 2.62e-03 | 1.12e-04 | 0.015 | 0.140 | 4.31e-03 |
++| interior+upwind | 10% | 4.72e-03 | 4.63e-03 | 5.48e-04 | 0.026 | 0.237 | 0.021 |
++| interior8 | 2% | 2.94e-04 | 2.19e-04 | 1.68e-04 | 1.62e-03 | 0.011 | 5.95e-03 |
++| interior8 | 10% | 1.47e-03 | 1.11e-03 | 8.17e-04 | 7.94e-03 | 0.053 | 0.028 |
++
++**Prior sensitivity (test ensemble)**
++
++| layout | noise | prior | total RMSE | local amp. rel. err | external amp. rel. err |
++|---|---|---|---|---|---|
++| interior | 2% | none (alpha=0) | 3.31e-03 | 0.193 | 8.20e-03 |
++| interior | 2% | strong (alpha=1e5) | 0.037 | 0.806 | 0.916 |
++| interior | 10% | none (alpha=0) | 0.013 | 0.735 | 0.041 |
++| interior | 10% | strong (alpha=1e5) | 0.045 | 0.990 | 0.996 |
++| interior+upwind | 2% | none (alpha=0) | 2.62e-03 | 0.137 | 4.33e-03 |
++| interior+upwind | 2% | strong (alpha=1e5) | 0.036 | 0.807 | 0.917 |
++| interior+upwind | 10% | none (alpha=0) | 6.59e-03 | 0.306 | 0.021 |
++| interior+upwind | 10% | strong (alpha=1e5) | 0.045 | 0.990 | 0.996 |
++| interior8 | 2% | none (alpha=0) | 2.94e-04 | 0.010 | 6.02e-03 |
++| interior8 | 2% | strong (alpha=1e5) | 0.033 | 0.697 | 0.893 |
++| interior8 | 10% | none (alpha=0) | 1.47e-03 | 0.052 | 0.030 |
++| interior8 | 10% | strong (alpha=1e5) | 0.045 | 0.979 | 0.994 |
++
++**Equal-budget comparison, 8 sensors (paired by case and noise draw; selected alpha)**
++
++| noise | metric (interior8 minus interior+upwind) | mean diff | sd of diff | pairs where interior+upwind is lower |
++|---|---|---|---|---|
++| 2% | total RMSE | 2.34e-03 | 3.68e-03 | 4/18 |
++| 2% | local RMSE | 2.40e-03 | 3.67e-03 | 1/18 |
++| 2% | external RMSE | -5.54e-05 | 9.82e-05 | 10/18 |
++| 2% | external-fraction error | 0.013 | 0.023 | 6/18 |
++| 10% | total RMSE | 3.26e-03 | 3.70e-03 | 3/18 |
++| 10% | local RMSE | 3.53e-03 | 3.61e-03 | 1/18 |
++| 10% | external RMSE | -2.69e-04 | 4.83e-04 | 10/18 |
++| 10% | external-fraction error | 0.018 | 0.026 | 5/18 |
++
++**Boundary input versus a localised plume (E1 explicit in A is the truth; fitted models omit E1)**
++
++| model (study-region field vs explicit-E1 truth) | RMSE / peak |
++|---|---|
++| A_E1_explicit_true_theta | 0.009 |
++| A_local_only | 0.257 |
++| A_sector_bases | 0.250 |
++| A_uniform_basis | 0.250 |
++
++**Outer-domain size (same physical problem; open boundary 5 km vs 10 km from the study region)**
++
++| scenario | A vs B RMSE / peak | external fraction A | external fraction B |
++|---|---|---|---|
++| external_sources | 0.009 | 0.429 | 0.424 |
++| mixed | 0.033 | 0.484 | 0.435 |
++
++**Special cases.** Confounded: column cosine between L1 and E1c = 0.991, flags ['rank_deficient', 'confounded:L1,E1c'], effective rank 2, condition number 14.9. No-arrival: external-to-local study-mean ratio 4.09e-06 (verified by the forward model; threshold 0.001). Details: `results/transboundary/special/`.
+ 
+ ## Reproduced with the smoke profile (not production numbers)
+ 
+diff --git a/src/pravah/geo/prepare.py b/src/pravah/geo/prepare.py
+index 2b6d1c2..de1d517 100644
+--- a/src/pravah/geo/prepare.py
++++ b/src/pravah/geo/prepare.py
+@@ -139,10 +139,13 @@ def international_border_info(country_polygons: dict[str, Any], study_polygon: A
+     }
+ 
+ 
+-def classify_point(point: Any, study_polygon: Any, country_polygons: dict[str, Any], home: str = "NPL") -> dict[str, Any]:
++def classify_point(point: Any, study_polygon: Any, country_polygons: dict[str, Any], home: str = "NPL",
++                   near_m: float = 10_000.0) -> dict[str, Any]:
+     """Origin class of a projected point: 'local' (inside the study polygon), 'external_domestic' (inside the home ADM0 but
+-    outside the study), 'external_international' (inside another country's ADM0), or 'unclassified' (in no ADM0 polygon
+-    or in several)."""
++    outside the study), 'external_international' (inside exactly one other country's ADM0), 'external_outside_home'
++    (inside NO ADM0 polygon but within ``near_m`` of the home boundary: outside the home country as drawn, while a coarse
++    neighbour outline cannot confirm containment; this is NOT a claim that any emitter is international) or
++    'unclassified' (in several ADM0 polygons, or in none and farther than ``near_m`` from the home boundary)."""
+     if study_polygon.contains(point):
+         return {"class": "local", "country": home}
+     inside = [iso for iso, g in country_polygons.items() if g.contains(point)]
+@@ -150,6 +153,12 @@ def classify_point(point: Any, study_polygon: Any, country_polygons: dict[str, A
+         return {"class": "external_domestic", "country": home}
+     if len(inside) == 1:
+         return {"class": "external_international", "country": inside[0]}
++    if not inside:
++        d = float(country_polygons[home].boundary.distance(point))
++        if d <= near_m:
++            return {"class": "external_outside_home", "country": None, "distance_to_home_boundary_m": d,
++                    "note": "outside the home ADM0 polygon near the shared boundary; the neighbour outline is too coarse to "
++                            "assert containment, so 'international' is not claimed"}
+     return {"class": "unclassified", "country": None, "countries_containing": inside}
+ 
+ 
+@@ -419,8 +428,12 @@ def prepare_region(cfg: dict[str, Any], raw_dir: str | Path, out_dir: str | Path
+     patch = {"hypothesis": SYNTHETIC_PRIOR, "group": "external", "centre_xy_m": [px, py], "centre_local_m": [px - g0.x0, py - g0.y0],
+              "centre_lonlat": [plon, plat], "sigma_m": sigma, "distance_to_polygon_km": float(study_m.distance(pt)) / 1000.0,
+              "origin": patch_class}
+-    if patch_class["class"] == "unclassified":
+-        warnings.append("external patch centre is in no (or several) ADM0 polygons: 'international' not asserted")
++    if patch_class["class"] == "external_outside_home":
++        warnings.append("external patch centre lies outside the home ADM0 polygon near the shared boundary but inside no "
++                        "neighbour ADM0 polygon (the neighbour outline is coarse): class 'external_outside_home'; "
++                        "'international' is not asserted")
++    elif patch_class["class"] == "unclassified":
++        warnings.append("external patch centre is in several ADM0 polygons or far from the home boundary: 'international' not asserted")
+ 
+     # --- per-resolution arrays
+     wgs_bbox = list(poly_ll.bounds)
+diff --git a/tests/test_geo.py b/tests/test_geo.py
+index 37cf050..c76d31a 100644
+--- a/tests/test_geo.py
++++ b/tests/test_geo.py
+@@ -315,7 +315,12 @@ def test_classify_point_international_only_across_adm0() -> None:
+     assert prepare.classify_point(Point(50, 50), study, c, "HOM")["class"] == "local"
+     assert prepare.classify_point(Point(70, 50), study, c, "HOM")["class"] == "external_domestic"  # municipality edge only
+     assert prepare.classify_point(Point(50, -20), study, c, "HOM") == {"class": "external_international", "country": "NEI"}
+-    assert prepare.classify_point(Point(500, 500), study, c, "HOM")["class"] == "unclassified"
++    # inside no ADM0 polygon: near the home boundary -> 'external_outside_home' (no international claim); far -> unclassified
++    out = prepare.classify_point(Point(50, 105), study, c, "HOM", near_m=10.0)
++    assert out["class"] == "external_outside_home" and out["country"] is None and out["distance_to_home_boundary_m"] == pytest.approx(5.0)
++    assert prepare.classify_point(Point(500, 500), study, c, "HOM", near_m=10.0)["class"] == "unclassified"
++    assert prepare.classify_point(Point(50, 50), study, {"HOM": home, "NEI": box(0, 0, 100, 100)}, "HOM")["class"] == "local"
++    assert prepare.classify_point(Point(70, 50), study, {"HOM": home, "NEI": box(0, 0, 100, 100)}, "HOM")["class"] == "unclassified"
+ 
+ 
+ # ---------------------------------------------------------------- prepare_region on a synthetic dataset
+
+# Untracked files (not included):
+#   docs/geography.md
+#   results/geography/fig1_domain_map.png
+#   results/geography/fig2_dem_hillshade.png
+#   results/geography/fig3_profiles.png
+#   results/geography/fig4_slope_valid.png
+#   results/geography/fig5_source_hypotheses.png
+#   results/geography/geography_report.json
+#   scripts/geo_relief_profile.py
+#   scripts/geo_report.py
+#   src/pravah/geo/scenarios.py
+#   tests/test_geo_real.py

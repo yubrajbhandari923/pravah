@@ -1,0 +1,481 @@
+{
+  "region": "Belauri",
+  "manifest": "data/belauri/manifest.json",
+  "manifest_created_utc": "2026-10-10T17:07:49+00:00",
+  "boundary_status": "verified",
+  "elevation_semantics": "m a.s.l. from the Copernicus GLO-30 DSM (surface model: includes canopy and buildings), EGM2008 heights; cell values are means of valid 30 m pixel centres in each cell",
+  "relief_statement": "Within the domain the DSM spans 161.9 to 241.3 m (range 79.4 m at 500 m cells); inside the polygon 167.7 to 204.4 m. The domain maximum (241.3 m) lies 19.3 km NE of the centroid, on the domain edge, so terrain may keep rising outside the domain. Cells above the 90th percentile centre 11.0 km towards NNE (30 deg) of the polygon centroid. Whether higher terrain (e.g. Siwalik hills) lies beyond the domain cannot be read from this DEM window, which extends only a small margin beyond the domain; the data show a plane-fit rise of 32.4 m across the domain, toward NNE.",
+  "levels": {
+    "250m": {
+      "grid": {
+        "x0": 419399.649701516,
+        "y0": 3158725.0300549963,
+        "nx": 132,
+        "ny": 130,
+        "dx": 250.0,
+        "dy": 250.0,
+        "epsg": 32644
+      },
+      "cells": 17160,
+      "polygon_cells": 2147,
+      "elevation": {
+        "inside_polygon": {
+          "min_m": 167.3968276977539,
+          "mean_m": 177.42713061509227,
+          "max_m": 207.00365130106607,
+          "range_m": 39.606823603312165,
+          "note": "cell means of the 500 m aggregation; mean weighted by polygon area fraction"
+        },
+        "over_domain": {
+          "min_m": 161.39801131354437,
+          "mean_m": 183.30407090361058,
+          "max_m": 244.5654822455512,
+          "range_m": 83.16747093200684
+        },
+        "highest_terrain": {
+          "p90_elevation_m": 204.30564134385853,
+          "cells_above_p90": 1716,
+          "centroid_of_cells_above_p90_vs_polygon_centroid": {
+            "distance_km": 10.838493740511337,
+            "bearing_deg": 30.32438093887727,
+            "sector": "NNE"
+          },
+          "domain_max_cell": {
+            "elevation_m": 244.5654822455512,
+            "on_domain_edge": true,
+            "distance_km": 19.46085978456613,
+            "bearing_deg": 33.9029197909801,
+            "sector": "NE"
+          },
+          "fraction_of_top_decile_cells_inside_polygon": 0.005827505827505828,
+          "fraction_of_top_decile_cells_on_domain_edge": 0.05419580419580419
+        },
+        "gradient": {
+          "domain_plane_fit_dz_per_km_east_m": 0.22116458801297828,
+          "domain_plane_fit_dz_per_km_north_m": 0.9717507404813097,
+          "steepest_ascent_bearing_deg": 12.821765512431877,
+          "steepest_ascent_sector": "NNE",
+          "plane_fit_total_rise_across_domain_m": 32.41424763213824,
+          "domain_mean_elevation_by_thirds_south_mid_north_m": [
+            174.41755016343086,
+            180.038373889394,
+            195.6629519310343
+          ],
+          "domain_north_minus_south_third_m": 21.245401767603454,
+          "polygon_mean_elevation_by_thirds_south_mid_north_m": [
+            172.72096891494303,
+            177.6415204537591,
+            181.74736089127333
+          ],
+          "polygon_north_minus_south_third_m": 9.026391976330302
+        }
+      },
+      "mean_slope_deg_in_polygon": 0.3107298267813524,
+      "max_slope_deg_domain": 4.699864911207057,
+      "dem_valid_fraction": {
+        "min_domain": 1.0,
+        "mean_domain": 1.0,
+        "min_in_polygon_cells": 1.0,
+        "cells_below_0.95": 0,
+        "cells_nan_dem": 0
+      },
+      "polygon_area_from_mask_km2": 122.95557734033939,
+      "polygon_area_km2": 122.95557734033926,
+      "polygon_area_relative_error": 1.0907227931061079e-15,
+      "source_sums_f_times_A": {
+        "road": 0.9999999999999998,
+        "builtup": 1.0,
+        "facility": 1.0000000000000002,
+        "external_patch": 0.9999999999999998
+      }
+    },
+    "500m": {
+      "grid": {
+        "x0": 419399.649701516,
+        "y0": 3158725.0300549963,
+        "nx": 66,
+        "ny": 65,
+        "dx": 500.0,
+        "dy": 500.0,
+        "epsg": 32644
+      },
+      "cells": 4290,
+      "polygon_cells": 584,
+      "elevation": {
+        "inside_polygon": {
+          "min_m": 167.6508879131741,
+          "mean_m": 177.43825886584952,
+          "max_m": 204.35429745872548,
+          "range_m": 36.70340954555138,
+          "note": "cell means of the 500 m aggregation; mean weighted by polygon area fraction"
+        },
+        "over_domain": {
+          "min_m": 161.90929486065087,
+          "mean_m": 183.30505718677708,
+          "max_m": 241.3121408276285,
+          "range_m": 79.40284596697762
+        },
+        "highest_terrain": {
+          "p90_elevation_m": 204.05582216788983,
+          "cells_above_p90": 429,
+          "centroid_of_cells_above_p90_vs_polygon_centroid": {
+            "distance_km": 11.009203105990247,
+            "bearing_deg": 30.290471943217604,
+            "sector": "NNE"
+          },
+          "domain_max_cell": {
+            "elevation_m": 241.3121408276285,
+            "on_domain_edge": true,
+            "distance_km": 19.287418387241804,
+            "bearing_deg": 33.801845376267046,
+            "sector": "NE"
+          },
+          "fraction_of_top_decile_cells_inside_polygon": 0.002331002331002331,
+          "fraction_of_top_decile_cells_on_domain_edge": 0.11421911421911422
+        },
+        "gradient": {
+          "domain_plane_fit_dz_per_km_east_m": 0.22120638922709743,
+          "domain_plane_fit_dz_per_km_north_m": 0.9718768665683263,
+          "steepest_ascent_bearing_deg": 12.82249952824908,
+          "steepest_ascent_sector": "NNE",
+          "plane_fit_total_rise_across_domain_m": 32.41855207050685,
+          "domain_mean_elevation_by_thirds_south_mid_north_m": [
+            174.41597782213884,
+            180.20352021705457,
+            195.86665525134546
+          ],
+          "domain_north_minus_south_third_m": 21.45067742920662,
+          "polygon_mean_elevation_by_thirds_south_mid_north_m": [
+            172.7391845484578,
+            177.64404841210742,
+            181.76483034341726
+          ],
+          "polygon_north_minus_south_third_m": 9.025645794959445
+        }
+      },
+      "mean_slope_deg_in_polygon": 0.21341335049923604,
+      "max_slope_deg_domain": 2.420777756663238,
+      "dem_valid_fraction": {
+        "min_domain": 1.0,
+        "mean_domain": 1.0,
+        "min_in_polygon_cells": 1.0,
+        "cells_below_0.95": 0,
+        "cells_nan_dem": 0
+      },
+      "polygon_area_from_mask_km2": 122.95557734033937,
+      "polygon_area_km2": 122.95557734033926,
+      "polygon_area_relative_error": 9.695313716498737e-16,
+      "source_sums_f_times_A": {
+        "road": 1.0,
+        "builtup": 1.0,
+        "facility": 1.0,
+        "external_patch": 1.0
+      }
+    }
+  },
+  "native_dem_inside_polygon_30m": {
+    "native_pixels_in_polygon": 147218,
+    "min_m": 167.0082550048828,
+    "mean_m": 177.4249344509503,
+    "max_m": 218.43331909179688,
+    "pixel_size_deg": [
+      0.0002777777777777778,
+      0.0002777777777777778
+    ]
+  },
+  "profiles_through_polygon_centroid": {
+    "N-S_500m": {
+      "extent_km": [
+        9.0,
+        23.5
+      ],
+      "min_m": 166.09082693802682,
+      "max_m": 206.58107140189722,
+      "range_m": 40.4902444638704
+    },
+    "E-W_500m": {
+      "extent_km": [
+        13.5,
+        22.5
+      ],
+      "min_m": 172.0,
+      "max_m": 201.22370763318293,
+      "range_m": 29.223707633182926
+    },
+    "N-S_250m": {
+      "extent_km": [
+        10.25,
+        20.25
+      ],
+      "min_m": 165.2672191619873,
+      "max_m": 208.10203976101346,
+      "range_m": 42.83482059902616
+    },
+    "E-W_250m": {
+      "extent_km": [
+        14.0,
+        22.25
+      ],
+      "min_m": 171.6599095662435,
+      "max_m": 203.93351533677844,
+      "range_m": 32.27360577053494
+    }
+  },
+  "border": {
+    "border_source": "geoBoundaries NPL ADM0 boundary (2019 release data)",
+    "centroid_to_border_km": 3.1433476318445956,
+    "centroid_to_nearest_border_point": {
+      "distance_km": 3.1433476318445956,
+      "bearing_deg": 255.3451063141203,
+      "sector": "WSW"
+    },
+    "polygon_to_border_km": 0.0,
+    "polygon_perimeter_km": 72.4612116251364,
+    "perimeter_share_within_tolerance_of_border": 0.37372343361854815,
+    "tolerance_m": 50.0,
+    "border_share_by_polygon_side_of_perimeter": {
+      "north": 0.0,
+      "east": 0.0028981507038366005,
+      "south": 0.191139939276839,
+      "west": 0.1796853436378666
+    },
+    "sides_touching_border": [
+      "east",
+      "south",
+      "west"
+    ],
+    "bounding_box_side_distances_km": {
+      "west": 0.0,
+      "east": 0.0,
+      "south": 0.0,
+      "north": 40.43374299842771
+    },
+    "ind_outline_touches_polygon": true,
+    "polygon_fraction_inside_ind_outline": 0.12179802377252084,
+    "polygon_fraction_inside_npl_adm0": 0.9999999983906814,
+    "ind_outline_coarseness": {
+      "vertices_ind_adm0_total": 2082,
+      "vertices_npl_adm0_total": 66082,
+      "npl_border_to_ind_outline_distance_m_near_domain": {
+        "mean": 5201.261851667705,
+        "max": 10986.742320089983,
+        "n_points": 200
+      },
+      "note": "if the two outlines described the same line these distances would be near 0; they measure the coarseness/offset of the IND outline"
+    }
+  },
+  "counts": {
+    "roads_segments_domain": 8206,
+    "road_km_domain": 2206.77723481106,
+    "road_km_in_study": 1024.9922653818953,
+    "buildings_domain": 50510,
+    "residential_landuse_polygons": 1020,
+    "builtup_km2_in_study": 6.88766929775032,
+    "facilities_domain": 98,
+    "facilities_in_study": 60,
+    "source": "manifest counts (OSM via Overpass mirror; completeness unknown, gaps are not zero sources)"
+  },
+  "dem_native_resolution": {
+    "pixel_m_approx_ew_ns": [
+      27.12324142200542,
+      30.715
+    ],
+    "nominal_m": 30,
+    "grid_cell_m": [
+      500,
+      250
+    ],
+    "dem_raw_nodata_pixels": 0,
+    "dem_raw_shape": [
+      1190,
+      1357
+    ]
+  },
+  "external_patch": {
+    "centre_lonlat": [
+      80.28358376018163,
+      28.683586687518225
+    ],
+    "centre_local_m": [
+      10609.022822454048,
+      14415.55935851112
+    ],
+    "sigma_m": 1000.0,
+    "distance_to_polygon_km": 2.916222006882909,
+    "origin": {
+      "class": "unclassified",
+      "country": null,
+      "countries_containing": []
+    },
+    "label": "synthetic hypothesis"
+  },
+  "crs": {
+    "epsg": 32644,
+    "axis_conventions": "geographic (lon, lat); projected (x=easting, y=northing); pyproj always_xy",
+    "roundtrip_error_m_manifest": 0.0,
+    "roundtrip_error_m_recomputed": 0.0,
+    "polygon_centroid_lonlat_from_utm_centroid": [
+      80.35421881393141,
+      28.700254384747254
+    ],
+    "local_coordinates": "x, y = UTM easting/northing minus the domain SW corner (x0, y0); arrays are [y, x] with y increasing northward"
+  },
+  "source_hypothesis_sums_figure5": {
+    "road": 1.0,
+    "builtup": 1.0,
+    "facility": 1.0,
+    "external_patch": 1.0
+  },
+  "provenance": [
+    {
+      "id": "geoBoundaries:NPL-ADM3:NPL-ADM3-92635248",
+      "url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+      "release": "Dec 12, 2023",
+      "data_year": "2019",
+      "retrieved_utc": "2026-10-10T15:40:38+00:00",
+      "licence": "Creative Commons Attribution-ShareAlike 4.0 International License",
+      "sha256_prefix": "139e8622ca46c47c"
+    },
+    {
+      "id": "geoBoundaries:NPL-ADM2:NPL-ADM2-79688334",
+      "url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM2/geoBoundaries-NPL-ADM2.geojson",
+      "release": "Dec 12, 2023",
+      "data_year": "2006",
+      "retrieved_utc": "2026-10-10T15:40:40+00:00",
+      "licence": "Public Domain",
+      "sha256_prefix": "83e197db0b729f67"
+    },
+    {
+      "id": "geoBoundaries:NPL-ADM0:NPL-ADM0-63295607",
+      "url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM0/geoBoundaries-NPL-ADM0.geojson",
+      "release": "Dec 12, 2023",
+      "data_year": "2019",
+      "retrieved_utc": "2026-10-10T15:40:41+00:00",
+      "licence": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "sha256_prefix": "fc0f32802e64cb5e"
+    },
+    {
+      "id": "geoBoundaries:IND-ADM0:IND-ADM0-67634026",
+      "url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/IND/ADM0/geoBoundaries-IND-ADM0.geojson",
+      "release": "Dec 12, 2023",
+      "data_year": "2014",
+      "retrieved_utc": "2026-10-10T15:40:42+00:00",
+      "licence": "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
+      "sha256_prefix": "77fb5cb03be9970e"
+    },
+    {
+      "id": "nominatim:Belauri, Kanchanpur, Nepal",
+      "url": "https://nominatim.openstreetmap.org/search?q=Belauri%2C+Kanchanpur%2C+Nepal&format=jsonv2&limit=5&extratags=1&polygon_geojson=0&addressdetails=0",
+      "release": "n/a (live query; see retrieved_utc)",
+      "data_year": null,
+      "retrieved_utc": "2026-10-10T15:40:43+00:00",
+      "licence": "ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "sha256_prefix": "20a138daed342873"
+    },
+    {
+      "id": "overpass:osm_roads",
+      "url": "https://maps.mail.ru/osm/tools/overpass/api",
+      "release": "n/a (live query; see retrieved_utc)",
+      "data_year": null,
+      "retrieved_utc": "2026-10-10T16:56:34+00:00",
+      "licence": "ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "sha256_prefix": "43ead5e2e2b5d168"
+    },
+    {
+      "id": "overpass:osm_buildings",
+      "url": "https://maps.mail.ru/osm/tools/overpass/api",
+      "release": "n/a (live query; see retrieved_utc)",
+      "data_year": null,
+      "retrieved_utc": "2026-10-10T16:56:34+00:00",
+      "licence": "ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "sha256_prefix": "dd07bb0ab2d12748"
+    },
+    {
+      "id": "overpass:osm_landuse",
+      "url": "https://maps.mail.ru/osm/tools/overpass/api",
+      "release": "n/a (live query; see retrieved_utc)",
+      "data_year": null,
+      "retrieved_utc": "2026-10-10T16:56:34+00:00",
+      "licence": "ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "sha256_prefix": "c2785f9ed89b2e03"
+    },
+    {
+      "id": "overpass:osm_amenity",
+      "url": "https://maps.mail.ru/osm/tools/overpass/api",
+      "release": "n/a (live query; see retrieved_utc)",
+      "data_year": null,
+      "retrieved_utc": "2026-10-10T16:56:34+00:00",
+      "licence": "ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "sha256_prefix": "896a4a9eba492616"
+    },
+    {
+      "id": "Copernicus GLO-30 DSM: Copernicus_DSM_COG_10_N28_00_E080_00_DEM",
+      "url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+      "release": "n/a (live query; see retrieved_utc)",
+      "data_year": null,
+      "retrieved_utc": "2026-10-10T17:07:43+00:00",
+      "licence": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required)",
+      "sha256_prefix": "35e3176e19b0fe05"
+    }
+  ],
+  "manifest_warnings": [
+    "OSM completeness is unknown: absent roads/buildings in the data are mapping gaps, not zero sources.",
+    "external patch centre is in no (or several) ADM0 polygons: 'international' not asserted"
+  ],
+  "boundary_checks": [
+    {
+      "name": "name",
+      "ok": true,
+      "detail": "shapeName='Belauri'"
+    },
+    {
+      "name": "shape_id",
+      "ok": true,
+      "detail": "shapeID='92635248B27542858320702'"
+    },
+    {
+      "name": "geometry_valid",
+      "ok": true,
+      "detail": "shapely is_valid on the projected polygon"
+    },
+    {
+      "name": "area",
+      "ok": true,
+      "detail": "area=122.96 km2 (UTM 32644), expected 123.0 +/- 10%"
+    },
+    {
+      "name": "bbox",
+      "ok": true,
+      "detail": "bbox=(80.258,28.628,80.430,28.773) max deviation 0.000 deg (tol 0.03)"
+    },
+    {
+      "name": "adm2_geometric_coverage",
+      "ok": false,
+      "detail": "71.7% of the polygon lies inside the ADM2 feature 'Kanchanpur'",
+      "informational": true
+    },
+    {
+      "name": "osm_relation_agreement",
+      "ok": true,
+      "detail": "IoU 0.9384 with the OSM administrative relation polygon; area differs by 0.05%; Hausdorff distance 238 m"
+    },
+    {
+      "name": "parent_district",
+      "ok": true,
+      "detail": "ADM2 geometric coverage 71.7% is below the threshold; independent evidence: OSM relation polygon agrees=True, hierarchy names the district=True, largest overlap with any OTHER district 0.00% (must be <= 1%)"
+    },
+    {
+      "name": "independent_locator",
+      "ok": true,
+      "detail": "nearest name-matching Nominatim result: {'osm_type': 'relation', 'osm_id': 5927493, 'display_name': 'Belauri, \u0915\u091e\u094d\u091a\u0928\u092a\u0941\u0930 \u091c\u093f\u0932\u094d\u0932\u093e, \u0938\u0941\u0926\u0942\u0930\u092a\u0936\u094d\u091a\u093f\u092e \u092a\u094d\u0930\u0926\u0947\u0936, \u0928\u0947\u092a\u093e\u0932', 'distance_km': 0.0, 'extratags': {'admin_level': '7'}}"
+    }
+  ],
+  "assumptions": [
+    "ASSUMPTION: emissions, source strengths and the external patch (centre, sigma) are synthetic spatial priors, not measurements or an inventory",
+    "ASSUMPTION: meteorology is synthetic; the DEM is context only and is not used by the PDE",
+    "ASSUMPTION: the municipality polygon (geoBoundaries ADM3, Open Data Nepal / MoFAGA 2019) is treated as the study region; no survey-department polygon was obtained",
+    "ASSUMPTION: the Nepal ADM0 line and the municipality polygon share a lineage, so their coincidence says little about the true border position",
+    "ASSUMPTION: OSM completeness is unknown; empty cells are mapping gaps, not zero sources",
+    "ASSUMPTION: a 500 m (or 250 m) cell mean of a 30 m DSM removes local relief; slopes from coarse cells understate native slopes"
+  ]
+}
