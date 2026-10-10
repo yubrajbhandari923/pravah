@@ -1,0 +1,70 @@
+{
+  "alpha": 1.0,
+  "selected_criterion": 0.013773333928453688,
+  "criterion": "mean over budgets, layouts, validation cases and noise reps of the regional field RMSE (uniform weights, ug/m^3, vs the validation truth); lowest wins, exact ties go to the smaller alpha",
+  "tie_rule": "exact tie -> smaller alpha",
+  "table": [
+    {
+      "alpha": 0.0,
+      "criterion": 1105.8946889764118,
+      "median_rmse": 0.01836987406299925,
+      "p90_rmse": 1457.7393864474266,
+      "n_rmse_gt_10x_no_emission": 5,
+      "mean_source_rel_err": 41096.835484731964,
+      "n_rows": 24
+    },
+    {
+      "alpha": 1.0,
+      "criterion": 0.013773333928453688,
+      "median_rmse": 0.01329164091749807,
+      "p90_rmse": 0.021288166063897763,
+      "n_rmse_gt_10x_no_emission": 0,
+      "mean_source_rel_err": 0.5557885625518234,
+      "n_rows": 24
+    },
+    {
+      "alpha": 100.0,
+      "criterion": 0.019072675394688807,
+      "median_rmse": 0.01906147728032261,
+      "p90_rmse": 0.024021113772090066,
+      "n_rmse_gt_10x_no_emission": 0,
+      "mean_source_rel_err": 0.7456832930219672,
+      "n_rows": 24
+    }
+  ],
+  "alpha_grid": [
+    0.0,
+    1.0,
+    100.0
+  ],
+  "validation_seed": 44,
+  "validation_noise_seed": 9000,
+  "n_validation": 2,
+  "noise_reps": 1,
+  "n_random": 5,
+  "budgets": [
+    1,
+    3
+  ],
+  "layout_seed": 7,
+  "layout_methods": [
+    "random",
+    "spread"
+  ],
+  "noise_std": 0.005,
+  "q_scale": 100000.0,
+  "prior": "zeros (prior mean 0 for every source)",
+  "prior_mean_uses_truth": false,
+  "config_hash": "01e06b446369f315ec5a2dd7982c66fb2674eba448d9865a5ffb67f94a6ded83",
+  "package_versions": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "xarray": "2026.9.0",
+    "fipy": "4.0.3",
+    "pandas": "3.0.6",
+    "matplotlib": "3.11.2",
+    "netCDF4": "1.7.4",
+    "pravah": "0.1.0"
+  },
+  "created_utc": "2026-10-10T14:48:58.874880+00:00"
+}

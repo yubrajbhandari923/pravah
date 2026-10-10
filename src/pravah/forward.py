@@ -9,21 +9,26 @@ Backward Euler in time. Concentrations are never clipped.
 """
 from __future__ import annotations
 
+import dataclasses
+import importlib
 import math
 import time as _time
 from collections.abc import Sequence
+from dataclasses import dataclass
 from typing import Any, Protocol, cast
 
 import numpy as np
 import xarray as xr
 import fipy as _fipy
 
+from . import __version__
 from .config import FieldResult, Scenario, SolverOptions, WindSegment
 from .sources import cell_centres, emission_profile, source_fields
 
 fp: Any = _fipy  # FiPy is untyped; use it through Any
 
 _TOL = 1e-9  # s; times closer than this are the same breakpoint
+_FIPY_VERSION = str(getattr(_fipy, "__version__", "unknown"))
 
 
 def step_times(scenario: Scenario) -> np.ndarray:
@@ -200,9 +205,27 @@ def simulate(scenario: Scenario, q: Sequence[float] | np.ndarray,
         "n_steps": int(len(times) - 1),
         "max_abs_budget_residual": float(resid.max()),
         "max_rel_budget_residual": float((resid / scale).max()),
+        "backend": FIPY.info.to_dict(),  # provenance only; FipyForward overwrites it with its own settings
     }
     return FieldResult(concentration=conc, budget=budget, status="ok",
                        runtime_s=_time.perf_counter() - t_wall, diagnostics=cast(dict[str, Any], diagnostics))
+
+
+@dataclass(frozen=True)
+class BackendInfo:
+    """Identity of a forward solver, recorded in cache keys, provenance and ``FieldResult.diagnostics['backend']``.
+
+    ``capabilities`` (all False unless declared): ``linear`` = superposition of source responses is valid (required
+    by the cached-response route, never assumed), ``budget`` = results carry a mass budget, ``boundary_bases`` =
+    supports boundary-inflow basis parameters (False for FiPy until the phase-2 physics lands)."""
+    name: str
+    version: str
+    settings: dict[str, Any]
+    capabilities: dict[str, bool]
+
+    def to_dict(self) -> dict[str, Any]:
+        return {"name": self.name, "version": self.version, "settings": dict(self.settings),
+                "capabilities": dict(self.capabilities)}
 
 
 class ForwardSolver(Protocol):
@@ -211,12 +234,94 @@ class ForwardSolver(Protocol):
     It is called exactly like ``simulate`` and must return a ``FieldResult`` whose ``concentration`` has dims
     ("time", "y", "x"), coords time = ``scenario.output_times``, x/y = cell centres (``sources.cell_centres``),
     attrs["units"] == "microgram/m^3", and finite values.  ``budget`` may be None; ``status`` is a string.
-    A solver only needs to support the scenarios it was built for.  Optionally give it a ``forward_id`` string
-    attribute (e.g. a weights hash) to separate cached responses of different parametrisations.
+    A solver only needs to support the scenarios it was built for.  Optionally give it an ``info`` attribute
+    (``BackendInfo``) or, minimally, a ``forward_id`` string (e.g. a weights hash) and a ``capabilities`` dict;
+    see ``forward_info``.  The cached-response route needs ``capabilities['linear'] is True``.
     ``check_field_result`` validates the contract."""
 
     def __call__(self, scenario: Scenario, q: Sequence[float] | np.ndarray,
                  solver: SolverOptions = ...) -> FieldResult: ...
+
+
+@dataclass(frozen=True)
+class FipyForward:
+    """The FiPy reference solver as a ``ForwardSolver``.  ``convection`` / ``tolerance`` (when not None) override the
+    corresponding fields of the per-call ``SolverOptions`` and are recorded in ``info.settings``.  With no overrides
+    it is exactly ``simulate``."""
+    convection: str | None = None
+    tolerance: float | None = None
+
+    @property
+    def info(self) -> BackendInfo:
+        return BackendInfo("fipy", f"fipy {_FIPY_VERSION}; pravah {__version__}",
+                           {"convection": self.convection, "tolerance": self.tolerance},
+                           {"linear": True, "budget": True, "boundary_bases": False})
+
+    @property
+    def forward_id(self) -> str:
+        return f"fipy:convection={self.convection}:tolerance={self.tolerance}"
+
+    def __call__(self, scenario: Scenario, q: Sequence[float] | np.ndarray,
+                 solver: SolverOptions = SolverOptions()) -> FieldResult:
+        over = {k: v for k, v in (("convection", self.convection), ("tolerance", self.tolerance)) if v is not None}
+        res = simulate(scenario, q, dataclasses.replace(solver, **over) if over else solver)
+        res.diagnostics["backend"] = self.info.to_dict()
+        return res
+
+
+FIPY = FipyForward()  # THE default forward solver of every library entry point and the CLI
+
+
+def forward_info(forward: ForwardSolver) -> BackendInfo:
+    """``forward.info`` if it has one; ``simulate`` is FIPY; otherwise derived from identity: name = module.qualname,
+    version 'unknown', settings = its ``forward_id`` (if any), capabilities from its ``capabilities`` dict.  An
+    undeclared replacement is NOT assumed linear."""
+    if forward is simulate:
+        return FIPY.info
+    info = getattr(forward, "info", None)
+    if isinstance(info, BackendInfo):
+        return info
+    obj: Any = forward
+    name = getattr(obj, "__qualname__", None)
+    if name is None:
+        obj = type(forward)
+        name = obj.__qualname__
+    caps = {"linear": False, "budget": False, "boundary_bases": False}
+    caps.update({str(k): bool(v) for k, v in dict(getattr(forward, "capabilities", {})).items()})
+    return BackendInfo(f"{obj.__module__}.{name}", "unknown", {"forward_id": str(getattr(forward, "forward_id", ""))},
+                       caps)
+
+
+def get_forward(spec: str | None, kwargs: dict[str, Any] | None = None) -> ForwardSolver:
+    """Resolve a solver spec.  None or 'fipy' -> FIPY (``FipyForward(**kwargs)`` when kwargs are given).
+    'module:callable' -> the callable is imported and treated as a FACTORY: it is called once with ``**kwargs`` and
+    must return the solver object (a ``ForwardSolver``).  ValueError for malformed specs, import failures, factory
+    errors and non-callable results."""
+    if spec is None or spec == "fipy":
+        if not kwargs:
+            return FIPY
+        try:
+            return FipyForward(**kwargs)
+        except TypeError as e:
+            raise ValueError(f"invalid kwargs for the fipy solver: {e}") from e
+    mod, sep, attr = spec.partition(":")
+    if not sep or not mod or not attr:
+        raise ValueError(f"solver spec {spec!r} must be 'fipy' or 'module:callable'")
+    try:
+        factory = getattr(importlib.import_module(mod), attr)
+    except ImportError as e:
+        raise ValueError(f"cannot import solver module {mod!r} from spec {spec!r}: {e}") from e
+    except AttributeError as e:
+        raise ValueError(f"module {mod!r} has no attribute {attr!r} (solver spec {spec!r})") from e
+    if not callable(factory):
+        raise ValueError(f"solver spec {spec!r} does not name a callable factory")
+    try:
+        solver = factory(**(kwargs or {}))
+    except Exception as e:
+        raise ValueError(f"solver factory {spec!r} failed with kwargs {kwargs or {}}: {e}") from e
+    if not callable(solver):
+        raise ValueError(f"solver factory {spec!r} returned a non-callable {type(solver).__name__}")
+    return cast(ForwardSolver, solver)
 
 
 def check_field_result(res: FieldResult, scenario: Scenario) -> None:

@@ -18,6 +18,7 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 markers = ["slow: longer numerical checks"]
 
 [tool.pyright]

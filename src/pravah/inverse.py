@@ -29,15 +29,13 @@ from typing import Any, Literal, cast
 
 import numpy as np
 import xarray as xr
-import fipy as _fipy
 from scipy import optimize
 
 from . import __version__
 from .config import SCHEMA_VERSION, FieldResult, Initial, Scenario, SolverOptions, to_dict
-from .forward import ForwardSolver, check_field_result, simulate
+from .forward import FIPY, ForwardSolver, check_field_result, forward_info
 from .observations import Observations, SensorLayout, sample
 
-_FIPY_VERSION = str(getattr(_fipy, "__version__", "unknown"))
 Q_REF_DEFAULT = 1e5  # ug/s; numerical scaling of the unit-response runs only
 
 
@@ -84,31 +82,27 @@ class Responses:
         return np.asarray(b, dtype=float), np.stack(cols, axis=1)
 
 
-def forward_identity(forward: ForwardSolver) -> str:
-    """module.qualname of the forward solver (class for instances) plus its optional ``forward_id`` attribute."""
-    obj: Any = forward
-    name = getattr(obj, "__qualname__", None)
-    if name is None:
-        obj = type(forward)
-        name = obj.__qualname__
-    return f"{obj.__module__}.{name}|{getattr(forward, 'forward_id', '')}"
-
-
 def run_forward(forward: ForwardSolver, scenario: Scenario, q: Sequence[float] | np.ndarray,
                 solver: SolverOptions) -> FieldResult:
-    """Call ``forward``; a non-default solver's result is checked against the ForwardSolver contract."""
+    """Call ``forward`` and check its result against the ForwardSolver contract (every backend, FiPy included)."""
     res = forward(scenario, q, solver)
-    if forward is not simulate:
-        check_field_result(res, scenario)
+    check_field_result(res, scenario)
     return res
 
 
-def cache_key(scenario: Scenario, solver: SolverOptions, q_ref: float, forward: ForwardSolver = simulate) -> str:
+def cache_key(scenario: Scenario, solver: SolverOptions, q_ref: float, forward: ForwardSolver = FIPY) -> str:
+    """Hash of everything a cached response depends on, including the full BackendInfo of ``forward``."""
     payload = {"scenario": to_dict(scenario), "solver": to_dict(solver), "schema": SCHEMA_VERSION, "q_ref": q_ref,
-               "pravah": __version__, "fipy": _FIPY_VERSION}
-    if forward is not simulate:  # default keeps the pre-interface keys valid
-        payload["forward"] = forward_identity(forward)
+               "pravah": __version__, "forward": forward_info(forward).to_dict()}
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
+
+
+def _require_linear_backend(forward: ForwardSolver) -> None:
+    info = forward_info(forward)
+    if info.capabilities.get("linear") is not True:
+        raise ValueError(f"forward solver {info.name!r} does not declare capabilities['linear'] = True: the "
+                         "cached-response (superposition) route needs an explicit linearity opt-in; use "
+                         "method='direct' or declare the capability")
 
 
 class ResponseCache:
@@ -122,8 +116,9 @@ class ResponseCache:
         self.misses = 0
 
     def get(self, scenario: Scenario, solver: SolverOptions = SolverOptions(), q_ref: float = Q_REF_DEFAULT,
-            forward: ForwardSolver = simulate) -> Responses:
+            forward: ForwardSolver = FIPY) -> Responses:
         _check_linear(scenario)
+        _require_linear_backend(forward)
         if not q_ref > 0:
             raise ValueError("q_ref must be positive")
         key = cache_key(scenario, solver, q_ref, forward)
@@ -146,9 +141,11 @@ class ResponseCache:
 
 
 def compute_responses(scenario: Scenario, solver: SolverOptions = SolverOptions(),
-                      q_ref: float = Q_REF_DEFAULT, forward: ForwardSolver = simulate) -> Responses:
-    """n_src + 1 forward solves: base (q=0, configured IC/background) and unit responses (zero IC, zero bg)."""
+                      q_ref: float = Q_REF_DEFAULT, forward: ForwardSolver = FIPY) -> Responses:
+    """n_src + 1 forward solves: base (q=0, configured IC/background) and unit responses (zero IC, zero bg).
+    ``forward`` must declare capabilities['linear'] (ValueError otherwise)."""
     _check_linear(scenario)
+    _require_linear_backend(forward)
     n = len(scenario.sources)
     base_da = run_forward(forward, scenario, np.zeros(n), solver).concentration
     zero = dataclasses.replace(scenario, initial=Initial(),
@@ -239,12 +236,12 @@ def _vec(v: tuple[float, ...] | None, n: int, default: float, name: str) -> np.n
 
 
 def fit_sources(scenario: Scenario, obs: Observations, options: InferenceOptions = InferenceOptions(),
-                cache: ResponseCache | None = None, forward: ForwardSolver = simulate) -> FitResult:
+                cache: ResponseCache | None = None, forward: ForwardSolver = FIPY) -> FitResult:
     """Fit q >= 0 to the readings of the non-held-out sensors.  Truth is not an input.
 
     Residual r = (b + A q - y) / sigma (sigma per sensor; if all sigma are 0, unit weights, so r is in ug/m^3; a mix
     of zero and non-zero sigma raises ValueError).  With alpha > 0 the rows sqrt(alpha) * (theta - prior/q_scale) are
-    appended.  'direct' calls simulate at every optimiser iterate (finite-difference Jacobian, no caching); its
+    appended.  'direct' calls the forward solver at every optimiser iterate (finite-difference Jacobian, no caching); its
     diagnostic matrix A is taken from the cached responses (n_src + 1 solves, the same cost as finite differences
     and exact thanks to linearity).  'success' is optimiser convergence, NOT identifiability: check rank/condition.
     """
@@ -376,7 +373,7 @@ def solve_linear(b: np.ndarray, A: np.ndarray, y: np.ndarray, sigma: np.ndarray,
 
 
 def reconstruct(scenario: Scenario, fit: FitResult, solver: SolverOptions = SolverOptions(),
-                forward: ForwardSolver = simulate) -> FieldResult:
+                forward: ForwardSolver = FIPY) -> FieldResult:
     """True forward run with the fitted amplitudes."""
     return run_forward(forward, scenario, fit.q_hat, solver)
 

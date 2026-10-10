@@ -26,6 +26,7 @@ Q = np.array([1.2e5, 0.8e5])
 class UpwindSolver:
     """Alternative numerical scheme (upwind convection) behind the ForwardSolver interface."""
     forward_id = "upwind-v1"
+    capabilities = {"linear": True}  # explicit opt-in to the cached-response route
 
     def __call__(self, scenario: Scenario, q, solver: SolverOptions = SolverOptions()) -> FieldResult:
         return simulate(scenario, q, dataclasses.replace(solver, convection="upwind"))
@@ -109,6 +110,8 @@ def test_disk_cache_not_mixed(tmp_path):
 
 def test_contract_violation_rejected():
     class Bad:
+        capabilities = {"linear": True}
+
         def __call__(self, scenario, q, solver=SolverOptions()):
             res = simulate(scenario, q, solver)
             return dataclasses.replace(res, concentration=res.concentration.assign_coords(

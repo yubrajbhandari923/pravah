@@ -1,0 +1,10 @@
+{
+  "stages_s": {
+    "matched_s": 4.300385833019391,
+    "refined_truth_s": 2.4172759590437636,
+    "wind_perturbed_s": 0.8442174999509007,
+    "extra_source_s": 0.8666160000720993
+  },
+  "total_s": 9.018811667105183,
+  "peak_memory_mb": 187.02336
+}

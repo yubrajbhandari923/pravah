@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 import xarray as xr
 
-from pravah import inverse, metrics
+from pravah import forward as forward_mod, inverse, metrics
 from pravah.config import (Boundary, Domain, GaussianSource, Initial, Scenario, SolverOptions, Times, Transport,
                            WindSegment)
 from pravah.forward import simulate
@@ -226,7 +226,7 @@ def test_cache_key_changes_with_versions(monkeypatch):
     k0 = cache_key(SC, SolverOptions(), 1e5)
     monkeypatch.setattr(inverse, "__version__", "9.9.9")
     k1 = cache_key(SC, SolverOptions(), 1e5)
-    monkeypatch.setattr(inverse, "_FIPY_VERSION", "0.0")
+    monkeypatch.setattr(forward_mod, "_FIPY_VERSION", "0.0")
     assert len({k0, k1, cache_key(SC, SolverOptions(), 1e5)}) == 3
 
 
@@ -268,12 +268,13 @@ def test_orchestration_cache_reuse_across_layouts_and_seeds(truth):
     """ORCHESTRATION test: counts calls to simulate (the real solver still runs) to show that many layouts and
     noise seeds cost only n_src + 1 forward solves."""
     calls = []
-    real = inverse.simulate
+    real = forward_mod.simulate
 
     def counting(*a, **k):
         calls.append(1)
         return real(*a, **k)
 
+    counting.capabilities = {"linear": True}  # explicit opt-in for the cached route
     c = ResponseCache()
     layouts = [GOOD, GOOD.select([0, 1, 2, 3]), GOOD.select([4, 5, 6, 7])]
     for lay in layouts:

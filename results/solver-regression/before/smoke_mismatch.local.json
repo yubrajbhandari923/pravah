@@ -1,0 +1,6 @@
+{
+  "extends": "/Users/yubraj/Code/pravah/configs/smoke_mismatch.json",
+  "mismatch": {
+    "layouts_from": "results/solver-regression/before/smoke"
+  }
+}

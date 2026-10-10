@@ -42,8 +42,8 @@ from .config import (GaussianSource, Scenario, SolverOptions, Times, Transport, 
 from .design import (Candidates, Constraints, DesignCase, DesignOptions, Layout, assert_disjoint, build_case,
                      candidate_grid, evaluate_layouts, evaluate_validation, fit_layout, greedy_trace, paired_comparison, random_layouts,
                      score_layout, spread_layout)
-from .forward import simulate
-from .inverse import ResponseCache
+from .forward import FIPY, ForwardSolver, forward_info, get_forward
+from .inverse import ResponseCache, run_forward
 from .io import make_run_dir, provenance, write_csv, write_json
 from .metrics import population_weight
 
@@ -190,6 +190,31 @@ class _Setup:
     validation_specs: list[CaseSpec] = field(default_factory=list)
     alpha: float | None = None  # None only for the alpha-selection run (alpha is then set per fit)
     alpha_info: dict[str, Any] | None = None
+    truth_forward: ForwardSolver = FIPY  # generates every synthetic truth (incl. refined / wind / extra-source)
+    inference_forward: ForwardSolver = FIPY  # response bases, case building, fits, reconstructions
+
+    def backend_dict(self) -> dict[str, Any]:
+        """Both BackendInfo records, for provenance / summary.json."""
+        return {"truth": forward_info(self.truth_forward).to_dict(),
+                "inference": forward_info(self.inference_forward).to_dict()}
+
+
+def resolve_backends(cfg: dict[str, Any], truth_forward: ForwardSolver | None = None,
+                     inference_forward: ForwardSolver | None = None) -> tuple[ForwardSolver, ForwardSolver]:
+    """(truth, inference) forward solvers, resolved once.  Explicit objects win; otherwise
+    cfg['backends'] = {'truth': {'spec': 'fipy' | 'module:callable', 'kwargs': {...}}, 'inference': {...}}
+    (see forward.get_forward); default FiPy for both.  cfg['solver'] stays the SolverOptions kwargs."""
+    b = cfg.get("backends", {})
+    unknown = set(b) - {"truth", "inference"}
+    if unknown:
+        raise ValueError(f"unknown cfg['backends'] roles {sorted(unknown)}; use 'truth' and 'inference'")
+
+    def one(role: str, given: ForwardSolver | None) -> ForwardSolver:
+        if given is not None:
+            return given
+        c = b.get(role, {})
+        return get_forward(c.get("spec"), c.get("kwargs"))
+    return one("truth", truth_forward), one("inference", inference_forward)
 
 
 def load_alpha_selection(path: Path | str) -> tuple[float, str]:
@@ -220,7 +245,8 @@ def resolve_alpha(d: dict[str, Any]) -> tuple[float, dict[str, Any]]:
                       "alpha_selection_sha256": None, "label": "not selected: sensitivity (no alpha_selection_file)"}
 
 
-def _setup(cfg: dict[str, Any], need_alpha: bool = True) -> _Setup:
+def _setup(cfg: dict[str, Any], need_alpha: bool = True, truth_forward: ForwardSolver | None = None,
+           inference_forward: ForwardSolver | None = None) -> _Setup:
     d = {**DESIGN_DEFAULTS, **cfg.get("design", {})}
     base = scenario_from_dict(cfg["scenario"])
     inv = cfg.get("inverse", {})
@@ -238,9 +264,10 @@ def _setup(cfg: dict[str, Any], need_alpha: bool = True) -> _Setup:
     check_ensembles(ds, ts, int(d["design_seed"]), int(d["test_seed"]), int(d["design_noise_seed"]),
                     int(d["test_noise_seed"]), vs, int(d["validation_seed"]), int(d["validation_noise_seed"]))
     alpha, info = resolve_alpha(d) if need_alpha else (None, None)
+    tf, inf = resolve_backends(cfg, truth_forward, inference_forward)
     return _Setup(cfg, d, base, SolverOptions(**cfg.get("solver", {})), float(inv.get("noise_std", 0.005)), obs_times,
                   candidate_grid(base.domain, int(d["candidates_n"])), held, ds, ts, population_weight(base.domain),
-                  vs, alpha, info)
+                  vs, alpha, info, tf, inf)
 
 
 def _opts(st: _Setup, weighted: bool) -> DesignOptions:
@@ -340,7 +367,9 @@ def _pick_alpha(table: pd.DataFrame) -> float:
 
 
 def run_alpha_selection(cfg: dict[str, Any], out_dir: Path | str | None = None, overwrite: bool = False,
-                        cache: ResponseCache | None = None, progress: Progress = None) -> AlphaSelectionResult:
+                        cache: ResponseCache | None = None, progress: Progress = None,
+                        truth_forward: ForwardSolver | None = None,
+                        inference_forward: ForwardSolver | None = None) -> AlphaSelectionResult:
     """Choose the Tikhonov strength alpha on a VALIDATION ensemble, independently of every test scenario.
 
     Pre-declared procedure (nothing below depends on the test ensemble, nor on design.alpha / alpha_selection_file):
@@ -359,7 +388,7 @@ def run_alpha_selection(cfg: dict[str, Any], out_dir: Path | str | None = None, 
     t_all = time.perf_counter()
     run_dir = None if out_dir is None else make_run_dir(out_dir, overwrite)
     cache = cache or ResponseCache()
-    st = _setup(cfg, need_alpha=False)
+    st = _setup(cfg, False, truth_forward, inference_forward)
     d = st.d
     grid = _alpha_grid(d["alpha_grid"])
     budgets = sorted(int(b) for b in d["budgets"])
@@ -408,7 +437,7 @@ def run_alpha_selection(cfg: dict[str, Any], out_dir: Path | str | None = None, 
         write_json(run_dir / "config.json", cfg)
         write_json(run_dir / "alpha_selected.json", selected)
         write_json(run_dir / "provenance.json", provenance(cfg, seeds, {
-            "experiment": "alpha_selection", "criterion": CRITERION_TEXT,
+            "experiment": "alpha_selection", "criterion": CRITERION_TEXT, "backends": st.backend_dict(),
             "note": "synthetic idealised experiment; independent of every test scenario"}))
         write_csv(run_dir / "validation_raw.csv", raw)
         write_json(run_dir / "layouts.json", {"candidates_n": int(d["candidates_n"]),
@@ -478,10 +507,11 @@ def _build_cases(st: _Setup, specs: list[CaseSpec], role: str, noise_seed0: int,
     out: dict[str, list[DesignCase]] = {w: [] for w in weightings}
     for i, s in enumerate(specs):
         q = np.array(s.q)
-        truth = simulate(s.scenario, q, st.solver).concentration
+        truth = run_forward(st.truth_forward, s.scenario, q, st.solver).concentration
         for w in weightings:
             out[w].append(build_case(s.name, role, s.scenario, q, s.scenario, st.cands, _opts(st, w == "population"),
-                                     noise_seed0 + i, int(st.d["noise_reps"]), cache, truth_field=truth))
+                                     noise_seed0 + i, int(st.d["noise_reps"]), cache, truth_field=truth,
+                                     forward=st.inference_forward))
     return out
 
 
@@ -531,7 +561,9 @@ def _summary_table(raw: pd.DataFrame, design: pd.DataFrame) -> pd.DataFrame:
 
 
 def run_benchmark(cfg: dict[str, Any], out_dir: Path | str | None = None, overwrite: bool = False,
-                  cache: ResponseCache | None = None, progress: Progress = None) -> BenchmarkResult:
+                  cache: ResponseCache | None = None, progress: Progress = None,
+                  truth_forward: ForwardSolver | None = None,
+                  inference_forward: ForwardSolver | None = None) -> BenchmarkResult:
     """Compare random / spread / greedy (and, if design.weighted, greedy_weighted) layouts over several budgets.
     See the module docstring.  Writes a run directory when ``out_dir`` is given (refuses a non-empty one unless
     ``overwrite``)."""
@@ -539,7 +571,7 @@ def run_benchmark(cfg: dict[str, Any], out_dir: Path | str | None = None, overwr
     run_dir = None if out_dir is None else make_run_dir(out_dir, overwrite)
     cache = cache or ResponseCache()
     tim: dict[str, float] = {}
-    st = _setup(cfg)
+    st = _setup(cfg, True, truth_forward, inference_forward)
     d = st.d
     budgets = sorted(int(b) for b in d["budgets"])
     weighted = bool(d["weighted"])
@@ -604,11 +636,11 @@ def run_benchmark(cfg: dict[str, Any], out_dir: Path | str | None = None, overwr
 def _write_benchmark(res: BenchmarkResult, cfg: dict[str, Any], run_dir: Path, st: _Setup) -> None:
     write_json(run_dir / "config.json", cfg)
     write_json(run_dir / "provenance.json", provenance(cfg, res.seeds, {
-        "experiment": "benchmark", "noise_std": st.noise_std, "alpha": st.alpha_info,
+        "experiment": "benchmark", "noise_std": st.noise_std, "alpha": st.alpha_info, "backends": st.backend_dict(),
         "note": "synthetic idealised experiment; RMSE in microgram/m^3 on the inference grid"}))
     write_csv(run_dir / "raw_metrics.csv", res.raw)
     write_csv(run_dir / "summary.csv", res.summary)
-    write_json(run_dir / "summary.json", {"sd_label": SD_LABEL, "alpha": st.alpha_info,
+    write_json(run_dir / "summary.json", {"sd_label": SD_LABEL, "alpha": st.alpha_info, "backend": st.backend_dict(),
                                           "summary": res.summary.to_dict("records"),
                                           "paired": res.paired.to_dict("records")})
     write_csv(run_dir / "paired_comparisons.csv", res.paired)
@@ -742,21 +774,21 @@ def _mismatch_case(kind: str, spec: CaseSpec, i: int, st: _Setup, opts: DesignOp
     truth = matched_truth
     if kind == "refined_truth":
         truth_scn = refine_scenario(inf, int(m["refine"]), float(m["truth_dt_factor"]))
-        truth = simulate(truth_scn, q, st.solver).concentration
+        truth = run_forward(st.truth_forward, truth_scn, q, st.solver).concentration
         err = block_average(truth, inf)
     elif kind == "wind_perturbed":
         truth_scn = perturb_wind(inf, float(m["wind_speed_error"]), float(m["wind_rotation_deg"]))
-        truth = simulate(truth_scn, q, st.solver).concentration
+        truth = run_forward(st.truth_forward, truth_scn, q, st.solver).concentration
     elif kind == "extra_source":
         e = m["extra_source"]
         truth_scn = dataclasses.replace(inf, sources=inf.sources + (GaussianSource(
             "X", float(e["x"]), float(e["y"]), float(e["sigma"])),))
         truth_q = np.append(q, float(e["q"]))
-        truth = simulate(truth_scn, truth_q, st.solver).concentration
+        truth = run_forward(st.truth_forward, truth_scn, truth_q, st.solver).concentration
     elif kind != "matched":
         raise ValueError(f"unknown mismatch kind {kind!r}")
     return build_case(spec.name, "test", truth_scn, truth_q, inf, st.cands, opts, seed, reps, cache,
-                      error_field=err, truth_field=truth)
+                      error_field=err, truth_field=truth, forward=st.inference_forward)
 
 
 def _poor_diagnostics(cases: list[DesignCase], layouts: dict[str, Layout], opts: DesignOptions,
@@ -798,7 +830,8 @@ def _mismatch_pairs(raw: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
 
 def run_mismatch(cfg: dict[str, Any], layouts_from: Path | str | dict[str, Any] | None = None,
                  out_dir: Path | str | None = None, overwrite: bool = False, cache: ResponseCache | None = None,
-                 progress: Progress = None) -> MismatchResult:
+                 progress: Progress = None, truth_forward: ForwardSolver | None = None,
+                 inference_forward: ForwardSolver | None = None) -> MismatchResult:
     """Evaluate FIXED design-stage layouts (from a benchmark run's layouts.json) on the test ensemble regenerated from
     the same config seeds, under matched conditions and three separate mismatches (refined-grid truth, hidden wind
     perturbation, unmodelled 4th source), plus a deliberately poor fixed layout.  ``layouts_from`` defaults to
@@ -806,7 +839,7 @@ def run_mismatch(cfg: dict[str, Any], layouts_from: Path | str | dict[str, Any] 
     t_all = time.perf_counter()
     run_dir = None if out_dir is None else make_run_dir(out_dir, overwrite)
     cache = cache or ResponseCache()
-    st = _setup(cfg)
+    st = _setup(cfg, True, truth_forward, inference_forward)
     m = {**MISMATCH_DEFAULTS, **cfg.get("mismatch", {})}
     src = layouts_from if layouts_from is not None else m.get("layouts_from")
     if src is None:
@@ -826,7 +859,8 @@ def run_mismatch(cfg: dict[str, Any], layouts_from: Path | str | dict[str, Any] 
         _say(progress, f"condition {kind}")
         cases = []
         for i, s in enumerate(st.test_specs):
-            matched_truth = simulate(s.scenario, np.array(s.q), st.solver).concentration if kind == "matched" else None
+            matched_truth = (run_forward(st.truth_forward, s.scenario, np.array(s.q), st.solver).concentration
+                             if kind == "matched" else None)
             cases.append(_mismatch_case(kind, s, i, st, opts, cache, m, matched_truth))  # type: ignore[arg-type]
         if kind == "matched":
             cases_matched = cases
@@ -874,12 +908,12 @@ def _write_mismatch(res: MismatchResult, cfg: dict[str, Any], run_dir: Path, st:
     write_json(run_dir / "config.json", cfg)
     seeds = {k: st.d[k] for k in SEED_KEYS}
     write_json(run_dir / "provenance.json", provenance(cfg, seeds, {
-        "experiment": "mismatch", "alpha": st.alpha_info, "layouts_from": src if isinstance(src, str) else "dict", "mismatch": m,
+        "experiment": "mismatch", "alpha": st.alpha_info, "backends": st.backend_dict(), "layouts_from": src if isinstance(src, str) else "dict", "mismatch": m,
         "poor_layout": [list(contrast["poor"]), [cands.ids[i] for i in contrast["poor"]]],
         "note": "mismatch differences are descriptive; they need not worsen every draw"}))
     write_csv(run_dir / "raw_metrics.csv", res.raw)
     write_csv(run_dir / "summary.csv", res.summary)
-    write_json(run_dir / "summary.json", {"sd_label": SD_LABEL, "alpha": st.alpha_info,
+    write_json(run_dir / "summary.json", {"sd_label": SD_LABEL, "alpha": st.alpha_info, "backend": st.backend_dict(),
                                           "summary": res.summary.to_dict("records"),
                                           "paired_mismatch": res.paired.to_dict("records"),
                                           "poor_layout_paired": res.poor_paired.to_dict("records")})

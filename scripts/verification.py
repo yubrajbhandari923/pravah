@@ -17,7 +17,7 @@ import numpy as np
 from pravah.config import (Boundary, Domain, Initial, Scenario, Times, Transport, WindSegment, load_config,
                            scenario_from_dict)
 from pravah.config import SolverOptions
-from pravah.forward import simulate
+from pravah.forward import FIPY  # physics verification OF the FiPy reference: FiPy is used explicitly
 from pravah.sources import cell_centres, quadrature_ratio
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -30,7 +30,7 @@ def fourier_error(nx: int, dt: float, T: float = 1800.0) -> float:
     sc = Scenario(domain=Domain(L, L, nx, nx), transport=Transport((WindSegment(0.0, u, v),), K, LAM, 500.0),
                   boundary=Boundary("periodic"), initial=Initial("gaussian", 1.0, 5000.0, 5000.0, s0),
                   times=Times(T, dt, T))
-    c = simulate(sc, [0.0, 0.0, 0.0]).concentration.values[-1]
+    c = FIPY(sc, [0.0, 0.0, 0.0]).concentration.values[-1]
     x, y = cell_centres(sc)
     X, Y = np.meshgrid(x, y)
     s2 = s0**2 + 2 * K * T
@@ -47,7 +47,7 @@ def keff_excess(nx: int, dt: float, conv: str, T: float = 3600.0) -> tuple[float
                   boundary=Boundary("periodic"), times=Times(T, dt, T))
     x = (np.arange(nx) + 0.5) * L / nx
     k = 2 * math.pi / L
-    c = simulate(sc, [0, 0, 0], SolverOptions(conv), initial_field=np.tile(1 + np.cos(k * x), (4, 1)))
+    c = FIPY(sc, [0, 0, 0], SolverOptions(conv), initial_field=np.tile(1 + np.cos(k * x), (4, 1)))
     a = abs(np.mean(c.concentration.values[-1] * np.exp(-1j * k * x)[None, :]))
     pe = u * (L / nx) / K
     spatial = 0.5 * pe / math.tanh(0.5 * pe) - 1 if conv == "exponential" else 0.5 * pe
@@ -79,7 +79,7 @@ def run(out: Path) -> list[dict[str, Any]]:
     fields: dict[float, np.ndarray] = {}
     for dt in (60.0, 30.0, 15.0):
         sc = dc.replace(ref, times=dc.replace(ref.times, dt=dt))
-        r = simulate(sc, q)
+        r = FIPY(sc, q)
         fields[dt] = r.concentration.values
         rows.append({"study": "dt_refinement", "label": f"dt={dt}", "dt": dt, "metric": "final_mass_ug",
                      "value": final_mass(sc, fields[dt][-1]), "runtime_s": r.runtime_s,
@@ -93,7 +93,7 @@ def run(out: Path) -> list[dict[str, Any]]:
 
     # grid refinement: identical continuous sources on 50x50 and 100x100; 100-grid block-averaged onto 50-grid
     sc100 = dc.replace(ref, domain=dc.replace(ref.domain, nx=100, ny=100))
-    r50, r100 = simulate(ref, q), simulate(sc100, q)
+    r50, r100 = FIPY(ref, q), FIPY(sc100, q)
     c100 = r100.concentration.values
     c100_on_50 = c100.reshape(c100.shape[0], 50, 2, 50, 2).mean(axis=(2, 4))
     c50 = r50.concentration.values

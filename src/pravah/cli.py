@@ -1,7 +1,18 @@
-"""Command line: ``python -m pravah {simulate,inverse,benchmark} --config CFG --out DIR [--overwrite]``."""
+"""Command line: ``python -m pravah {simulate,inverse,benchmark} --config CFG --out DIR [--overwrite]``.
+
+Forward solver selection (all three commands; default FiPy, results unchanged):
+  --solver SPEC             solver for both roles: 'fipy' or 'module:callable' (a FACTORY called once with the kwargs
+                            and returning a ForwardSolver, see pravah.forward.get_forward)
+  --truth-solver SPEC       solver that generates the synthetic truth (overrides --solver for that role)
+  --inference-solver SPEC   solver for response bases, fits and reconstructions (overrides --solver for that role)
+  --solver-kwargs JSON      kwargs object for the factory; applies to --solver and to each role without its own
+  --truth-solver-kwargs JSON, --inference-solver-kwargs JSON   role-specific kwargs
+Each role's solver is resolved once here and passed down as an object; the BackendInfo of both is recorded in
+provenance.json.  See docs/solver-interchangeability.md."""
 from __future__ import annotations
 
 import argparse
+import json
 import time
 from collections.abc import Sequence
 from pathlib import Path
@@ -11,6 +22,36 @@ import numpy as np
 
 from . import io
 from .config import FieldResult, Scenario, SolverOptions, load_config, scenario_from_dict, to_dict
+from .forward import ForwardSolver, forward_info, get_forward
+
+
+def _kwargs(text: str | None, flag: str) -> dict[str, Any] | None:
+    if text is None:
+        return None
+    try:
+        obj = json.loads(text)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"{flag} must be a JSON object: {e}") from e
+    if not isinstance(obj, dict):
+        raise ValueError(f"{flag} must be a JSON object, got {type(obj).__name__}")
+    return obj
+
+
+def _forwards(args: argparse.Namespace, cfg: dict[str, Any]) -> tuple[ForwardSolver, ForwardSolver]:
+    """(truth, inference) solvers: CLI flags win over cfg['backends'] (a role without any flag uses the config /
+    FiPy).  --solver / --solver-kwargs are the shared defaults of both roles."""
+    from .experiments import resolve_backends
+    shared_kw = _kwargs(args.solver_kwargs, "--solver-kwargs")
+    shared = get_forward(args.solver, shared_kw) if (args.solver is not None or shared_kw is not None) else None
+    out: dict[str, ForwardSolver | None] = {}
+    for role in ("truth", "inference"):
+        spec = getattr(args, f"{role}_solver")
+        kw = _kwargs(getattr(args, f"{role}_solver_kwargs"), f"--{role}-solver-kwargs")
+        if spec is None and kw is None:
+            out[role] = shared  # one object for both roles when only --solver is given
+        else:
+            out[role] = get_forward(spec if spec is not None else args.solver, kw if kw is not None else shared_kw)
+    return resolve_backends(cfg, out["truth"], out["inference"])
 
 
 def _setup(cfg_path: str, out: str, overwrite: bool) -> tuple[dict[str, Any], Path]:
@@ -35,15 +76,17 @@ def _budget_summary(res: FieldResult) -> dict[str, Any]:
 
 def cmd_simulate(args: argparse.Namespace) -> int:
     from . import plotting
-    from .forward import simulate
+    from .inverse import run_forward
     cfg, out = _setup(args.config, args.out, args.overwrite)
     sc, q, solver = _scenario(cfg)
-    res = simulate(sc, q, solver)
+    truth_fwd, _ = _forwards(args, cfg)
+    res = run_forward(truth_fwd, sc, q, solver)
     io.save_field(out / "concentration.nc", res.concentration)
     if res.budget is not None:
         io.save_field(out / "budget.nc", res.budget)
     io.write_json(out / "metrics.json", _budget_summary(res))
-    io.write_json(out / "provenance.json", io.provenance(cfg, {}, {"solver": to_dict(solver)}))
+    io.write_json(out / "provenance.json", io.provenance(cfg, {}, {"solver": to_dict(solver),
+                                                                       "backend": forward_info(truth_fwd).to_dict()}))
     plotting.plot_field_snapshots(res.concentration).savefig(out / "snapshots.png", dpi=120)
     if res.budget is not None:
         plotting.plot_mass_budget(res.budget).savefig(out / "mass_budget.png", dpi=120)
@@ -55,14 +98,14 @@ def cmd_simulate(args: argparse.Namespace) -> int:
 
 def cmd_inverse(args: argparse.Namespace) -> int:
     from . import plotting
-    from .forward import simulate
-    from .inverse import InferenceOptions, ResponseCache, fit_sources, reconstruct
+    from .inverse import InferenceOptions, ResponseCache, fit_sources, reconstruct, run_forward
     from .metrics import field_rmse, sensor_rmse, source_error
     from .observations import ObservationSpec, SensorLayout, observe
     cfg, out = _setup(args.config, args.out, args.overwrite)
     sc, q, solver = _scenario(cfg)
     inv = cfg["inverse"]
-    truth = simulate(sc, q, solver)
+    truth_fwd, inf_fwd = _forwards(args, cfg)
+    truth = run_forward(truth_fwd, sc, q, solver)
     sens = inv["sensors"]
     layout = SensorLayout(tuple(f"S{i + 1}" for i in range(len(sens))), tuple(float(s[0]) for s in sens),
                           tuple(float(s[1]) for s in sens))
@@ -74,8 +117,9 @@ def cmd_inverse(args: argparse.Namespace) -> int:
     methods: list[Literal["linear", "direct"]] = ["linear", "direct"] if args.direct else ["linear"]
     for m in methods:
         t0 = time.perf_counter()
-        fit = fit_sources(sc, obs, InferenceOptions(method=m, heldout_ids=held, solver=solver, alpha=inv.get("alpha", 0.0)), cache)
-        rec = reconstruct(sc, fit, solver)
+        fit = fit_sources(sc, obs, InferenceOptions(method=m, heldout_ids=held, solver=solver, alpha=inv.get("alpha", 0.0)), cache,
+                          forward=inf_fwd)
+        rec = reconstruct(sc, fit, solver, forward=inf_fwd)
         fits[m] = fit
         used = layout.subset([i for i in layout.ids if i not in held])
         report[m] = {
@@ -97,7 +141,9 @@ def cmd_inverse(args: argparse.Namespace) -> int:
     report["assumptions"] = ("Wind, K, lambda, H, source geometry, initial state and boundary forcing are known; only "
                              "the 3 emission amplitudes are fitted. Accurate fields do not imply correct attribution.")
     io.write_json(out / "inverse_metrics.json", report)
-    io.write_json(out / "provenance.json", io.provenance(cfg, {"noise_seed": inv["seed"]}, {}))
+    io.write_json(out / "provenance.json", io.provenance(cfg, {"noise_seed": inv["seed"]},
+                                                  {"backends": {"truth": forward_info(truth_fwd).to_dict(),
+                                                                "inference": forward_info(inf_fwd).to_dict()}}))
     lin = report["linear"]
     print(f"inverse: q_hat={np.round(lin['q_hat'], 0).tolist()} true={q.tolist()} rank={lin['rank']} "
           f"cond={lin['condition']:.3g} regional_rmse={lin['regional_rmse']:.3g} -> {out}")
@@ -108,14 +154,18 @@ def cmd_benchmark(args: argparse.Namespace) -> int:
     from .experiments import run_alpha_selection, run_benchmark, run_mismatch
     cfg = load_config(args.config)
     out = Path(args.out)
+    truth_fwd, inf_fwd = _forwards(args, cfg)
     kind = cfg.get("experiment", "benchmark")
     if kind == "alpha_selection":
-        sel = run_alpha_selection(cfg, out, overwrite=args.overwrite, progress=print)
+        sel = run_alpha_selection(cfg, out, overwrite=args.overwrite, progress=print, truth_forward=truth_fwd,
+                  inference_forward=inf_fwd)
         print(f"selected alpha = {sel.alpha:g} (criterion {sel.selected['selected_criterion']:.4g})")
     elif kind == "mismatch":
-        run_mismatch(cfg, Path(cfg["mismatch"]["layouts_from"]), out, overwrite=args.overwrite, progress=print)
+        run_mismatch(cfg, Path(cfg["mismatch"]["layouts_from"]), out, overwrite=args.overwrite, progress=print, truth_forward=truth_fwd,
+                  inference_forward=inf_fwd)
     else:
-        run_benchmark(cfg, out, overwrite=args.overwrite, progress=print)
+        run_benchmark(cfg, out, overwrite=args.overwrite, progress=print, truth_forward=truth_fwd,
+                  inference_forward=inf_fwd)
     print(f"{kind} written to {out}")
     return 0
 
@@ -130,6 +180,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         p.add_argument("--config", required=True, help="JSON config (see configs/)")
         p.add_argument("--out", required=True, help="output directory (refused if non-empty)")
         p.add_argument("--overwrite", action="store_true", help="allow writing into a non-empty --out")
+        p.add_argument("--solver", metavar="SPEC", help="forward solver for both roles: 'fipy' (default) or "
+                       "'module:callable' (factory called once with --solver-kwargs)")
+        p.add_argument("--truth-solver", metavar="SPEC", help="solver for the synthetic truth (overrides --solver)")
+        p.add_argument("--inference-solver", metavar="SPEC", help="solver for responses/fits (overrides --solver)")
+        p.add_argument("--solver-kwargs", metavar="JSON", help="JSON object of factory kwargs for --solver and for "
+                       "each role without role-specific kwargs")
+        p.add_argument("--truth-solver-kwargs", metavar="JSON", help="JSON kwargs for the truth solver only")
+        p.add_argument("--inference-solver-kwargs", metavar="JSON", help="JSON kwargs for the inference solver only")
         if name == "inverse":
             p.add_argument("--direct", action="store_true", help="also run the direct least_squares route and compare")
         p.set_defaults(fn=fn)
