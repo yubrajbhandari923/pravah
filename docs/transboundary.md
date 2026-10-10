@@ -18,10 +18,27 @@ Code: `src/pravah/transboundary.py` (scenarios, studies), `attribution.py` (tags
 * **Three regions.** The *study region* (a reporting mask and weight, never a PDE wall), the *simulation domain* (where the
   advection-diffusion-decay equation is solved; the study region plus a buffer on every side), and the *outer inflow boundary*
   (the domain edge; only inflow faces carry a boundary input). Config coordinates are study-relative metres (origin = south-west
-  corner of the study region), so domains A and B hold the same physical problem.
+  corner of the study region), so domains A and B hold the same sources and study region.  They are NOT the same physical
+  problem in every scenario: the open boundary is 5 km (A) vs 10 km (B) from the study region.  Without boundary bases the
+  A-B difference is pure domain truncation; for `mixed` the basis sits at the domain edge, so the difference mixes truncation
+  with a moved forcing.
 * **Parameter vector** `theta` = emission amplitudes (units **ug/s**, one per explicit source) followed by boundary-basis
   amplitudes (units **ug/m^3**, one per basis). The two kinds are never compared by raw magnitude; errors are reported per kind
-  (`attribution.emission_error`), and the optimiser works in scaled units (emission 1e5 ug/s, basis 0.05 ug/m^3; documented scaling only).
+  (`attribution.emission_error`), and the optimiser works in scaled units (emission 1e5 ug/s, basis 0.05 ug/m^3).
+* **The scales are a prior width when alpha > 0.** `SCALE_BY_KIND` is only a numerical scaling at alpha = 0, but with alpha > 0
+  the ridge penalty is `alpha (a/0.05)^2` for an inflow amplitude a and `alpha (q/1e5)^2` for an emission q, so the scale IS the
+  width of a zero-mean prior, and the emission scale 1e5 ug/s equals the true L1 amplitude.  `effective_rank` (and the
+  `weakly_constrained` flag) also depend on the scales.  `recovery/scale_sensitivity.csv` reruns the interior8 fits (test ensemble
+  only, both noise levels, alpha as selected at the default scales, not reselected) with the inflow scale and then the emission
+  scale multiplied by 0.1 and 10.
+* **Known temporal profiles.** The inversion is given the TRUE temporal profiles: wind history, E1's step onset (0 -> 1 at 3600 s),
+  and the basis step profile (onset 7200 s in the scenarios).  Only amplitudes are estimated.  In the equivalence study the basis
+  is run at E1's true onset AND at a different onset (7200 s vs 3600 s in the production config) to measure the sensitivity to
+  that assumption.
+* **Tangential boundary faces.** A face with |u.n| < 1e-12 m/s is exactly tangential, neither inflow nor outflow (`forward.UN_TOL`;
+  without it sin(pi) = 1.2e-16 made the south side an inflow side with the full 2K/h Dirichlet term), and wind components built
+  from a direction are rounded to 1e-12.  The inflow coefficient jumps from 0 to |u.n| + 2K/h as u.n changes sign: that is a
+  property of the Dirichlet-inflow treatment, not a bug, so a basis on a nearly tangential side has a discontinuous effect.
 * **Boundary basis vs explicit source**: never both for the same plume. `transboundary.check_no_double_count` refuses a
   basis flagged (`represents`) to stand for a region that contains an explicit source, and refuses explicit sources outside the domain.
 * **Tags by linear superposition** (`attribution.contributions`): `local`, `external_sources`, `boundary`, `background`,
@@ -63,15 +80,23 @@ It reports singular values, **rank** (numerical: singular values above `max(shap
 singular values > 1, i.e. directions constrained better than one scale at the stated noise), **condition** (`s_max / s_min`, inf if rank
 deficient), per-parameter `q_std` (linear-Gaussian, ignores the `q >= 0` bound), `column_norm` and column cosines. Flags:
 
-* `rank_deficient`: rank < n, or effective rank < n, or condition > 1e6;
+* `rank_deficient`: rank < n or condition > 1e6 (singular or nearly singular unregularised problem);
+* `weakly_constrained`: effective rank < n (some direction is constrained worse than one `q_scale` at the stated noise; depends on
+  the scales and the noise level, it is not a singularity);
 * `unidentifiable:<name>`: column norm < 1 or `q_std / q_scale` > 10;
-* `confounded:<a>,<b>`: |cos| of two columns > 0.99 (columns with negligible norm skipped).
+* `confounded:<a>,<b>`: |cos| of two columns > 0.99 (columns with negligible norm skipped).  This is PAIRWISE: a column in
+  the span of two or more others, but close to none of them, is not flagged.
 
 `FitResult.success` is optimiser convergence only and says nothing about identifiability. The flags describe the *assumed*
 model, so they cannot detect a wrong wind or a wrong source geometry (the notebook shows a wind-mismatch fit with no flag).
-Cases built on purpose: **confounded** (E1c collinear upwind of L1; total field fitted well, split poorly), **no arrival**
-(verified with the model, `verify_no_arrival`; the E1 column is numerically zero, so with no prior its estimate is arbitrary and
-with a prior it equals the prior, neither is a recovery), wind mismatch, prior sensitivity (alpha 0 = no prior, weak, moderate,
+Cases built on purpose: **confounded** (E1c on the wind line upwind of L1, a constructed example; diagnostics are stored PER noise
+level in `special/diagnostics.json` under `confounded.by_noise_fraction`, 2 % and 30 %.  At 2 % the only flag is `confounded`
+(effective rank 3) and the split is recovered; at 30 % the amplitude errors are large (numbers in the generated results table
+from `confounded.csv`).  The flag alone does not mean the split failed, and |cos| is close to the 0.99 threshold at the production
+geometry (5 m/s, 3.8 km upwind, dedicated layout)), **no arrival** (verified with the model, `verify_no_arrival`; the E1 column
+is very small, NOT numerically zero: at alpha = 0 the estimate is noise amplified through a near-null direction (production
+numbers in the generated table), with a prior it falls to the prior; neither is a recovery), wind mismatch (production numbers
+in the generated table: no identifiability flag despite a wrong F_ext), prior sensitivity (alpha 0 = no prior, weak, moderate,
 strong), omitted external source.
 
 ## Regularisation history audit
@@ -96,12 +121,15 @@ strong), omitted external source.
 .venv/bin/python -m pravah benchmark --config configs/transboundary_smoke.json --out results/transboundary-smoke
 # production profile (fine grids, 6 h, ensembles; long)
 .venv/bin/python -m pravah benchmark --config configs/transboundary.json --out results/transboundary
+# regenerate the RESULTS section between the PRODUCTION_RESULTS markers below from results/transboundary (offline)
+.venv/bin/python scripts/transboundary_tables.py
 .venv/bin/pytest -q tests/test_transboundary.py tests/test_indoor.py
 ```
 
 Output tree of a run: `scenarios/param_table.csv`, `fields/` (summary, arrival times, fraction time series, wind sweep),
 `recovery/` (alpha selection, validation and test rows, layouts, paired layout comparisons), `special/`, `domain_size/`,
-`figures/`, `provenance.json`, `timings.json`. The notebook's bounded settings: domain A 30x30 at 500 m, T = 7200 s, one
+`figures/`, `provenance.json` (git revision, dirty flag, short hash of `git diff HEAD` and the dirty-file list, so a run from a dirty
+tree is identifiable), `timings.json`. The notebook's bounded settings: domain A 30x30 at 500 m, T = 7200 s, one
 cached set of unit responses; its "confounded" section overrides this locally to T = 14400 s, dt = 60 s and wind 8 m/s so
 that the two columns become collinear (the same override the test suite uses).
 
@@ -118,98 +146,50 @@ piecewise-linear `c_out` (Taylor series for the small-argument phi functions, no
 * Estimate ONE indoor amplitude with known building parameters (`fit_indoor_emission`, nonnegative, closed form) from paired
   indoor / outdoor readings (`paired_observations`).
 * Ignoring indoor emission: `misattribution_demo` shows the naive "outdoor equivalent" (reading / steady indoor-outdoor ratio)
-  overstating the true outdoor value by the indoor contribution.
+  overstating the true outdoor value.  The overstatement is `from_indoor / F` with `F = P a / (a + k_dep)` (the indoor reading
+  due to indoor emission, divided by the steady indoor/outdoor ratio), plus a lag error from the box's response time; it is not
+  simply "the indoor contribution" itself.
 * Indoor-only ambiguity (`indoor_only_ambiguity`): with a constant outdoor level the indoor columns for the outdoor amplitude and
   `q_in` are proportional (cosine 1, smallest singular value ~0); a paired outdoor reading removes it.
 * This is **not** part of the municipality-wide outdoor sensor-placement objective, and the building parameters here are
   demonstration values.
 
-## RESULTS (production run EXP-010)
+## RESULTS (production run)
 
-Production run EXP-010 / RUN-0017 (`results/transboundary`, 26.5 min wall, domains A 20 km / B 30 km, validation 4 + test 6 cases, 3 noise reps; alpha selected on VALIDATION cases only: {'0.02': 1.0, '0.1': 1.0}; sd is a standard deviation, not a confidence interval).
+Generated by `scripts/transboundary_tables.py` from `results/transboundary/*.csv|json`; do not edit by hand.
 
-**Recovery on the test ensemble (selected alpha; means over cases x reps)**
-
-| layout | noise (% of signal scale) | total RMSE | local RMSE | external RMSE | |F_ext error| | local amp. rel. err | external amp. rel. err |
-|---|---|---|---|---|---|---|---|
-| interior | 2% | 2.64e-03 | 2.59e-03 | 1.91e-04 | 0.015 | 0.147 | 8.10e-03 |
-| interior | 10% | 4.21e-03 | 3.95e-03 | 9.43e-04 | 0.026 | 0.189 | 0.039 |
-| interior+upwind | 2% | 2.64e-03 | 2.62e-03 | 1.12e-04 | 0.015 | 0.140 | 4.31e-03 |
-| interior+upwind | 10% | 4.72e-03 | 4.63e-03 | 5.48e-04 | 0.026 | 0.237 | 0.021 |
-| interior8 | 2% | 2.94e-04 | 2.19e-04 | 1.68e-04 | 1.62e-03 | 0.011 | 5.95e-03 |
-| interior8 | 10% | 1.47e-03 | 1.11e-03 | 8.17e-04 | 7.94e-03 | 0.053 | 0.028 |
-
-**Prior sensitivity (test ensemble)**
-
-| layout | noise | prior | total RMSE | local amp. rel. err | external amp. rel. err |
-|---|---|---|---|---|---|
-| interior | 2% | none (alpha=0) | 3.31e-03 | 0.193 | 8.20e-03 |
-| interior | 2% | strong (alpha=1e5) | 0.037 | 0.806 | 0.916 |
-| interior | 10% | none (alpha=0) | 0.013 | 0.735 | 0.041 |
-| interior | 10% | strong (alpha=1e5) | 0.045 | 0.990 | 0.996 |
-| interior+upwind | 2% | none (alpha=0) | 2.62e-03 | 0.137 | 4.33e-03 |
-| interior+upwind | 2% | strong (alpha=1e5) | 0.036 | 0.807 | 0.917 |
-| interior+upwind | 10% | none (alpha=0) | 6.59e-03 | 0.306 | 0.021 |
-| interior+upwind | 10% | strong (alpha=1e5) | 0.045 | 0.990 | 0.996 |
-| interior8 | 2% | none (alpha=0) | 2.94e-04 | 0.010 | 6.02e-03 |
-| interior8 | 2% | strong (alpha=1e5) | 0.033 | 0.697 | 0.893 |
-| interior8 | 10% | none (alpha=0) | 1.47e-03 | 0.052 | 0.030 |
-| interior8 | 10% | strong (alpha=1e5) | 0.045 | 0.979 | 0.994 |
-
-**Equal-budget comparison, 8 sensors (paired by case and noise draw; selected alpha)**
-
-| noise | metric (interior8 minus interior+upwind) | mean diff | sd of diff | pairs where interior+upwind is lower |
-|---|---|---|---|---|
-| 2% | total RMSE | 2.34e-03 | 3.68e-03 | 4/18 |
-| 2% | local RMSE | 2.40e-03 | 3.67e-03 | 1/18 |
-| 2% | external RMSE | -5.54e-05 | 9.82e-05 | 10/18 |
-| 2% | external-fraction error | 0.013 | 0.023 | 6/18 |
-| 10% | total RMSE | 3.26e-03 | 3.70e-03 | 3/18 |
-| 10% | local RMSE | 3.53e-03 | 3.61e-03 | 1/18 |
-| 10% | external RMSE | -2.69e-04 | 4.83e-04 | 10/18 |
-| 10% | external-fraction error | 0.018 | 0.026 | 5/18 |
-
-**Boundary input versus a localised plume (E1 explicit in A is the truth; fitted models omit E1)**
-
-| model (study-region field vs explicit-E1 truth) | RMSE / peak |
-|---|---|
-| A_E1_explicit_true_theta | 0.009 |
-| A_local_only | 0.257 |
-| A_sector_bases | 0.250 |
-| A_uniform_basis | 0.250 |
-
-**Outer-domain size (same physical problem; open boundary 5 km vs 10 km from the study region)**
-
-| scenario | A vs B RMSE / peak | external fraction A | external fraction B |
-|---|---|---|---|
-| external_sources | 0.009 | 0.429 | 0.424 |
-| mixed | 0.033 | 0.484 | 0.435 |
-
-**Special cases.** Confounded: column cosine between L1 and E1c = 0.991, flags ['rank_deficient', 'confounded:L1,E1c'], effective rank 2, condition number 14.9. No-arrival: external-to-local study-mean ratio 4.09e-06 (verified by the forward model; threshold 0.001). Details: `results/transboundary/special/`.
+<!-- PRODUCTION_RESULTS_BEGIN -->
+PRODUCTION_RESULTS: <to be regenerated after rerun>
+<!-- PRODUCTION_RESULTS_END -->
 
 ## Reproduced with the smoke profile (not production numbers)
 
-I ran `configs/transboundary_smoke.json` into a scratch directory (one run, 1 noise repetition, noise 2 %, frozen alpha = 1.0
-from its own 3-point validation grid). Boundary-basis equivalence (truth: explicit E1 outside the study region; model has no
-E1; error = total-field study-region RMSE relative to the peak of the true total over the study block):
+`configs/transboundary_smoke.json` into a scratch directory (one run, 1 noise repetition, noise 2 %, frozen alpha = 1.0 from its
+own 3-point validation grid, about 65 s wall).  Boundary-basis equivalence: the truth is E1 explicit in domain B; the models in
+domain A have no E1; sensors sit at the same study-relative sites in both domains (an earlier version of the code sampled
+the truth at domain-A coordinates, which read the wrong place and returned L1 = 0; fixed).  Error = total-field study-region
+RMSE relative to the peak of the true total over the study block; the basis onset equals E1's true onset (1800 s):
 
-| model without E1 | rmse_total / peak |
-|---|---|
-| reference: E1 explicit, true amplitudes (no fit) | 0.0052 |
-| local sources only | 0.227 |
-| local sources + uniform boundary basis | 0.302 |
-| local sources + four sector bases | 0.301 |
+| model without E1 | RMSE / peak | L1 / L2 estimate (truth 1.0e5 / 0.7e5) |
+|---|---|---|
+| reference: E1 explicit in A, true amplitudes (no fit) | 0.0052 | - |
+| local sources only | 0.097 | 1.12e5 / 6.75e4 |
+| local sources + uniform boundary basis | 0.080 | 1.09e5 / 6.81e4 |
+| local sources + four whole-side bases | 0.079 | 1.09e5 / 6.81e4 |
 
-So at smoke scale the boundary basis did **not** mimic the localised plume: it was no better than leaving E1 out (and
-worse in the uniform case). One noise draw, tiny grid: it shows the effect exists, not how large it is in general.
+With the basis onset at 3600 s instead of E1's 1800 s the two basis models give 0.084 and 0.083.  So at smoke scale the whole-side
+bases removed only part of the error that omitting E1 causes (0.097 -> 0.08), they did not reproduce the explicit plume (0.005),
+and the result depends on the assumed basis timing.  One noise draw, tiny grid: it shows that the effect exists, not how large
+it is in general.
 
 ## What this does NOT establish
 
 * No real data. The truth and the fitted model share the same equations and grid family (an inverse crime in the strict
   sense), so recovery results are an optimistic bound; only the wind-mismatch and omitted-source cases probe model error.
 * No identification of any real foreign or distant emitter, and no statement about any real border or place.
-* A boundary basis cannot stand in for a localised external plume (smoke equivalence result above). It represents unresolved
-  distant sources only.
+* Whole-side boundary bases (one uniform basis, or four side bases) did not reproduce a localised external plume in the smoke
+  equivalence study above; that is all that was tested (no other basis shapes).  Such a basis represents unresolved distant
+  sources only.
 * The external fraction is a concentration share for one wind history; it is not a property of "the place".
 * Optimiser success and a good total-field fit are not evidence of identifiability or of a correct origin split.
 * The research-profile ensembles are small (4 validation, 6 test cases); any statistics from them are indicative.

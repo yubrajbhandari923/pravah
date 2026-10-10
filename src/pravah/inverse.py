@@ -45,7 +45,10 @@ Q_REF_DEFAULT = 1e5  # ug/s; numerical scaling of the unit-response runs only
 # Reference amplitude of the unit-response runs per parameter kind (numerical scaling only; linearity makes results
 # independent of it).  emission: ug/s, inflow (boundary-basis amplitude): ug/m^3.
 REF_BY_KIND: dict[str, float] = {"emission": Q_REF_DEFAULT, "inflow": 0.05}
-# Default optimiser/regularisation scale per parameter kind (same numbers, same status: documented scaling only).
+# Default optimiser/regularisation scale per parameter kind.  At alpha = 0 it is a numerical scaling only; with
+# alpha > 0 it is a PRIOR WIDTH: the penalty is alpha*(a/0.05)^2 for an inflow amplitude a and alpha*(q/1e5)^2 for an
+# emission q, so the numbers are a modelling choice (and the 1e5 ug/s emission scale happens to equal the true L1
+# amplitude in the transboundary study).  ``effective_rank`` is also defined relative to these scales.
 SCALE_BY_KIND: dict[str, float] = {"emission": 1e5, "inflow": 0.05}
 
 
@@ -204,8 +207,9 @@ class InferenceOptions:
     """method 'linear' (cached operator + lsq_linear) or 'direct' (least_squares on forward solves).
     q_scale: scale of each parameter, one entry per parameter (ug/s for emissions, ug/m^3 for inflow bases); the
     optimiser works in theta = q / q_scale >= 0.  Default per kind (SCALE_BY_KIND): emission 1e5 ug/s, inflow 0.05
-    ug/m^3 -- documented numerical scaling only.  alpha acts in these scaled units, so the same alpha means "one
-    scale unit" for every kind.
+    ug/m^3.  alpha acts in these scaled units, so the same alpha means "one scale unit" for every kind.  The scale is a
+    numerical scaling at alpha = 0 but the WIDTH OF THE ZERO-MEAN PRIOR when alpha > 0 (penalty alpha*(q/q_scale)^2), so
+    changing it changes the estimate and ``effective_rank``; report results with the scales used.
     alpha, prior: Tikhonov alpha * ||theta - prior/q_scale||^2 (prior in parameter units, default zeros).
     heldout_ids: sensors excluded from the fit."""
     method: Literal["linear", "direct"] = "linear"
