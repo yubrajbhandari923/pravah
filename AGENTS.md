@@ -1,5 +1,45 @@
 # Agent instructions — pravah
 
+## Start here: PRAVAH orientation (project-specific; written for agents resuming work)
+
+PRAVAH = regional air-quality toolkit: a FiPy finite-volume advection-diffusion-removal model, nonnegative source/background inversion, sensor-placement
+experiments, and a real Belauri (Nepal) geography layer. **Everything quantitative is synthetic** (emissions, winds, noise); real geography alone validates nothing.
+
+### Read in layers (stop as soon as you have what you need)
+0. This file (rules + map). 1. `.research/bin/research current` and `research resume` (~2k tokens: goal, baseline, findings + status, open questions, plans,
+decisions, what needs review). 2. `docs/README.md` (index: which doc answers which question), then ONE area doc. 3. On demand: `research show <ID>`,
+`research search "…"`, `research task context T-…`. 4. Evidence: `results/<run>/` (raw rows, `provenance.json`, `summary.*`), `data/belauri/manifest.json`.
+Do not read everything; do not re-derive what a finding or doc already states. Findings carry a status: only **supported** ones were independently reviewed.
+
+### Where things are
+`src/pravah/`: `config` (frozen dataclasses, theta kinds), `forward` (FiPy + `ForwardSolver`/`BackendInfo`), `inverse`, `attribution`, `design`, `experiments`,
+`transboundary`, `indoor`, `belauri`, `geodesign`, `geodesign_robust`, `geo/` (fetch/prepare/regionio/scenarios; optional GIS extra), `cli.py`
+(`python -m pravah {simulate,inverse,benchmark,geo}`; `benchmark` dispatches on `cfg["experiment"]`). Configs in `configs/`, notebooks `01`–`06` in `notebooks/`.
+
+### Commands
+Env: `uv venv --python 3.12 .venv && uv pip install -e ".[dev,geo]" -c requirements-lock-geo.txt`. Tests `.venv/bin/pytest -q` (447 tests, ~13 min; geo/real-data
+tests skip without `data/belauri/manifest.json`). Types `.venv/bin/pyright` (0 errors expected). Notebooks `.venv/bin/python scripts/verify_notebooks.py`.
+FiPy regression gate: `scripts/capture_regression.py` + `scripts/compare_runs.py results/solver-regression/before <new>` must print `21 files compared, 0 differ`.
+Geography: `python -m pravah geo fetch --config configs/belauri_geo.json` (network; Overpass main endpoint is flaky, a mirror fallback is built in) then `geo prepare` (offline).
+Scientific runs go through `.research/bin/research run exec EXP-… -- <cmd>` (register the experiment first; synthesise before the 5-run budget).
+
+### Rules learned the hard way
+* **Do not touch the user's notebook kernels or notebook files**: the six notebooks in the working tree contain outputs the user saved from VS Code; do not clear,
+  commit or revert them without asking (commit with `git add -A -- . ':!notebooks'`). Idle `ipykernel` processes whose parent is VS Code are the user's.
+* Never select a hyperparameter (alpha, layouts, noise level) using test-ensemble quantities; design / validation / test seeds and noise ranges are disjoint and guarded.
+* Never loosen a check or tolerance to make something pass; supersede findings (`research finding supersede`), never rewrite history. Report numbers from files, not memory;
+  an earlier error (a layout-coordinate bug in the boundary-basis study) was only caught by independent review.
+* Legacy FiPy outputs must stay bit-identical (regression gate above). No `sys.path` hacks, no absolute paths, no global config.
+* Terms are exact: **local** = emitted inside the study polygon; **external** = outside it; **international transboundary** only across a verified national boundary
+  (the Indian outline in geoBoundaries is coarse); **indoor** = inside a building (separate one-way box). The study polygon is a mask, never a PDE wall.
+* Emission amplitudes (µg/s) and inflow-basis amplitudes (µg/m³) are different parameter kinds: never compare raw magnitudes. The scale vector acts as a prior width when alpha > 0.
+
+### Known state and open items (see docs/phase2-validation.md "Wrap-up log" for detail)
+Done and reviewed: solver interface, external/local study, verified Belauri geography, Belauri forward runs, geographic design + robustness. Known limits: numerical diffusion
+dominates the nominal K (K_eff/K ≈ 2.4–9.4); small-budget sensor rankings are unresolved at 6 test scenarios; identifiability flags are saturated in the geodesign runs; test noise level
+was derived from the test ensemble (2.6% off the design value); no terrain-coupled flow. Unshipped fixes for these are in `git stash list` entry **G2-unshipped**.
+Best next experiment: add a chi-square-per-dof model check to the robustness study and rerun it with the noise level fixed from the validation scale.
+
 <!-- research:begin — managed by `research init`; edit outside these markers freely -->
 ## Research OS
 

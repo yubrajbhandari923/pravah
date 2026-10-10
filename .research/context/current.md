@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2006 tokens.
-> Generated 2026-10-10T19:42:04-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1676 tokens.
+> Generated 2026-10-10T19:53:40-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `1412942ce5` (uncommitted changes)
+Git: `master` @ `d7f3d19b14` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -28,13 +28,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Active & open questions
 
-- Q-007 [investigating] On the Belauri geography, do greedy layouts selected for regional reconstruction or for local/external attribution outperform random and spread layouts on independent scenarios, and does an external reference site help at equal budget?
-- Q-006 [investigating] How does the Belauri flow field respond to wind direction, outer-domain size and mesh/time-step choices when emissions and meteorology are synthetic, and how large is numerical diffusion relative to the nominal K?
-- Q-005 [investigating] Can total synthetic concentration observations separate local from external contributions, when is the decomposition unidentifiable, and does an upwind/background site help?
-- Q-004 [investigating] Is the Belauri Municipality boundary, DEM and feature set acquired from public sources verifiable, and what does it show about the surrounding terrain and national border?
-- Q-003 [investigating] Does routing every workflow through one ForwardSolver interface leave all FiPy results bit-identical, and do injected solvers reach every call?
-- Q-002 [investigating] Can sparse noisy sensors reconstruct the regional field, and do random, spread and greedy layouts differ on independent cases?
-- Q-001 [investigating] Does the FiPy forward model reproduce analytical, conservation and refinement behaviour?
+_none_
 
 ## Established findings (what we believe)
 

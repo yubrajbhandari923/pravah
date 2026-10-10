@@ -9,6 +9,8 @@ mathematics (exact solutions, conservation, refinement), not against measurement
 below describe the synthetic baseline; **Phase 2** (section below) adds real Belauri *geography* (polygon, roads, buildings,
 DEM context) under **synthetic emissions and meteorology**, still with no real data.
 
+> Documentation map: `docs/README.md` (one row per question). Agents: start with `AGENTS.md`.
+
 ## Install
 
 Tested with Python 3.12.7 on macOS arm64 (the package declares `>=3.11`; the system Python 3.14 was judged too new for FiPy and not tried).
