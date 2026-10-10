@@ -1,0 +1,11 @@
+{"author_type": "agent", "name": "min_concentration", "ts": "2026-10-10T02:25:21-04:00", "value": 0.0}
+{"author_type": "agent", "name": "n_negative", "ts": "2026-10-10T02:25:21-04:00", "value": 0.0}
+{"author_type": "agent", "name": "n_steps", "ts": "2026-10-10T02:25:21-04:00", "value": 240.0}
+{"author_type": "agent", "name": "max_abs_budget_residual", "ts": "2026-10-10T02:25:21-04:00", "value": 1.6263220459222794e-06}
+{"author_type": "agent", "name": "max_rel_budget_residual", "ts": "2026-10-10T02:25:22-04:00", "value": 1.6427495413356357e-14}
+{"author_type": "agent", "name": "total_emission", "ts": "2026-10-10T02:25:22-04:00", "value": 4752000000.0}
+{"author_type": "agent", "name": "total_removal", "ts": "2026-10-10T02:25:22-04:00", "value": 886759921.1791673}
+{"author_type": "agent", "name": "total_inflow", "ts": "2026-10-10T02:25:22-04:00", "value": -1148608.0614815715}
+{"author_type": "agent", "name": "total_outflow", "ts": "2026-10-10T02:25:22-04:00", "value": 2170872983.0038166}
+{"author_type": "agent", "name": "runtime_s", "ts": "2026-10-10T02:25:23-04:00", "value": 2.780943249934353}
+{"author_type": "agent", "name": "max_concentration", "ts": "2026-10-10T02:25:23-04:00", "value": 0.16076671122515923}

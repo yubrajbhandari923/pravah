@@ -1,0 +1,17 @@
+diff --git a/.gitignore b/.gitignore
+index 44c3225..ebb970d 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -3,7 +3,5 @@ __pycache__/
+ *.egg-info/
+ .pytest_cache/
+ .ipynb_checkpoints/
+-results/*
+-!results/reference-v0/
+ .research/cache/
+ .research/bin/
+
+# Untracked files (not included):
+#   results/verification/verification.csv
+#   results/verification/verification.json
+#   scripts/register_research.py

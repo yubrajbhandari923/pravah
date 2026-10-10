@@ -1,0 +1,52 @@
+diff --git a/.gitignore b/.gitignore
+index 44c3225..ebb970d 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -3,7 +3,5 @@ __pycache__/
+ *.egg-info/
+ .pytest_cache/
+ .ipynb_checkpoints/
+-results/*
+-!results/reference-v0/
+ .research/cache/
+ .research/bin/
+
+# Untracked files (not included):
+#   results/benchmark/config.json
+#   results/benchmark/design_scores.csv
+#   results/benchmark/figures/error_vs_sensors_population.png
+#   results/benchmark/figures/error_vs_sensors_uniform.png
+#   results/benchmark/figures/heldout_vs_regional.png
+#   results/benchmark/figures/selected_sites.png
+#   results/benchmark/layouts.json
+#   results/benchmark/paired_comparisons.csv
+#   results/benchmark/provenance.json
+#   results/benchmark/raw_metrics.csv
+#   results/benchmark/summary.csv
+#   results/benchmark/summary.json
+#   results/benchmark/timings.json
+#   results/inverse-v0/inverse_metrics.json
+#   results/inverse-v0/provenance.json
+#   results/inverse-v0/truth_vs_fit.png
+#   results/reference-v0/budget.nc
+#   results/reference-v0/concentration.nc
+#   results/reference-v0/mass_budget.png
+#   results/reference-v0/metrics.json
+#   results/reference-v0/provenance.json
+#   results/reference-v0/snapshots.png
+#   results/smoke/config.json
+#   results/smoke/design_scores.csv
+#   results/smoke/figures/error_vs_sensors_population.png
+#   results/smoke/figures/error_vs_sensors_uniform.png
+#   results/smoke/figures/heldout_vs_regional.png
+#   results/smoke/figures/selected_sites.png
+#   results/smoke/layouts.json
+#   results/smoke/paired_comparisons.csv
+#   results/smoke/provenance.json
+#   results/smoke/raw_metrics.csv
+#   results/smoke/summary.csv
+#   results/smoke/summary.json
+#   results/smoke/timings.json
+#   results/verification/verification.csv
+#   results/verification/verification.json
+#   scripts/register_research.py

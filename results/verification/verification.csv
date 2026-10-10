@@ -1,0 +1,44 @@
+convection,dt,final_mass_100,final_mass_50,keff_ratio,label,mass_change_rel,max_100,max_50,max_rel_budget_residual,metric,min_concentration,n_steps,nx,rel_to_max,runtime_100_s,runtime_50_s,runtime_s,study,theory,value
+,15.0,,,,"nx=20,dt=15",,,,,relative_L2_error_vs_exact,,,20,,,,,fourier_spatial,,0.15522590456916763
+,15.0,,,,"nx=40,dt=15",,,,,relative_L2_error_vs_exact,,,40,,,,,fourier_spatial,,0.06067886177985102
+,15.0,,,,"nx=80,dt=15",,,,,relative_L2_error_vs_exact,,,80,,,,,fourier_spatial,,0.02378178095366276
+,60.0,,,,"nx=40,dt=60.0",,,,,relative_L2_error_vs_exact,,,40,,,,,fourier_time,,0.08317317784442363
+,30.0,,,,"nx=40,dt=30.0",,,,,relative_L2_error_vs_exact,,,40,,,,,fourier_time,,0.06830856719952273
+,15.0,,,,"nx=40,dt=15.0",,,,,relative_L2_error_vs_exact,,,40,,,,,fourier_time,,0.06067886177985102
+,7.5,,,,"nx=40,dt=7.5",,,,,relative_L2_error_vs_exact,,,40,,,,,fourier_time,,0.05682670360810639
+,60.0,,,,dt=60.0,,,,1.6427495413356357e-14,final_mass_ug,0.0,240,,,,,4.440165749983862,dt_refinement,,1693218487.7555943
+,30.0,,,,dt=30.0,,,,1.8571183612250317e-14,final_mass_ug,0.0,480,,,,,9.031879125046544,dt_refinement,,1693224347.090596
+,15.0,,,,dt=15.0,,,,4.0866444863360184e-15,final_mass_ug,0.0,960,,,,,17.76496370800305,dt_refinement,,1693226499.6624787
+,,,,,dt 60.0 vs 30.0,-3.4604599277177073e-06,,,,field_RMSE_change_ug_m3,,,,0.0010935055829906415,,,,dt_refinement,,0.00017579929629045786
+,,,,,dt 30.0 vs 15.0,-1.2712840740114473e-06,,,,field_RMSE_change_ug_m3,,,,0.0005734114214147112,,,,dt_refinement,,9.218546840416875e-05
+,,1690049513.8906837,1693218487.7555943,,50 vs 100,0.0018750775281224374,0.1625940385881239,0.16076671122515923,,field_RMSE_ug_m3,,,,0.003989058286011903,13.029604666982777,4.28472045797389,,grid_refinement,,0.0006485970968860947
+,,,,,"nx=50,source=0",,,,,discrete/continuous,,,50,,,,,quadrature_ratio,,1.0000000896607122
+,,,,,"nx=50,source=1",,,,,discrete/continuous,,,50,,,,,quadrature_ratio,,1.0000000000000007
+,,,,,"nx=50,source=2",,,,,discrete/continuous,,,50,,,,,quadrature_ratio,,1.0000000000006977
+,,,,,"nx=100,source=0",,,,,discrete/continuous,,,100,,,,,quadrature_ratio,,1.000000024154412
+,,,,,"nx=100,source=1",,,,,discrete/continuous,,,100,,,,,quadrature_ratio,,1.0
+,,,,,"nx=100,source=2",,,,,discrete/continuous,,,100,,,,,quadrature_ratio,,1.0000000000002027
+exponential,60.0,,,2.3493895348360527,"exponential,nx=25,dt=60.0",,,,,Keff/K-1_measured,,,25,,,,,numerical_diffusion,1.3746294414550964,1.3493895348360527
+exponential,30.0,,,2.207341616948045,"exponential,nx=25,dt=30.0",,,,,Keff/K-1_measured,,,25,,,,,numerical_diffusion,1.2246294414550962,1.207341616948045
+exponential,15.0,,,2.1357237544237697,"exponential,nx=25,dt=15.0",,,,,Keff/K-1_measured,,,25,,,,,numerical_diffusion,1.1496294414550963,1.1357237544237697
+exponential,10.0,,,2.11176721360937,"exponential,nx=25,dt=10.0",,,,,Keff/K-1_measured,,,25,,,,,numerical_diffusion,1.1246294414550964,1.1117672136093701
+exponential,60.0,,,1.6056467477122107,"exponential,nx=50,dt=60.0",,,,,Keff/K-1_measured,,,50,,,,,numerical_diffusion,0.6130352854993315,0.6056467477122107
+exponential,30.0,,,1.4590146003075355,"exponential,nx=50,dt=30.0",,,,,Keff/K-1_measured,,,50,,,,,numerical_diffusion,0.4630352854993315,0.4590146003075355
+exponential,15.0,,,1.385286468967211,"exponential,nx=50,dt=15.0",,,,,Keff/K-1_measured,,,50,,,,,numerical_diffusion,0.3880352854993315,0.3852864689672111
+exponential,10.0,,,1.360653938177679,"exponential,nx=50,dt=10.0",,,,,Keff/K-1_measured,,,50,,,,,numerical_diffusion,0.36303528549933145,0.360653938177679
+exponential,60.0,,,1.3781034222717352,"exponential,nx=100,dt=60.0",,,,,Keff/K-1_measured,,,100,,,,,numerical_diffusion,0.38197670686932644,0.3781034222717352
+exponential,30.0,,,1.23032181109355,"exponential,nx=100,dt=30.0",,,,,Keff/K-1_measured,,,100,,,,,numerical_diffusion,0.23197670686932645,0.2303218110935501
+exponential,15.0,,,1.1560767352232666,"exponential,nx=100,dt=15.0",,,,,Keff/K-1_measured,,,100,,,,,numerical_diffusion,0.15697670686932647,0.1560767352232666
+exponential,10.0,,,1.131280571036963,"exponential,nx=100,dt=10.0",,,,,Keff/K-1_measured,,,100,,,,,numerical_diffusion,0.13197670686932644,0.1312805710369629
+upwind,60.0,,,3.2631725968911396,"upwind,nx=25,dt=60.0",,,,,Keff/K-1_measured,,,25,,,,,numerical_diffusion,2.3,2.2631725968911396
+upwind,30.0,,,3.124790815091357,"upwind,nx=25,dt=30.0",,,,,Keff/K-1_measured,,,25,,,,,numerical_diffusion,2.15,2.124790815091357
+upwind,15.0,,,3.0547801486813713,"upwind,nx=25,dt=15.0",,,,,Keff/K-1_measured,,,25,,,,,numerical_diffusion,2.075,2.0547801486813713
+upwind,10.0,,,3.0313252864908615,"upwind,nx=25,dt=10.0",,,,,Keff/K-1_measured,,,25,,,,,numerical_diffusion,2.05,2.0313252864908615
+upwind,60.0,,,2.2880728750780897,"upwind,nx=50,dt=60.0",,,,,Keff/K-1_measured,,,50,,,,,numerical_diffusion,1.3,1.2880728750780897
+upwind,30.0,,,2.1434932570168455,"upwind,nx=50,dt=30.0",,,,,Keff/K-1_measured,,,50,,,,,numerical_diffusion,1.15,1.1434932570168455
+upwind,15.0,,,2.0706157730714905,"upwind,nx=50,dt=15.0",,,,,Keff/K-1_measured,,,50,,,,,numerical_diffusion,1.075,1.0706157730714905
+upwind,10.0,,,2.046240455894991,"upwind,nx=50,dt=10.0",,,,,Keff/K-1_measured,,,50,,,,,numerical_diffusion,1.05,1.0462404558949912
+upwind,60.0,,,1.794128780609199,"upwind,nx=100,dt=60.0",,,,,Keff/K-1_measured,,,100,,,,,numerical_diffusion,0.8,0.794128780609199
+upwind,30.0,,,1.6474222985053246,"upwind,nx=100,dt=30.0",,,,,Keff/K-1_measured,,,100,,,,,numerical_diffusion,0.65,0.6474222985053246
+upwind,15.0,,,1.573606420435176,"upwind,nx=100,dt=15.0",,,,,Keff/K-1_measured,,,100,,,,,numerical_diffusion,0.575,0.5736064204351761
+upwind,10.0,,,1.5489371071614293,"upwind,nx=100,dt=10.0",,,,,Keff/K-1_measured,,,100,,,,,numerical_diffusion,0.55,0.5489371071614293

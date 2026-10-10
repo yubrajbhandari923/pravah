@@ -1,0 +1,7 @@
+{"author_type": "agent", "name": "max_rel_budget_residual_reference", "ts": "2026-10-10T02:22:37-04:00", "value": 1.86e-14}
+{"author_type": "agent", "name": "fourier_rel_L2_nx20", "ts": "2026-10-10T02:22:37-04:00", "value": 0.1552}
+{"author_type": "agent", "name": "fourier_rel_L2_nx40", "ts": "2026-10-10T02:22:38-04:00", "value": 0.0607}
+{"author_type": "agent", "name": "fourier_rel_L2_nx80", "ts": "2026-10-10T02:22:38-04:00", "value": 0.0238}
+{"author_type": "agent", "name": "dt_refine_rmse_change_60v30", "ts": "2026-10-10T02:22:38-04:00", "value": 0.0001758}
+{"author_type": "agent", "name": "dt_refine_rmse_change_30v15", "ts": "2026-10-10T02:22:38-04:00", "value": 9.22e-05}
+{"author_type": "agent", "name": "grid_refine_rmse_50v100_rel_to_max", "ts": "2026-10-10T02:22:38-04:00", "value": 0.00399}

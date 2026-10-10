@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~341 tokens.
-> Generated 2026-10-10T01:53:47-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~405 tokens.
+> Generated 2026-10-10T02:44:21-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `a31d07ef4d` (uncommitted changes)
+Git: `master` @ `1c20446334` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -19,7 +19,8 @@ _none set_
 
 ## Active & open questions
 
-_none_
+- Q-002 [investigating] Can sparse noisy sensors reconstruct the regional field, and do random, spread and greedy layouts differ on independent cases?
+- Q-001 [investigating] Does the FiPy forward model reproduce analytical, conservation and refinement behaviour?
 
 ## Established findings (what we believe)
 

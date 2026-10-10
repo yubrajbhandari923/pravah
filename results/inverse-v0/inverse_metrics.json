@@ -1,0 +1,96 @@
+{
+  "linear": {
+    "q_true": [
+      100000.0,
+      150000.0,
+      80000.0
+    ],
+    "q_hat": [
+      97530.66533574984,
+      146717.5073745926,
+      78806.99315064483
+    ],
+    "source_error": {
+      "relative_l2": 0.02168697431819125,
+      "per_source_abs": [
+        -2469.3346642501565,
+        -3282.492625407409,
+        -1193.0068493551662
+      ],
+      "per_source_rel": [
+        -0.024693346642501564,
+        -0.021883284169382726,
+        -0.014912585616939577
+      ]
+    },
+    "success": true,
+    "message": "The unconstrained solution is optimal.",
+    "weighted_residual": 8.213766378322068,
+    "n_obs": 96,
+    "singular_values": [
+      67.39929742330972,
+      21.437867461129052,
+      11.993087069468029
+    ],
+    "rank": 3,
+    "effective_rank": 3,
+    "condition": 5.619845585453531,
+    "q_std": [
+      5805.419700530732,
+      6887.60356809048,
+      3513.230627495405
+    ],
+    "regional_rmse": 0.0009686045025926078,
+    "heldout_sensor_rmse": 0.0004333553949260809,
+    "fit_sensor_rmse": 0.0009213998570562246,
+    "wall_s": 22.353695124969818
+  },
+  "direct": {
+    "q_true": [
+      100000.0,
+      150000.0,
+      80000.0
+    ],
+    "q_hat": [
+      97530.66494926854,
+      146717.50733457442,
+      78806.99331609684
+    ],
+    "source_error": {
+      "relative_l2": 0.021686975371179876,
+      "per_source_abs": [
+        -2469.335050731461,
+        -3282.4926654255833,
+        -1193.0066839031642
+      ],
+      "per_source_rel": [
+        -0.024693350507314606,
+        -0.021883284436170554,
+        -0.014912583548789552
+      ]
+    },
+    "success": true,
+    "message": "`ftol` termination condition is satisfied.",
+    "weighted_residual": 8.21376637832207,
+    "n_obs": 96,
+    "singular_values": [
+      67.39929742330972,
+      21.437867461129052,
+      11.993087069468029
+    ],
+    "rank": 3,
+    "effective_rank": 3,
+    "condition": 5.619845585453531,
+    "q_std": [
+      5805.419700530732,
+      6887.60356809048,
+      3513.230627495405
+    ],
+    "regional_rmse": 0.0009686045507704418,
+    "heldout_sensor_rmse": 0.00043335546069423484,
+    "fit_sensor_rmse": 0.000921399888719901,
+    "wall_s": 113.23689670907333
+  },
+  "direct_vs_linear_max_rel_diff": 3.962664490940147e-09,
+  "assumptions": "Wind, K, lambda, H, source geometry, initial state and boundary forcing are known; only the 3 emission amplitudes are fitted. Accurate fields do not imply correct attribution."
+}

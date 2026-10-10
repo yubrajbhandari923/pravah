@@ -1,0 +1,427 @@
+[
+  {
+    "study": "fourier_spatial",
+    "label": "nx=20,dt=15",
+    "nx": 20,
+    "dt": 15.0,
+    "value": 0.15522590456916763,
+    "metric": "relative_L2_error_vs_exact"
+  },
+  {
+    "study": "fourier_spatial",
+    "label": "nx=40,dt=15",
+    "nx": 40,
+    "dt": 15.0,
+    "value": 0.06067886177985102,
+    "metric": "relative_L2_error_vs_exact"
+  },
+  {
+    "study": "fourier_spatial",
+    "label": "nx=80,dt=15",
+    "nx": 80,
+    "dt": 15.0,
+    "value": 0.02378178095366276,
+    "metric": "relative_L2_error_vs_exact"
+  },
+  {
+    "study": "fourier_time",
+    "label": "nx=40,dt=60.0",
+    "nx": 40,
+    "dt": 60.0,
+    "value": 0.08317317784442363,
+    "metric": "relative_L2_error_vs_exact"
+  },
+  {
+    "study": "fourier_time",
+    "label": "nx=40,dt=30.0",
+    "nx": 40,
+    "dt": 30.0,
+    "value": 0.06830856719952273,
+    "metric": "relative_L2_error_vs_exact"
+  },
+  {
+    "study": "fourier_time",
+    "label": "nx=40,dt=15.0",
+    "nx": 40,
+    "dt": 15.0,
+    "value": 0.06067886177985102,
+    "metric": "relative_L2_error_vs_exact"
+  },
+  {
+    "study": "fourier_time",
+    "label": "nx=40,dt=7.5",
+    "nx": 40,
+    "dt": 7.5,
+    "value": 0.05682670360810639,
+    "metric": "relative_L2_error_vs_exact"
+  },
+  {
+    "study": "dt_refinement",
+    "label": "dt=60.0",
+    "dt": 60.0,
+    "metric": "final_mass_ug",
+    "value": 1693218487.7555943,
+    "runtime_s": 4.440165749983862,
+    "n_steps": 240,
+    "min_concentration": 0.0,
+    "max_rel_budget_residual": 1.6427495413356357e-14
+  },
+  {
+    "study": "dt_refinement",
+    "label": "dt=30.0",
+    "dt": 30.0,
+    "metric": "final_mass_ug",
+    "value": 1693224347.090596,
+    "runtime_s": 9.031879125046544,
+    "n_steps": 480,
+    "min_concentration": 0.0,
+    "max_rel_budget_residual": 1.8571183612250317e-14
+  },
+  {
+    "study": "dt_refinement",
+    "label": "dt=15.0",
+    "dt": 15.0,
+    "metric": "final_mass_ug",
+    "value": 1693226499.6624787,
+    "runtime_s": 17.76496370800305,
+    "n_steps": 960,
+    "min_concentration": 0.0,
+    "max_rel_budget_residual": 4.0866444863360184e-15
+  },
+  {
+    "study": "dt_refinement",
+    "label": "dt 60.0 vs 30.0",
+    "metric": "field_RMSE_change_ug_m3",
+    "value": 0.00017579929629045786,
+    "rel_to_max": 0.0010935055829906415,
+    "mass_change_rel": -3.4604599277177073e-06
+  },
+  {
+    "study": "dt_refinement",
+    "label": "dt 30.0 vs 15.0",
+    "metric": "field_RMSE_change_ug_m3",
+    "value": 9.218546840416875e-05,
+    "rel_to_max": 0.0005734114214147112,
+    "mass_change_rel": -1.2712840740114473e-06
+  },
+  {
+    "study": "grid_refinement",
+    "label": "50 vs 100",
+    "metric": "field_RMSE_ug_m3",
+    "value": 0.0006485970968860947,
+    "rel_to_max": 0.003989058286011903,
+    "final_mass_50": 1693218487.7555943,
+    "final_mass_100": 1690049513.8906837,
+    "mass_change_rel": 0.0018750775281224374,
+    "max_50": 0.16076671122515923,
+    "max_100": 0.1625940385881239,
+    "runtime_50_s": 4.28472045797389,
+    "runtime_100_s": 13.029604666982777
+  },
+  {
+    "study": "quadrature_ratio",
+    "label": "nx=50,source=0",
+    "nx": 50,
+    "metric": "discrete/continuous",
+    "value": 1.0000000896607122
+  },
+  {
+    "study": "quadrature_ratio",
+    "label": "nx=50,source=1",
+    "nx": 50,
+    "metric": "discrete/continuous",
+    "value": 1.0000000000000007
+  },
+  {
+    "study": "quadrature_ratio",
+    "label": "nx=50,source=2",
+    "nx": 50,
+    "metric": "discrete/continuous",
+    "value": 1.0000000000006977
+  },
+  {
+    "study": "quadrature_ratio",
+    "label": "nx=100,source=0",
+    "nx": 100,
+    "metric": "discrete/continuous",
+    "value": 1.000000024154412
+  },
+  {
+    "study": "quadrature_ratio",
+    "label": "nx=100,source=1",
+    "nx": 100,
+    "metric": "discrete/continuous",
+    "value": 1.0
+  },
+  {
+    "study": "quadrature_ratio",
+    "label": "nx=100,source=2",
+    "nx": 100,
+    "metric": "discrete/continuous",
+    "value": 1.0000000000002027
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "exponential,nx=25,dt=60.0",
+    "nx": 25,
+    "dt": 60.0,
+    "convection": "exponential",
+    "metric": "Keff/K-1_measured",
+    "value": 1.3493895348360527,
+    "theory": 1.3746294414550964,
+    "keff_ratio": 2.3493895348360527
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "exponential,nx=25,dt=30.0",
+    "nx": 25,
+    "dt": 30.0,
+    "convection": "exponential",
+    "metric": "Keff/K-1_measured",
+    "value": 1.207341616948045,
+    "theory": 1.2246294414550962,
+    "keff_ratio": 2.207341616948045
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "exponential,nx=25,dt=15.0",
+    "nx": 25,
+    "dt": 15.0,
+    "convection": "exponential",
+    "metric": "Keff/K-1_measured",
+    "value": 1.1357237544237697,
+    "theory": 1.1496294414550963,
+    "keff_ratio": 2.1357237544237697
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "exponential,nx=25,dt=10.0",
+    "nx": 25,
+    "dt": 10.0,
+    "convection": "exponential",
+    "metric": "Keff/K-1_measured",
+    "value": 1.1117672136093701,
+    "theory": 1.1246294414550964,
+    "keff_ratio": 2.11176721360937
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "exponential,nx=50,dt=60.0",
+    "nx": 50,
+    "dt": 60.0,
+    "convection": "exponential",
+    "metric": "Keff/K-1_measured",
+    "value": 0.6056467477122107,
+    "theory": 0.6130352854993315,
+    "keff_ratio": 1.6056467477122107
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "exponential,nx=50,dt=30.0",
+    "nx": 50,
+    "dt": 30.0,
+    "convection": "exponential",
+    "metric": "Keff/K-1_measured",
+    "value": 0.4590146003075355,
+    "theory": 0.4630352854993315,
+    "keff_ratio": 1.4590146003075355
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "exponential,nx=50,dt=15.0",
+    "nx": 50,
+    "dt": 15.0,
+    "convection": "exponential",
+    "metric": "Keff/K-1_measured",
+    "value": 0.3852864689672111,
+    "theory": 0.3880352854993315,
+    "keff_ratio": 1.385286468967211
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "exponential,nx=50,dt=10.0",
+    "nx": 50,
+    "dt": 10.0,
+    "convection": "exponential",
+    "metric": "Keff/K-1_measured",
+    "value": 0.360653938177679,
+    "theory": 0.36303528549933145,
+    "keff_ratio": 1.360653938177679
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "exponential,nx=100,dt=60.0",
+    "nx": 100,
+    "dt": 60.0,
+    "convection": "exponential",
+    "metric": "Keff/K-1_measured",
+    "value": 0.3781034222717352,
+    "theory": 0.38197670686932644,
+    "keff_ratio": 1.3781034222717352
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "exponential,nx=100,dt=30.0",
+    "nx": 100,
+    "dt": 30.0,
+    "convection": "exponential",
+    "metric": "Keff/K-1_measured",
+    "value": 0.2303218110935501,
+    "theory": 0.23197670686932645,
+    "keff_ratio": 1.23032181109355
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "exponential,nx=100,dt=15.0",
+    "nx": 100,
+    "dt": 15.0,
+    "convection": "exponential",
+    "metric": "Keff/K-1_measured",
+    "value": 0.1560767352232666,
+    "theory": 0.15697670686932647,
+    "keff_ratio": 1.1560767352232666
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "exponential,nx=100,dt=10.0",
+    "nx": 100,
+    "dt": 10.0,
+    "convection": "exponential",
+    "metric": "Keff/K-1_measured",
+    "value": 0.1312805710369629,
+    "theory": 0.13197670686932644,
+    "keff_ratio": 1.131280571036963
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "upwind,nx=25,dt=60.0",
+    "nx": 25,
+    "dt": 60.0,
+    "convection": "upwind",
+    "metric": "Keff/K-1_measured",
+    "value": 2.2631725968911396,
+    "theory": 2.3,
+    "keff_ratio": 3.2631725968911396
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "upwind,nx=25,dt=30.0",
+    "nx": 25,
+    "dt": 30.0,
+    "convection": "upwind",
+    "metric": "Keff/K-1_measured",
+    "value": 2.124790815091357,
+    "theory": 2.15,
+    "keff_ratio": 3.124790815091357
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "upwind,nx=25,dt=15.0",
+    "nx": 25,
+    "dt": 15.0,
+    "convection": "upwind",
+    "metric": "Keff/K-1_measured",
+    "value": 2.0547801486813713,
+    "theory": 2.075,
+    "keff_ratio": 3.0547801486813713
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "upwind,nx=25,dt=10.0",
+    "nx": 25,
+    "dt": 10.0,
+    "convection": "upwind",
+    "metric": "Keff/K-1_measured",
+    "value": 2.0313252864908615,
+    "theory": 2.05,
+    "keff_ratio": 3.0313252864908615
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "upwind,nx=50,dt=60.0",
+    "nx": 50,
+    "dt": 60.0,
+    "convection": "upwind",
+    "metric": "Keff/K-1_measured",
+    "value": 1.2880728750780897,
+    "theory": 1.3,
+    "keff_ratio": 2.2880728750780897
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "upwind,nx=50,dt=30.0",
+    "nx": 50,
+    "dt": 30.0,
+    "convection": "upwind",
+    "metric": "Keff/K-1_measured",
+    "value": 1.1434932570168455,
+    "theory": 1.15,
+    "keff_ratio": 2.1434932570168455
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "upwind,nx=50,dt=15.0",
+    "nx": 50,
+    "dt": 15.0,
+    "convection": "upwind",
+    "metric": "Keff/K-1_measured",
+    "value": 1.0706157730714905,
+    "theory": 1.075,
+    "keff_ratio": 2.0706157730714905
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "upwind,nx=50,dt=10.0",
+    "nx": 50,
+    "dt": 10.0,
+    "convection": "upwind",
+    "metric": "Keff/K-1_measured",
+    "value": 1.0462404558949912,
+    "theory": 1.05,
+    "keff_ratio": 2.046240455894991
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "upwind,nx=100,dt=60.0",
+    "nx": 100,
+    "dt": 60.0,
+    "convection": "upwind",
+    "metric": "Keff/K-1_measured",
+    "value": 0.794128780609199,
+    "theory": 0.8,
+    "keff_ratio": 1.794128780609199
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "upwind,nx=100,dt=30.0",
+    "nx": 100,
+    "dt": 30.0,
+    "convection": "upwind",
+    "metric": "Keff/K-1_measured",
+    "value": 0.6474222985053246,
+    "theory": 0.65,
+    "keff_ratio": 1.6474222985053246
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "upwind,nx=100,dt=15.0",
+    "nx": 100,
+    "dt": 15.0,
+    "convection": "upwind",
+    "metric": "Keff/K-1_measured",
+    "value": 0.5736064204351761,
+    "theory": 0.575,
+    "keff_ratio": 1.573606420435176
+  },
+  {
+    "study": "numerical_diffusion",
+    "label": "upwind,nx=100,dt=10.0",
+    "nx": 100,
+    "dt": 10.0,
+    "convection": "upwind",
+    "metric": "Keff/K-1_measured",
+    "value": 0.5489371071614293,
+    "theory": 0.55,
+    "keff_ratio": 1.5489371071614293
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "min_concentration": 0.0,
+  "n_negative": 0,
+  "n_steps": 240,
+  "max_abs_budget_residual": 1.6263220459222794e-06,
+  "max_rel_budget_residual": 1.6427495413356357e-14,
+  "total_emission": 4752000000.0,
+  "total_removal": 886759921.1791673,
+  "total_inflow": -1148608.0614815715,
+  "total_outflow": 2170872983.0038166,
+  "status": "ok",
+  "runtime_s": 2.780943249934353,
+  "max_concentration": 0.16076671122515923
+}
