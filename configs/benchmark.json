@@ -2,11 +2,14 @@
   "extends": "reference.json",
   "name": "benchmark",
   "experiment": "benchmark",
-  "notes": "noise_std 0.005 ug/m^3 is about 3% of the reference-scenario peak concentration (see docs); sensors read every 600 s. Synthetic, idealised.",
+  "notes": "noise_std 0.005 ug/m^3 is about 3% of the reference-scenario peak concentration (see docs); sensors read every 600 s. Synthetic, idealised. alpha (Tikhonov strength) is null: it is read from design.alpha_selection_file, written by `configs/alpha_selection.json` on a separate VALIDATION ensemble (validation_seed 44). The test ensemble (test_seed 33, test_noise_seed 7000) is fresh: the earlier test seeds 22/5000 were seen while alpha was chosen and must not be reused.",
   "inverse": {"sensor_interval": 600.0, "noise_std": 0.005},
   "design": {
-    "candidates_n": 10, "budgets": [1, 2, 3, 5, 8], "n_design": 6, "n_test": 6, "noise_reps": 3, "n_random": 20,
-    "weighted": true, "min_separation": 0.0, "heldout_n": 7, "alpha": 1.0, "t_exclude": 0.0,
-    "design_seed": 11, "test_seed": 22, "design_noise_seed": 1000, "test_noise_seed": 5000, "layout_seed": 7
+    "candidates_n": 10, "budgets": [1, 2, 3, 5, 8], "n_design": 6, "n_test": 6, "n_validation": 6, "noise_reps": 3,
+    "n_random": 20, "weighted": true, "min_separation": 0.0, "heldout_n": 7, "t_exclude": 0.0,
+    "alpha": null, "alpha_selection_file": "results/alpha-selection/alpha_selected.json",
+    "alpha_grid": [0.0, 1e-4, 1e-3, 1e-2, 1e-1, 1.0, 10.0, 100.0, 1000.0],
+    "design_seed": 11, "test_seed": 33, "validation_seed": 44,
+    "design_noise_seed": 1000, "test_noise_seed": 7000, "validation_noise_seed": 9000, "layout_seed": 7
   }
 }

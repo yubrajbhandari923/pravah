@@ -1,19 +1,27 @@
-"""Sensor-placement experiments: scenario ensembles, the design benchmark and the model-mismatch study.
+"""Sensor-placement experiments: scenario ensembles, alpha selection, the design benchmark and the mismatch study.
 
 Config sections used (see configs/benchmark.json, configs/mismatch.json):
 * ``scenario``, ``q`` (nominal amplitudes), ``solver``, ``inverse.noise_std`` / ``inverse.sensor_interval``;
-* ``design``: candidates_n, budgets, n_design, n_test, noise_reps, n_random, weighted, min_separation, heldout_n,
-  alpha, t_exclude and the explicit seeds design_seed, test_seed, design_noise_seed, test_noise_seed, layout_seed;
+* ``design``: candidates_n, budgets, n_design, n_test, n_validation, noise_reps, n_random, weighted, min_separation,
+  heldout_n, alpha, t_exclude, the explicit seeds design_seed, test_seed, validation_seed, design_noise_seed,
+  test_noise_seed, validation_noise_seed, layout_seed, and alpha_grid / alpha_selection_file (see below);
 * ``mismatch`` (run_mismatch only): refine, truth_dt_factor, wind_speed_error, wind_rotation_deg, extra_source,
   poor_layout_sites, layouts_from.
 
-Honesty rules.  Layouts are SELECTED only from role='design' cases (design.py enforces it); every reported error
-comes from independent role='test' cases with fresh noise.  Random layouts are never selected; their design-stage
+Honesty rules.  Three disjoint scenario ensembles exist: 'design' (greedy layout selection), 'validation' (choice of
+the Tikhonov strength alpha, ``run_alpha_selection``) and 'test' (every reported error).  Layouts are SELECTED only
+from role='design' cases (design.py enforces it); every reported error comes from independent role='test' cases
+with fresh noise.  alpha is chosen once on the validation ensemble, frozen in ``alpha_selected.json``, and then read
+by ``run_benchmark`` / ``run_mismatch`` through ``design.alpha_selection_file`` (design.alpha null = take it from the
+file; if both are given they must agree).  A config with alpha set and no selection file (e.g. the alpha = 0
+sensitivity run, or the smoke config) is labelled 'not selected: sensitivity' in provenance.  Random layouts are never selected; their design-stage
 score is computed only as a diagnostic.  All numbers are synthetic and idealised.
 """
 from __future__ import annotations
 
 import dataclasses
+import datetime as dt
+import hashlib
 import json
 import math
 import resource
@@ -32,7 +40,7 @@ from matplotlib.figure import Figure
 from .config import (GaussianSource, Scenario, SolverOptions, Times, Transport, WindSegment, scenario_from_dict,
                      to_dict)
 from .design import (Candidates, Constraints, DesignCase, DesignOptions, Layout, assert_disjoint, build_case,
-                     candidate_grid, evaluate_layouts, fit_layout, greedy_trace, paired_comparison, random_layouts,
+                     candidate_grid, evaluate_layouts, evaluate_validation, fit_layout, greedy_trace, paired_comparison, random_layouts,
                      score_layout, spread_layout)
 from .forward import simulate
 from .inverse import ResponseCache
@@ -49,7 +57,13 @@ MISMATCH_KINDS = ("refined_truth", "wind_perturbed", "extra_source")
 DESIGN_DEFAULTS: dict[str, Any] = {
     "candidates_n": 10, "budgets": [1, 2, 3, 5, 8], "n_design": 6, "n_test": 6, "noise_reps": 3, "n_random": 20,
     "weighted": False, "min_separation": 0.0, "heldout_n": 7, "alpha": 0.0, "t_exclude": 0.0,
-    "design_seed": 11, "test_seed": 22, "design_noise_seed": 1000, "test_noise_seed": 5000, "layout_seed": 7}
+    "design_seed": 11, "test_seed": 33, "design_noise_seed": 1000, "test_noise_seed": 7000, "layout_seed": 7,
+    "n_validation": 6, "validation_seed": 44, "validation_noise_seed": 9000,
+    "alpha_grid": [0.0, 1e-4, 1e-3, 1e-2, 1e-1, 1.0, 10.0, 100.0, 1000.0], "alpha_selection_file": None}
+SEED_KEYS = ("design_seed", "test_seed", "validation_seed", "design_noise_seed", "test_noise_seed",
+             "validation_noise_seed", "layout_seed")
+DEFAULT_Q_SCALE = 1e5  # ug/s; the default of inverse.InferenceOptions.q_scale, recorded in alpha_selected.json
+NO_EMISSION_FACTOR = 10.0  # blow-up count: rows with RMSE > 10 x the RMSE of the zero-emission estimate
 
 
 # ------------------------------------------------------------------ scenario ensembles
@@ -102,19 +116,27 @@ def _draw_key(spec: CaseSpec) -> str:
 
 
 def check_ensembles(design: list[CaseSpec], test: list[CaseSpec], design_seed: int, test_seed: int,
-                    design_noise_seed: int, test_noise_seed: int) -> None:
-    """Raise ValueError unless seeds differ, the noise-seed ranges are disjoint and no (q, wind) draw is shared."""
-    if design_seed == test_seed:
-        raise ValueError("design_seed and test_seed must differ")
-    d_rng = set(range(design_noise_seed, design_noise_seed + len(design)))
-    t_rng = set(range(test_noise_seed, test_noise_seed + len(test)))
-    if d_rng & t_rng:
-        raise ValueError("design and test noise seeds overlap")
-    shared = {_draw_key(s) for s in design} & {_draw_key(s) for s in test}
-    if shared:
-        raise ValueError("design and test ensembles share a (q, wind) draw")
-    if {s.name for s in design} & {s.name for s in test}:
-        raise ValueError("design and test case names overlap")
+                    design_noise_seed: int, test_noise_seed: int, validation: list[CaseSpec] | None = None,
+                    validation_seed: int | None = None, validation_noise_seed: int | None = None) -> None:
+    """Raise ValueError unless, pairwise over design / test (/ validation), the seeds differ, the noise-seed ranges
+    are disjoint, no (q, wind) draw is shared and no case name is shared."""
+    ens = {"design": (design, design_seed, design_noise_seed), "test": (test, test_seed, test_noise_seed)}
+    if validation is not None:
+        if validation_seed is None or validation_noise_seed is None:
+            raise ValueError("validation ensemble needs validation_seed and validation_noise_seed")
+        ens["validation"] = (validation, validation_seed, validation_noise_seed)
+    names = list(ens)
+    for i, a in enumerate(names):
+        for b in names[i + 1:]:
+            (sa, seed_a, nz_a), (sb, seed_b, nz_b) = ens[a], ens[b]
+            if seed_a == seed_b:
+                raise ValueError(f"{a}_seed and {b}_seed must differ")
+            if set(range(nz_a, nz_a + len(sa))) & set(range(nz_b, nz_b + len(sb))):
+                raise ValueError(f"{a} and {b} noise seeds overlap")
+            if {_draw_key(x) for x in sa} & {_draw_key(x) for x in sb}:
+                raise ValueError(f"{a} and {b} ensembles share a (q, wind) draw")
+            if {x.name for x in sa} & {x.name for x in sb}:
+                raise ValueError(f"{a} and {b} case names overlap")
 
 
 # ------------------------------------------------------------------ mismatch helpers
@@ -165,9 +187,40 @@ class _Setup:
     design_specs: list[CaseSpec]
     test_specs: list[CaseSpec]
     weight: np.ndarray
+    validation_specs: list[CaseSpec] = field(default_factory=list)
+    alpha: float | None = None  # None only for the alpha-selection run (alpha is then set per fit)
+    alpha_info: dict[str, Any] | None = None
 
 
-def _setup(cfg: dict[str, Any]) -> _Setup:
+def load_alpha_selection(path: Path | str) -> tuple[float, str]:
+    """(selected alpha, sha256 of the file) from an ``alpha_selected.json``.  The path is used as given (relative
+    paths are relative to the working directory)."""
+    raw = Path(path).read_bytes()
+    alpha = float(json.loads(raw)["alpha"])
+    if not (math.isfinite(alpha) and alpha >= 0):
+        raise ValueError(f"{path}: selected alpha must be finite and >= 0, got {alpha}")
+    return alpha, hashlib.sha256(raw).hexdigest()
+
+
+def resolve_alpha(d: dict[str, Any]) -> tuple[float, dict[str, Any]]:
+    """alpha used by benchmark / mismatch and a provenance record.  With design.alpha_selection_file: alpha is read
+    from that file; design.alpha must be null or equal to it (ValueError otherwise).  Without a file design.alpha
+    must be a number and the run is labelled 'not selected: sensitivity'."""
+    f, a = d.get("alpha_selection_file"), d.get("alpha")
+    if f:
+        sel, sha = load_alpha_selection(f)
+        if a is not None and not math.isclose(float(a), sel, rel_tol=1e-12, abs_tol=0.0):
+            raise ValueError(f"design.alpha = {a} disagrees with the alpha {sel} selected in {f}; set alpha to null "
+                             "or to the selected value")
+        return sel, {"value": sel, "source": "alpha_selection_file", "alpha_selection_file": str(f),
+                     "alpha_selection_sha256": sha}
+    if a is None:
+        raise ValueError("design.alpha is null but design.alpha_selection_file is not set")
+    return float(a), {"value": float(a), "source": "config", "alpha_selection_file": None,
+                      "alpha_selection_sha256": None, "label": "not selected: sensitivity (no alpha_selection_file)"}
+
+
+def _setup(cfg: dict[str, Any], need_alpha: bool = True) -> _Setup:
     d = {**DESIGN_DEFAULTS, **cfg.get("design", {})}
     base = scenario_from_dict(cfg["scenario"])
     inv = cfg.get("inverse", {})
@@ -181,14 +234,18 @@ def _setup(cfg: dict[str, Any]) -> _Setup:
     q_base = cfg["q"]
     ds = make_ensemble(base, int(d["n_design"]), int(d["design_seed"]), q_base, "d")
     ts = make_ensemble(base, int(d["n_test"]), int(d["test_seed"]), q_base, "t")
+    vs = make_ensemble(base, int(d["n_validation"]), int(d["validation_seed"]), q_base, "v")
     check_ensembles(ds, ts, int(d["design_seed"]), int(d["test_seed"]), int(d["design_noise_seed"]),
-                    int(d["test_noise_seed"]))
+                    int(d["test_noise_seed"]), vs, int(d["validation_seed"]), int(d["validation_noise_seed"]))
+    alpha, info = resolve_alpha(d) if need_alpha else (None, None)
     return _Setup(cfg, d, base, SolverOptions(**cfg.get("solver", {})), float(inv.get("noise_std", 0.005)), obs_times,
-                  candidate_grid(base.domain, int(d["candidates_n"])), held, ds, ts, population_weight(base.domain))
+                  candidate_grid(base.domain, int(d["candidates_n"])), held, ds, ts, population_weight(base.domain),
+                  vs, alpha, info)
 
 
 def _opts(st: _Setup, weighted: bool) -> DesignOptions:
-    return DesignOptions(noise_std=st.noise_std, obs_times=st.obs_times, alpha=float(st.d["alpha"]),
+    # st.alpha is None only in run_alpha_selection, which overrides alpha on every fit (dataclasses.replace)
+    return DesignOptions(noise_std=st.noise_std, obs_times=st.obs_times, alpha=float(st.alpha or 0.0),
                          t_exclude=float(st.d["t_exclude"]), weight=st.weight if weighted else None,
                          eval_sites=st.heldout, solver=st.solver)
 
@@ -197,10 +254,12 @@ def _constraints(st: _Setup) -> Constraints:
     return Constraints(None, float(st.d["min_separation"]))
 
 
-def _evaluate(flat: dict[str, list[Layout]], cases: list[DesignCase], opts: DesignOptions) -> pd.DataFrame:
-    """design.evaluate_layouts; its matrix 'condition' number is renamed 'cond_number' (the word 'condition' tags
-    the mismatch kind in this module's tables)."""
-    return evaluate_layouts(flat, cases, opts).rename(columns={"condition": "cond_number"})
+def _evaluate(flat: dict[str, list[Layout]], cases: list[DesignCase], opts: DesignOptions,
+              validation: bool = False) -> pd.DataFrame:
+    """design.evaluate_layouts (or evaluate_validation for the alpha selection); its matrix 'condition' number is
+    renamed 'cond_number' (the word 'condition' tags the mismatch kind in this module's tables)."""
+    df = evaluate_validation(flat, cases, opts) if validation else evaluate_layouts(flat, cases, opts)
+    return df.rename(columns={"condition": "cond_number"})
 
 
 def _flatten(layouts: dict[str, dict[int, list[Layout]]]) -> dict[str, list[Layout]]:
@@ -234,6 +293,160 @@ def load_layouts(src: Path | str | dict[str, Any]) -> tuple[int | None, dict[str
     lays = {m: {int(b): [tuple(int(i) for i in lay) for lay in ls] for b, ls in by_b.items()}
             for m, by_b in data["layouts"].items()}
     return (None if n is None else int(n)), lays
+
+
+# ------------------------------------------------------------------ alpha selection (validation ensemble)
+CRITERION_TEXT = ("mean over budgets, layouts, validation cases and noise reps of the regional field RMSE "
+                  "(uniform weights, ug/m^3, vs the validation truth); lowest wins, exact ties go to the smaller alpha")
+
+
+@dataclass
+class AlphaSelectionResult:
+    alpha: float
+    table: pd.DataFrame  # one row per alpha: criterion and companions
+    raw: pd.DataFrame  # one row per (alpha, layout, case, rep)
+    selected: dict[str, Any]  # the alpha_selected.json payload
+    layouts: dict[str, dict[int, list[Layout]]]
+    timings: dict[str, float]
+    runtime_s: float
+    peak_memory_mb: float
+    out_dir: Path | None = None
+    figures: list[str] = field(default_factory=list)
+
+
+def _alpha_grid(grid: Any) -> list[float]:
+    try:
+        g = sorted({float(a) for a in grid})
+    except TypeError as e:
+        raise ValueError("design.alpha_grid must be a list of numbers") from e
+    if not g or not all(math.isfinite(a) and a >= 0 for a in g):
+        raise ValueError("design.alpha_grid must be a non-empty list of finite alphas >= 0")
+    return g
+
+
+def _alpha_table(raw: pd.DataFrame) -> pd.DataFrame:
+    g: Any = raw.groupby("alpha")
+    t = pd.DataFrame({
+        "criterion": g["rmse"].mean(), "median_rmse": g["rmse"].median(), "p90_rmse": g["rmse"].quantile(0.9),
+        "n_rmse_gt_10x_no_emission": g.apply(lambda r: int((r["rmse"] > NO_EMISSION_FACTOR * r["rmse_no_emission"]).sum())),
+        "mean_source_rel_err": g["source_rel_err"].mean(), "n_rows": g.size()}).reset_index()
+    return t
+
+
+def _pick_alpha(table: pd.DataFrame) -> float:
+    """Lowest criterion; exact ties (and a nan criterion, treated as +inf) resolve to the smaller alpha."""
+    key = [(math.inf if not math.isfinite(c) else float(c), float(a)) for a, c in zip(table["alpha"], table["criterion"])]
+    return min(key)[1]
+
+
+def run_alpha_selection(cfg: dict[str, Any], out_dir: Path | str | None = None, overwrite: bool = False,
+                        cache: ResponseCache | None = None, progress: Progress = None) -> AlphaSelectionResult:
+    """Choose the Tikhonov strength alpha on a VALIDATION ensemble, independently of every test scenario.
+
+    Pre-declared procedure (nothing below depends on the test ensemble, nor on design.alpha / alpha_selection_file):
+    1. build design.n_validation matched validation cases (validation_seed; fresh noise from validation_noise_seed);
+    2. layouts: only alpha-INDEPENDENT ones, per budget the design.n_random seeded random layouts
+       (layout_seed + budget) and the spread layout (greedy is excluded: its choice depends on alpha);
+    3. for every alpha in design.alpha_grid fit every layout x case x noise rep (prior mean = 0 for all sources;
+       alpha is applied at fit time on the cached case arrays, no forward solve is repeated);
+    4. criterion = mean over budgets, layouts, validation cases and noise reps of the regional field RMSE (uniform
+       weights; CRITERION_TEXT); the lowest criterion wins and an exact tie goes to the smaller alpha.
+       Also recorded per alpha: median, 90th percentile, number of rows whose RMSE exceeds 10 x the RMSE of the
+       zero-emission estimate, mean source relative error.
+    The grid spans several decades of alpha / q_scale^2 (the only combination that matters in the linear route).
+    Writes alpha_selected.json, validation_raw.csv, layouts.json, figures/criterion_vs_alpha.png, config.json,
+    provenance.json, timings.json when ``out_dir`` is given."""
+    t_all = time.perf_counter()
+    run_dir = None if out_dir is None else make_run_dir(out_dir, overwrite)
+    cache = cache or ResponseCache()
+    st = _setup(cfg, need_alpha=False)
+    d = st.d
+    grid = _alpha_grid(d["alpha_grid"])
+    budgets = sorted(int(b) for b in d["budgets"])
+    tim: dict[str, float] = {}
+    t0 = time.perf_counter()
+    _say(progress, f"building {len(st.validation_specs)} validation cases")
+    vcs = _build_cases(st, st.validation_specs, "validation", int(d["validation_noise_seed"]), cache,
+                       ["uniform"])["uniform"]
+    tim["cases_s"] = time.perf_counter() - t0
+    k = _constraints(st)
+    layouts: dict[str, dict[int, list[Layout]]] = {"random": {}, "spread": {}}
+    for b in budgets:
+        layouts["random"][b] = random_layouts(st.cands, b, int(d["n_random"]), k, int(d["layout_seed"]) + b)
+        layouts["spread"][b] = [spread_layout(st.cands, b, k)]
+    flat = _flatten(layouts)
+    base_opts = _opts(st, False)
+    no_emission = {c.name: math.sqrt(c.c0) for c in vcs}
+    t0 = time.perf_counter()
+    parts = []
+    for a in grid:
+        _say(progress, f"alpha = {a:g}")
+        df = _evaluate(flat, vcs, dataclasses.replace(base_opts, alpha=a), validation=True)
+        df.insert(0, "alpha", a)
+        df["rmse_no_emission"] = [no_emission[c] for c in df["case"]]
+        parts.append(df)
+    raw = pd.concat(parts, ignore_index=True)
+    table = _alpha_table(raw)
+    alpha = _pick_alpha(table)
+    tim["evaluation_s"] = time.perf_counter() - t0
+    seeds = {k_: d[k_] for k_ in SEED_KEYS}
+    selected = {
+        "alpha": alpha, "selected_criterion": float(table.loc[table["alpha"] == alpha, "criterion"].iloc[0]),
+        "criterion": CRITERION_TEXT, "tie_rule": "exact tie -> smaller alpha",
+        "table": table.to_dict("records"), "alpha_grid": grid,
+        "validation_seed": d["validation_seed"], "validation_noise_seed": d["validation_noise_seed"],
+        "n_validation": d["n_validation"], "noise_reps": d["noise_reps"], "n_random": d["n_random"],
+        "budgets": budgets, "layout_seed": d["layout_seed"], "layout_methods": ["random", "spread"],
+        "noise_std": st.noise_std, "q_scale": DEFAULT_Q_SCALE,
+        "prior": "zeros (prior mean 0 for every source)", "prior_mean_uses_truth": False,
+        "config_hash": hashlib.sha256(json.dumps(cfg, sort_keys=True, default=str).encode()).hexdigest(),
+        "package_versions": provenance({}, {})["versions"],
+        "created_utc": dt.datetime.now(dt.timezone.utc).isoformat()}
+    res = AlphaSelectionResult(alpha, table, raw, selected, layouts, tim, time.perf_counter() - t_all, _peak_mb(),
+                               run_dir)
+    if run_dir is not None:
+        write_json(run_dir / "config.json", cfg)
+        write_json(run_dir / "alpha_selected.json", selected)
+        write_json(run_dir / "provenance.json", provenance(cfg, seeds, {
+            "experiment": "alpha_selection", "criterion": CRITERION_TEXT,
+            "note": "synthetic idealised experiment; independent of every test scenario"}))
+        write_csv(run_dir / "validation_raw.csv", raw)
+        write_json(run_dir / "layouts.json", {"candidates_n": int(d["candidates_n"]),
+                                              "layouts": _jsonable_layouts(layouts)})
+        (run_dir / "figures").mkdir(exist_ok=True)
+        fig = plot_alpha_criterion(table, alpha)
+        fig.savefig(run_dir / "figures" / "criterion_vs_alpha.png", dpi=120)
+        plt.close(fig)
+        res.figures.append("criterion_vs_alpha.png")
+        res.runtime_s = time.perf_counter() - t_all
+        res.peak_memory_mb = _peak_mb()
+        write_json(run_dir / "timings.json", {"stages_s": tim, "total_s": res.runtime_s,
+                                              "peak_memory_mb": res.peak_memory_mb})
+    return res
+
+
+def plot_alpha_criterion(table: pd.DataFrame, selected: float | None = None) -> Figure:
+    """Validation criterion (mean RMSE) and median RMSE vs alpha, log axes; alpha = 0 sits at the left edge,
+    one decade below the smallest positive alpha, labelled '0'."""
+    t = table.sort_values("alpha")
+    pos = [a for a in t["alpha"] if a > 0]
+    x0 = (min(pos) / 10.0) if pos else 1.0
+    pos_x = lambda a: x0 if a == 0 else a  # noqa: E731
+    xs = [pos_x(a) for a in t["alpha"]]
+    fig, ax = plt.subplots(figsize=(6.5, 4.2))
+    ax.plot(xs, t["criterion"], "o-", color="tab:red", label="criterion (mean RMSE)")
+    ax.plot(xs, t["median_rmse"], "s--", color="tab:blue", label="median RMSE")
+    ax.plot(xs, t["p90_rmse"], "^:", color="tab:gray", label="90th percentile RMSE")
+    if selected is not None:
+        ax.axvline(pos_x(selected), color="k", lw=0.8, alpha=0.5, label=f"selected alpha = {selected:g}")
+    ax.set(xscale="log", yscale="log", xlabel="alpha (Tikhonov strength; 0 = no prior)",
+           ylabel="validation RMSE (microgram/m$^3$)", title="Alpha selection on the validation ensemble")
+    ax.set_xticks(xs)
+    ax.set_xticklabels(["0" if a == 0 else f"{a:g}" for a in t["alpha"]])
+    ax.minorticks_off()
+    ax.legend(fontsize=8)
+    fig.tight_layout()
+    return fig
 
 
 # ------------------------------------------------------------------ benchmark
@@ -374,7 +587,7 @@ def run_benchmark(cfg: dict[str, Any], out_dir: Path | str | None = None, overwr
     design = pd.DataFrame(dscores)
     tim["evaluation_s"] = time.perf_counter() - t0
     summary, paired = _summary_table(raw, design), _paired_table(raw)
-    seeds = {k_: d[k_] for k_ in ("design_seed", "test_seed", "design_noise_seed", "test_noise_seed", "layout_seed")}
+    seeds = {k_: d[k_] for k_ in SEED_KEYS}
     res = BenchmarkResult(raw, summary, paired, design, layouts, orders, st.cands, st.base, tim,
                           time.perf_counter() - t_all, _peak_mb(), seeds, run_dir)
     if run_dir is not None:
@@ -391,11 +604,12 @@ def run_benchmark(cfg: dict[str, Any], out_dir: Path | str | None = None, overwr
 def _write_benchmark(res: BenchmarkResult, cfg: dict[str, Any], run_dir: Path, st: _Setup) -> None:
     write_json(run_dir / "config.json", cfg)
     write_json(run_dir / "provenance.json", provenance(cfg, res.seeds, {
-        "experiment": "benchmark", "noise_std": st.noise_std,
+        "experiment": "benchmark", "noise_std": st.noise_std, "alpha": st.alpha_info,
         "note": "synthetic idealised experiment; RMSE in microgram/m^3 on the inference grid"}))
     write_csv(run_dir / "raw_metrics.csv", res.raw)
     write_csv(run_dir / "summary.csv", res.summary)
-    write_json(run_dir / "summary.json", {"sd_label": SD_LABEL, "summary": res.summary.to_dict("records"),
+    write_json(run_dir / "summary.json", {"sd_label": SD_LABEL, "alpha": st.alpha_info,
+                                          "summary": res.summary.to_dict("records"),
                                           "paired": res.paired.to_dict("records")})
     write_csv(run_dir / "paired_comparisons.csv", res.paired)
     write_csv(run_dir / "design_scores.csv", res.design_scores)
@@ -658,14 +872,15 @@ def run_mismatch(cfg: dict[str, Any], layouts_from: Path | str | dict[str, Any] 
 def _write_mismatch(res: MismatchResult, cfg: dict[str, Any], run_dir: Path, st: _Setup, m: dict[str, Any],
                     src: Any, contrast: dict[str, Layout], cands: Candidates) -> None:
     write_json(run_dir / "config.json", cfg)
-    seeds = {k: st.d[k] for k in ("design_seed", "test_seed", "design_noise_seed", "test_noise_seed", "layout_seed")}
+    seeds = {k: st.d[k] for k in SEED_KEYS}
     write_json(run_dir / "provenance.json", provenance(cfg, seeds, {
-        "experiment": "mismatch", "layouts_from": src if isinstance(src, str) else "dict", "mismatch": m,
+        "experiment": "mismatch", "alpha": st.alpha_info, "layouts_from": src if isinstance(src, str) else "dict", "mismatch": m,
         "poor_layout": [list(contrast["poor"]), [cands.ids[i] for i in contrast["poor"]]],
         "note": "mismatch differences are descriptive; they need not worsen every draw"}))
     write_csv(run_dir / "raw_metrics.csv", res.raw)
     write_csv(run_dir / "summary.csv", res.summary)
-    write_json(run_dir / "summary.json", {"sd_label": SD_LABEL, "summary": res.summary.to_dict("records"),
+    write_json(run_dir / "summary.json", {"sd_label": SD_LABEL, "alpha": st.alpha_info,
+                                          "summary": res.summary.to_dict("records"),
                                           "paired_mismatch": res.paired.to_dict("records"),
                                           "poor_layout_paired": res.poor_paired.to_dict("records")})
     write_csv(run_dir / "paired_mismatch_rows.csv", res.paired_rows)

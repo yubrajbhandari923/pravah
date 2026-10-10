@@ -31,13 +31,26 @@ python -m pravah simulate  --config configs/reference.json --out results/my-sim 
 python -m pravah inverse   --config configs/reference.json --out results/my-inv            # linear route, ~20 s
 python -m pravah inverse   --config configs/reference.json --out results/my-inv2 --direct  # + direct route, ~2 min
 python -m pravah benchmark --config configs/smoke.json     --out results/my-smoke          # ~20 s, coarse, plumbing check
-python -m pravah benchmark --config configs/benchmark.json --out results/my-bench          # ~5 min
-python -m pravah benchmark --config configs/mismatch.json  --out results/my-mismatch       # ~8 min
+python -m pravah benchmark --config configs/smoke_alpha_selection.json --out results/my-smoke-alpha  # plumbing check
+# final procedure, in this order (alpha is chosen BEFORE the test scenarios are run):
+python -m pravah benchmark --config configs/alpha_selection.json --out results/alpha-selection   # validation ensemble
+python -m pravah benchmark --config configs/benchmark.json --out results/benchmark-final         # reads the frozen alpha
+python -m pravah benchmark --config configs/mismatch.json  --out results/mismatch-final          # same alpha, same layouts
+python -m pravah benchmark --config configs/benchmark_unregularized.json --out results/benchmark-unregularized-final  # alpha = 0, not selected
 ```
 
+Alpha (Tikhonov strength) procedure: `configs/alpha_selection.json` fits alpha-independent layouts (random + spread)
+on a separate **validation** ensemble (seeds 44 / 9000) for a grid of alphas and writes the lowest-criterion alpha to
+`results/alpha-selection/alpha_selected.json`. `configs/benchmark.json` and `configs/mismatch.json` have `design.alpha:
+null` and `design.alpha_selection_file`, so they read that frozen alpha (if `alpha` is also set it must agree, else
+the run stops) and record the file's sha256. The test ensemble (seeds 33 / 7000) is fresh and independent of both
+the design and validation ensembles. Runs with a numeric alpha and no selection file are labelled
+`not selected: sensitivity` in `provenance.json` / `summary.json`.
+
 `configs/mismatch.json` re-uses the layouts of a finished benchmark: it reads them from `mismatch.layouts_from`
-(`results/benchmark`); if you wrote your benchmark elsewhere, extend the config and change that path.
-The `benchmark` command runs either experiment depending on the config's `"experiment"` key.
+(`results/benchmark-final`); if you wrote your benchmark elsewhere, extend the config and change that path.
+The `benchmark` command runs any of the three experiments depending on the config's `"experiment"` key
+(`benchmark`, `alpha_selection`, `mismatch`).
 
 **`results/reference-v0` (and `inverse-v0`, `smoke`, `benchmark*`, `mismatch`, `verification`) are the frozen
 v0 results quoted in `docs/validation.md`. Do not overwrite them: write alternatives to `results/<your-name>`.**
@@ -80,8 +93,11 @@ Full definitions: `docs/specification.md`; discretisation and design: `docs/impl
 * Counts are modest (6 design + 6 test scenarios, 3 noise draws). The reported **sd is the spread of individual
   results, not a confidence interval**; the paired tables give win fractions, not significance tests.
 * An accurate reconstructed field is **not** correct attribution: check `effective_rank` and `q_std`.
-* The headline fits use a weak ridge prior (alpha = 1). That choice was made **after** seeing the alpha = 0 run
-  fail on plume-blind layouts (means of 1e19); it was not tuned, and the alpha = 0 run is kept as a sensitivity result.
+* The headline fits use a ridge prior (zero prior mean) whose strength alpha is selected on a separate validation
+  ensemble and frozen before the test scenarios are run (see the procedure above). The **earlier** `results/benchmark`
+  and `results/mismatch` tables (alpha = 1) are exploratory: alpha was chosen after seeing the alpha = 0 results on
+  those test scenarios, so they are not an independent evaluation and are superseded by `results/*-final`. The
+  alpha = 0 run is kept as a sensitivity result.
 * Greedy selection is a heuristic, not an optimum (one tiny exhaustive test fixture showed greedy's design MSE at 3.7x the optimum, about 1.9x in RMSE).
 
 ## Known limitations
@@ -123,7 +139,7 @@ package never imports it. To register a finished run directory as artifacts and 
 
 ```
 src/pravah/   config forward sources observations inverse metrics design experiments io plotting cli
-configs/      reference smoke benchmark benchmark_unregularized mismatch wind_change (JSON, "extends" supported)
+configs/      reference smoke smoke_alpha_selection alpha_selection benchmark benchmark_unregularized mismatch wind_change (JSON, "extends" supported)
 notebooks/    01_transport 02_inverse 03_sensor_design
 scripts/      verification.py  verify_notebooks.py  register_research.py
 tests/        pytest suite (scientific checks, no mocks of the solver)

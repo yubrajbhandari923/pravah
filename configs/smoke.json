@@ -2,7 +2,7 @@
   "extends": "reference.json",
   "name": "smoke",
   "experiment": "benchmark",
-  "notes": "Fast end-to-end check only (coarse 25x25 grid, dt 120 s, 7200 s). Not for scientific conclusions. The same file also parameterises the mismatch smoke run (run_mismatch reads the 'mismatch' section).",
+  "notes": "Fast end-to-end check only (coarse 25x25 grid, dt 120 s, 7200 s). Plumbing only: alpha 1.0 is NOT selected on validation data (no alpha_selection_file) and the numbers are not for scientific conclusions. Setting experiment to 'alpha_selection' runs the (tiny) alpha selection. The same file also parameterises the mismatch smoke run (run_mismatch reads the 'mismatch' section).",
   "scenario": {
     "domain": {
       "nx": 25,
@@ -31,11 +31,20 @@
     "weighted": true,
     "heldout_n": 4,
     "design_seed": 11,
-    "test_seed": 22,
+    "test_seed": 33,
     "design_noise_seed": 1000,
-    "test_noise_seed": 5000,
+    "test_noise_seed": 7000,
     "layout_seed": 7,
-    "alpha": 1.0
+    "alpha": 1.0,
+    "n_validation": 2,
+    "validation_seed": 44,
+    "validation_noise_seed": 9000,
+    "alpha_grid": [
+      0.0,
+      1.0,
+      100.0
+    ],
+    "alpha_selection_file": null
   },
   "mismatch": {
     "layouts_from": "results/smoke",

@@ -1,5 +1,7 @@
 """End-to-end tests of experiments.py on a tiny problem (20x20 grid, T=3600 s, 3x3 candidates, real solves)."""
 import copy
+import dataclasses
+import hashlib
 import json
 import math
 
@@ -22,7 +24,9 @@ CFG = {
     "inverse": {"sensor_interval": 600.0, "noise_std": 0.005},
     "design": {"candidates_n": 3, "budgets": [1, 2], "n_design": 2, "n_test": 2, "noise_reps": 1, "n_random": 3,
                "weighted": True, "heldout_n": 3, "design_seed": 11, "test_seed": 22, "design_noise_seed": 1000,
-               "test_noise_seed": 5000, "layout_seed": 7},
+               "test_noise_seed": 5000, "layout_seed": 7,
+               "n_validation": 2, "validation_seed": 44, "validation_noise_seed": 9000, "alpha": 1.0,
+               "alpha_grid": [0.0, 1.0, 100.0], "alpha_selection_file": None},
     "mismatch": {"refine": 2, "truth_dt_factor": 0.5, "wind_speed_error": 0.2, "wind_rotation_deg": 15.0,
                  "extra_source": {"x": 3000.0, "y": 4500.0, "sigma": 500.0, "q": 60000.0},
                  "poor_layout_sites": [[1667.0, 8333.0], [5000.0, 8333.0]]},
@@ -224,3 +228,210 @@ def test_mismatch_checks_candidate_grid(bench):
     cfg["design"]["candidates_n"] = 4
     with pytest.raises(ValueError, match="candidate grid"):
         ex.run_mismatch(cfg, bench[1])
+
+
+# ---------------------------------------------------------------- validation ensemble and alpha selection
+@pytest.fixture(scope="module")
+def sel(tmp_path_factory, cache):
+    out = tmp_path_factory.mktemp("sel") / "run"
+    return ex.run_alpha_selection(copy.deepcopy(CFG), out, cache=cache), out
+
+
+def test_validation_ensemble_disjoint_and_guarded():
+    from pravah.design import assert_disjoint
+    st = ex._setup(CFG)
+    keys = [{ex._draw_key(s) for s in specs} for specs in (st.design_specs, st.test_specs, st.validation_specs)]
+    assert all(a.isdisjoint(b) for i, a in enumerate(keys) for b in keys[i + 1:])
+    assert [s.name for s in st.validation_specs] == ["v0", "v1"]
+    d = st.d
+    cache = ResponseCache()
+    cs = {r: ex._build_cases(st, specs, r, d[f"{r}_noise_seed"], cache, ["uniform"])["uniform"]
+          for r, specs in (("design", st.design_specs), ("test", st.test_specs),
+                           ("validation", st.validation_specs))}
+    assert_disjoint(cs["design"], cs["test"], cs["validation"])
+    assert not np.allclose(cs["validation"][0].noise, cs["test"][0].noise)
+    with pytest.raises(ValueError, match="test and validation cases share"):
+        assert_disjoint(cs["design"], cs["test"], [dataclasses.replace(cs["test"][0], role="validation")])
+    base = base_scenario()
+    dsp, tsp = ex.make_ensemble(base, 2, 1, CFG["q"], "d"), ex.make_ensemble(base, 2, 2, CFG["q"], "t")
+    vsp = ex.make_ensemble(base, 2, 3, CFG["q"], "v")
+    ex.check_ensembles(dsp, tsp, 1, 2, 10, 20, vsp, 3, 30)
+    with pytest.raises(ValueError, match="validation_seed"):
+        ex.check_ensembles(dsp, tsp, 1, 2, 10, 20, vsp, 2, 30)
+    with pytest.raises(ValueError, match="noise seeds overlap"):
+        ex.check_ensembles(dsp, tsp, 1, 2, 10, 20, vsp, 3, 21)
+    with pytest.raises(ValueError, match="share a"):
+        ex.check_ensembles(dsp, tsp, 1, 2, 10, 20, ex.make_ensemble(base, 2, 1, CFG["q"], "v"), 3, 30)
+    for key, val in (("validation_seed", 22), ("validation_noise_seed", 5001), ("validation_seed", 11)):
+        cfg = copy.deepcopy(CFG)
+        cfg["design"][key] = val
+        with pytest.raises(ValueError):
+            ex.run_alpha_selection(cfg)
+        with pytest.raises(ValueError):
+            ex.run_benchmark(cfg)
+
+
+def test_role_guards(cache):
+    from pravah import design
+    st = ex._setup(CFG)
+    d = st.d
+    vcs = ex._build_cases(st, st.validation_specs, "validation", d["validation_noise_seed"], cache, ["uniform"])["uniform"]
+    tcs = ex._build_cases(st, st.test_specs, "test", d["test_noise_seed"], cache, ["uniform"])["uniform"]
+    opts = ex._opts(st, False)
+    k = ex._constraints(st)
+    for cases in (vcs, tcs):
+        with pytest.raises(ValueError, match="leakage"):
+            design.greedy_trace(st.cands, 1, cases, k, opts)
+        with pytest.raises(ValueError, match="leakage"):
+            design.select_layout(st.cands, 1, cases, k, opts)
+        with pytest.raises(ValueError, match="leakage"):
+            design.score_layout((0,), cases, opts)
+    with pytest.raises(ValueError, match="leakage"):
+        design.evaluate_layouts({"m": [(0,)]}, vcs, opts)
+    with pytest.raises(ValueError, match="validation"):
+        design.evaluate_layouts({"m": [(0,)]}, vcs, opts, allow_design=True)
+    with pytest.raises(ValueError, match="leakage"):
+        design.evaluate_validation({"m": [(0,)]}, tcs, opts)
+    assert len(design.evaluate_validation({"m": [(0,)]}, vcs, opts)) == 2
+    with pytest.raises(ValueError, match="role"):
+        design.build_case("x", "other", st.base, np.array(CFG["q"]), st.base, st.cands, opts, 1, 1, cache)
+
+
+def test_alpha_selection_outputs(sel):
+    res, out = sel
+    for name in ("alpha_selected.json", "validation_raw.csv", "provenance.json", "timings.json", "config.json",
+                 "layouts.json", "figures/criterion_vs_alpha.png"):
+        assert (out / name).is_file(), name
+    assert (out / "figures" / "criterion_vs_alpha.png").stat().st_size > 1000
+    a = json.loads((out / "alpha_selected.json").read_text(), parse_constant=lambda c: pytest.fail(c))
+    for key in ("alpha", "table", "alpha_grid", "validation_seed", "validation_noise_seed", "n_validation",
+                "layout_seed", "q_scale", "prior", "prior_mean_uses_truth", "config_hash", "package_versions",
+                "created_utc", "criterion", "tie_rule"):
+        assert key in a, key
+    assert a["alpha_grid"] == [0.0, 1.0, 100.0] and a["prior_mean_uses_truth"] is False and a["q_scale"] == 1e5
+    assert (a["validation_seed"], a["validation_noise_seed"], a["n_validation"], a["layout_seed"]) == (44, 9000, 2, 7)
+    t = pd.DataFrame(a["table"])
+    assert {"criterion", "median_rmse", "p90_rmse", "n_rmse_gt_10x_no_emission", "mean_source_rel_err"} <= set(t.columns)
+    assert list(t["alpha"]) == [0.0, 1.0, 100.0]
+    assert a["alpha"] == t.loc[t["criterion"].idxmin(), "alpha"] == res.alpha
+    # criterion is the plain mean of the raw per-row regional RMSE (all budgets, layouts, cases, reps)
+    raw = pd.read_csv(out / "validation_raw.csv")
+    assert set(raw["case"]) == {"v0", "v1"} and set(raw["method"]) == {"random", "spread"}
+    assert len(raw) == 3 * (2 * (3 + 1)) * 2 * 1
+    assert t["criterion"].to_numpy() == pytest.approx(raw.groupby("alpha")["rmse"].mean().to_numpy())
+    assert (raw["rmse_no_emission"] > 0).all()
+    prov = json.loads((out / "provenance.json").read_text())
+    assert prov["seeds"]["validation_seed"] == 44 and prov["extra"]["experiment"] == "alpha_selection"
+
+
+def test_pick_alpha_tie_goes_to_smaller_alpha():
+    t = pd.DataFrame({"alpha": [0.0, 1.0, 10.0, 100.0], "criterion": [3.0, 1.0, 1.0, float("nan")]})
+    assert ex._pick_alpha(t) == 1.0
+    assert ex._pick_alpha(t.iloc[::-1]) == 1.0
+
+
+def test_alpha_selection_independent_of_test_ensemble(sel, cache):
+    cfg = copy.deepcopy(CFG)
+    cfg["design"].update({"test_seed": 99, "test_noise_seed": 8000, "n_test": 3})
+    other = ex.run_alpha_selection(cfg, cache=cache)
+    cols = [c for c in sel[0].raw.columns if c != "runtime_s"]
+    pd.testing.assert_frame_equal(other.raw[cols], sel[0].raw[cols])
+    assert other.alpha == sel[0].alpha
+    pd.testing.assert_frame_equal(other.table, sel[0].table)
+
+
+def test_alpha_selection_ignores_cfg_alpha_and_file(sel, cache):
+    cfg = copy.deepcopy(CFG)
+    cfg["design"].update({"alpha": None, "alpha_selection_file": "does/not/exist.json"})
+    assert ex.run_alpha_selection(cfg, cache=cache).alpha == sel[0].alpha
+
+
+def test_alpha_selection_grid_validation():
+    for grid in ([], [-1.0], [float("inf")]):
+        cfg = copy.deepcopy(CFG)
+        cfg["design"]["alpha_grid"] = grid
+        with pytest.raises(ValueError, match="alpha_grid"):
+            ex.run_alpha_selection(cfg)
+
+
+def _with_file(path, alpha=None):
+    cfg = copy.deepcopy(CFG)
+    cfg["design"].update({"alpha": alpha, "alpha_selection_file": str(path)})
+    return cfg
+
+
+def test_benchmark_reads_alpha_from_file(sel, cache, tmp_path):
+    res, out = sel
+    f = out / "alpha_selected.json"
+    sha = hashlib.sha256(f.read_bytes()).hexdigest()
+    run = ex.run_benchmark(_with_file(f), tmp_path / "b", cache=cache)
+    for name in ("provenance.json", "summary.json"):
+        info = json.loads((tmp_path / "b" / name).read_text())
+        info = info["extra"]["alpha"] if name == "provenance.json" else info["alpha"]
+        assert info["value"] == res.alpha and info["alpha_selection_sha256"] == sha
+        assert info["source"] == "alpha_selection_file"
+    # same alpha given explicitly gives the same numbers as the file
+    explicit = copy.deepcopy(CFG)
+    explicit["design"]["alpha"] = res.alpha
+    again = ex.run_benchmark(explicit, cache=cache)
+    cols = [c for c in run.raw.columns if c != "runtime_s"]
+    pd.testing.assert_frame_equal(again.raw[cols], run.raw[cols])
+    # agreeing explicit alpha plus file is accepted
+    ex.resolve_alpha(_with_file(f, res.alpha)["design"])
+
+
+def test_alpha_mismatch_with_file_raises(sel, bench):
+    f = sel[1] / "alpha_selected.json"
+    wrong = sel[0].alpha + 1.0
+    with pytest.raises(ValueError, match="disagrees"):
+        ex.run_benchmark(_with_file(f, wrong))
+    with pytest.raises(ValueError, match="disagrees"):
+        ex.run_mismatch(_with_file(f, wrong), bench[1])
+    cfg = copy.deepcopy(CFG)
+    cfg["design"]["alpha"] = None
+    with pytest.raises(ValueError, match="alpha_selection_file"):
+        ex.run_benchmark(cfg)
+
+
+def test_mismatch_uses_frozen_alpha(sel, bench, cache, tmp_path):
+    f = sel[1] / "alpha_selected.json"
+    ex.run_mismatch(_with_file(f), bench[1], tmp_path / "m", cache=cache)
+    prov = json.loads((tmp_path / "m" / "provenance.json").read_text())
+    summ = json.loads((tmp_path / "m" / "summary.json").read_text())
+    assert prov["extra"]["alpha"]["alpha_selection_sha256"] == hashlib.sha256(f.read_bytes()).hexdigest()
+    assert summ["alpha"]["value"] == sel[0].alpha
+
+
+def test_alpha_zero_sensitivity_runs_and_is_labelled(cache, tmp_path):
+    cfg = copy.deepcopy(CFG)
+    cfg["design"]["alpha"] = 0.0
+    ex.run_benchmark(cfg, tmp_path / "u", cache=cache)
+    info = json.loads((tmp_path / "u" / "summary.json").read_text())["alpha"]
+    assert info["value"] == 0.0 and info["alpha_selection_sha256"] is None
+    assert info["label"].startswith("not selected: sensitivity")
+
+
+def test_cli_alpha_selection_and_shipped_configs(tmp_path):
+    from pravah import cli
+    from pravah.config import load_config
+    cfg = copy.deepcopy(CFG)
+    cfg["experiment"] = "alpha_selection"
+    (tmp_path / "c.json").write_text(json.dumps(cfg))
+    assert cli.main(["benchmark", "--config", str(tmp_path / "c.json"), "--out", str(tmp_path / "o")]) == 0
+    assert json.loads((tmp_path / "o" / "alpha_selected.json").read_text())["alpha"] in (0.0, 1.0, 100.0)
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1] / "configs"
+    c = {n: load_config(root / f"{n}.json") for n in ("benchmark", "alpha_selection", "benchmark_unregularized",
+                                                      "mismatch", "smoke", "smoke_alpha_selection")}
+    assert c["alpha_selection"]["experiment"] == "alpha_selection"
+    for n in ("benchmark", "alpha_selection", "mismatch"):
+        assert (c[n]["design"]["test_seed"], c[n]["design"]["test_noise_seed"]) == (33, 7000)
+    assert c["alpha_selection"]["design"]["layout_seed"] == 77 and c["benchmark"]["design"]["layout_seed"] == 7
+    assert c["benchmark"]["design"]["alpha"] is None and c["mismatch"]["design"]["alpha"] is None
+    assert c["mismatch"]["design"]["alpha_selection_file"] == c["benchmark"]["design"]["alpha_selection_file"]
+    assert c["mismatch"]["mismatch"]["layouts_from"] == "results/benchmark-final"
+    assert c["benchmark_unregularized"]["design"]["alpha"] == 0.0
+    assert c["benchmark_unregularized"]["design"]["alpha_selection_file"] is None
+    assert c["smoke"]["design"]["alpha_selection_file"] is None and c["smoke"]["design"]["alpha"] == 1.0
+    for n in c:  # every shipped config passes the ensemble guards
+        ex._setup(c[n], need_alpha=False)

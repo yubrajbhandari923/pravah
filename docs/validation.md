@@ -27,15 +27,18 @@ An earlier single execution of `scripts/verify_notebooks.py` (clean kernels) pri
 .venv/bin/python -m pravah simulate  --config configs/reference.json --out results/reference-v0
 .venv/bin/python -m pravah inverse   --config configs/reference.json --out results/inverse-v0 --direct
 .venv/bin/python -m pravah benchmark --config configs/smoke.json     --out results/smoke
-.venv/bin/python -m pravah benchmark --config configs/benchmark.json --out results/benchmark
-.venv/bin/python -m pravah benchmark --config configs/benchmark_unregularized.json --out results/benchmark-unregularized
-.venv/bin/python -m pravah benchmark --config configs/mismatch.json  --out results/mismatch   # needs results/benchmark
+.venv/bin/python -m pravah benchmark --config configs/alpha_selection.json --out results/alpha-selection
+.venv/bin/python -m pravah benchmark --config configs/benchmark.json --out results/benchmark-final   # needs alpha-selection
+.venv/bin/python -m pravah benchmark --config configs/benchmark_unregularized.json --out results/benchmark-unregularized-final
+.venv/bin/python -m pravah benchmark --config configs/mismatch.json  --out results/mismatch-final   # needs benchmark-final
+# exploratory v0 runs (alpha = 1 chosen after seeing test results; test seeds 22/5000): results/benchmark, results/mismatch
 .venv/bin/python scripts/verify_notebooks.py
 ```
 
 Use fresh `--out` directories (e.g. `results/rerun-1`) rather than `--overwrite` so the frozen results stay intact.
-Seeds are explicit in the configs (`design_seed 11`, `test_seed 22`, `design_noise_seed 1000`, `test_noise_seed 5000`,
-`layout_seed 7`); `tests/test_experiments.py::test_benchmark_deterministic` checks a rerun reproduces itself.
+Seeds are explicit in the configs (`design_seed 11`, `test_seed 33`, `validation_seed 44`, `design_noise_seed 1000`,
+`test_noise_seed 7000`, `validation_noise_seed 9000`, `layout_seed 7`; `layout_seed 77` for the alpha selection; the v0
+runs used `test_seed 22`, `test_noise_seed 5000`); `tests/test_experiments.py::test_benchmark_deterministic` checks a rerun reproduces itself.
 Whether a rerun on another machine or other library versions matches these tables to the last digit was **not tested**.
 
 ## Machine and timings
@@ -141,7 +144,30 @@ Reference scenario, 5 sensors every 600 s, S5 held out (4 used, 96 readings), no
 This is the inverse crime: truth and inference use the same solver, grid and (known) physics. Figure:
 [truth vs fit](../results/inverse-v0/truth_vs_fit.png).
 
-## Sensor-placement benchmark (`results/benchmark`, alpha = 1, matched model)
+## Alpha selection and benchmark procedure (final runs: `results/alpha-selection`, `results/*-final`)
+
+Three disjoint scenario ensembles: **design** (seed 11; greedy layout selection), **validation** (seed 44, noise seed
+9000; choice of the Tikhonov strength alpha) and **test** (seed 33, noise seed 7000; every reported error). The code
+refuses to run if any two ensembles share a seed, a noise-seed range or a drawn (q, wind) set. The v0 test scenarios
+(seeds 22 / 5000) were seen while alpha was chosen and are not reused.
+
+Procedure (`configs/alpha_selection.json`, declared before any final test run, independent of every test scenario):
+6 matched validation cases with fresh noise (3 draws each); only alpha-independent layouts (20 seeded random layouts
+per budget, `layout_seed 77`, plus the spread layout; greedy is excluded because its choice depends on alpha); every
+alpha in {0, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10, 100, 1000} is fitted on every layout x case x draw with the prior mean
+at zero (the true emissions are never used: `prior_mean_uses_truth: false`). **Criterion:** mean over budgets,
+layouts, cases and noise draws of the regional RMSE (uniform weights, the same primary metric as the headline); the
+lowest value wins and an exact tie goes to the smaller alpha (no preference for stronger regularisation). Also
+recorded per alpha: median, 90th percentile, the number of rows with RMSE above 10x the no-emission RMSE, and the
+mean source relative error. Output: `alpha_selected.json` (alpha, full criterion table, seeds, q_scale, config
+hash, package versions), `validation_raw.csv`, `figures/criterion_vs_alpha.png`. `benchmark.json` and `mismatch.json`
+read that file (`design.alpha: null`), refuse a conflicting `design.alpha`, and record its sha256. The selected
+alpha, the criterion table and the final numbers are to be filled in from the final runs.
+
+## Sensor-placement benchmark (`results/benchmark`, alpha = 1, matched model) -- EXPLORATORY, superseded by `results/benchmark-final`
+
+**Exploratory: alpha was chosen after seeing the alpha = 0 results on these test scenarios (seeds 22 / 5000); these
+numbers are not an independent evaluation and are superseded by `results/benchmark-final`.**
 
 6 design + 6 test scenarios (q x U(0.5, 1.5), wind speed 0.6-1.6 m/s, direction +/-40 deg around nominal; every
 second scenario has a two-segment wind), 3 noise draws each, 10 x 10 candidate sites, budgets 1/2/3/5/8, 20 random
@@ -202,8 +228,9 @@ elsewhere), or any statement about real networks. With 6 + 6 scenarios and 3 noi
 
 ### Sensitivity: no prior (alpha = 0, `results/benchmark-unregularized`)
 
-The headline uses a weak ridge prior (alpha = 1, in units of q_scale = 1e5 ug/s). **That choice was made after
-seeing the alpha = 0 test results**, so it is not independent of them; it was not searched (one value tried) and
+The exploratory headline above used a weak ridge prior (alpha = 1, in units of q_scale = 1e5 ug/s). **That choice was
+made after seeing the alpha = 0 test results**, so it is not independent of them (superseded: alpha is now selected
+on a validation ensemble, see above; the alpha = 0 run stays a sensitivity run, "not selected: sensitivity"); it was not searched (one value tried) and
 it does not favour greedy (greedy is slightly worse with alpha = 1 at b = 8: 3.6e-4 vs 2.6e-4; the prior mainly rescues
 spread and random), and the alpha = 0 run is kept as a
 sensitivity result. Mean RMSE (median in brackets), uniform weights:
@@ -224,7 +251,10 @@ sensible summary of the alpha = 0 run; the greedy numbers are stable at alpha = 
 the three amplitudes (effective rank 3 for b >= 3). Prior strength, not just layout, therefore decides how bad a
 blind layout looks.
 
-## Model mismatch (`results/mismatch`)
+## Model mismatch (`results/mismatch`) -- EXPLORATORY, superseded by `results/mismatch-final`
+
+**Exploratory: alpha = 1 was chosen after seeing test results on these scenarios; superseded by `results/mismatch-final`,
+which uses layouts from `results/benchmark-final`, the frozen validation-selected alpha and the fresh test seeds.**
 
 Fixed design-stage layouts from `results/benchmark` are evaluated on the same 6 test scenarios x 3 noise draws,
 changing one thing in the truth (the inversion keeps the matched model): **refined truth** (100 x 100 grid, dt/2,
@@ -300,7 +330,7 @@ Also available: `results/benchmark/figures/error_vs_sensors_population.png`,
   The mismatch study shows how fast this assumption costs accuracy (wind error: roughly 15-35x the refined-truth effect at b >= 2).
 * **Small samples.** 6 + 6 scenarios x 3 noise draws, one wind-ensemble definition, one noise level (0.005 ug/m^3),
   one magnitude per mismatch kind, one random-layout seed. sd values describe spread, not uncertainty of the mean.
-* **Prior choice.** alpha = 1 adopted after the alpha = 0 failure (disclosed above).
+* **Prior choice.** The v0 tables used alpha = 1, adopted after the alpha = 0 failure (disclosed above); the final runs use an alpha selected on a separate validation ensemble (one noise level and one scenario family, so it is a choice for this setting).
 * **Greedy is a heuristic**; no optimality claim. Weighted layouts were scored on the uniform metric only under mismatch.
 * **Not measured:** peak memory of `simulate`/`inverse`/verification; CPU contention during timing; behaviour on other
   machines or library versions; oblique-wind numerical diffusion; anything about real data.

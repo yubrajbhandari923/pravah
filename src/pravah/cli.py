@@ -105,11 +105,14 @@ def cmd_inverse(args: argparse.Namespace) -> int:
 
 
 def cmd_benchmark(args: argparse.Namespace) -> int:
-    from .experiments import run_benchmark, run_mismatch
+    from .experiments import run_alpha_selection, run_benchmark, run_mismatch
     cfg = load_config(args.config)
     out = Path(args.out)
     kind = cfg.get("experiment", "benchmark")
-    if kind == "mismatch":
+    if kind == "alpha_selection":
+        sel = run_alpha_selection(cfg, out, overwrite=args.overwrite, progress=print)
+        print(f"selected alpha = {sel.alpha:g} (criterion {sel.selected['selected_criterion']:.4g})")
+    elif kind == "mismatch":
         run_mismatch(cfg, Path(cfg["mismatch"]["layouts_from"]), out, overwrite=args.overwrite, progress=print)
     else:
         run_benchmark(cfg, out, overwrite=args.overwrite, progress=print)
@@ -122,7 +125,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
     for name, fn, helptext in (("simulate", cmd_simulate, "run the forward model"),
                                ("inverse", cmd_inverse, "synthetic source-recovery experiment"),
-                               ("benchmark", cmd_benchmark, "sensor-placement benchmark (or mismatch, per config)")):
+                               ("benchmark", cmd_benchmark, "sensor-placement benchmark (or alpha selection / mismatch, per config)")):
         p = sub.add_parser(name, help=helptext)
         p.add_argument("--config", required=True, help="JSON config (see configs/)")
         p.add_argument("--out", required=True, help="output directory (refused if non-empty)")

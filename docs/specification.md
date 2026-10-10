@@ -51,6 +51,15 @@ forcing are KNOWN in matched experiments. Linear model y = b + A theta + eps wit
 the q >= 0 bound) report how well the data constrain each q_j; `rank` is only a numerical rank.
 Good concentration reconstruction does not imply correct source attribution; see identifiability diagnostics.
 
+### Prior and scaling
+The prior mean is zero for every source: it does not use the true emission rates (`prior_mean_uses_truth: false` in
+`alpha_selected.json`). The solver works in theta = q / q_scale; `q_scale = 1e5` ug/s is a numerical scaling whose
+order of magnitude matches the demo emissions (0.8-1.5e5 ug/s), not a tuned parameter. The linear solution depends
+only on alpha / q_scale^2 (the penalty alpha ||theta||^2 = (alpha / q_scale^2) ||q||^2), so the alpha grid
+{0, 1e-4, ..., 1e3} spans 9 decades of equivalent lambda = alpha / q_scale^2, and q_scale does not pre-decide the
+result. alpha is selected on a validation ensemble separate from the design and test ensembles
+(`run_alpha_selection`) and frozen in `alpha_selected.json` before the test scenarios are run.
+
 ## Error metric
 MSE_w = sum_t sum_cells w dA dt_q (c_hat-c_true)^2 / sum w dA dt_q, with trapezoid time weights dt_q over
 [t_exclude, T]; default w=1, t_exclude=0.

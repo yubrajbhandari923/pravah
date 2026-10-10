@@ -1,0 +1,11 @@
+{
+  "extends": "benchmark.json",
+  "name": "alpha_selection",
+  "experiment": "alpha_selection",
+  "notes": "Chooses the Tikhonov strength alpha on a VALIDATION ensemble (validation_seed 44, noise seed 9000) using only alpha-independent layouts (random layouts with layout_seed 77 + spread; not greedy). Criterion: mean regional RMSE over budgets, layouts, cases and noise reps, uniform weights; lowest wins, exact tie -> smaller alpha. Independent of every test scenario. Prior mean is zero; q_scale 1e5 ug/s, so only alpha/q_scale^2 matters.",
+  "design": {
+    "alpha": null, "alpha_selection_file": null, "n_validation": 6,
+    "alpha_grid": [0.0, 1e-4, 1e-3, 1e-2, 1e-1, 1.0, 10.0, 100.0, 1000.0],
+    "validation_seed": 44, "validation_noise_seed": 9000, "layout_seed": 77
+  }
+}

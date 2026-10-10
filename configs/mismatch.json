@@ -2,9 +2,9 @@
   "extends": "benchmark.json",
   "name": "mismatch",
   "experiment": "mismatch",
-  "notes": "Fixed design-stage layouts from the benchmark run are tested under model mismatch; truth differs from the inference model in one way at a time.",
+  "notes": "Fixed design-stage layouts from the final benchmark run (results/benchmark-final) are tested under model mismatch; truth differs from the inference model in one way at a time. Uses the same frozen alpha (read from design.alpha_selection_file) and the same fresh test seeds as benchmark.json.",
   "mismatch": {
-    "layouts_from": "results/benchmark",
+    "layouts_from": "results/benchmark-final",
     "refine": 2,
     "truth_dt_factor": 0.5,
     "wind_speed_error": 0.2,

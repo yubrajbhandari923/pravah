@@ -7,14 +7,17 @@ fit of any layout is then a tiny bounded least-squares problem (``inverse.solve_
 ``fit_sources``) and its field error MSE_w costs O(n_src^2): with d0 = base - truth,
 ``E(q) = c0 + 2 q.h + q'Gq`` (exact, same weights as ``metrics.field_mse``).
 
-Leakage.  The fit sees only the noisy readings at the layout's sites (y = truth_readings + sigma * noise).  Selection
-(``select_layout`` / ``greedy_trace``) accepts only cases with ``role == 'design'``; ``evaluate_layouts`` accepts
-only ``role == 'test'`` cases (override with allow_design=True for diagnostics).  ``assert_disjoint`` checks that
-design and test cases share no noise seed, name or truth fingerprint.
+Leakage.  The fit sees only the noisy readings at the layout's sites (y = truth_readings + sigma * noise).  Three
+roles exist.  Layout selection (``select_layout`` / ``greedy_trace``) accepts only ``role == 'design'`` cases;
+``evaluate_layouts`` accepts only ``role == 'test'`` cases (override with allow_design=True for diagnostics);
+``evaluate_validation`` accepts only ``role == 'validation'`` cases and exists for the Tikhonov-strength selection
+(``experiments.run_alpha_selection``).  ``assert_disjoint`` checks that the design, test and validation cases share
+no noise seed, name or truth fingerprint.
 
 Baked at build time: obs_times, t_exclude, weight and eval_sites of the ``DesignOptions`` passed to ``build_case``
 (fit-time options must carry the same values; this is checked).  noise_std, alpha, prior, q_scale are applied at fit
-time.  Row order of the operator is time-major then sensor, as in ``inverse``.
+time, so one built case can be fitted with many alphas (``dataclasses.replace(options, alpha=a)``) without any
+forward solve.  Row order of the operator is time-major then sensor, as in ``inverse``.
 
 Feasibility.  Choosing `budget` sites with pairwise distance >= min_separation is a maximum-independent-set problem
 (NP-hard).  ``InfeasibleError`` is raised exactly when budget > number of allowed sites; otherwise detection is
@@ -41,6 +44,7 @@ from .observations import SensorLayout, candidate_hull, sample
 Layout = tuple[int, ...]  # sorted, unique candidate indices
 N_FEASIBILITY_ORDERS = 200
 MAX_RANDOM_ATTEMPTS = 200
+ROLES = ("design", "test", "validation")
 
 
 class InfeasibleError(ValueError):
@@ -236,7 +240,7 @@ def _build_key(options: DesignOptions, obs_times: tuple[float, ...]) -> str:
 class DesignCase:
     """One truth scenario + inference model, reduced to arrays (see module docstring).  No truth fields."""
     name: str
-    role: str  # 'design' | 'test'
+    role: str  # 'design' | 'test' | 'validation'
     q_true: np.ndarray  # follows the TRUTH scenario's sources
     noise_seed: int
     truth_fingerprint: str  # truth scenario + q_true
@@ -280,8 +284,8 @@ def build_case(name: str, role: str, truth_scenario: Scenario, q_true: np.ndarra
     Different output times raise ValueError (no time interpolation).  ``truth_field`` may pass an already computed
     ``simulate(truth_scenario, q_true, options.solver).concentration`` (saves the solve; the caller guarantees it).  ``forward`` replaces ``simulate`` for both the inference responses
     and the truth run (see ``forward.ForwardSolver``)."""
-    if role not in ("design", "test"):
-        raise ValueError("role must be 'design' or 'test'")
+    if role not in ROLES:
+        raise ValueError("role must be 'design', 'test' or 'validation'")
     q_true = np.asarray(q_true, dtype=float)
     n_src = len(inference_scenario.sources)
     if q_true.shape != (len(truth_scenario.sources),):
@@ -433,13 +437,20 @@ def select_layout(candidates: Candidates, budget: int, design_cases: list[Design
     return greedy_trace(candidates, budget, design_cases, constraints, options).layout
 
 
-def assert_disjoint(design_cases: list[DesignCase], test_cases: list[DesignCase]) -> None:
-    """Raise ValueError if design and test cases share a noise seed, a name or a truth fingerprint."""
+def assert_disjoint(design_cases: list[DesignCase], test_cases: list[DesignCase],
+                    validation_cases: list[DesignCase] | None = None) -> None:
+    """Raise ValueError if any two of the design, test and (optional) validation case sets share a noise seed, a
+    name or a truth fingerprint."""
+    sets = {"design": design_cases, "test": test_cases, **({} if validation_cases is None
+                                                           else {"validation": validation_cases})}
+    names = list(sets)
     for what, get in (("noise seed", lambda c: c.noise_seed), ("name", lambda c: c.name),
                       ("truth fingerprint", lambda c: c.truth_fingerprint)):
-        shared = {get(c) for c in design_cases} & {get(c) for c in test_cases}
-        if shared:
-            raise ValueError(f"design and test cases share {what}: {sorted(shared, key=str)}")
+        for i, a in enumerate(names):
+            for b in names[i + 1:]:
+                shared = {get(c) for c in sets[a]} & {get(c) for c in sets[b]}
+                if shared:
+                    raise ValueError(f"{a} and {b} cases share {what}: {sorted(shared, key=str)}")
 
 
 # ------------------------------------------------------------------ evaluation
@@ -450,13 +461,29 @@ COLUMNS = ["method", "layout_id", "budget", "case", "rep", "sensors", "mse_w", "
 def evaluate_layouts(layouts: dict[str, list[Layout]], test_cases: list[DesignCase], options: DesignOptions,
                      n_noise: int | None = None, allow_design: bool = False) -> pd.DataFrame:
     """Long-form table: one row per (method, layout, case, rep).  layout_id = '<method>-<k>'.  Test cases bring their
-    own fresh noise (built with a seed disjoint from the design cases').  n_noise limits the reps used."""
+    own fresh noise (built with a seed disjoint from the design cases').  n_noise limits the reps used.
+    Accepts only role='test' cases (role='design' too with allow_design=True; never 'validation')."""
     if not allow_design:
         _require_role(test_cases, "test", "evaluate_layouts")
+    elif any(c.role == "validation" for c in test_cases):
+        raise ValueError("evaluate_layouts never accepts role='validation' cases; use evaluate_validation")
+    return _evaluate_rows(layouts, test_cases, options, n_noise)
+
+
+def evaluate_validation(layouts: dict[str, list[Layout]], validation_cases: list[DesignCase],
+                        options: DesignOptions, n_noise: int | None = None) -> pd.DataFrame:
+    """Same table as ``evaluate_layouts`` for role='validation' cases only (used to choose alpha, never for layouts
+    or reported test results)."""
+    _require_role(validation_cases, "validation", "evaluate_validation")
+    return _evaluate_rows(layouts, validation_cases, options, n_noise)
+
+
+def _evaluate_rows(layouts: dict[str, list[Layout]], cases: list[DesignCase], options: DesignOptions,
+                   n_noise: int | None) -> pd.DataFrame:
     rows: list[dict[str, Any]] = []
     for method, lays in layouts.items():
         for k, lay in enumerate(lays):
-            for c in test_cases:
+            for c in cases:
                 reps = c.n_noise if n_noise is None else n_noise
                 if reps > c.n_noise:
                     raise ValueError(f"case {c.name} has only {c.n_noise} noise reps")

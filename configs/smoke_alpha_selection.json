@@ -1,0 +1,6 @@
+{
+  "extends": "smoke.json",
+  "name": "smoke_alpha_selection",
+  "experiment": "alpha_selection",
+  "notes": "Plumbing check of the alpha-selection experiment on the coarse smoke problem (3 alphas, 2 validation cases). Not for scientific conclusions."
+}
