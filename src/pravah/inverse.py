@@ -228,10 +228,6 @@ def fit_sources(scenario: Scenario, obs: Observations, options: InferenceOptions
     """
     t0 = _time.perf_counter()
     n = len(scenario.sources)
-    q_scale = _vec(options.q_scale, n, 1e5, "q_scale")
-    prior = _vec(options.prior, n, 0.0, "prior")
-    if np.any(q_scale <= 0):
-        raise ValueError("q_scale must be positive")
     ids = list(obs.layout.ids)
     unknown = [s for s in options.heldout_ids if s not in ids]
     if unknown:
@@ -242,34 +238,21 @@ def fit_sources(scenario: Scenario, obs: Observations, options: InferenceOptions
     layout = obs.layout.select(keep)
     times = np.asarray(obs.times if obs.times else obs.values["time"].values, dtype=float)
     y = np.asarray(obs.values.transpose("time", "sensor").values, dtype=float)[:, keep]
-    sigma = np.asarray(obs.noise_std, dtype=float)[keep]
-    if np.all(sigma == 0):
-        sigma = np.ones_like(sigma)
-    elif np.any(sigma == 0):
-        raise ValueError("mixed zero and non-zero noise_std among the used sensors is not supported")
-    w = np.broadcast_to(1.0 / sigma, y.shape).reshape(-1)  # time-major then sensor, like the operator
+    sigma = np.broadcast_to(np.asarray(obs.noise_std, dtype=float)[keep], y.shape).reshape(-1)  # time-major, sensor
     yv = y.reshape(-1)
+    w = _whitening(sigma)  # raises early on a mix of zero and non-zero sigma
 
     _check_linear(scenario)
     cache = cache if cache is not None else ResponseCache()
     resp = cache.get(scenario, options.solver, options.q_ref)
     b, A = resp.operator(layout, times)
-    Aw = (A * w[:, None]) * q_scale[None, :]  # scaled, whitened, unregularised
-    rhs = (yv - b) * w
-    m = Aw.shape[0]
-    th_prior = prior / q_scale
-    sa = float(np.sqrt(options.alpha))
-    reg = sa * np.eye(n)
-    A_stack = np.vstack([Aw, reg])
-    s, rank, cond = _svd_diag(Aw)
-    s_reg, _, cond_reg = _svd_diag(A_stack)
-
     if options.method == "linear":
-        res = optimize.lsq_linear(A_stack, np.concatenate([rhs, sa * th_prior]), bounds=(0.0, np.inf),
-                                  method="bvls", tol=1e-14, max_iter=1000)
-        theta, success, message = np.asarray(res.x, dtype=float), bool(res.success), str(res.message)
-        r_data = Aw @ theta - rhs
+        diag = solve_linear(b, A, yv, sigma, options)
+        q_hat, success, message, r_norm = diag.q_hat, diag.success, diag.message, diag.weighted_residual
     else:
+        diag = _linear_system(b, A, yv, sigma, options)  # diagnostics from the cached operator (see docstring)
+        q_scale, sa, th_prior = diag.q_scale, diag.sa, diag.prior / diag.q_scale
+
         def fun(th: np.ndarray) -> np.ndarray:
             pred = sample(simulate(scenario, th * q_scale, options.solver).concentration, layout, times)
             r = (np.asarray(pred.values, dtype=float).reshape(-1) - yv) * w
@@ -277,14 +260,97 @@ def fit_sources(scenario: Scenario, obs: Observations, options: InferenceOptions
 
         ls = optimize.least_squares(fun, np.ones(n), bounds=(0.0, np.inf), x_scale=1.0, ftol=1e-14, xtol=1e-14,
                                     gtol=1e-14, max_nfev=200)
-        theta, success, message = np.asarray(ls.x, dtype=float), bool(ls.success), str(ls.message)
-        r_data = np.asarray(ls.fun, dtype=float)[:m]
+        q_hat, success, message = np.asarray(ls.x, dtype=float) * q_scale, bool(ls.success), str(ls.message)
+        r_norm = float(np.linalg.norm(np.asarray(ls.fun, dtype=float)[:A.shape[0]]))
     return FitResult(
-        q_hat=theta * q_scale, success=success, message=message, weighted_residual=float(np.linalg.norm(r_data)),
-        n_obs=m, singular_values=s, rank=rank, condition=cond, effective_rank=int(np.sum(s > 1.0)),
-        q_std=q_scale * _posterior_std(A_stack), reg_singular_values=s_reg, reg_condition=cond_reg,
-        method=options.method, q_scale=q_scale, alpha=float(options.alpha), prior=prior,
-        heldout_ids=tuple(options.heldout_ids), runtime_s=_time.perf_counter() - t0)
+        q_hat=q_hat, success=success, message=message, weighted_residual=r_norm,
+        n_obs=A.shape[0], singular_values=diag.singular_values, rank=diag.rank, condition=diag.condition,
+        effective_rank=diag.effective_rank, q_std=diag.q_std, reg_singular_values=diag.reg_singular_values,
+        reg_condition=diag.reg_condition, method=options.method, q_scale=diag.q_scale, alpha=float(options.alpha),
+        prior=diag.prior, heldout_ids=tuple(options.heldout_ids), runtime_s=_time.perf_counter() - t0)
+
+
+def _whitening(sigma: np.ndarray) -> np.ndarray:
+    """Row weights 1/sigma; if all sigma are 0, unit weights; a mix of zero and non-zero raises ValueError."""
+    sigma = np.asarray(sigma, dtype=float)
+    if np.all(sigma == 0):
+        return np.ones_like(sigma)
+    if np.any(sigma == 0):
+        raise ValueError("mixed zero and non-zero noise_std among the used sensors is not supported")
+    return 1.0 / sigma
+
+
+@dataclass(frozen=True)
+class _System:
+    """Scaled, whitened, regularised least-squares system and its identifiability diagnostics (no optimisation)."""
+    Aw: np.ndarray  # scaled, whitened, unregularised
+    rhs: np.ndarray
+    A_stack: np.ndarray  # Aw with the Tikhonov rows appended
+    q_scale: np.ndarray
+    prior: np.ndarray
+    sa: float  # sqrt(alpha)
+    singular_values: np.ndarray
+    rank: int
+    condition: float
+    effective_rank: int
+    q_std: np.ndarray
+    reg_singular_values: np.ndarray
+    reg_condition: float
+
+
+def _linear_system(b: np.ndarray, A: np.ndarray, y: np.ndarray, sigma: np.ndarray,
+                   options: InferenceOptions) -> _System:
+    n = A.shape[1]
+    q_scale = _vec(options.q_scale, n, 1e5, "q_scale")
+    prior = _vec(options.prior, n, 0.0, "prior")
+    if np.any(q_scale <= 0):
+        raise ValueError("q_scale must be positive")
+    w = _whitening(sigma)
+    Aw = (A * w[:, None]) * q_scale[None, :]
+    rhs = (np.asarray(y, dtype=float) - b) * w
+    sa = float(np.sqrt(options.alpha))
+    A_stack = np.vstack([Aw, sa * np.eye(n)])
+    s, rank, cond = _svd_diag(Aw)
+    s_reg, _, cond_reg = _svd_diag(A_stack)
+    return _System(Aw, rhs, A_stack, q_scale, prior, sa, s, rank, cond, int(np.sum(s > 1.0)),
+                   q_scale * _posterior_std(A_stack), s_reg, cond_reg)
+
+
+@dataclass(frozen=True)
+class LinearSolution:
+    """Result of ``solve_linear``: the bounded solution plus the diagnostics that FitResult reports."""
+    q_hat: np.ndarray
+    success: bool  # optimiser convergence ONLY
+    message: str
+    weighted_residual: float
+    singular_values: np.ndarray
+    rank: int
+    condition: float
+    effective_rank: int
+    q_std: np.ndarray
+    reg_singular_values: np.ndarray
+    reg_condition: float
+    q_scale: np.ndarray
+    prior: np.ndarray
+
+
+def solve_linear(b: np.ndarray, A: np.ndarray, y: np.ndarray, sigma: np.ndarray,
+                 options: InferenceOptions = InferenceOptions()) -> LinearSolution:
+    """The linear route of ``fit_sources`` on an explicit operator: min over q >= 0 of
+    ||(b + A q - y)/sigma||^2 + alpha ||theta - prior/q_scale||^2 with theta = q / q_scale (bounded-variable LS).
+
+    b, y: (m,); A: (m, n_src); sigma: (m,) per-row noise std (all 0 -> unit weights).  Row order is irrelevant.
+    ``fit_sources`` (method 'linear') and the sensor-design code both call this, so they use identical maths."""
+    sy = _linear_system(b, A, y, sigma, options)
+    res = optimize.lsq_linear(sy.A_stack, np.concatenate([sy.rhs, sy.sa * (sy.prior / sy.q_scale)]),
+                              bounds=(0.0, np.inf), method="bvls", tol=1e-14, max_iter=1000)
+    theta = np.asarray(res.x, dtype=float)
+    return LinearSolution(
+        q_hat=theta * sy.q_scale, success=bool(res.success), message=str(res.message),
+        weighted_residual=float(np.linalg.norm(sy.Aw @ theta - sy.rhs)), singular_values=sy.singular_values,
+        rank=sy.rank, condition=sy.condition, effective_rank=sy.effective_rank, q_std=sy.q_std,
+        reg_singular_values=sy.reg_singular_values, reg_condition=sy.reg_condition, q_scale=sy.q_scale,
+        prior=sy.prior)
 
 
 def reconstruct(scenario: Scenario, fit: FitResult, solver: SolverOptions = SolverOptions()) -> FieldResult:

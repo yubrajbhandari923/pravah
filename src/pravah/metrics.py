@@ -14,6 +14,28 @@ def _arr(da: xr.DataArray) -> np.ndarray:
     return np.asarray(da.transpose("time", "y", "x").values, dtype=float)
 
 
+def quadrature_weights(times: np.ndarray, ny: int, nx: int, weight: np.ndarray | None, t_exclude: float
+                       ) -> tuple[np.ndarray, np.ndarray, np.ndarray, float]:
+    """(sel, dt, w, den) of the MSE_w definition: boolean mask of the used output times, trapezoid time weights dt over
+    them, the (ny, nx) weight map w and den = sum(w) * sum(dt), so MSE_w = einsum(dt, diff2[sel], w) / den."""
+    t = np.asarray(times, dtype=float)
+    sel = t >= t_exclude - _TOL * max(1.0, abs(t[-1]))
+    t_sel = t[sel]
+    if t_sel.size < 2:
+        raise ValueError("fewer than two output times at or after t_exclude")
+    w = np.ones((ny, nx)) if weight is None else np.asarray(weight, dtype=float)
+    if w.shape != (ny, nx) or not np.all(np.isfinite(w)) or np.any(w < 0):
+        raise ValueError("weight must be a finite non-negative (ny, nx) array")
+    dt = np.zeros(t_sel.size)
+    h = np.diff(t_sel)
+    dt[:-1] += h / 2
+    dt[1:] += h / 2
+    den = float(w.sum() * dt.sum())
+    if not den > 0:
+        raise ValueError("zero weight denominator")
+    return sel, dt, w, den
+
+
 def field_mse(est: xr.DataArray, truth: xr.DataArray, weight: np.ndarray | None = None,
               t_exclude: float = 0.0) -> float:
     """MSE_w = sum_t sum_cells w dA dt_q (est-truth)^2 / sum w dA dt_q.
@@ -25,22 +47,8 @@ def field_mse(est: xr.DataArray, truth: xr.DataArray, weight: np.ndarray | None 
     for dim in ("time", "x", "y"):
         if est.sizes[dim] != truth.sizes[dim] or not np.allclose(est[dim].values, truth[dim].values):
             raise ValueError(f"est and truth differ in coordinate {dim!r}")
-    t = np.asarray(est["time"].values, dtype=float)
-    sel = t >= t_exclude - _TOL * max(1.0, abs(t[-1]))
-    t_sel = t[sel]
-    if t_sel.size < 2:
-        raise ValueError("fewer than two output times at or after t_exclude")
-    ny, nx = est.sizes["y"], est.sizes["x"]
-    w = np.ones((ny, nx)) if weight is None else np.asarray(weight, dtype=float)
-    if w.shape != (ny, nx) or not np.all(np.isfinite(w)) or np.any(w < 0):
-        raise ValueError("weight must be a finite non-negative (ny, nx) array")
-    dt = np.zeros(t_sel.size)
-    h = np.diff(t_sel)
-    dt[:-1] += h / 2
-    dt[1:] += h / 2
-    den = float(w.sum() * dt.sum())
-    if not den > 0:
-        raise ValueError("zero weight denominator")
+    sel, dt, w, den = quadrature_weights(np.asarray(est["time"].values, dtype=float), est.sizes["y"], est.sizes["x"],
+                                         weight, t_exclude)
     diff2 = (_arr(est) - _arr(truth))[sel] ** 2
     return float(np.einsum("t,tyx,yx->", dt, diff2, w) / den)
 
