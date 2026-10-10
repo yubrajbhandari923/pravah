@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pravah"
+version = "0.1.0"
+description = "Regional air-quality simulation, synthetic inverse problems and sensor-placement experiments"
+requires-python = ">=3.11"
+dependencies = ["fipy", "numpy", "scipy", "xarray", "netcdf4", "pandas", "matplotlib", "jupyter", "ipykernel"]
+
+[project.optional-dependencies]
+widgets = ["ipywidgets"]
+dev = ["pytest", "pyright", "nbformat", "nbclient"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["slow: longer numerical checks"]
+
+[tool.pyright]
+include = ["src/pravah"]
+pythonVersion = "3.11"
+typeCheckingMode = "standard"
+venvPath = "."
+venv = ".venv"

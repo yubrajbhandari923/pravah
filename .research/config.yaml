@@ -1,0 +1,49 @@
+# Research project configuration (human-editable).
+# project.goal is shown at the top of the Resume view and in .research/context/current.md.
+# agent_policy limits are enforced for agents (exit code 3); humans get warnings unless enforce_for_humans.
+# backends.slurm.setup: shell lines run before every SLURM job, e.g. "module load python/3.11".
+project: {name: pravah, description: '', goal: Simulate the air pollution field evolution, status: active,
+  created_at: '2026-10-10T00:33:02-04:00', git_repo: null, default_backend: local}
+agent_policy: {max_runs_without_synthesis: 5, max_failed_runs_without_review: 3, require_experiment_registration: true,
+  require_synthesis_before_new_experiment: true, enforce_for_humans: false}
+backends:
+  slurm:
+    partition: null
+    account: null
+    time: 01:00:00
+    cpus: null
+    mem: null
+    gpus: null
+    extra_args: []
+    setup: []
+artifacts: {hash_max_bytes: 67108864}
+resume: {stale_checkpoint_days: 14}
+agents:
+  default_profile: claude
+  roles: {planner: null, implementer: null, verifier: null, analyst: null}
+  profiles:
+    claude:
+      command: claude
+      args: []
+      model: null
+      model_flag: --model
+      prompt_flag: null
+    codex:
+      command: codex
+      args: []
+      model: null
+      model_flag: -m
+      prompt_flag: null
+    gemini:
+      command: gemini
+      args: []
+      model: null
+      model_flag: -m
+      prompt_flag: -i
+verification: {require_review_for_supported: true, independent_reviewer: true, require_evidence_for_supported: true,
+  checks_gate_task_completion: true, check_timeout_seconds: 600}
+coordination: {stale_task_hours: 4}
+context: {max_chars: 12000}
+skills:
+  link: [claude, agents]
+git: {commit_checkpoints: false}
