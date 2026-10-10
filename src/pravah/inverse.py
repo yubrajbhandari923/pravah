@@ -22,6 +22,7 @@ import dataclasses
 import hashlib
 import json
 import time as _time
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal, cast
@@ -33,7 +34,7 @@ from scipy import optimize
 
 from . import __version__
 from .config import SCHEMA_VERSION, FieldResult, Initial, Scenario, SolverOptions, to_dict
-from .forward import simulate
+from .forward import ForwardSolver, check_field_result, simulate
 from .observations import Observations, SensorLayout, sample
 
 _FIPY_VERSION = str(getattr(_fipy, "__version__", "unknown"))
@@ -83,9 +84,30 @@ class Responses:
         return np.asarray(b, dtype=float), np.stack(cols, axis=1)
 
 
-def cache_key(scenario: Scenario, solver: SolverOptions, q_ref: float) -> str:
+def forward_identity(forward: ForwardSolver) -> str:
+    """module.qualname of the forward solver (class for instances) plus its optional ``forward_id`` attribute."""
+    obj: Any = forward
+    name = getattr(obj, "__qualname__", None)
+    if name is None:
+        obj = type(forward)
+        name = obj.__qualname__
+    return f"{obj.__module__}.{name}|{getattr(forward, 'forward_id', '')}"
+
+
+def run_forward(forward: ForwardSolver, scenario: Scenario, q: Sequence[float] | np.ndarray,
+                solver: SolverOptions) -> FieldResult:
+    """Call ``forward``; a non-default solver's result is checked against the ForwardSolver contract."""
+    res = forward(scenario, q, solver)
+    if forward is not simulate:
+        check_field_result(res, scenario)
+    return res
+
+
+def cache_key(scenario: Scenario, solver: SolverOptions, q_ref: float, forward: ForwardSolver = simulate) -> str:
     payload = {"scenario": to_dict(scenario), "solver": to_dict(solver), "schema": SCHEMA_VERSION, "q_ref": q_ref,
                "pravah": __version__, "fipy": _FIPY_VERSION}
+    if forward is not simulate:  # default keeps the pre-interface keys valid
+        payload["forward"] = forward_identity(forward)
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
 
@@ -99,12 +121,12 @@ class ResponseCache:
         self.hits = 0
         self.misses = 0
 
-    def get(self, scenario: Scenario, solver: SolverOptions = SolverOptions(), q_ref: float = Q_REF_DEFAULT
-            ) -> Responses:
+    def get(self, scenario: Scenario, solver: SolverOptions = SolverOptions(), q_ref: float = Q_REF_DEFAULT,
+            forward: ForwardSolver = simulate) -> Responses:
         _check_linear(scenario)
         if not q_ref > 0:
             raise ValueError("q_ref must be positive")
-        key = cache_key(scenario, solver, q_ref)
+        key = cache_key(scenario, solver, q_ref, forward)
         if key in self._mem:
             self.hits += 1
             return self._mem[key]
@@ -114,7 +136,7 @@ class ResponseCache:
                 resp = Responses(z["base"], z["g"], z["times"], z["x"], z["y"], float(z["q_ref"]))
             self.hits += 1
         else:
-            resp = compute_responses(scenario, solver, q_ref)
+            resp = compute_responses(scenario, solver, q_ref, forward)
             self.misses += 1
             if path is not None:
                 path.parent.mkdir(parents=True, exist_ok=True)
@@ -124,18 +146,18 @@ class ResponseCache:
 
 
 def compute_responses(scenario: Scenario, solver: SolverOptions = SolverOptions(),
-                      q_ref: float = Q_REF_DEFAULT) -> Responses:
+                      q_ref: float = Q_REF_DEFAULT, forward: ForwardSolver = simulate) -> Responses:
     """n_src + 1 forward solves: base (q=0, configured IC/background) and unit responses (zero IC, zero bg)."""
     _check_linear(scenario)
     n = len(scenario.sources)
-    base_da = simulate(scenario, np.zeros(n), solver).concentration
+    base_da = run_forward(forward, scenario, np.zeros(n), solver).concentration
     zero = dataclasses.replace(scenario, initial=Initial(),
                                boundary=dataclasses.replace(scenario.boundary, background=0.0))
     g = []
     for j in range(n):
         q = np.zeros(n)
         q[j] = q_ref
-        g.append(simulate(zero, q, solver).concentration.values / q_ref)
+        g.append(run_forward(forward, zero, q, solver).concentration.values / q_ref)
     return Responses(np.asarray(base_da.values, dtype=float), np.stack(g), np.asarray(base_da["time"].values),
                      np.asarray(base_da["x"].values), np.asarray(base_da["y"].values), q_ref)
 
@@ -217,7 +239,7 @@ def _vec(v: tuple[float, ...] | None, n: int, default: float, name: str) -> np.n
 
 
 def fit_sources(scenario: Scenario, obs: Observations, options: InferenceOptions = InferenceOptions(),
-                cache: ResponseCache | None = None) -> FitResult:
+                cache: ResponseCache | None = None, forward: ForwardSolver = simulate) -> FitResult:
     """Fit q >= 0 to the readings of the non-held-out sensors.  Truth is not an input.
 
     Residual r = (b + A q - y) / sigma (sigma per sensor; if all sigma are 0, unit weights, so r is in ug/m^3; a mix
@@ -244,7 +266,7 @@ def fit_sources(scenario: Scenario, obs: Observations, options: InferenceOptions
 
     _check_linear(scenario)
     cache = cache if cache is not None else ResponseCache()
-    resp = cache.get(scenario, options.solver, options.q_ref)
+    resp = cache.get(scenario, options.solver, options.q_ref, forward)
     b, A = resp.operator(layout, times)
     if options.method == "linear":
         diag = solve_linear(b, A, yv, sigma, options)
@@ -254,7 +276,7 @@ def fit_sources(scenario: Scenario, obs: Observations, options: InferenceOptions
         q_scale, sa, th_prior = diag.q_scale, diag.sa, diag.prior / diag.q_scale
 
         def fun(th: np.ndarray) -> np.ndarray:
-            pred = sample(simulate(scenario, th * q_scale, options.solver).concentration, layout, times)
+            pred = sample(run_forward(forward, scenario, th * q_scale, options.solver).concentration, layout, times)
             r = (np.asarray(pred.values, dtype=float).reshape(-1) - yv) * w
             return np.concatenate([r, sa * (th - th_prior)])
 
@@ -353,9 +375,10 @@ def solve_linear(b: np.ndarray, A: np.ndarray, y: np.ndarray, sigma: np.ndarray,
         prior=sy.prior)
 
 
-def reconstruct(scenario: Scenario, fit: FitResult, solver: SolverOptions = SolverOptions()) -> FieldResult:
+def reconstruct(scenario: Scenario, fit: FitResult, solver: SolverOptions = SolverOptions(),
+                forward: ForwardSolver = simulate) -> FieldResult:
     """True forward run with the fitted amplitudes."""
-    return simulate(scenario, fit.q_hat, solver)
+    return run_forward(forward, scenario, fit.q_hat, solver)
 
 
 def reconstruct_linear(responses: Responses, fit: FitResult) -> xr.DataArray:

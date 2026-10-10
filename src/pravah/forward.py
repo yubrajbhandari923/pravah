@@ -12,7 +12,7 @@ from __future__ import annotations
 import math
 import time as _time
 from collections.abc import Sequence
-from typing import Any, cast
+from typing import Any, Protocol, cast
 
 import numpy as np
 import xarray as xr
@@ -203,3 +203,40 @@ def simulate(scenario: Scenario, q: Sequence[float] | np.ndarray,
     }
     return FieldResult(concentration=conc, budget=budget, status="ok",
                        runtime_s=_time.perf_counter() - t_wall, diagnostics=cast(dict[str, Any], diagnostics))
+
+
+class ForwardSolver(Protocol):
+    """Interface a replacement solver (e.g. a neural surrogate for a fixed family of scenarios) must satisfy.
+
+    It is called exactly like ``simulate`` and must return a ``FieldResult`` whose ``concentration`` has dims
+    ("time", "y", "x"), coords time = ``scenario.output_times``, x/y = cell centres (``sources.cell_centres``),
+    attrs["units"] == "microgram/m^3", and finite values.  ``budget`` may be None; ``status`` is a string.
+    A solver only needs to support the scenarios it was built for.  Optionally give it a ``forward_id`` string
+    attribute (e.g. a weights hash) to separate cached responses of different parametrisations.
+    ``check_field_result`` validates the contract."""
+
+    def __call__(self, scenario: Scenario, q: Sequence[float] | np.ndarray,
+                 solver: SolverOptions = ...) -> FieldResult: ...
+
+
+def check_field_result(res: FieldResult, scenario: Scenario) -> None:
+    """Raise ValueError (clear message) if ``res`` violates the ``ForwardSolver`` output contract for ``scenario``."""
+    da = res.concentration
+    if tuple(da.dims) != ("time", "y", "x"):
+        raise ValueError(f"concentration dims must be ('time', 'y', 'x'), got {tuple(da.dims)}")
+    x, y = cell_centres(scenario)
+    for name, want in (("time", np.asarray(scenario.output_times, dtype=float)), ("y", y), ("x", x)):
+        if name not in da.coords:
+            raise ValueError(f"concentration is missing coordinate {name!r}")
+        got = np.asarray(da[name].values, dtype=float)
+        if got.shape != want.shape or not np.allclose(got, want, rtol=0, atol=1e-9):
+            raise ValueError(f"coordinate {name!r} differs from the scenario's "
+                             f"{'output times' if name == 'time' else 'cell centres'} (shape {got.shape} vs "
+                             f"{want.shape}, max |diff| "
+                             f"{np.max(np.abs(got - want)) if got.shape == want.shape else float('nan'):.3g})")
+    if da.attrs.get("units") != "microgram/m^3":
+        raise ValueError(f"concentration attrs['units'] must be 'microgram/m^3', got {da.attrs.get('units')!r}")
+    if not np.all(np.isfinite(np.asarray(da.values, dtype=float))):
+        raise ValueError("concentration contains non-finite values")
+    if not isinstance(res.status, str):
+        raise ValueError(f"status must be a str, got {type(res.status).__name__}")

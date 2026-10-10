@@ -33,8 +33,8 @@ import pandas as pd
 import xarray as xr
 
 from .config import Domain, Scenario, SolverOptions, to_dict
-from .inverse import InferenceOptions, ResponseCache, solve_linear
-from .forward import simulate
+from .inverse import InferenceOptions, ResponseCache, run_forward, solve_linear
+from .forward import ForwardSolver, simulate
 from .metrics import quadrature_weights, source_error
 from .observations import SensorLayout, candidate_hull, sample
 
@@ -269,7 +269,7 @@ class DesignCase:
 def build_case(name: str, role: str, truth_scenario: Scenario, q_true: np.ndarray, inference_scenario: Scenario,
                candidates: Candidates, options: DesignOptions, noise_seed: int, n_noise: int,
                cache: ResponseCache, error_field: xr.DataArray | None = None,
-               truth_field: xr.DataArray | None = None) -> DesignCase:
+               truth_field: xr.DataArray | None = None, forward: ForwardSolver = simulate) -> DesignCase:
     """Run one truth simulation and precompute everything fits need.
 
     truth_scenario may differ from inference_scenario (wind, resolution, extra sources); q_true has one entry per
@@ -278,7 +278,8 @@ def build_case(name: str, role: str, truth_scenario: Scenario, q_true: np.ndarra
     error compares the inference model with `error_field` (default: the native truth), which must be on the
     inference model's (time, y, x) coordinates exactly; for a refined truth the caller passes a block-averaged field.
     Different output times raise ValueError (no time interpolation).  ``truth_field`` may pass an already computed
-    ``simulate(truth_scenario, q_true, options.solver).concentration`` (saves the solve; the caller guarantees it)."""
+    ``simulate(truth_scenario, q_true, options.solver).concentration`` (saves the solve; the caller guarantees it).  ``forward`` replaces ``simulate`` for both the inference responses
+    and the truth run (see ``forward.ForwardSolver``)."""
     if role not in ("design", "test"):
         raise ValueError("role must be 'design' or 'test'")
     q_true = np.asarray(q_true, dtype=float)
@@ -290,8 +291,9 @@ def build_case(name: str, role: str, truth_scenario: Scenario, q_true: np.ndarra
     if n_noise < 1:
         raise ValueError("n_noise must be >= 1")
     obs_times = _times(options, inference_scenario)
-    resp = cache.get(inference_scenario, options.solver)
-    truth = truth_field if truth_field is not None else simulate(truth_scenario, q_true, options.solver).concentration
+    resp = cache.get(inference_scenario, options.solver, forward=forward)
+    truth = (truth_field if truth_field is not None
+             else run_forward(forward, truth_scenario, q_true, options.solver).concentration)
     ref = truth if error_field is None else error_field
     for dim, coord in (("time", resp.times), ("y", resp.y), ("x", resp.x)):
         v = np.asarray(ref[dim].values, dtype=float)

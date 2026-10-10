@@ -138,3 +138,22 @@ uv venv --python 3.12 .venv && uv pip install -e ".[dev]"
 ```
 Scientific runs go through `.research/bin/research run exec EXP-… -- <cmd>`. Measured numbers go to
 docs/validation.md.
+
+## Status / deviations (added after v0)
+
+The plan above is kept as written; where the implementation differs, the code and `docs/specification.md` are
+authoritative. Results and tolerances: `docs/validation.md`. Differences found by comparing this plan with `src/`:
+
+- No `python -m pravah verify` subcommand: the refinement studies are `scripts/verification.py --out results/verification`.
+- No `domain.py`; the grid lives in `config.Domain` and `sources.cell_centres`.
+- `SolverOptions` has `convection` and `tolerance` (not `lu`). Linearity is the function `inverse.is_linear(scenario)`,
+  not a `Scenario.linear_in_sources` field. Unit responses use a fixed `q_ref = 1e5` ug/s (a numerical scaling only), not `q_scale_j`.
+- Greedy selection is `design.greedy_trace` / `select_layout` (nested layouts), not `greedy_layout`. `FitResult` also carries
+  `effective_rank` and `q_std` (always an array). `fit_layout` and the benchmark report both.
+- Added after the plan: `forward.ForwardSolver` / `check_field_result` and the optional `forward=` keyword (inverse, design);
+  `configs/benchmark_unregularized.json` (alpha = 0 sensitivity); `greedy_weighted` and the uniform/population metrics.
+- The headline benchmark uses alpha = 1, adopted after the alpha = 0 run showed unbounded errors for plume-blind layouts.
+- The numerical-diffusion estimate of the baseline scheme was first stated as +31% of K (space term only); the measured value at the
+  default grid and dt = 60 s is +61% (space +0.31, backward-Euler time term +0.30).
+- Still not done: a solver other than FiPy (the interface exists, nothing implements it), 2-D oblique-wind numerical-diffusion
+  measurement, CLI/`run_benchmark` support for `forward=`.

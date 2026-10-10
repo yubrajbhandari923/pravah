@@ -78,7 +78,6 @@ pexpect==4.9.0
 pillow==12.3.0
 platformdirs==4.12.4
 pluggy==1.6.0
--e file:///Users/yubraj/Code/pravah
 prometheus-client==0.26.0
 prompt-toolkit==3.0.53
 psutil==7.2.2

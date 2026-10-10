@@ -264,7 +264,7 @@ def test_heldout_sensors_excluded_bitwise(cache, truth):
 
 
 # ---------------------------------------------------------------- cache
-def test_orchestration_cache_reuse_across_layouts_and_seeds(truth, monkeypatch):
+def test_orchestration_cache_reuse_across_layouts_and_seeds(truth):
     """ORCHESTRATION test: counts calls to simulate (the real solver still runs) to show that many layouts and
     noise seeds cost only n_src + 1 forward solves."""
     calls = []
@@ -274,12 +274,12 @@ def test_orchestration_cache_reuse_across_layouts_and_seeds(truth, monkeypatch):
         calls.append(1)
         return real(*a, **k)
 
-    monkeypatch.setattr(inverse, "simulate", counting)
     c = ResponseCache()
     layouts = [GOOD, GOOD.select([0, 1, 2, 3]), GOOD.select([4, 5, 6, 7])]
     for lay in layouts:
         for seed in (1, 2):
-            fit_sources(SC, observe(truth, lay, ObservationSpec(OBS_T, 0.05, seed)), InferenceOptions(), c)
+            fit_sources(SC, observe(truth, lay, ObservationSpec(OBS_T, 0.05, seed)), InferenceOptions(), c,
+                        forward=counting)
     assert len(calls) == 4 and c.misses == 1 and c.hits == 5
 
 
