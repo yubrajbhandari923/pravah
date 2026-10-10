@@ -32,12 +32,16 @@ python -m pravah inverse   --config configs/reference.json --out results/my-inv 
 python -m pravah inverse   --config configs/reference.json --out results/my-inv2 --direct  # + direct route, ~2 min
 python -m pravah benchmark --config configs/smoke.json     --out results/my-smoke          # ~20 s, coarse, plumbing check
 python -m pravah benchmark --config configs/smoke_alpha_selection.json --out results/my-smoke-alpha  # plumbing check
-# final procedure, in this order (alpha is chosen BEFORE the test scenarios are run):
+# final procedure, in this order (alpha is chosen on validation scenarios BEFORE the test scenarios are run):
 python -m pravah benchmark --config configs/alpha_selection.json --out results/alpha-selection   # validation ensemble
 python -m pravah benchmark --config configs/benchmark.json --out results/benchmark-final         # reads the frozen alpha
 python -m pravah benchmark --config configs/mismatch.json  --out results/mismatch-final          # same alpha, same layouts
-python -m pravah benchmark --config configs/benchmark_unregularized.json --out results/benchmark-unregularized-final  # alpha = 0, not selected
+python -m pravah benchmark --config configs/benchmark_unregularized.json --out results/benchmark-unregularized-final  # alpha = 0 SENSITIVITY run, not a selected alpha
 ```
+
+Order: `alpha-selection` -> `benchmark-final` -> `mismatch-final` (the last two read the frozen alpha file; `mismatch-final`
+also reads the layouts of `benchmark-final`). `benchmark_unregularized` is a sensitivity run, not part of the chain.
+The notebooks and `configs/smoke.json` use alpha = 1 as a plumbing/demo value; it is **not** the selected alpha.
 
 Alpha (Tikhonov strength) procedure: `configs/alpha_selection.json` fits alpha-independent layouts (random + spread)
 on a separate **validation** ensemble (seeds 44 / 9000) for a grid of alphas and writes the lowest-criterion alpha to
@@ -52,8 +56,10 @@ the design and validation ensembles. Runs with a numeric alpha and no selection 
 The `benchmark` command runs any of the three experiments depending on the config's `"experiment"` key
 (`benchmark`, `alpha_selection`, `mismatch`).
 
-**`results/reference-v0` (and `inverse-v0`, `smoke`, `benchmark*`, `mismatch`, `verification`) are the frozen
-v0 results quoted in `docs/validation.md`. Do not overwrite them: write alternatives to `results/<your-name>`.**
+**`results/reference-v0` (and `inverse-v0`, `smoke`, `alpha-selection`, `benchmark-final`,
+`benchmark-unregularized-final`, `mismatch-final`, `verification`, plus the exploratory `benchmark`,
+`benchmark-unregularized`, `mismatch`) are the frozen results quoted in `docs/validation.md`. Do not overwrite them:
+write alternatives to `results/<your-name>`.**
 
 Notebooks (`.venv/bin/jupyter lab notebooks/`), in this order. Run times are one measurement each on the machine
 described in `docs/validation.md`, not a controlled benchmark.
@@ -85,19 +91,31 @@ Full definitions: `docs/specification.md`; discretisation and design: `docs/impl
 
 ## What the experiments do and do not establish
 
-* **Matched benchmark** (`results/benchmark`): truth and inference use the *same* solver and grid (an "inverse
+* **Matched benchmark** (`results/benchmark-final`, alpha = 0.1 selected on validation scenarios): truth and inference use the *same* solver and grid (an "inverse
   crime"), with the true wind given to the inversion. It shows what sensor layout can do when the model is right.
   It does not show performance on real data.
-* **Mismatch study** (`results/mismatch`): fixed layouts tested when the truth differs in one way at a time (finer
+* **Mismatch study** (`results/mismatch-final`): fixed layouts tested when the truth differs in one way at a time (finer
   grid and smaller dt; hidden +20% wind speed and 15 degree rotation; an unmodelled 4th source). One magnitude per kind.
 * Counts are modest (6 design + 6 test scenarios, 3 noise draws). The reported **sd is the spread of individual
   results, not a confidence interval**; the paired tables give win fractions, not significance tests.
 * An accurate reconstructed field is **not** correct attribution: check `effective_rank` and `q_std`.
-* The headline fits use a ridge prior (zero prior mean) whose strength alpha is selected on a separate validation
-  ensemble and frozen before the test scenarios are run (see the procedure above). The **earlier** `results/benchmark`
-  and `results/mismatch` tables (alpha = 1) are exploratory: alpha was chosen after seeing the alpha = 0 results on
-  those test scenarios, so they are not an independent evaluation and are superseded by `results/*-final`. The
-  alpha = 0 run is kept as a sensitivity result.
+* The headline fits use a ridge (Tikhonov) prior with zero prior mean (it does not use the true emission rates) whose
+  strength alpha = 0.1 was **selected on a separate validation ensemble** (seeds 44 / 9000; random and spread layouts
+  only, because greedy layouts depend on alpha) and frozen in `results/alpha-selection/alpha_selected.json` before the
+  test scenarios (seeds 33 / 7000) were run. `q_scale = 1e5` is only a numerical scaling: the penalty is
+  alpha/q_scale^2 * ||q||^2, so only that ratio matters. The criterion is flat between alpha = 0.1 (0.01431) and
+  alpha = 1 (0.01457), so 0.1 is not a sharp optimum.
+* Headline results (details in `docs/validation.md`; mean test RMSE in ug/m^3, uniform weights, 18 rows per layout):
+  greedy 0.0205, 0.0173, 0.0015, 4.5e-4, 4.1e-4 for 1, 2, 3, 5, 8 sensors; spread 0.0225, 0.0203, 0.0144, 0.0144, 0.0013;
+  random (20 layouts) 0.0339, 0.0244, 0.0196, 0.0093, 0.0047. Greedy's advantage over spread is clear from 3 sensors
+  (wins in 78-100% of the 18 paired rows) but is **not established at 1-2 sensors** (wins in 78% and 61%, mean difference
+  smaller than the sd of the differences). At 2 sensors greedy's mean test RMSE is 2.6x its design RMSE (pooled 3.2x),
+  so design-stage scores should not be quoted as expected performance. `greedy_weighted` is essentially identical to
+  `greedy`. With alpha = 0 the greedy mean blows up at 1-2 sensors too (0.44 and 0.34), because a few rows are unconstrained.
+* **Exploratory (superseded).** The first runs `results/benchmark`, `results/benchmark-unregularized` and
+  `results/mismatch` (test seeds 22 / 5000, alpha = 1) chose alpha **after** the alpha = 0 test results had been seen.
+  The earlier text calling that choice "a priori" was wrong. Those runs are not an independent evaluation and are
+  kept only for the record; the evidence is in the `*-final` runs.
 * Greedy selection is a heuristic, not an optimum (one tiny exhaustive test fixture showed greedy's design MSE at 3.7x the optimum, about 1.9x in RMSE).
 
 ## Known limitations
@@ -144,7 +162,7 @@ notebooks/    01_transport 02_inverse 03_sensor_design
 scripts/      verification.py  verify_notebooks.py  register_research.py
 tests/        pytest suite (scientific checks, no mocks of the solver)
 docs/         specification  architecture  implementation-plan  extending  validation
-results/      frozen v0 outputs (see docs/validation.md)
+results/      frozen outputs (see docs/validation.md; benchmark, benchmark-unregularized, mismatch are exploratory/superseded)
 ```
 
 Checks: `pytest -q`, `pyright`, `python scripts/verify_notebooks.py` (status in `docs/validation.md`).

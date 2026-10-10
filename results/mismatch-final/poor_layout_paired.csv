@@ -1,0 +1,3 @@
+comparison,budget,mean_diff,sd_diff,n,frac_a_better
+poor - greedy,3,0.04704787723306574,0.013079862032849257,18,0.0
+poor - spread,3,0.03418963319437472,0.016260875698863166,18,0.0

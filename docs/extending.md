@@ -269,7 +269,8 @@ mismatch tables in `validation.md` for how model error propagates.
 
 `InferenceOptions(method, q_scale, alpha, prior, heldout_ids, solver, q_ref)`. The optimiser works in
 `theta = q / q_scale >= 0` and minimises `||(b + A q - y)/sigma||^2 + alpha ||theta - prior/q_scale||^2`, so **alpha is
-measured in units of `q_scale`**: changing `q_scale` changes the effective prior strength.
+measured in units of `q_scale`**: changing `q_scale` changes the effective prior strength (only alpha/q_scale^2 matters).
+The `alpha=1` values in the examples below are demo values; the benchmark's alpha (0.1) is selected on a validation ensemble (`results/alpha-selection`).
 
 ```python
 # example 5
@@ -390,7 +391,7 @@ farthest   0.0241          0.5949             1.0
 ```
 
 This is a 2-design / 2-test-scenario demonstration on a coarse grid, **not** a result: with so few cases the numbers
-only show that the pipeline works (the real comparison is `results/benchmark`, 6 + 6 scenarios on the full grid).
+only show that the pipeline works (the real comparison is `results/benchmark-final`, 6 + 6 scenarios on the full grid, with alpha = 0.1 selected on separate validation scenarios).
 A naive "far from the sources" rule is worst because it puts sensors where the plumes are not (effective rank 1).
 To get paired statistics, pass several methods and use `design.paired_comparison(df, "greedy", "row_y5000")`.
 To respect separation or exclusion zones use `Constraints(allowed=mask, min_separation=...)` and

@@ -132,8 +132,9 @@ uv venv --python 3.12 .venv && uv pip install -e ".[dev]"
 .venv/bin/python -m pravah simulate --config configs/reference.json --out results/reference-v0
 .venv/bin/python -m pravah inverse  --config configs/reference.json --out results/inverse-v0
 .venv/bin/python -m pravah benchmark --config configs/smoke.json --out results/smoke
-.venv/bin/python -m pravah benchmark --config configs/benchmark.json --out results/benchmark
-.venv/bin/python -m pravah benchmark --config configs/mismatch.json --out results/mismatch
+.venv/bin/python -m pravah benchmark --config configs/alpha_selection.json --out results/alpha-selection
+.venv/bin/python -m pravah benchmark --config configs/benchmark.json --out results/benchmark-final
+.venv/bin/python -m pravah benchmark --config configs/mismatch.json --out results/mismatch-final
 .venv/bin/python scripts/verify_notebooks.py
 ```
 Scientific runs go through `.research/bin/research run exec EXP-… -- <cmd>`. Measured numbers go to
@@ -152,7 +153,7 @@ authoritative. Results and tolerances: `docs/validation.md`. Differences found b
   `effective_rank` and `q_std` (always an array). `fit_layout` and the benchmark report both.
 - Added after the plan: `forward.ForwardSolver` / `check_field_result` and the optional `forward=` keyword (inverse, design);
   `configs/benchmark_unregularized.json` (alpha = 0 sensitivity); `greedy_weighted` and the uniform/population metrics.
-- The headline benchmark uses alpha = 1, adopted after the alpha = 0 run showed unbounded errors for plume-blind layouts.
+- The first (exploratory, superseded) benchmark used alpha = 1, adopted after the alpha = 0 test results were seen. The headline benchmark now reads alpha = 0.1 from `results/alpha-selection/alpha_selected.json` (selected on a validation ensemble) and is run as `results/benchmark-final`.
 - The numerical-diffusion estimate of the baseline scheme was first stated as +31% of K (space term only); the measured value at the
   default grid and dt = 60 s is +61% (space +0.31, backward-Euler time term +0.30).
 - Still not done: a solver other than FiPy (the interface exists, nothing implements it), 2-D oblique-wind numerical-diffusion

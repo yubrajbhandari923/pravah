@@ -1,22 +1,23 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~984 tokens.
-> Generated 2026-10-10T10:12:01-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1052 tokens.
+> Generated 2026-10-10T10:39:33-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `abb41a6750` (uncommitted changes)
+Git: `master` @ `dcd75e10df` (uncommitted changes)
 
 ## Latest checkpoint
 
-**CP-001** Checkpoint — 2026-10-10 (2026-10-10)
-- **Understanding:** - Hidden wind error and an unmodelled source dominate over discretisation mismatch; more sensors do not fix them (F-004, preliminary)
+**CP-002** Checkpoint — 2026-10-10 (2026-10-10)
+- **Understanding:** - Greedy layouts optimised for the matched model are not robust to model error at small budgets (F-008, preliminary)
+  - FINAL: greedy layouts beat spread/random on fresh test scenarios with alpha frozen on validation (matched, synthetic) (F-006, preliminary)
+  - FINAL: hidden wind error and unmodelled source dominate discretisation mismatch; poor layout unidentifiable (F-007, preliminary)
   - Forward scheme is mass-consistent and converges but carries large numerical diffusion (F-001, preliminary)
   - Matched synthetic recovery of three amplitudes works; cached and direct routes agree (F-002, preliminary)
-  - Greedy layouts selected on design scenarios beat spread and random on independent test scenarios on average (matched, synthetic) (F-003, preliminary)
-- **Next step:** Final scientific review and freeze
+- **Next step:** Update findings, decision, docs; checkpoint
 
 ## Current baseline
 
@@ -29,10 +30,11 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Established findings (what we believe)
 
-- F-004 [preliminary, medium] Hidden wind error and an unmodelled source dominate over discretisation mismatch; more sensors do not fix them — evidence: EXP-004, RUN-0007
+- F-008 [preliminary, medium] Greedy layouts optimised for the matched model are not robust to model error at small budgets — evidence: EXP-007, RUN-0011
+- F-006 [preliminary, medium] FINAL: greedy layouts beat spread/random on fresh test scenarios with alpha frozen on validation (matched, synthetic) — evidence: EXP-005, EXP-006, RUN-0008, RUN-0009
+- F-007 [preliminary, medium] FINAL: hidden wind error and unmodelled source dominate discretisation mismatch; poor layout unidentifiable — evidence: EXP-007, RUN-0011
 - F-001 [preliminary, high] Forward scheme is mass-consistent and converges but carries large numerical diffusion — evidence: EXP-001, RUN-0001
 - F-002 [preliminary, medium] Matched synthetic recovery of three amplitudes works; cached and direct routes agree — evidence: EXP-002, RUN-0003
-- F-003 [preliminary, medium] Greedy layouts selected on design scenarios beat spread and random on independent test scenarios on average (matched, synthetic) — evidence: EXP-003, RUN-0005, RUN-0006
 
 ## Failed directions (do not repeat without a new reason)
 
@@ -44,19 +46,18 @@ _none_
 
 ## Active plans
 
-- PLAN-001 PRAVAH v0 baseline — 9/11 tasks done · objective: Runnable v0: forward model, inverse, sensor design, notebooks, CLI
-  - running: T-008 G: experiments, mismatch, deployment notebook (claimed by claude-code) — STALE, idle 7.5h
-  - running: T-011 J: freeze alpha on validation ensemble; rerun benchmark+mismatch on fresh test scenarios (claimed by claude-code)
+- PLAN-001 PRAVAH v0 baseline — 10/11 tasks done · objective: Runnable v0: forward model, inverse, sensor design, notebooks, CLI
+  - running: T-008 G: experiments, mismatch, deployment notebook (claimed by claude-code) — STALE, idle 7.9h
 
 ## Needs attention (verification)
 
-- [awaiting review] F-004 Hidden wind error and an unmodelled source dominate over discretisation mismatch; more sensors do not fix them: Agent finding awaiting an independent review
-- [awaiting review] F-003 Greedy layouts selected on design scenarios beat spread and random on independent test scenarios on average (matched, synthetic): Agent finding awaiting an independent review
-- [awaiting review] F-002 Matched synthetic recovery of three amplitudes works; cached and direct routes agree: Agent finding awaiting an independent review
+- [awaiting review] F-008 Greedy layouts optimised for the matched model are not robust to model error at small budgets: Agent finding awaiting an independent review
+- [awaiting review] F-007 FINAL: hidden wind error and unmodelled source dominate discretisation mismatch; poor layout unidentifiable: Agent finding awaiting an independent review
+- [awaiting review] F-006 FINAL: greedy layouts beat spread/random on fresh test scenarios with alpha frozen on validation (matched, synthetic): Agent finding awaiting an independent review
 
 ## Active decisions
 
-- D-001 (2026-10-10) Freeze results/reference-v0 and results/inverse-v0 with configs/reference.json as the PRAVAH v0 baseline; use results/benchmark and results/mismatch as the reference comparisons
+- D-002 (2026-10-10) Baseline v0: results/reference-v0 + results/inverse-v0 (configs/reference.json); comparison evidence is results/alpha-selection, results/benchmark-final, results/mismatch-final (alpha=0.1 frozen on validation, fresh test seeds 33/7000). results/benchmark, benchmark-unregularized, mismatch are exploratory and superseded.
 
 ## Blockers
 

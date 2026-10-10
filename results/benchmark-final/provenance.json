@@ -1,0 +1,172 @@
+{
+  "config": {
+    "name": "benchmark",
+    "scenario": {
+      "domain": {
+        "lx": 10000.0,
+        "ly": 10000.0,
+        "nx": 50,
+        "ny": 50
+      },
+      "sources": [
+        {
+          "name": "S1",
+          "x": 2500.0,
+          "y": 2500.0,
+          "sigma": 500.0
+        },
+        {
+          "name": "S2",
+          "x": 4000.0,
+          "y": 6000.0,
+          "sigma": 500.0
+        },
+        {
+          "name": "S3",
+          "x": 6500.0,
+          "y": 3500.0,
+          "sigma": 500.0
+        }
+      ],
+      "transport": {
+        "wind": [
+          {
+            "t_start": 0.0,
+            "u": 1.0,
+            "v": 0.3
+          }
+        ],
+        "K": 100.0,
+        "lam": 4.6296296296296294e-05,
+        "H": 500.0
+      },
+      "boundary": {
+        "mode": "open",
+        "background": 0.0
+      },
+      "initial": {
+        "kind": "zero"
+      },
+      "times": {
+        "duration": 14400.0,
+        "dt": 60.0,
+        "output_interval": 300.0
+      }
+    },
+    "q": [
+      100000.0,
+      150000.0,
+      80000.0
+    ],
+    "solver": {
+      "convection": "exponential",
+      "tolerance": 1e-12
+    },
+    "inverse": {
+      "sensor_interval": 600.0,
+      "noise_std": 0.005,
+      "seed": 1,
+      "heldout_ids": [
+        "S5"
+      ],
+      "sensors": [
+        [
+          2500,
+          4500
+        ],
+        [
+          5000,
+          5000
+        ],
+        [
+          7500,
+          4500
+        ],
+        [
+          4000,
+          7500
+        ],
+        [
+          6000,
+          2000
+        ]
+      ]
+    },
+    "experiment": "benchmark",
+    "notes": "noise_std 0.005 ug/m^3 is about 3% of the reference-scenario peak concentration (see docs); sensors read every 600 s. Synthetic, idealised. alpha (Tikhonov strength) is null: it is read from design.alpha_selection_file, written by `configs/alpha_selection.json` on a separate VALIDATION ensemble (validation_seed 44). The test ensemble (test_seed 33, test_noise_seed 7000) is fresh: the earlier test seeds 22/5000 were seen while alpha was chosen and must not be reused.",
+    "design": {
+      "candidates_n": 10,
+      "budgets": [
+        1,
+        2,
+        3,
+        5,
+        8
+      ],
+      "n_design": 6,
+      "n_test": 6,
+      "n_validation": 6,
+      "noise_reps": 3,
+      "n_random": 20,
+      "weighted": true,
+      "min_separation": 0.0,
+      "heldout_n": 7,
+      "t_exclude": 0.0,
+      "alpha": null,
+      "alpha_selection_file": "results/alpha-selection/alpha_selected.json",
+      "alpha_grid": [
+        0.0,
+        0.0001,
+        0.001,
+        0.01,
+        0.1,
+        1.0,
+        10.0,
+        100.0,
+        1000.0
+      ],
+      "design_seed": 11,
+      "test_seed": 33,
+      "validation_seed": 44,
+      "design_noise_seed": 1000,
+      "test_noise_seed": 7000,
+      "validation_noise_seed": 9000,
+      "layout_seed": 7
+    }
+  },
+  "seeds": {
+    "design_seed": 11,
+    "test_seed": 33,
+    "validation_seed": 44,
+    "design_noise_seed": 1000,
+    "test_noise_seed": 7000,
+    "validation_noise_seed": 9000,
+    "layout_seed": 7
+  },
+  "versions": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "xarray": "2026.9.0",
+    "fipy": "4.0.3",
+    "pandas": "3.0.6",
+    "matplotlib": "3.11.2",
+    "netCDF4": "1.7.4",
+    "pravah": "0.1.0"
+  },
+  "python": "3.12.7 (main, Oct  1 2024, 02:05:46) [Clang 16.0.0 (clang-1600.0.26.3)]",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "git_revision": "dcd75e10df367711b8a845017e6347ac8080fefc",
+  "git_dirty": true,
+  "timestamp_utc": "2026-10-10T14:25:35.613645+00:00",
+  "extra": {
+    "experiment": "benchmark",
+    "noise_std": 0.005,
+    "alpha": {
+      "value": 0.1,
+      "source": "alpha_selection_file",
+      "alpha_selection_file": "results/alpha-selection/alpha_selected.json",
+      "alpha_selection_sha256": "cd526c9d2e6ffe3821f4fcd201dceb451b86e8dd6d064a750dca27fa4df50e6a"
+    },
+    "note": "synthetic idealised experiment; RMSE in microgram/m^3 on the inference grid"
+  }
+}

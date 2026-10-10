@@ -1,0 +1,133 @@
+{
+  "alpha": 0.1,
+  "selected_criterion": 0.014311566118050349,
+  "criterion": "mean over budgets, layouts, validation cases and noise reps of the regional field RMSE (uniform weights, ug/m^3, vs the validation truth); lowest wins, exact ties go to the smaller alpha",
+  "tie_rule": "exact tie -> smaller alpha",
+  "table": [
+    {
+      "alpha": 0.0,
+      "criterion": 1.6671963922060183e+18,
+      "median_rmse": 0.01547557643879302,
+      "p90_rmse": 757.5755671455039,
+      "n_rmse_gt_10x_no_emission": 413,
+      "mean_source_rel_err": 6.803775749261638e+19,
+      "n_rows": 1890
+    },
+    {
+      "alpha": 0.0001,
+      "criterion": 0.07085048109732443,
+      "median_rmse": 0.014546860820017757,
+      "p90_rmse": 0.1702493124642078,
+      "n_rmse_gt_10x_no_emission": 108,
+      "mean_source_rel_err": 2.349107513691714,
+      "n_rows": 1890
+    },
+    {
+      "alpha": 0.001,
+      "criterion": 0.030191149175442127,
+      "median_rmse": 0.012323747051481065,
+      "p90_rmse": 0.06092486116757721,
+      "n_rmse_gt_10x_no_emission": 17,
+      "mean_source_rel_err": 0.9888210794705223,
+      "n_rows": 1890
+    },
+    {
+      "alpha": 0.01,
+      "criterion": 0.017520178341886006,
+      "median_rmse": 0.011635056938845326,
+      "p90_rmse": 0.041135651544953966,
+      "n_rmse_gt_10x_no_emission": 0,
+      "mean_source_rel_err": 0.5619069629548018,
+      "n_rows": 1890
+    },
+    {
+      "alpha": 0.1,
+      "criterion": 0.014311566118050349,
+      "median_rmse": 0.01053964004854934,
+      "p90_rmse": 0.03218749542684217,
+      "n_rmse_gt_10x_no_emission": 0,
+      "mean_source_rel_err": 0.44585249305282937,
+      "n_rows": 1890
+    },
+    {
+      "alpha": 1.0,
+      "criterion": 0.014569591884897431,
+      "median_rmse": 0.011227203716260533,
+      "p90_rmse": 0.036451190037779475,
+      "n_rmse_gt_10x_no_emission": 0,
+      "mean_source_rel_err": 0.44473199756011333,
+      "n_rows": 1890
+    },
+    {
+      "alpha": 10.0,
+      "criterion": 0.016234427259086727,
+      "median_rmse": 0.015133220857700648,
+      "p90_rmse": 0.0401013602844262,
+      "n_rmse_gt_10x_no_emission": 0,
+      "mean_source_rel_err": 0.4893216228109182,
+      "n_rows": 1890
+    },
+    {
+      "alpha": 100.0,
+      "criterion": 0.01905925674586066,
+      "median_rmse": 0.017425885725207257,
+      "p90_rmse": 0.0416710749190091,
+      "n_rmse_gt_10x_no_emission": 0,
+      "mean_source_rel_err": 0.5642130612139221,
+      "n_rows": 1890
+    },
+    {
+      "alpha": 1000.0,
+      "criterion": 0.024705110234966653,
+      "median_rmse": 0.022365162964982616,
+      "p90_rmse": 0.04422949422701102,
+      "n_rmse_gt_10x_no_emission": 0,
+      "mean_source_rel_err": 0.7027165760076247,
+      "n_rows": 1890
+    }
+  ],
+  "alpha_grid": [
+    0.0,
+    0.0001,
+    0.001,
+    0.01,
+    0.1,
+    1.0,
+    10.0,
+    100.0,
+    1000.0
+  ],
+  "validation_seed": 44,
+  "validation_noise_seed": 9000,
+  "n_validation": 6,
+  "noise_reps": 3,
+  "n_random": 20,
+  "budgets": [
+    1,
+    2,
+    3,
+    5,
+    8
+  ],
+  "layout_seed": 77,
+  "layout_methods": [
+    "random",
+    "spread"
+  ],
+  "noise_std": 0.005,
+  "q_scale": 100000.0,
+  "prior": "zeros (prior mean 0 for every source)",
+  "prior_mean_uses_truth": false,
+  "config_hash": "d7d4b8856ebcd91afc557a547c95b9d20c483b71aa789a964129e9ff70118154",
+  "package_versions": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "xarray": "2026.9.0",
+    "fipy": "4.0.3",
+    "pandas": "3.0.6",
+    "matplotlib": "3.11.2",
+    "netCDF4": "1.7.4",
+    "pravah": "0.1.0"
+  },
+  "created_utc": "2026-10-10T14:22:42.925299+00:00"
+}
