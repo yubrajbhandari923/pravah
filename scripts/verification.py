@@ -16,6 +16,7 @@ import numpy as np
 
 from pravah.config import (Boundary, Domain, Initial, Scenario, Times, Transport, WindSegment, load_config,
                            scenario_from_dict)
+from pravah.config import SolverOptions
 from pravah.forward import simulate
 from pravah.sources import cell_centres, quadrature_ratio
 
@@ -36,6 +37,21 @@ def fourier_error(nx: int, dt: float, T: float = 1800.0) -> float:
     exact = sum(np.exp(-((X - 5000 - u * T - i * L) ** 2 + (Y - 5000 - v * T - j * L) ** 2) / (2 * s2))
                 for i in range(-2, 3) for j in range(-2, 3)) * s0**2 / s2 * math.exp(-LAM * T)
     return float(np.linalg.norm(c - exact) / np.linalg.norm(exact))
+
+
+def keff_excess(nx: int, dt: float, conv: str, T: float = 3600.0) -> tuple[float, float]:
+    """Measured K_eff/K - 1 and theory, from the decay of the m=1 Fourier mode of 1 + cos(kx) (periodic, lam=0,
+    u=1 along x). Theory: spatial part + u^2 dt/(2K); spatial = (Pe/2)coth(Pe/2) - 1 (exponential) or Pe/2 (upwind)."""
+    L, K, u = 10000.0, 100.0, 1.0
+    sc = Scenario(domain=Domain(L, L, nx, 4), transport=Transport((WindSegment(0.0, u, 0.0),), K, 0.0, 500.0),
+                  boundary=Boundary("periodic"), times=Times(T, dt, T))
+    x = (np.arange(nx) + 0.5) * L / nx
+    k = 2 * math.pi / L
+    c = simulate(sc, [0, 0, 0], SolverOptions(conv), initial_field=np.tile(1 + np.cos(k * x), (4, 1)))
+    a = abs(np.mean(c.concentration.values[-1] * np.exp(-1j * k * x)[None, :]))
+    pe = u * (L / nx) / K
+    spatial = 0.5 * pe / math.tanh(0.5 * pe) - 1 if conv == "exponential" else 0.5 * pe
+    return -math.log(a / 0.5) / (k * k * T) / K - 1.0, spatial + u * u * dt / (2 * K)
 
 
 def rmse(a: np.ndarray, b: np.ndarray) -> float:
@@ -91,6 +107,13 @@ def run(out: Path) -> list[dict[str, Any]]:
         for j, ratio in enumerate(quadrature_ratio(sc)):
             rows.append({"study": "quadrature_ratio", "label": f"nx={nx},source={j}", "nx": nx,
                          "metric": "discrete/continuous", "value": float(ratio)})
+    for conv in ("exponential", "upwind"):  # numerical diffusion of the baseline scheme (documented model error)
+        for nx in (25, 50, 100):
+            for dt in (60.0, 30.0, 15.0, 10.0):
+                meas, th = keff_excess(nx, dt, conv)
+                rows.append({"study": "numerical_diffusion", "label": f"{conv},nx={nx},dt={dt}", "nx": nx, "dt": dt,
+                             "convection": conv, "metric": "Keff/K-1_measured", "value": meas,
+                             "theory": th, "keff_ratio": 1 + meas})
     return rows
 
 

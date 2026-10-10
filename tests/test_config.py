@@ -30,3 +30,10 @@ def test_extends_merge(tmp_path):
     (tmp_path / "b.json").write_text(json.dumps({"extends": "a.json", "scenario": {"domain": {"nx": 20}}}))
     cfg = load_config(tmp_path / "b.json")
     assert cfg["scenario"]["domain"] == {"nx": 20, "ny": 10} and cfg["q"] == [1]
+
+
+def test_periodic_background_rejected():
+    from pravah.config import Boundary
+    with pytest.raises(ValueError, match="background"):
+        Scenario(boundary=Boundary(mode="periodic", background=1.0))
+    Scenario(boundary=Boundary(mode="periodic"))

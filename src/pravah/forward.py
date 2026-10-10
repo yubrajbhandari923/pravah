@@ -116,9 +116,13 @@ def _initial_field(scenario: Scenario) -> np.ndarray:
 
 
 def simulate(scenario: Scenario, q: Sequence[float] | np.ndarray,
-             solver: SolverOptions = SolverOptions()) -> FieldResult:
+             solver: SolverOptions = SolverOptions(), initial_field: np.ndarray | None = None) -> FieldResult:
     """Run the forward model for emission rates q [ug/s] (one per source). Raises ValueError for invalid input and
-    RuntimeError if the solution is not finite."""
+    RuntimeError if the solution is not finite.
+
+    ``initial_field`` (shape (ny, nx), for verification of the linear operator only) overrides ``scenario.initial``;
+    it may be negative. Ordinary configs leave it None; it is not part of any cache key (the inverse module never
+    passes it)."""
     t_wall = _time.perf_counter()
     qa = _validate_q(scenario, q)
     d, tr, T = scenario.domain, scenario.transport, scenario.times
@@ -131,7 +135,13 @@ def simulate(scenario: Scenario, q: Sequence[float] | np.ndarray,
     shape = (d.ny, d.nx)
     dA = d.dx * d.dy
     f = source_fields(scenario)  # (n_src, ny, nx)
-    var = fp.CellVariable(mesh=grid, value=_initial_field(scenario).reshape(-1), hasOld=True)
+    if initial_field is None:
+        c0 = _initial_field(scenario)
+    else:
+        c0 = np.asarray(initial_field, dtype=float)
+        if c0.shape != shape or not np.all(np.isfinite(c0)):
+            raise ValueError(f"initial_field must be finite with shape {shape}")
+    var = fp.CellVariable(mesh=grid, value=c0.reshape(-1), hasOld=True)
     source = fp.CellVariable(mesh=grid, value=0.0)
     lu = fp.LinearLUSolver(tolerance=solver.tolerance)
     segments: dict[int, _Segment] = {}

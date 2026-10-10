@@ -195,6 +195,41 @@ def test_noise_weighted_fit_matches_predicted_covariance(cache, truth):
     assert abs(f.weighted_residual**2 - (f.n_obs - 3)) < 5 * np.sqrt(2 * (f.n_obs - 3))
 
 
+def test_effective_rank_and_q_std_match_empirical(cache, truth):
+    sigma = np.linspace(0.001, 0.003, len(GOOD))
+    obs = observe(truth, GOOD, ObservationSpec(OBS_T, tuple(sigma), 0))
+    fit = fit_sources(SC, obs, InferenceOptions(), cache)
+    _, A = cache.get(SC).operator(GOOD, OBS_T)
+    w = np.broadcast_to(1.0 / sigma, (len(OBS_T), len(GOOD))).reshape(-1)
+    pred_std = np.sqrt(np.diag(np.linalg.inv((A * w[:, None]).T @ (A * w[:, None]))))
+    np.testing.assert_allclose(fit.q_std, pred_std, rtol=1e-6)  # same quantity the covariance test checks empirically
+    assert fit.effective_rank == int(np.sum(fit.singular_values > 1.0)) == 3  # q_scale 1e5 >> q_std ~ 1e3
+    # alpha > 0 can only shrink q_std
+    reg = fit_sources(SC, obs, InferenceOptions(alpha=10.0), cache)
+    assert np.all(reg.q_std < fit.q_std)
+
+
+def test_q_std_huge_for_unconstrained_direction(cache, truth):
+    lay = SensorLayout(("a", "b", "c"), (600.0, 800.0, 700.0), (9400.0, 9200.0, 9300.0))  # sees no source
+    fit = fit_sources(SC, noiseless_obs(truth, lay), InferenceOptions(), cache)
+    # A is numerically ~0 (not exactly singular): q_std is astronomically large (measured 3e14..5e26), inf if exactly singular
+    assert fit.effective_rank == 0 and np.all(fit.q_std > 1e12)
+    assert np.all(np.isfinite(fit_sources(SC, noiseless_obs(truth, lay), InferenceOptions(alpha=1.0), cache).q_std))
+
+
+def test_posterior_std_exactly_singular_is_inf():
+    assert np.all(np.isinf(inverse._posterior_std(np.array([[1.0, 1.0], [1.0, 1.0]]))))  # pyright: ignore
+    np.testing.assert_allclose(inverse._posterior_std(2 * np.eye(2)), 0.5)  # pyright: ignore
+
+
+def test_cache_key_changes_with_versions(monkeypatch):
+    k0 = cache_key(SC, SolverOptions(), 1e5)
+    monkeypatch.setattr(inverse, "__version__", "9.9.9")
+    k1 = cache_key(SC, SolverOptions(), 1e5)
+    monkeypatch.setattr(inverse, "_FIPY_VERSION", "0.0")
+    assert len({k0, k1, cache_key(SC, SolverOptions(), 1e5)}) == 3
+
+
 def test_sigma_validation(cache, truth):
     obs = noiseless_obs(truth)
     mixed = Observations(obs.values, np.array([0.0] + [0.1] * 7), obs.layout, obs.times)

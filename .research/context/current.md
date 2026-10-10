@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~335 tokens.
-> Generated 2026-10-10T01:25:05-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~340 tokens.
+> Generated 2026-10-10T01:40:17-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `4fdf707211` (uncommitted changes)
+Git: `master` @ `9ce491399f` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -35,8 +35,8 @@ _none_
 
 ## Active plans
 
-- PLAN-001 PRAVAH v0 baseline — 5/10 tasks done · objective: Runnable v0: forward model, inverse, sensor design, notebooks, CLI
-  - running: T-006 E: scientific review 1 (claimed by claude-code)
+- PLAN-001 PRAVAH v0 baseline — 6/10 tasks done · objective: Runnable v0: forward model, inverse, sensor design, notebooks, CLI
+  - next ready: T-007 F: design + layouts + evaluation (`research task context T-007`)
 
 ## Active decisions
 

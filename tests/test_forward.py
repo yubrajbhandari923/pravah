@@ -296,3 +296,149 @@ def test_invalid_q_raises(q):
 def test_exponential_requires_positive_K():
     with pytest.raises(ValueError):
         simulate(small(K=0.0), [0.0, 0.0, 0.0])
+
+
+# ---- Times / step plan robustness (M1) -----------------------------------------------------------------------
+
+@pytest.mark.parametrize("T,out", [(1000.0, 300.0), (14400.0, 7000.0), (100.0, 33.0)])
+def test_times_non_multiple_raises(T: float, out: float):
+    with pytest.raises(ValueError, match="multiple"):
+        Times(T, 10.0, out)
+
+
+def test_times_multiple_accepted_within_relative_1e9():
+    assert Times(0.3, 0.01, 0.1).duration == 0.3  # 0.3/0.1 = 2.9999999999999996
+    assert Scenario().output_times[-1] == 14400.0
+
+
+def test_wind_change_off_output_grid_runs():
+    wind = (WindSegment(0.0, 1.0, 0.0), WindSegment(950.0, -1.0, 0.0))
+    sc = small(10, wind=wind, T=1000.0, dt=100.0, out=250.0)
+    r = simulate(sc, [1e5, 0.0, 0.0])
+    t = step_times(sc)
+    assert t[-1] == 1000.0 and np.isclose(t, 950.0).any()
+    assert r.concentration.sizes["time"] == 5 and r.diagnostics["max_rel_budget_residual"] < 1e-9
+
+
+@pytest.mark.parametrize("t_late", [1000.0, 1000.0 + 1e-12, 1500.0])
+def test_breakpoints_at_or_after_T_are_harmless(t_late: float):
+    base = small(10, T=1000.0, dt=100.0, out=250.0)
+    ref = simulate(base, [1e5, 0.0, 0.0]).concentration.values
+    wind = (WindSegment(0.0, 1.0, 0.3), WindSegment(t_late, -1.0, 0.0))
+    srcs = tuple(dc.replace(s, profile=((0.0, 1.0), (t_late, 5.0))) for s in base.sources)
+    sc = dc.replace(base, transport=dc.replace(base.transport, wind=wind), sources=srcs)
+    t = step_times(sc)
+    assert t[-1] == 1000.0 and np.all(np.diff(t) > 0)
+    np.testing.assert_allclose(simulate(sc, [1e5, 0.0, 0.0]).concentration.values, ref, rtol=0, atol=1e-12)
+
+
+# ---- Fourier-mode check of the linear operator (m2) and numerical diffusion (M2) ------------------------------
+
+_L, _K, _U = 10_000.0, 100.0, 1.0
+
+
+def _mode_run(nx: int, dt: float, conv: str, T: float = 3600.0, lam: float = 0.0):
+    """Periodic run of 1 + cos(kx) (x only, v = 0, m = 1). Returns (a_T, a_0 = 1/2, k, n_steps): a is the complex
+    coefficient of exp(i k x). (Here the field is >= 0, but the check concerns the linear operator and would hold for negative values.)"""
+    sc = Scenario(domain=Domain(_L, _L, nx, 4), transport=Transport((WindSegment(0.0, _U, 0.0),), _K, lam, 500.0),
+                  boundary=Boundary("periodic"), times=Times(T, dt, T))
+    x = (np.arange(nx) + 0.5) * _L / nx
+    k = 2 * math.pi / _L
+    c = simulate(sc, [0, 0, 0], SolverOptions(conv), initial_field=np.tile(1 + np.cos(k * x), (4, 1))).concentration
+    a = complex(np.mean(c.values[-1] * np.exp(-1j * k * x)[None, :]))
+    return a, 0.5, k, int(round(T / dt))
+
+
+def _keff_excess(nx: int, dt: float, conv: str) -> float:
+    a, a0, k, _ = _mode_run(nx, dt, conv)
+    return -math.log(abs(a) / a0) / (k * k * 3600.0) / _K - 1.0
+
+
+def _theory_excess(nx: int, dt: float, conv: str) -> float:
+    pe = _U * (_L / nx) / _K
+    spatial = 0.5 * pe / math.tanh(0.5 * pe) - 1.0 if conv == "exponential" else 0.5 * pe
+    return spatial + _U**2 * dt / (2 * _K)
+
+
+@pytest.mark.parametrize("nx,dt", [(50, 10.0), (50, 60.0), (25, 10.0), (100, 10.0)])
+def test_effective_diffusion_matches_theory_exponential(nx: int, dt: float):
+    # Measured excess K_eff/K - 1: 0.361 (50, dt 10), 0.606 (50, 60), 1.112 (25, 10), 0.131 (100, 10).
+    # Theory: (Pe/2)coth(Pe/2) - 1 + u^2 dt/(2K). Residual is O(k^2 dx^2) finite-wavenumber corrections (< 1%).
+    meas, th = _keff_excess(nx, dt, "exponential"), _theory_excess(nx, dt, "exponential")
+    assert abs(meas - th) < 0.03 * th, (meas, th)
+
+
+def test_effective_diffusion_upwind_matches_theory():
+    # upwind: Pe/2 + u^2 dt/(2K); measured 1.046 and 1.288 at 50 cells, dt 10 and 60.
+    for dt in (10.0, 60.0):
+        meas, th = _keff_excess(50, dt, "upwind"), _theory_excess(50, dt, "upwind")
+        assert abs(meas - th) < 0.03 * th, (meas, th)
+
+
+def _symbol(nx: int, conv: str, lam: float) -> complex:
+    """Spatial symbol sigma(k) of dc_i/dt = -sigma c_i for c_i ~ exp(i k x_i), u > 0: flux at face i+1/2 is
+    a c_i - b c_{i+1} with a - b = u (upwind: a = u + K/dx, b = K/dx; exponential: a = K/dx B(-Pe), b = K/dx B(Pe),
+    B(x) = x/(e^x - 1))."""
+    dx, pe = _L / nx, _U * _L / nx / _K
+    if conv == "upwind":
+        a, b = _U + _K / dx, _K / dx
+    else:
+        a, b = _K / dx * pe * math.exp(pe) / math.expm1(pe), _K / dx * pe / math.expm1(pe)
+    th = 2 * math.pi / nx  # k dx for m = 1
+    return (a * (1 - np.exp(-1j * th)) - b * (np.exp(1j * th) - 1)) / dx + lam
+
+
+@pytest.mark.parametrize("conv", ["upwind", "exponential"])
+@pytest.mark.parametrize("nx,dt", [(25, 60.0), (50, 30.0), (100, 15.0)])
+def test_sine_mode_amplitude_and_phase(nx: int, dt: float, conv: str):
+    lam = LAM
+    a, a0, k, n = _mode_run(nx, dt, conv, lam=lam)
+    # (1) round-off agreement with the discrete backward-Euler symbol (1 + dt(sigma))^-n
+    pred = a0 * (1 + dt * _symbol(nx, conv, lam)) ** (-n)
+    assert abs(a - pred) < 1e-9 * abs(pred), (a, pred)
+    # (2) agreement with the analytic solution exp(-(K k^2 + lam) T - i k u T), with the error the K_eff theory predicts
+    T = 3600.0
+    exact_amp = a0 * math.exp(-(_K * k * k + lam) * T)
+    ln_err = math.log(abs(a) / exact_amp)  # = -(K_eff - K) k^2 T
+    predicted = -_theory_excess(nx, dt, conv) * _K * k * k * T
+    assert abs(ln_err - predicted) < 0.05 * abs(predicted)
+    assert abs(np.angle(a) + k * _U * T) < 0.06  # phase shift -k u T (dispersion error: measured 0.047 at 25 cells, 0.005 at 100)
+
+
+@pytest.mark.parametrize("conv", ["upwind", "exponential"])
+def test_sine_mode_error_decreases_with_refinement(conv: str):
+    errs = []
+    for nx, dt in [(25, 60.0), (50, 30.0), (100, 15.0)]:
+        a, a0, k, _ = _mode_run(nx, dt, conv, lam=LAM)
+        errs.append(abs(a - a0 * np.exp(-(_K * k * k + LAM) * 3600.0 - 1j * k * _U * 3600.0)) / a0)
+    assert errs[0] > errs[1] > errs[2], errs
+
+
+def test_initial_field_validation():
+    sc = small(10)
+    with pytest.raises(ValueError):
+        simulate(sc, [0, 0, 0], initial_field=np.zeros((3, 3)))
+
+
+# ---- steady open-boundary solution vs analytic (m1) ----------------------------------------------------------
+
+def _steady_error(nx: int) -> float:
+    """u c' = K c'' - lam c, c(0) = cb, c'(L) = 0 on a strip (v = 0). Backward Euler steady state does not depend on
+    dt, so one huge step (1e12 s >> 1/lam) is used; its residual transient term is ~ 1/(lam dt) = 2e-8."""
+    L, u, K, lam, cb = _L, _U, _K, LAM, 2.0
+    sc = Scenario(domain=Domain(L, 1000.0, nx, 3), transport=Transport((WindSegment(0.0, u, 0.0),), K, lam, 500.0),
+                  boundary=Boundary("open", cb), times=Times(1e12, 1e12, 1e12), sources=small().sources)
+    c = simulate(sc, [0, 0, 0]).concentration.values[-1]
+    assert np.ptp(c, axis=0).max() < 1e-12  # strip: uniform across y
+    r1, r2 = ((u + s * math.sqrt(u * u + 4 * K * lam)) / (2 * K) for s in (1, -1))
+    A = -cb * r2 * math.exp(r2 * L) / (r1 * math.exp(r1 * L) - r2 * math.exp(r2 * L))
+    x = (np.arange(nx) + 0.5) * L / nx
+    return float(np.abs(c[0] - (A * np.exp(r1 * x) + (cb - A) * np.exp(r2 * x))).max())
+
+
+def test_steady_open_boundary_converges_to_analytic():
+    ns = (25, 50, 100, 200)
+    e = [_steady_error(n) for n in ns]  # measured by the reviewer: 6.8e-3, 1.5e-3, 2.8e-4, 5.8e-5
+    assert all(a > b for a, b in zip(e, e[1:])), e
+    orders = [math.log2(a / b) for a, b in zip(e, e[1:])]
+    assert min(orders) > 1.5, (e, orders)

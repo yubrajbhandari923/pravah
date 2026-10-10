@@ -13,7 +13,7 @@ numerical scaling, linearity makes the result independent of it) and then reused
 draw and fit.  Any future nonlinear physics must make ``is_linear`` return False; the cached route then refuses.
 
 Identifiability warning: optimiser ``success`` only means the optimiser converged.  It says nothing about whether the
-data determine q.  Read ``rank``, ``condition`` and ``singular_values`` of the FitResult.  A well fitting field with
+data determine q.  Read ``rank``, ``condition``, ``singular_values``, ``effective_rank`` and ``q_std`` of the FitResult.  A well fitting field with
 a rank-deficient A means different q give (almost) the same readings: accurate reconstruction != correct attribution.
 """
 from __future__ import annotations
@@ -28,12 +28,15 @@ from typing import Any, Literal, cast
 
 import numpy as np
 import xarray as xr
+import fipy as _fipy
 from scipy import optimize
 
+from . import __version__
 from .config import SCHEMA_VERSION, FieldResult, Initial, Scenario, SolverOptions, to_dict
 from .forward import simulate
 from .observations import Observations, SensorLayout, sample
 
+_FIPY_VERSION = str(_fipy.__version__)  # type: ignore[attr-defined]
 Q_REF_DEFAULT = 1e5  # ug/s; numerical scaling of the unit-response runs only
 
 
@@ -81,7 +84,8 @@ class Responses:
 
 
 def cache_key(scenario: Scenario, solver: SolverOptions, q_ref: float) -> str:
-    payload = {"scenario": to_dict(scenario), "solver": to_dict(solver), "schema": SCHEMA_VERSION, "q_ref": q_ref}
+    payload = {"scenario": to_dict(scenario), "solver": to_dict(solver), "schema": SCHEMA_VERSION, "q_ref": q_ref,
+               "pravah": __version__, "fipy": _FIPY_VERSION}
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
 
@@ -167,6 +171,12 @@ class FitResult:
     singular_values: np.ndarray  # of the scaled, whitened, unregularised observation matrix
     rank: int  # singular values > max(shape) * eps * s_max (purely relative: also inspect the size of s_max itself)
     condition: float  # s_max / s_min, inf if rank < n_src
+    effective_rank: int  # number of whitened, q_scale-scaled singular values > 1: directions the data constrain
+    #   to better than one q_scale (relative to noise).  Unlike ``rank`` it is meaningful with real noise.
+    q_std: np.ndarray  # posterior std of each q_j [ug/s] = q_scale_j * sqrt(diag((Aw^T Aw + alpha I)^-1)).  Linear-
+    #   Gaussian approximation: ignores the q >= 0 bound (unreliable when q_hat is at 0) and assumes sigma is correct
+    #   (if all sigma == 0 it is in units of the data, ug/m^3, per unit weight).  inf for directions that neither
+    #   the data nor the regularisation constrain.
     reg_singular_values: np.ndarray  # same, with the Tikhonov rows stacked
     reg_condition: float
     method: str
@@ -184,6 +194,19 @@ def _svd_diag(M: np.ndarray) -> tuple[np.ndarray, int, float]:
     rank = int(np.sum(s > max(M.shape) * np.finfo(float).eps * s[0]))
     cond = float(s[0] / s[-1]) if rank == M.shape[1] and s[-1] > 0 else float("inf")
     return s, rank, cond
+
+
+def _posterior_std(A_stack: np.ndarray) -> np.ndarray:
+    """sqrt(diag((M^T M)^-1)) via SVD of M; inf for coordinates touching the numerical null space of M."""
+    _, s, vt = np.linalg.svd(A_stack, full_matrices=True)
+    n = A_stack.shape[1]
+    s_full = np.zeros(n)
+    s_full[:s.size] = s
+    tiny = s_full <= max(A_stack.shape) * np.finfo(float).eps * (s[0] if s.size and s[0] > 0 else 1.0)
+    inv2 = np.where(tiny, 0.0, 1.0 / np.where(tiny, 1.0, s_full) ** 2)
+    var = (vt.T**2) @ inv2
+    null_weight = (vt.T**2) @ tiny.astype(float)
+    return np.where(null_weight > 1e-12, np.inf, np.sqrt(var))
 
 
 def _vec(v: tuple[float, ...] | None, n: int, default: float, name: str) -> np.ndarray:
@@ -258,7 +281,8 @@ def fit_sources(scenario: Scenario, obs: Observations, options: InferenceOptions
         r_data = np.asarray(ls.fun, dtype=float)[:m]
     return FitResult(
         q_hat=theta * q_scale, success=success, message=message, weighted_residual=float(np.linalg.norm(r_data)),
-        n_obs=m, singular_values=s, rank=rank, condition=cond, reg_singular_values=s_reg, reg_condition=cond_reg,
+        n_obs=m, singular_values=s, rank=rank, condition=cond, effective_rank=int(np.sum(s > 1.0)),
+        q_std=q_scale * _posterior_std(A_stack), reg_singular_values=s_reg, reg_condition=cond_reg,
         method=options.method, q_scale=q_scale, alpha=float(options.alpha), prior=prior,
         heldout_ids=tuple(options.heldout_ids), runtime_s=_time.perf_counter() - t0)
 

@@ -119,6 +119,9 @@ class Times:
     def __post_init__(self) -> None:
         _need(self.duration > 0 and self.dt > 0 and self.output_interval > 0, "times must be positive")
         _need(self.output_interval <= self.duration, "output_interval must not exceed duration")
+        ratio = self.duration / self.output_interval
+        _need(abs(ratio - round(ratio)) <= 1e-9 * max(1.0, ratio),
+              f"duration ({self.duration}) must be an integer multiple of output_interval ({self.output_interval})")
 
 
 @dataclass(frozen=True)
@@ -155,6 +158,7 @@ class Scenario:
                   "closed boundaries require zero wind (a uniform wind cannot be tangent to every wall)")
         if self.boundary.mode == "periodic":
             _need(len(self.transport.wind) >= 1, "periodic mode needs a wind")
+            _need(self.boundary.background == 0, "background is ignored in periodic mode; it must be 0")
 
     @property
     def output_times(self) -> list[float]:
