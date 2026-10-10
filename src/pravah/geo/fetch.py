@@ -237,6 +237,21 @@ def parse_nominatim(raw: Any) -> list[dict[str, Any]]:
 
 
 # ---------------------------------------------------------------- OSM via osmnx
+def _retry(fn: Any, what: str, attempts: int = 5, base_sleep: float = 20.0) -> Any:
+    """Call ``fn()``; on a connection error or timeout wait base_sleep*attempt seconds and retry (bounded). Overpass is
+    served by several backends and one can be briefly unreachable; a hard failure after ``attempts`` is raised."""
+    import requests
+    last: Exception | None = None
+    for k in range(1, attempts + 1):
+        try:
+            return fn()
+        except (requests.ConnectionError, requests.Timeout) as e:
+            last = e
+            print(f"  {what}: attempt {k}/{attempts} failed ({type(e).__name__}); waiting {base_sleep * k:.0f} s", flush=True)
+            time.sleep(base_sleep * k)
+    raise RuntimeError(f"{what}: gave up after {attempts} attempts") from last
+
+
 def osm_features(polygon_wgs84: Any, tags: dict[str, Any], cache_dir: str | Path, *, max_features: int = 500_000,
                  timeout: int = 120) -> dict[str, dict[str, Any]]:
     """Fetch OSM layers inside ``polygon_wgs84`` through osmnx (Overpass), caching each as GeoJSON in ``cache_dir`` and
@@ -267,13 +282,15 @@ def osm_features(polygon_wgs84: Any, tags: dict[str, Any], cache_dir: str | Path
                             extra={"query": query, "feature_count": int(len(g)),
                                    "geometry_types": sorted(map(str, g.geom_type.unique()))})
 
-    graph = ox.graph.graph_from_polygon(polygon_wgs84, network_type="all", simplify=True)
+    print("  OSM roads (Overpass via osmnx) ...", flush=True)
+    graph = _retry(lambda: ox.graph.graph_from_polygon(polygon_wgs84, network_type="all", simplify=True), "osm_roads")
     save("osm_roads", ox.convert.graph_to_gdfs(graph, nodes=False), ("highway", "name", "length"), "network_type=all")
     for role, key in (("osm_buildings", "buildings"), ("osm_landuse", "landuse"), ("osm_amenity", "amenity")):
         if key not in tags:
             continue
+        print(f"  OSM {role} (Overpass via osmnx) ...", flush=True)
         try:
-            gdf = ox.features.features_from_polygon(polygon_wgs84, tags[key])
+            gdf = _retry(lambda k=key: ox.features.features_from_polygon(polygon_wgs84, tags[k]), role)
         except Exception as e:  # osmnx raises InsufficientResponseError when nothing matches
             if type(e).__name__ != "InsufficientResponseError":
                 raise

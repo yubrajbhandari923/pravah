@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1198 tokens.
-> Generated 2026-10-10T11:39:41-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1270 tokens.
+> Generated 2026-10-10T11:53:15-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `6a726ec01c` (uncommitted changes)
+Git: `master` @ `5e3adaaaae` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -25,6 +25,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Active & open questions
 
+- Q-004 [investigating] Is the Belauri Municipality boundary, DEM and feature set acquired from public sources verifiable, and what does it show about the surrounding terrain and national border?
 - Q-003 [investigating] Does routing every workflow through one ForwardSolver interface leave all FiPy results bit-identical, and do injected solvers reach every call?
 - Q-002 [investigating] Can sparse noisy sensors reconstruct the regional field, and do random, spread and greedy layouts differ on independent cases?
 - Q-001 [investigating] Does the FiPy forward model reproduce analytical, conservation and refinement behaviour?
@@ -44,7 +45,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Current experiments
 
-_none_
+- EXP-009 [running] EXP geography acquisition and verification (Belauri) — runs 2, ⚠ 1 unsynthesized
 
 ## Active plans
 

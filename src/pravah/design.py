@@ -288,6 +288,8 @@ def build_case(name: str, role: str, truth_scenario: Scenario, q_true: np.ndarra
         raise ValueError("role must be 'design', 'test' or 'validation'")
     q_true = np.asarray(q_true, dtype=float)
     n_src = len(inference_scenario.sources)
+    if inference_scenario.n_params != n_src:
+        raise ValueError("sensor design supports emission-only inference scenarios (no inflow bases) so far")
     if q_true.shape != (len(truth_scenario.sources),):
         raise ValueError(f"q_true must have one entry per truth source ({len(truth_scenario.sources)})")
     if len(truth_scenario.sources) < n_src:

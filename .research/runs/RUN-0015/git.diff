@@ -1,0 +1,408 @@
+diff --git a/src/pravah/design.py b/src/pravah/design.py
+index 7fc9e58..6b04606 100644
+--- a/src/pravah/design.py
++++ b/src/pravah/design.py
+@@ -288,6 +288,8 @@ def build_case(name: str, role: str, truth_scenario: Scenario, q_true: np.ndarra
+         raise ValueError("role must be 'design', 'test' or 'validation'")
+     q_true = np.asarray(q_true, dtype=float)
+     n_src = len(inference_scenario.sources)
++    if inference_scenario.n_params != n_src:
++        raise ValueError("sensor design supports emission-only inference scenarios (no inflow bases) so far")
+     if q_true.shape != (len(truth_scenario.sources),):
+         raise ValueError(f"q_true must have one entry per truth source ({len(truth_scenario.sources)})")
+     if len(truth_scenario.sources) < n_src:
+diff --git a/src/pravah/geo/fetch.py b/src/pravah/geo/fetch.py
+index 7ee9e5d..1da50f8 100644
+--- a/src/pravah/geo/fetch.py
++++ b/src/pravah/geo/fetch.py
+@@ -237,6 +237,21 @@ def parse_nominatim(raw: Any) -> list[dict[str, Any]]:
+ 
+ 
+ # ---------------------------------------------------------------- OSM via osmnx
++def _retry(fn: Any, what: str, attempts: int = 5, base_sleep: float = 20.0) -> Any:
++    """Call ``fn()``; on a connection error or timeout wait base_sleep*attempt seconds and retry (bounded). Overpass is
++    served by several backends and one can be briefly unreachable; a hard failure after ``attempts`` is raised."""
++    import requests
++    last: Exception | None = None
++    for k in range(1, attempts + 1):
++        try:
++            return fn()
++        except (requests.ConnectionError, requests.Timeout) as e:
++            last = e
++            print(f"  {what}: attempt {k}/{attempts} failed ({type(e).__name__}); waiting {base_sleep * k:.0f} s", flush=True)
++            time.sleep(base_sleep * k)
++    raise RuntimeError(f"{what}: gave up after {attempts} attempts") from last
++
++
+ def osm_features(polygon_wgs84: Any, tags: dict[str, Any], cache_dir: str | Path, *, max_features: int = 500_000,
+                  timeout: int = 120) -> dict[str, dict[str, Any]]:
+     """Fetch OSM layers inside ``polygon_wgs84`` through osmnx (Overpass), caching each as GeoJSON in ``cache_dir`` and
+@@ -267,13 +282,15 @@ def osm_features(polygon_wgs84: Any, tags: dict[str, Any], cache_dir: str | Path
+                             extra={"query": query, "feature_count": int(len(g)),
+                                    "geometry_types": sorted(map(str, g.geom_type.unique()))})
+ 
+-    graph = ox.graph.graph_from_polygon(polygon_wgs84, network_type="all", simplify=True)
++    print("  OSM roads (Overpass via osmnx) ...", flush=True)
++    graph = _retry(lambda: ox.graph.graph_from_polygon(polygon_wgs84, network_type="all", simplify=True), "osm_roads")
+     save("osm_roads", ox.convert.graph_to_gdfs(graph, nodes=False), ("highway", "name", "length"), "network_type=all")
+     for role, key in (("osm_buildings", "buildings"), ("osm_landuse", "landuse"), ("osm_amenity", "amenity")):
+         if key not in tags:
+             continue
++        print(f"  OSM {role} (Overpass via osmnx) ...", flush=True)
+         try:
+-            gdf = ox.features.features_from_polygon(polygon_wgs84, tags[key])
++            gdf = _retry(lambda k=key: ox.features.features_from_polygon(polygon_wgs84, tags[k]), role)
+         except Exception as e:  # osmnx raises InsufficientResponseError when nothing matches
+             if type(e).__name__ != "InsufficientResponseError":
+                 raise
+diff --git a/src/pravah/inverse.py b/src/pravah/inverse.py
+index 315162f..e28560e 100644
+--- a/src/pravah/inverse.py
++++ b/src/pravah/inverse.py
+@@ -1,5 +1,10 @@
+ """Source-amplitude inversion: recover the emission rates q [ug/s] from sensor readings.
+ 
++Parameter vector theta = [emission amplitudes (ug/s) per source, then inflow-basis amplitudes (ug/m^3) per
++``scenario.boundary.bases``]; without bases theta == q.  WARNING: the two kinds have different units and must never be
++compared by raw magnitude (use the per-kind errors in ``attribution``).  ``q_hat``/``q_std``/``q_scale``/``prior`` have
++one entry per parameter, in the units of ``param_units``.
++
+ Everything except q (wind, K, lam, H, source geometry, initial state, boundary forcing) is KNOWN to the inversion.
+ 
+ Linear structure.  For a fixed scenario the model is affine in q:  c(q) = base + sum_j q_j g_j, where ``base`` is the
+@@ -37,6 +42,11 @@ from .forward import FIPY, ForwardSolver, check_field_result, forward_info
+ from .observations import Observations, SensorLayout, sample
+ 
+ Q_REF_DEFAULT = 1e5  # ug/s; numerical scaling of the unit-response runs only
++# Reference amplitude of the unit-response runs per parameter kind (numerical scaling only; linearity makes results
++# independent of it).  emission: ug/s, inflow (boundary-basis amplitude): ug/m^3.
++REF_BY_KIND: dict[str, float] = {"emission": Q_REF_DEFAULT, "inflow": 0.05}
++# Default optimiser/regularisation scale per parameter kind (same numbers, same status: documented scaling only).
++SCALE_BY_KIND: dict[str, float] = {"emission": 1e5, "inflow": 0.05}
+ 
+ 
+ def is_linear(scenario: Scenario) -> bool:
+@@ -56,26 +66,35 @@ def _check_linear(scenario: Scenario) -> None:
+ class Responses:
+     """Base (q=0) field and per-unit-emission responses of one scenario on the output grid."""
+     base: np.ndarray  # (nt, ny, nx) ug/m^3
+-    g: np.ndarray  # (n_src, nt, ny, nx) ug/m^3 per (ug/s)
++    g: np.ndarray  # (n_params, nt, ny, nx) ug/m^3 per unit parameter (per ug/s or per ug/m^3, see param_units)
+     times: np.ndarray
+     x: np.ndarray
+     y: np.ndarray
+-    q_ref: float
++    q_ref: float  # emission reference amplitude
++    param_names: tuple[str, ...] = ()
++    param_kinds: tuple[str, ...] = ()  # "emission" | "inflow"
++    param_groups: tuple[str, ...] = ()  # "local" | "external" | "boundary"
++    param_units: tuple[str, ...] = ()
++    refs: np.ndarray = field(default_factory=lambda: np.zeros(0))  # reference amplitude used per parameter
+ 
+     def _da(self, values: np.ndarray, name: str) -> xr.DataArray:
+         return xr.DataArray(values, dims=("time", "y", "x"), coords={"time": self.times, "x": self.x, "y": self.y},
+                             name=name, attrs={"units": "microgram/m^3"})
+ 
++    def dataarray(self, values: np.ndarray, name: str) -> xr.DataArray:
++        """Wrap a (time, y, x) array on this response grid as a DataArray (units microgram/m^3)."""
++        return self._da(values, name)
++
+     def field(self, q: np.ndarray | list[float] | tuple[float, ...]) -> xr.DataArray:
+-        """Concentration base + sum_j q_j g_j as a (time, y, x) DataArray."""
++        """Concentration base + sum_j theta_j g_j as a (time, y, x) DataArray (theta: one entry per parameter)."""
+         qa = np.asarray(q, dtype=float)
+         if qa.shape != (self.g.shape[0],):
+-            raise ValueError(f"q must have shape ({self.g.shape[0]},), got {qa.shape}")
++            raise ValueError(f"theta must have shape ({self.g.shape[0]},), got {qa.shape}")
+         return self._da(self.base + np.tensordot(qa, self.g, axes=1), "concentration")
+ 
+     def operator(self, layout: SensorLayout, times: np.ndarray | list[float] | tuple[float, ...]
+                  ) -> tuple[np.ndarray, np.ndarray]:
+-        """(b, A): b (nt*ns,) zero-emission readings, A (nt*ns, n_src); rows time-major then sensor.  Uses
++        """(b, A): b (nt*ns,) zero-amplitude readings, A (nt*ns, n_params); rows time-major then sensor.  Uses
+         observations.sample, so it is identical to sampling the direct field."""
+         b = sample(self._da(self.base, "base"), layout, times).values.reshape(-1)
+         cols = [sample(self._da(gj, "g"), layout, times).values.reshape(-1) for gj in self.g]
+@@ -90,13 +109,22 @@ def run_forward(forward: ForwardSolver, scenario: Scenario, q: Sequence[float] |
+     return res
+ 
+ 
+-def cache_key(scenario: Scenario, solver: SolverOptions, q_ref: float, forward: ForwardSolver = FIPY) -> str:
+-    """Hash of everything a cached response depends on, including the full BackendInfo of ``forward``."""
++def cache_key(scenario: Scenario, solver: SolverOptions, q_ref: float, forward: ForwardSolver = FIPY,
++              inflow_ref: float = REF_BY_KIND["inflow"]) -> str:
++    """Hash of everything a cached response depends on, including the full BackendInfo of ``forward`` and the
++    parameter table (names, kinds, reference amplitudes)."""
++    refs = _refs(scenario, q_ref, inflow_ref)
+     payload = {"scenario": to_dict(scenario), "solver": to_dict(solver), "schema": SCHEMA_VERSION, "q_ref": q_ref,
+-               "pravah": __version__, "forward": forward_info(forward).to_dict()}
++               "pravah": __version__, "forward": forward_info(forward).to_dict(),
++               "params": [[p.name, p.kind, r] for p, r in zip(scenario.param_table(), refs)]}
+     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
+ 
+ 
++def _refs(scenario: Scenario, q_ref: float, inflow_ref: float) -> list[float]:
++    by_kind = {"emission": q_ref, "inflow": inflow_ref}
++    return [by_kind[p.kind] for p in scenario.param_table()]
++
++
+ def _require_linear_backend(forward: ForwardSolver) -> None:
+     info = forward_info(forward)
+     if info.capabilities.get("linear") is not True:
+@@ -114,56 +142,71 @@ class ResponseCache:
+         self._mem: dict[str, Responses] = {}
+         self.hits = 0
+         self.misses = 0
++        self.extra: dict[str, Any] = {}  # in-memory side store for derived quantities (e.g. attribution.base_parts)
+ 
+     def get(self, scenario: Scenario, solver: SolverOptions = SolverOptions(), q_ref: float = Q_REF_DEFAULT,
+-            forward: ForwardSolver = FIPY) -> Responses:
++            forward: ForwardSolver = FIPY, inflow_ref: float = REF_BY_KIND["inflow"]) -> Responses:
+         _check_linear(scenario)
+         _require_linear_backend(forward)
+-        if not q_ref > 0:
+-            raise ValueError("q_ref must be positive")
+-        key = cache_key(scenario, solver, q_ref, forward)
++        if not (q_ref > 0 and inflow_ref > 0):
++            raise ValueError("q_ref and inflow_ref must be positive")
++        key = cache_key(scenario, solver, q_ref, forward, inflow_ref)
+         if key in self._mem:
+             self.hits += 1
+             return self._mem[key]
+         path = None if self.directory is None else self.directory / f"{key}.npz"
+         if path is not None and path.exists():
+             with np.load(path) as z:
+-                resp = Responses(z["base"], z["g"], z["times"], z["x"], z["y"], float(z["q_ref"]))
++                tab = scenario.param_table()
++                resp = Responses(z["base"], z["g"], z["times"], z["x"], z["y"], float(z["q_ref"]),
++                                 tuple(p.name for p in tab), tuple(p.kind for p in tab), tuple(p.group for p in tab),
++                                 tuple(p.units for p in tab), z["refs"])
+             self.hits += 1
+         else:
+-            resp = compute_responses(scenario, solver, q_ref, forward)
++            resp = compute_responses(scenario, solver, q_ref, forward, inflow_ref)
+             self.misses += 1
+             if path is not None:
+                 path.parent.mkdir(parents=True, exist_ok=True)
+-                np.savez(path, base=resp.base, g=resp.g, times=resp.times, x=resp.x, y=resp.y, q_ref=resp.q_ref)
++                np.savez(path, base=resp.base, g=resp.g, times=resp.times, x=resp.x, y=resp.y, q_ref=resp.q_ref,
++                         refs=resp.refs)
+         self._mem[key] = resp
+         return resp
+ 
+ 
+ def compute_responses(scenario: Scenario, solver: SolverOptions = SolverOptions(),
+-                      q_ref: float = Q_REF_DEFAULT, forward: ForwardSolver = FIPY) -> Responses:
+-    """n_src + 1 forward solves: base (q=0, configured IC/background) and unit responses (zero IC, zero bg).
++                      q_ref: float = Q_REF_DEFAULT, forward: ForwardSolver = FIPY,
++                      inflow_ref: float = REF_BY_KIND["inflow"]) -> Responses:
++    """n_params + 1 forward solves: base (all amplitudes 0; configured IC and static background) and unit responses
++    (zero IC, zero static background): g_j = forward(theta = e_j * ref_j) / ref_j, ref_j = q_ref for emissions (ug/s)
++    and inflow_ref for inflow bases (ug/m^3).  The refs are numerical scaling only.
+     ``forward`` must declare capabilities['linear'] (ValueError otherwise)."""
+     _check_linear(scenario)
+     _require_linear_backend(forward)
+-    n = len(scenario.sources)
++    tab = scenario.param_table()
++    n = len(tab)
++    refs = _refs(scenario, q_ref, inflow_ref)
+     base_da = run_forward(forward, scenario, np.zeros(n), solver).concentration
+     zero = dataclasses.replace(scenario, initial=Initial(),
+                                boundary=dataclasses.replace(scenario.boundary, background=0.0))
+     g = []
+     for j in range(n):
+         q = np.zeros(n)
+-        q[j] = q_ref
+-        g.append(run_forward(forward, zero, q, solver).concentration.values / q_ref)
++        q[j] = refs[j]
++        g.append(run_forward(forward, zero, q, solver).concentration.values / refs[j])
+     return Responses(np.asarray(base_da.values, dtype=float), np.stack(g), np.asarray(base_da["time"].values),
+-                     np.asarray(base_da["x"].values), np.asarray(base_da["y"].values), q_ref)
++                     np.asarray(base_da["x"].values), np.asarray(base_da["y"].values), q_ref,
++                     tuple(p.name for p in tab), tuple(p.kind for p in tab), tuple(p.group for p in tab),
++                     tuple(p.units for p in tab), np.asarray(refs, dtype=float))
+ 
+ 
+ @dataclass(frozen=True)
+ class InferenceOptions:
+     """method 'linear' (cached operator + lsq_linear) or 'direct' (least_squares on forward solves).
+-    q_scale: scale of each q_j (ug/s); the optimiser works in theta = q / q_scale >= 0 (default 1e5 each).
+-    alpha, prior: Tikhonov alpha * ||theta - prior/q_scale||^2 (prior in ug/s, default zeros).
++    q_scale: scale of each parameter, one entry per parameter (ug/s for emissions, ug/m^3 for inflow bases); the
++    optimiser works in theta = q / q_scale >= 0.  Default per kind (SCALE_BY_KIND): emission 1e5 ug/s, inflow 0.05
++    ug/m^3 -- documented numerical scaling only.  alpha acts in these scaled units, so the same alpha means "one
++    scale unit" for every kind.
++    alpha, prior: Tikhonov alpha * ||theta - prior/q_scale||^2 (prior in parameter units, default zeros).
+     heldout_ids: sensors excluded from the fit."""
+     method: Literal["linear", "direct"] = "linear"
+     q_scale: tuple[float, ...] | None = None
+@@ -172,6 +215,7 @@ class InferenceOptions:
+     heldout_ids: tuple[str, ...] = ()
+     solver: SolverOptions = field(default_factory=SolverOptions)
+     q_ref: float = Q_REF_DEFAULT
++    inflow_ref: float = REF_BY_KIND["inflow"]
+ 
+     def __post_init__(self) -> None:
+         if self.method not in ("linear", "direct"):
+@@ -189,7 +233,7 @@ class FitResult:
+     n_obs: int
+     singular_values: np.ndarray  # of the scaled, whitened, unregularised observation matrix
+     rank: int  # singular values > max(shape) * eps * s_max (purely relative: also inspect the size of s_max itself)
+-    condition: float  # s_max / s_min, inf if rank < n_src
++    condition: float  # s_max / s_min, inf if rank < n_params
+     effective_rank: int  # number of whitened, q_scale-scaled singular values > 1: directions the data constrain
+     #   to better than one q_scale (relative to noise).  Unlike ``rank`` it is meaningful with real noise.
+     q_std: np.ndarray  # posterior std of each q_j [ug/s] = q_scale_j * sqrt(diag((Aw^T Aw + alpha I)^-1)).  Linear-
+@@ -204,6 +248,12 @@ class FitResult:
+     prior: np.ndarray
+     heldout_ids: tuple[str, ...]
+     runtime_s: float
++    # Additive (parameter bookkeeping and per-column diagnostics, used by attribution.identifiability_report):
++    param_names: tuple[str, ...] = ()
++    param_kinds: tuple[str, ...] = ()
++    param_units: tuple[str, ...] = ()
++    column_norms: np.ndarray = field(default_factory=lambda: np.zeros(0))  # norm of each whitened, scaled column of A
++    column_cosines: np.ndarray = field(default_factory=lambda: np.zeros((0, 0)))  # cosine between those columns
+ 
+ 
+ def _svd_diag(M: np.ndarray) -> tuple[np.ndarray, int, float]:
+@@ -228,8 +278,8 @@ def _posterior_std(A_stack: np.ndarray) -> np.ndarray:
+     return np.where(null_weight > 1e-12, np.inf, np.sqrt(var))
+ 
+ 
+-def _vec(v: tuple[float, ...] | None, n: int, default: float, name: str) -> np.ndarray:
+-    out = np.full(n, default) if v is None else np.asarray(v, dtype=float)
++def _vec(v: tuple[float, ...] | None, n: int, default: float | np.ndarray, name: str) -> np.ndarray:
++    out = np.full(n, default, dtype=float) if v is None else np.asarray(v, dtype=float)
+     if out.shape != (n,) or not np.all(np.isfinite(out)):
+         raise ValueError(f"{name} must be {n} finite numbers")
+     return out
+@@ -242,11 +292,12 @@ def fit_sources(scenario: Scenario, obs: Observations, options: InferenceOptions
+     Residual r = (b + A q - y) / sigma (sigma per sensor; if all sigma are 0, unit weights, so r is in ug/m^3; a mix
+     of zero and non-zero sigma raises ValueError).  With alpha > 0 the rows sqrt(alpha) * (theta - prior/q_scale) are
+     appended.  'direct' calls the forward solver at every optimiser iterate (finite-difference Jacobian, no caching); its
+-    diagnostic matrix A is taken from the cached responses (n_src + 1 solves, the same cost as finite differences
++    diagnostic matrix A is taken from the cached responses (n_params + 1 solves, the same cost as finite differences
+     and exact thanks to linearity).  'success' is optimiser convergence, NOT identifiability: check rank/condition.
+     """
+     t0 = _time.perf_counter()
+-    n = len(scenario.sources)
++    n = scenario.n_params
++    tab = scenario.param_table()
+     ids = list(obs.layout.ids)
+     unknown = [s for s in options.heldout_ids if s not in ids]
+     if unknown:
+@@ -263,13 +314,14 @@ def fit_sources(scenario: Scenario, obs: Observations, options: InferenceOptions
+ 
+     _check_linear(scenario)
+     cache = cache if cache is not None else ResponseCache()
+-    resp = cache.get(scenario, options.solver, options.q_ref, forward)
++    resp = cache.get(scenario, options.solver, options.q_ref, forward, options.inflow_ref)
++    kinds = tuple(p.kind for p in tab)
+     b, A = resp.operator(layout, times)
+     if options.method == "linear":
+-        diag = solve_linear(b, A, yv, sigma, options)
++        diag = solve_linear(b, A, yv, sigma, options, kinds)
+         q_hat, success, message, r_norm = diag.q_hat, diag.success, diag.message, diag.weighted_residual
+     else:
+-        diag = _linear_system(b, A, yv, sigma, options)  # diagnostics from the cached operator (see docstring)
++        diag = _linear_system(b, A, yv, sigma, options, kinds)  # diagnostics from the cached operator (see docstring)
+         q_scale, sa, th_prior = diag.q_scale, diag.sa, diag.prior / diag.q_scale
+ 
+         def fun(th: np.ndarray) -> np.ndarray:
+@@ -286,7 +338,9 @@ def fit_sources(scenario: Scenario, obs: Observations, options: InferenceOptions
+         n_obs=A.shape[0], singular_values=diag.singular_values, rank=diag.rank, condition=diag.condition,
+         effective_rank=diag.effective_rank, q_std=diag.q_std, reg_singular_values=diag.reg_singular_values,
+         reg_condition=diag.reg_condition, method=options.method, q_scale=diag.q_scale, alpha=float(options.alpha),
+-        prior=diag.prior, heldout_ids=tuple(options.heldout_ids), runtime_s=_time.perf_counter() - t0)
++        prior=diag.prior, heldout_ids=tuple(options.heldout_ids), runtime_s=_time.perf_counter() - t0,
++        param_names=tuple(p.name for p in tab), param_kinds=kinds, param_units=tuple(p.units for p in tab),
++        column_norms=diag.column_norms, column_cosines=diag.column_cosines)
+ 
+ 
+ def _whitening(sigma: np.ndarray) -> np.ndarray:
+@@ -315,12 +369,33 @@ class _System:
+     q_std: np.ndarray
+     reg_singular_values: np.ndarray
+     reg_condition: float
++    column_norms: np.ndarray
++    column_cosines: np.ndarray
++
++
++def _default_scale(kinds: Sequence[str] | None, n: int) -> np.ndarray:
++    if kinds is None:
++        return np.full(n, SCALE_BY_KIND["emission"])
++    if len(kinds) != n:
++        raise ValueError(f"kinds must have {n} entries")
++    return np.array([SCALE_BY_KIND[k] for k in kinds])
++
++
++def _column_geometry(Aw: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
++    norms = np.linalg.norm(Aw, axis=0)
++    safe = np.where(norms > 0, norms, 1.0)
++    unit = Aw / safe[None, :]
++    cos = unit.T @ unit
++    zero = norms == 0
++    cos[zero, :] = 0.0
++    cos[:, zero] = 0.0
++    return norms, cos
+ 
+ 
+ def _linear_system(b: np.ndarray, A: np.ndarray, y: np.ndarray, sigma: np.ndarray,
+-                   options: InferenceOptions) -> _System:
++                   options: InferenceOptions, kinds: Sequence[str] | None = None) -> _System:
+     n = A.shape[1]
+-    q_scale = _vec(options.q_scale, n, 1e5, "q_scale")
++    q_scale = _vec(options.q_scale, n, _default_scale(kinds, n), "q_scale")
+     prior = _vec(options.prior, n, 0.0, "prior")
+     if np.any(q_scale <= 0):
+         raise ValueError("q_scale must be positive")
+@@ -331,8 +406,9 @@ def _linear_system(b: np.ndarray, A: np.ndarray, y: np.ndarray, sigma: np.ndarra
+     A_stack = np.vstack([Aw, sa * np.eye(n)])
+     s, rank, cond = _svd_diag(Aw)
+     s_reg, _, cond_reg = _svd_diag(A_stack)
++    norms, cos = _column_geometry(Aw)
+     return _System(Aw, rhs, A_stack, q_scale, prior, sa, s, rank, cond, int(np.sum(s > 1.0)),
+-                   q_scale * _posterior_std(A_stack), s_reg, cond_reg)
++                   q_scale * _posterior_std(A_stack), s_reg, cond_reg, norms, cos)
+ 
+ 
+ @dataclass(frozen=True)
+@@ -351,16 +427,19 @@ class LinearSolution:
+     reg_condition: float
+     q_scale: np.ndarray
+     prior: np.ndarray
++    column_norms: np.ndarray = field(default_factory=lambda: np.zeros(0))
++    column_cosines: np.ndarray = field(default_factory=lambda: np.zeros((0, 0)))
+ 
+ 
+ def solve_linear(b: np.ndarray, A: np.ndarray, y: np.ndarray, sigma: np.ndarray,
+-                 options: InferenceOptions = InferenceOptions()) -> LinearSolution:
++                 options: InferenceOptions = InferenceOptions(), kinds: Sequence[str] | None = None
++                 ) -> LinearSolution:
+     """The linear route of ``fit_sources`` on an explicit operator: min over q >= 0 of
+     ||(b + A q - y)/sigma||^2 + alpha ||theta - prior/q_scale||^2 with theta = q / q_scale (bounded-variable LS).
+ 
+-    b, y: (m,); A: (m, n_src); sigma: (m,) per-row noise std (all 0 -> unit weights).  Row order is irrelevant.
++    b, y: (m,); A: (m, n_params); sigma: (m,) per-row noise std (all 0 -> unit weights).  Row order is irrelevant.
+     ``fit_sources`` (method 'linear') and the sensor-design code both call this, so they use identical maths."""
+-    sy = _linear_system(b, A, y, sigma, options)
++    sy = _linear_system(b, A, y, sigma, options, kinds)
+     res = optimize.lsq_linear(sy.A_stack, np.concatenate([sy.rhs, sy.sa * (sy.prior / sy.q_scale)]),
+                               bounds=(0.0, np.inf), method="bvls", tol=1e-14, max_iter=1000)
+     theta = np.asarray(res.x, dtype=float)
+@@ -369,7 +448,7 @@ def solve_linear(b: np.ndarray, A: np.ndarray, y: np.ndarray, sigma: np.ndarray,
+         weighted_residual=float(np.linalg.norm(sy.Aw @ theta - sy.rhs)), singular_values=sy.singular_values,
+         rank=sy.rank, condition=sy.condition, effective_rank=sy.effective_rank, q_std=sy.q_std,
+         reg_singular_values=sy.reg_singular_values, reg_condition=sy.reg_condition, q_scale=sy.q_scale,
+-        prior=sy.prior)
++        prior=sy.prior, column_norms=sy.column_norms, column_cosines=sy.column_cosines)
+ 
+ 
+ def reconstruct(scenario: Scenario, fit: FitResult, solver: SolverOptions = SolverOptions(),
+
+# Untracked files (not included):
+#   src/pravah/attribution.py
+#   src/pravah/indoor.py
+#   tests/test_attribution.py
+#   tests/test_indoor.py
