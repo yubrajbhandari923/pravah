@@ -6,6 +6,24 @@
 ``u_int`` is the wind on interior faces and ZERO on exterior faces, so FiPy itself contributes no boundary flux;
 open-boundary inflow/outflow is handled explicitly (and the budget uses the very same coefficients).
 Backward Euler in time. Concentrations are never clipped.
+
+Inflow-concentration bases (``Boundary.bases``).  The parameter vector is theta = [emission amplitudes (ug/s) per
+source, then one amplitude a_k (ug/m^3) per basis].  Per wind segment and per boundary SIDE the unit-concentration
+inflow source array s_in_side = sum over that side's INFLOW faces (u.n < 0) of (|u.n| + 2K/h) / h  (the existing
+formula with c_b = 1; a_in / a_out do not depend on the concentration value) is built once.  The explicit source at a
+step is  s_q + s_in_bg + sum_k a_k phi_k(t_mid) sum_{sides of k} s_in_side,  where phi_k is the basis' right-continuous
+piecewise-constant profile (its breakpoints are step-plan breakpoints).  The budget inflow term uses the very same
+total, so the residual still closes to round-off.  Classification is per face and per wind segment: a wind reversal
+flips which faces (hence which bases) act.  ``Boundary.background`` acts on all inflow faces as before.
+
+Stream-function wind (``WindSegment.psi``, cell-corner values, shape (ny+1, nx+1), m^2/s).  Conventions u = d psi/dy,
+v = -d psi/dx, giving the face normal velocities  u_f[j, i] = (psi[j+1, i] - psi[j, i]) / dy  on the x-normal face
+between cells (i-1, i) of row j, and  v_f[j, i] = -(psi[j, i+1] - psi[j, i]) / dx  on the y-normal face between cells
+(j-1, j) of column i.  The discrete divergence (u_f[j,i+1]-u_f[j,i])/dx + (v_f[j+1,i]-v_f[j,i])/dy cancels
+identically, so the flow is exactly divergence-free per cell.  A uniform wind is psi = u*y - v*x.  FiPy face
+velocities are assigned by matching ``grid.faceCenters`` / ``faceNormals`` to (orientation, j, i) (no assumption on
+FiPy's face ordering; the mapping is checked to be one-to-one).  Exterior faces carry zero velocity inside FiPy as
+for the uniform wind, and the open-boundary coefficients use the per-face u.n.  Periodic mode does not support psi.
 """
 from __future__ import annotations
 
@@ -22,8 +40,8 @@ import xarray as xr
 import fipy as _fipy
 
 from . import __version__
-from .config import FieldResult, Scenario, SolverOptions, WindSegment
-from .sources import cell_centres, emission_profile, source_fields
+from .config import SIDES, FieldResult, Scenario, SolverOptions, WindSegment
+from .sources import cell_centres, emission_profile, piecewise_value, source_fields
 
 fp: Any = _fipy  # FiPy is untyped; use it through Any
 
@@ -32,11 +50,12 @@ _FIPY_VERSION = str(getattr(_fipy, "__version__", "unknown"))
 
 
 def step_times(scenario: Scenario) -> np.ndarray:
-    """Time points of the implicit steps. Breakpoints = output times, wind-segment starts, emission-profile
+    """Time points of the implicit steps. Breakpoints = output times, wind-segment starts, emission- and basis-profile
     breakpoints (inside the run); each interval between breakpoints is split in ceil(len/dt) equal steps."""
     T, dt = scenario.times.duration, scenario.times.dt
     pts = list(scenario.output_times) + [w.t_start for w in scenario.transport.wind]
     pts += [t for s in scenario.sources for t, _ in s.profile]
+    pts += [t for b in scenario.boundary.bases for t, _ in b.profile]
     pts = sorted(p for p in pts if 0.0 <= p <= T + _TOL)
     bps: list[float] = []
     for p in pts:
@@ -57,23 +76,79 @@ def _wind_at(scenario: Scenario, t: float) -> int:
     return idx
 
 
+def psi_face_fluxes(scenario: Scenario, psi: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Face-normal velocities from the stream function at cell corners: u_f (ny, nx+1) on x-normal faces and
+    v_f (ny+1, nx) on y-normal faces; u = d psi/dy, v = -d psi/dx (see module docstring)."""
+    d = scenario.domain
+    p = np.asarray(psi, dtype=float)
+    if p.shape != (d.ny + 1, d.nx + 1):
+        raise ValueError(f"psi must have shape {(d.ny + 1, d.nx + 1)}, got {p.shape}")
+    return (p[1:, :] - p[:-1, :]) / d.dy, -(p[:, 1:] - p[:, :-1]) / d.dx
+
+
+def _side_normal_velocities(scenario: Scenario, w: WindSegment) -> dict[str, np.ndarray]:
+    """Outward-normal velocity u.n along each boundary side (west/south: length ny/nx arrays in cell order)."""
+    d = scenario.domain
+    if w.psi is None:
+        return {"west": np.full(d.ny, -w.u), "east": np.full(d.ny, w.u),
+                "south": np.full(d.nx, -w.v), "north": np.full(d.nx, w.v)}
+    uf, vf = psi_face_fluxes(scenario, w.psi)
+    return {"west": -uf[:, 0], "east": uf[:, -1], "south": -vf[0, :], "north": vf[-1, :]}
+
+
+def _side_geometry(scenario: Scenario) -> dict[str, tuple[Any, float]]:
+    d = scenario.domain
+    return {"west": (np.s_[:, 0], d.dx), "east": (np.s_[:, -1], d.dx),
+            "south": (np.s_[0, :], d.dy), "north": (np.s_[-1, :], d.dy)}
+
+
+def _boundary_arrays(scenario: Scenario, w: WindSegment
+                     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, dict[str, np.ndarray]]:
+    """Per-cell (ny, nx) a_out [1/s], a_in [1/s], S_in [ug/m^3/s] (static background c_b) for the open-boundary
+    faces, plus the unit-concentration (c_b = 1) inflow source per side. Classified per face by the sign of u.n."""
+    d, K, cb = scenario.domain, scenario.transport.K, scenario.boundary.background
+    a_out, a_in, s_in = (np.zeros((d.ny, d.nx)) for _ in range(3))
+    unit = {name: np.zeros((d.ny, d.nx)) for name in SIDES}
+    un_all = _side_normal_velocities(scenario, w)
+    for name, (sl, h) in _side_geometry(scenario).items():
+        un = un_all[name]
+        out, inn = un > 0, un < 0  # outflow: upwind export, no diffusive flux; inflow: prescribed face value
+        a_out[sl] += np.where(out, un / h, 0.0)
+        a_in[sl] += np.where(inn, 2 * K / h**2, 0.0)
+        s_in[sl] += np.where(inn, (-un + 2 * K / h) * cb / h, 0.0)
+        unit[name][sl] += np.where(inn, (-un + 2 * K / h) / h, 0.0)
+    return a_out, a_in, s_in, unit
+
+
 def _boundary_coefficients(scenario: Scenario, w: WindSegment) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Per-cell (ny, nx) a_out [1/s], a_in [1/s], S_in [ug/m^3/s] for the open-boundary faces, classified per face
     by the sign of u.n for this wind segment."""
-    d, K, cb = scenario.domain, scenario.transport.K, scenario.boundary.background
-    a_out, a_in, s_in = (np.zeros((d.ny, d.nx)) for _ in range(3))
-    # (cell slice, u.n, cell size normal to the face): face area / cell volume = 1 / size
-    sides = [
-        (np.s_[:, 0], -w.u, d.dx), (np.s_[:, -1], w.u, d.dx),
-        (np.s_[0, :], -w.v, d.dy), (np.s_[-1, :], w.v, d.dy),
-    ]
-    for sl, un, h in sides:
-        if un > 0:  # outflow: upwind export of the boundary-cell value, no diffusive flux
-            a_out[sl] += un / h
-        elif un < 0:  # inflow: face value prescribed c_b (advective + Dirichlet diffusive flux)
-            a_in[sl] += 2 * K / h**2
-            s_in[sl] += (-un + 2 * K / h) * cb / h
-    return a_out, a_in, s_in
+    return _boundary_arrays(scenario, w)[:3]
+
+
+def _psi_face_velocity(scenario: Scenario, grid: Any, psi: np.ndarray) -> np.ndarray:
+    """(2, n_faces) FiPy face velocity vectors from psi. Faces are matched by centre/normal, never by ordering."""
+    d = scenario.domain
+    uf, vf = psi_face_fluxes(scenario, psi)
+    fc, fn = np.asarray(grid.faceCenters), np.asarray(grid.faceNormals)
+    nf = fc.shape[1]
+    xface = np.abs(fn[0]) > 0.5
+    if not np.all(xface | (np.abs(fn[1]) > 0.5)):
+        raise RuntimeError("unexpected FiPy face normals")
+    gx, gy = fc[0] / d.dx, fc[1] / d.dy
+    # x-normal faces sit on integer x, cell-centre y; y-normal faces the converse
+    i = np.where(xface, np.rint(gx), np.floor(gx)).astype(int)
+    j = np.where(xface, np.floor(gy), np.rint(gy)).astype(int)
+    if (np.abs(np.where(xface, gx - i, gy - j)) > 1e-9).any():
+        raise RuntimeError("FiPy face centres are not on the expected grid lines")
+    seen = np.zeros((2, d.ny + 1, d.nx + 1), dtype=int)
+    np.add.at(seen, (np.where(xface, 0, 1), j, i), 1)
+    if seen.sum() != nf or seen.max() != 1 or seen[0].sum() != (d.nx + 1) * d.ny or seen[1].sum() != d.nx * (d.ny + 1):
+        raise RuntimeError("face mapping from the stream function to FiPy faces is not one-to-one")
+    vel = np.zeros((2, nf))
+    vel[0, xface] = uf[j[xface], i[xface]]
+    vel[1, ~xface] = vf[j[~xface], i[~xface]]
+    return vel
 
 
 class _Segment:
@@ -85,11 +160,20 @@ class _Segment:
             raise ValueError("exponential convection needs K > 0 (use convection='upwind' for K = 0)")
         d = scenario.domain
         self.periodic = scenario.boundary.mode == "periodic"
+        self.basis_s: list[np.ndarray] = []  # per basis: sum of its sides' unit inflow arrays (ny, nx)
         if self.periodic:
             self.a_out = self.a_in = self.s_in = np.zeros((d.ny, d.nx))
         else:
-            self.a_out, self.a_in, self.s_in = _boundary_coefficients(scenario, w)
-        face_u = fp.FaceVariable(mesh=grid, rank=1, value=[[w.u], [w.v]])
+            self.a_out, self.a_in, self.s_in, unit = _boundary_arrays(scenario, w)
+            for b in scenario.boundary.bases:
+                tot = np.zeros((d.ny, d.nx))
+                for name in b.sides:
+                    tot += unit[name]
+                self.basis_s.append(tot)
+        if w.psi is None:
+            face_u = fp.FaceVariable(mesh=grid, rank=1, value=[[w.u], [w.v]])
+        else:
+            face_u = fp.FaceVariable(mesh=grid, rank=1, value=_psi_face_velocity(scenario, grid, w.psi))
         if not self.periodic:
             face_u = face_u * ~grid.exteriorFaces  # zero on exterior faces
         self.source = source
@@ -101,8 +185,8 @@ class _Segment:
 
 def _validate_q(scenario: Scenario, q: Sequence[float] | np.ndarray) -> np.ndarray:
     arr = np.asarray(q, dtype=float)
-    if arr.ndim != 1 or arr.size != len(scenario.sources):
-        raise ValueError(f"q must be 1-D with {len(scenario.sources)} entries, got shape {arr.shape}")
+    if arr.ndim != 1 or arr.size != scenario.n_params:
+        raise ValueError(f"q (theta) must be 1-D with {scenario.n_params} entries, got shape {arr.shape}")
     if not np.all(np.isfinite(arr)) or np.any(arr < 0):
         raise ValueError("q must be finite and >= 0")
     return arr
@@ -122,7 +206,8 @@ def _initial_field(scenario: Scenario) -> np.ndarray:
 
 def simulate(scenario: Scenario, q: Sequence[float] | np.ndarray,
              solver: SolverOptions = SolverOptions(), initial_field: np.ndarray | None = None) -> FieldResult:
-    """Run the forward model for emission rates q [ug/s] (one per source). Raises ValueError for invalid input and
+    """Run the forward model for the parameter vector q = theta = [emission rates (ug/s) per source, then inflow-basis
+    amplitudes (ug/m^3) per ``scenario.boundary.bases``]. Raises ValueError for invalid input and
     RuntimeError if the solution is not finite.
 
     ``initial_field`` (shape (ny, nx), for verification of the linear operator only) overrides ``scenario.initial``;
@@ -131,8 +216,22 @@ def simulate(scenario: Scenario, q: Sequence[float] | np.ndarray,
     t_wall = _time.perf_counter()
     qa = _validate_q(scenario, q)
     d, tr, T = scenario.domain, scenario.transport, scenario.times
+    n_src = len(scenario.sources)
+    bases = scenario.boundary.bases
+    has_psi = any(w.psi is not None for w in tr.wind)
     if scenario.boundary.mode == "closed" and any(w.u != 0 or w.v != 0 for w in tr.wind):
         raise ValueError("closed boundaries require zero wind")
+    if has_psi and scenario.boundary.mode != "open":
+        raise ValueError(f"stream-function wind is only supported with open boundaries, not {scenario.boundary.mode!r}")
+    max_speed = 0.0
+    for w in tr.wind:
+        if w.psi is None:
+            max_speed = max(max_speed, abs(w.u) / d.dx + abs(w.v) / d.dy)
+        else:
+            uf, vf = psi_face_fluxes(scenario, w.psi)
+            max_speed = max(max_speed, float(np.abs(uf).max()) / d.dx, float(np.abs(vf).max()) / d.dy)
+    if not math.isfinite(max_speed):
+        raise ValueError("wind speed is not finite")
     if scenario.boundary.mode == "periodic":
         grid: Any = fp.PeriodicGrid2D(dx=d.dx, dy=d.dy, nx=d.nx, ny=d.ny)
     else:
@@ -166,8 +265,12 @@ def simulate(scenario: Scenario, q: Sequence[float] | np.ndarray,
         if seg is None:
             seg = segments[k_w] = _Segment(scenario, solver, tr.wind[k_w], source, grid)
         s_vec = np.array([emission_profile(s, tm) for s in scenario.sources])
-        s_q = np.tensordot(qa * s_vec, f, axes=1) / tr.H  # (ny, nx), ug/m^3/s
-        source.setValue((s_q + seg.s_in).reshape(-1))
+        s_q = np.tensordot(qa[:n_src] * s_vec, f, axes=1) / tr.H  # (ny, nx), ug/m^3/s
+        s_bnd = seg.s_in  # total explicit boundary-inflow source: background + sum_k a_k phi_k(t) s_in_k
+        if bases:
+            s_bnd = s_bnd + sum(qa[n_src + k] * piecewise_value(b.profile, tm) * seg.basis_s[k]
+                                for k, b in enumerate(bases))
+        source.setValue((s_q + s_bnd).reshape(-1))
         c_old = var.value.reshape(shape).copy()
         var.updateOld()
         seg.eq.solve(var=var, dt=h, solver=lu)
@@ -175,9 +278,9 @@ def simulate(scenario: Scenario, q: Sequence[float] | np.ndarray,
         while i_out < n_out and tm > out_times[i_out + 1]:
             i_out += 1
         # budget terms from the same implicit (n+1) boundary coefficients used in the equation
-        acc["emission"][i_out] += h * float(np.dot(qa, s_vec))
+        acc["emission"][i_out] += h * float(np.dot(qa[:n_src], s_vec))
         acc["removal"][i_out] += h * tr.H * tr.lam * float(c.sum()) * dA
-        acc["inflow"][i_out] += h * tr.H * dA * float((seg.s_in - seg.a_in * c).sum())
+        acc["inflow"][i_out] += h * tr.H * dA * float((s_bnd - seg.a_in * c).sum())
         acc["outflow"][i_out] += h * tr.H * dA * float((seg.a_out * c).sum())
         acc["mass_change"][i_out] += tr.H * dA * float((c - c_old).sum())
         if t1 >= out_times[i_out + 1] - _TOL and i_out < n_out:
@@ -199,7 +302,7 @@ def simulate(scenario: Scenario, q: Sequence[float] | np.ndarray,
     scale = np.maximum.reduce([np.abs(budget[k].values) for k in keys])
     scale = np.maximum(scale, np.finfo(float).tiny)
     resid = np.abs(budget["residual"].values)
-    diagnostics = {
+    diagnostics: dict[str, Any] = {
         "min_concentration": float(data.min()),
         "n_negative": int((data < 0).sum()),
         "n_steps": int(len(times) - 1),
@@ -207,6 +310,9 @@ def simulate(scenario: Scenario, q: Sequence[float] | np.ndarray,
         "max_rel_budget_residual": float((resid / scale).max()),
         "backend": FIPY.info.to_dict(),  # provenance only; FipyForward overwrites it with its own settings
     }
+    if bases or has_psi:  # extra keys only for the new physics: legacy diagnostics (and metrics.json) stay byte-identical
+        diagnostics.update({"n_basis": len(bases), "wind_field": has_psi,
+                            "max_courant": float(max_speed * scenario.times.dt)})
     return FieldResult(concentration=conc, budget=budget, status="ok",
                        runtime_s=_time.perf_counter() - t_wall, diagnostics=cast(dict[str, Any], diagnostics))
 
@@ -217,7 +323,7 @@ class BackendInfo:
 
     ``capabilities`` (all False unless declared): ``linear`` = superposition of source responses is valid (required
     by the cached-response route, never assumed), ``budget`` = results carry a mass budget, ``boundary_bases`` =
-    supports boundary-inflow basis parameters (False for FiPy until the phase-2 physics lands)."""
+    supports boundary-inflow basis parameters, ``wind_field`` = supports stream-function wind segments."""
     name: str
     version: str
     settings: dict[str, Any]
@@ -255,7 +361,8 @@ class FipyForward:
     def info(self) -> BackendInfo:
         return BackendInfo("fipy", f"fipy {_FIPY_VERSION}; pravah {__version__}",
                            {"convection": self.convection, "tolerance": self.tolerance},
-                           {"linear": True, "budget": True, "boundary_bases": False})
+                           {"linear": True, "budget": True, "boundary_bases": True,
+                            "wind_field": True})
 
     @property
     def forward_id(self) -> str:

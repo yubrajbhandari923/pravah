@@ -5,3 +5,4 @@ __pycache__/
 .ipynb_checkpoints/
 .research/cache/
 .research/bin/
+data/belauri/raw/

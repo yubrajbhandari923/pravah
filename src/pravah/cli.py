@@ -170,6 +170,22 @@ def cmd_benchmark(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_geo(args: argparse.Namespace) -> int:
+    """geo fetch (bounded network, cached) / geo prepare (offline). GIS libraries are imported only here."""
+    cfg = load_config(args.config)
+    if args.geo_cmd == "fetch":
+        from .geo.fetch import fetch_all
+        recs = fetch_all(cfg, args.cache_dir)
+        print(json.dumps({k: {f: v[f] for f in ("url", "id", "retrieved_utc", "bytes", "sha256", "license")} for k, v in recs.items()},
+                         indent=2))
+        return 0
+    from .geo.prepare import prepare_region
+    man = prepare_region(cfg, args.cache_dir, args.out)
+    print(f"geo prepare: boundary_status={man['boundary_status']}, {len(man['processed'])} arrays, "
+          f"{len(man['incomplete'])} incomplete item(s) -> {Path(args.out).parent / 'manifest.json'}")
+    return 0
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="python -m pravah", description=__doc__)
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -191,6 +207,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         if name == "inverse":
             p.add_argument("--direct", action="store_true", help="also run the direct least_squares route and compare")
         p.set_defaults(fn=fn)
+    geo = sub.add_parser("geo", help="Belauri geography: fetch (network, cached) and prepare (offline); needs pravah[geo]")
+    gsub = geo.add_subparsers(dest="geo_cmd", required=True)
+    for gname, ghelp in (("fetch", "download boundaries, OSM and DEM into the cache (bounded, polite, no credentials)"),
+                         ("prepare", "offline: cached raw files -> processed arrays + manifest.json")):
+        gp = gsub.add_parser(gname, help=ghelp)
+        gp.add_argument("--config", required=True, help="geo JSON config, e.g. configs/belauri_geo.json")
+        gp.add_argument("--cache-dir", default="data/belauri/raw", help="raw download cache (git-ignored)")
+        if gname == "prepare":
+            gp.add_argument("--out", default="data/belauri/processed", help="processed arrays dir; manifest.json goes in its parent")
+        gp.set_defaults(fn=cmd_geo)
     args = ap.parse_args(argv)
     import matplotlib
     matplotlib.use("Agg")  # CLI is headless; library code never sets the backend

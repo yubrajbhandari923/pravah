@@ -241,7 +241,8 @@ def test_upwind_backend_in_provenance(routed, tmp_path):
 # ------------------------------------------------------------------ defaults, info, refusal, get_forward
 def test_default_fipy_identity_and_backend_diagnostics():
     assert forward_info(simulate) == FIPY.info and forward_info(FIPY) == FIPY.info
-    assert FIPY.info.capabilities == {"linear": True, "budget": True, "boundary_bases": False}
+    assert FIPY.info.capabilities == {"linear": True, "budget": True, "boundary_bases": True,
+                                       "wind_field": True}
     a, b, c = simulate(SC, Q), FIPY(SC, Q), FipyForward()(SC, Q)
     assert np.array_equal(a.concentration.values, b.concentration.values)
     assert np.array_equal(a.concentration.values, c.concentration.values)

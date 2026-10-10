@@ -39,13 +39,18 @@ def source_fields(scenario: Scenario) -> np.ndarray:
     return out
 
 
-def emission_profile(src: Source, t: float) -> float:
-    """Piecewise-constant temporal factor s(t) (right-continuous: a breakpoint belongs to the later segment)."""
-    value = src.profile[0][1]
-    for t_start, v in src.profile:
+def piecewise_value(profile: tuple[tuple[float, float], ...], t: float) -> float:
+    """Piecewise-constant profile value at t (right-continuous: a breakpoint belongs to the later segment)."""
+    value = profile[0][1]
+    for t_start, v in profile:
         if t >= t_start:
             value = v
     return value
+
+
+def emission_profile(src: Source, t: float) -> float:
+    """Piecewise-constant temporal factor s(t) (right-continuous: a breakpoint belongs to the later segment)."""
+    return piecewise_value(src.profile, t)
 
 
 def study_weights(scenario: Scenario) -> np.ndarray | None:
