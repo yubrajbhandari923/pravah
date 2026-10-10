@@ -1,0 +1,12 @@
+{
+  "extends": "reference.json",
+  "name": "benchmark",
+  "experiment": "benchmark",
+  "notes": "noise_std 0.005 ug/m^3 is about 3% of the reference-scenario peak concentration (see docs); sensors read every 600 s. Synthetic, idealised.",
+  "inverse": {"sensor_interval": 600.0, "noise_std": 0.005},
+  "design": {
+    "candidates_n": 10, "budgets": [1, 2, 3, 5, 8], "n_design": 6, "n_test": 6, "noise_reps": 3, "n_random": 20,
+    "weighted": true, "min_separation": 0.0, "heldout_n": 7, "alpha": 1.0, "t_exclude": 0.0,
+    "design_seed": 11, "test_seed": 22, "design_noise_seed": 1000, "test_noise_seed": 5000, "layout_seed": 7
+  }
+}

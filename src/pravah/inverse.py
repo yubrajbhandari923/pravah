@@ -36,7 +36,7 @@ from .config import SCHEMA_VERSION, FieldResult, Initial, Scenario, SolverOption
 from .forward import simulate
 from .observations import Observations, SensorLayout, sample
 
-_FIPY_VERSION = str(_fipy.__version__)  # type: ignore[attr-defined]
+_FIPY_VERSION = str(getattr(_fipy, "__version__", "unknown"))
 Q_REF_DEFAULT = 1e5  # ug/s; numerical scaling of the unit-response runs only
 
 

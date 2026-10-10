@@ -268,7 +268,8 @@ class DesignCase:
 
 def build_case(name: str, role: str, truth_scenario: Scenario, q_true: np.ndarray, inference_scenario: Scenario,
                candidates: Candidates, options: DesignOptions, noise_seed: int, n_noise: int,
-               cache: ResponseCache, error_field: xr.DataArray | None = None) -> DesignCase:
+               cache: ResponseCache, error_field: xr.DataArray | None = None,
+               truth_field: xr.DataArray | None = None) -> DesignCase:
     """Run one truth simulation and precompute everything fits need.
 
     truth_scenario may differ from inference_scenario (wind, resolution, extra sources); q_true has one entry per
@@ -276,7 +277,8 @@ def build_case(name: str, role: str, truth_scenario: Scenario, q_true: np.ndarra
     inference sources; extra truth sources are 'unmodelled').  Sensors read the NATIVE truth field.  The regional
     error compares the inference model with `error_field` (default: the native truth), which must be on the
     inference model's (time, y, x) coordinates exactly; for a refined truth the caller passes a block-averaged field.
-    Different output times raise ValueError (no time interpolation)."""
+    Different output times raise ValueError (no time interpolation).  ``truth_field`` may pass an already computed
+    ``simulate(truth_scenario, q_true, options.solver).concentration`` (saves the solve; the caller guarantees it)."""
     if role not in ("design", "test"):
         raise ValueError("role must be 'design' or 'test'")
     q_true = np.asarray(q_true, dtype=float)
@@ -289,7 +291,7 @@ def build_case(name: str, role: str, truth_scenario: Scenario, q_true: np.ndarra
         raise ValueError("n_noise must be >= 1")
     obs_times = _times(options, inference_scenario)
     resp = cache.get(inference_scenario, options.solver)
-    truth = simulate(truth_scenario, q_true, options.solver).concentration
+    truth = truth_field if truth_field is not None else simulate(truth_scenario, q_true, options.solver).concentration
     ref = truth if error_field is None else error_field
     for dim, coord in (("time", resp.times), ("y", resp.y), ("x", resp.x)):
         v = np.asarray(ref[dim].values, dtype=float)
@@ -342,7 +344,7 @@ def fit_layout(case: DesignCase, layout: Layout, rep: int, options: DesignOption
     layout].  Returns q_hat, mse_w, rmse, source_rel_err (relative L2 vs the first n_src truth amplitudes),
     unmodelled_source_mass (share of truth emission in extra sources; 0 if none), heldout_rmse (noiseless
     readings at eval_sites, estimate vs truth; nan without eval sites), rank, effective_rank, condition,
-    singular_values, success, runtime_s."""
+    singular_values, q_std (linear-Gaussian posterior std), success, runtime_s."""
     t0 = _time.perf_counter()
     _check_layout(case, layout)
     if not 0 <= rep < case.n_noise:
@@ -365,7 +367,7 @@ def fit_layout(case: DesignCase, layout: Layout, rep: int, options: DesignOption
         "q_hat": sol.q_hat, "mse_w": mse, "rmse": float(np.sqrt(mse)),
         "source_rel_err": float(source_error(sol.q_hat, q_match)["relative_l2"]),
         "unmodelled_source_mass": float(case.q_true[case.n_src:].sum() / case.q_true.sum()),
-        "heldout_rmse": held, "rank": sol.rank, "effective_rank": sol.effective_rank, "condition": sol.condition,
+        "heldout_rmse": held, "q_std": sol.q_std, "rank": sol.rank, "effective_rank": sol.effective_rank, "condition": sol.condition,
         "singular_values": sol.singular_values, "success": sol.success, "runtime_s": _time.perf_counter() - t0}
 
 

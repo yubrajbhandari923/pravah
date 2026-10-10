@@ -1,0 +1,8 @@
+{
+  "extends": "benchmark.json",
+  "name": "benchmark_unregularized",
+  "notes": "Sensitivity run: alpha=0 (no prior). Layouts that miss the plumes leave amplitudes unconstrained and bounded least squares can return astronomically large q; compare medians, not means.",
+  "design": {
+    "alpha": 0.0
+  }
+}
