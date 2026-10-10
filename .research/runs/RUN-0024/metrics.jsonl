@@ -1,0 +1,8 @@
+{"author_type": "agent", "name": "equiv_localonly_rmse_rel_peak", "ts": "2026-10-10T14:29:29-04:00", "value": 0.172}
+{"author_type": "agent", "name": "equiv_uniform_basis_matched_onset", "ts": "2026-10-10T14:29:29-04:00", "value": 0.118}
+{"author_type": "agent", "name": "equiv_sector_basis_matched_onset", "ts": "2026-10-10T14:29:30-04:00", "value": 0.114}
+{"author_type": "agent", "name": "equiv_uniform_basis_mismatched_onset", "ts": "2026-10-10T14:29:30-04:00", "value": 0.135}
+{"author_type": "agent", "name": "equiv_explicit_E1_reference", "ts": "2026-10-10T14:29:30-04:00", "value": 0.00925}
+{"author_type": "agent", "name": "interior8_total_rmse_2pct", "ts": "2026-10-10T14:29:30-04:00", "value": 0.000294}
+{"author_type": "agent", "name": "wind_mismatch_total_rmse_rel_peak", "ts": "2026-10-10T14:29:30-04:00", "value": 0.486}
+{"author_type": "agent", "name": "emission_scale_x0.1_total_rmse_10pct", "ts": "2026-10-10T14:29:31-04:00", "value": 0.00737}

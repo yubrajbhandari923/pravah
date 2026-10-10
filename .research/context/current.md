@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1512 tokens.
-> Generated 2026-10-10T14:14:15-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1535 tokens.
+> Generated 2026-10-10T14:29:35-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `b27027627c`
+Git: `master` @ `91282a789b` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -31,11 +31,12 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - Q-003 [investigating] Does routing every workflow through one ForwardSolver interface leave all FiPy results bit-identical, and do injected solvers reach every call?
 - Q-002 [investigating] Can sparse noisy sensors reconstruct the regional field, and do random, spread and greedy layouts differ on independent cases?
 - Q-001 [investigating] Does the FiPy forward model reproduce analytical, conservation and refinement behaviour?
+- Q-007 [open] On the Belauri geography, do greedy layouts selected for regional reconstruction or for local/external attribution outperform random and spread layouts on independent scenarios, and does an external reference site help at equal budget?
 
 ## Established findings (what we believe)
 
+- F-012 [preliminary, medium] Boundary-condition input (whole-side bases) removes only part of the error from an omitted localised external plume (synthetic) — evidence: EXP-011, RUN-0024
 - F-011 [preliminary, high] Belauri forward simulations: wind direction and numerical diffusion dominate; terrain layers are context only (real geography, synthetic emissions and meteorology) — evidence: EXP-012, RUN-0025
-- F-010 [preliminary, medium] External vs local decomposition from total observations: recoverable when well conditioned, flagged when not; boundary input cannot mimic a localised plume (synthetic) — evidence: EXP-010, RUN-0017
 - F-009 [preliminary, high] Solver routing refactor preserves every deterministic FiPy output bit-for-bit — evidence: EXP-008, RUN-0012, RUN-0013
 - F-008 [preliminary, medium] Greedy layouts optimised for the matched model are not robust to model error at small budgets — evidence: EXP-007, RUN-0011
 - F-006 [preliminary, medium] FINAL: greedy layouts beat spread/random on fresh test scenarios with alpha frozen on validation (matched, synthetic) — evidence: EXP-005, EXP-006, RUN-0008, RUN-0009
@@ -49,7 +50,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Current experiments
 
-- EXP-011 [running] EXP external vs local identifiability RERUN (after independent review fixes) — runs 1
+_none_
 
 ## Active plans
 
@@ -59,8 +60,8 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Needs attention (verification)
 
+- [awaiting review] F-012 Boundary-condition input (whole-side bases) removes only part of the error from an omitted localised external plume (synthetic): Agent finding awaiting an independent review
 - [awaiting review] F-011 Belauri forward simulations: wind direction and numerical diffusion dominate; terrain layers are context only (real geography, synthetic emissions and meteorology): Agent finding awaiting an independent review
-- [awaiting review] F-010 External vs local decomposition from total observations: recoverable when well conditioned, flagged when not; boundary input cannot mimic a localised plume (synthetic): Agent finding awaiting an independent review
 - [awaiting review] F-009 Solver routing refactor preserves every deterministic FiPy output bit-for-bit: Agent finding awaiting an independent review
 
 ## Active decisions
