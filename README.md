@@ -82,7 +82,7 @@ Full definitions: `docs/specification.md`; discretisation and design: `docs/impl
 * An accurate reconstructed field is **not** correct attribution: check `effective_rank` and `q_std`.
 * The headline fits use a weak ridge prior (alpha = 1). That choice was made **after** seeing the alpha = 0 run
   fail on plume-blind layouts (means of 1e19); it was not tuned, and the alpha = 0 run is kept as a sensitivity result.
-* Greedy selection is a heuristic, not an optimum (tests found a 3.7x gap to the exhaustive optimum on a tiny case).
+* Greedy selection is a heuristic, not an optimum (one tiny exhaustive test fixture showed greedy's design MSE at 3.7x the optimum, about 1.9x in RMSE).
 
 ## Known limitations
 

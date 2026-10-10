@@ -288,6 +288,9 @@ def build_case(name: str, role: str, truth_scenario: Scenario, q_true: np.ndarra
         raise ValueError(f"q_true must have one entry per truth source ({len(truth_scenario.sources)})")
     if len(truth_scenario.sources) < n_src:
         raise ValueError("truth must have at least as many sources as the inference model")
+    if any((t.x, t.y, t.sigma) != (m.x, m.y, m.sigma)
+           for t, m in zip(truth_scenario.sources[:n_src], inference_scenario.sources)):
+        raise ValueError("the first truth sources must be the inference sources (same x, y, sigma), in order")
     if n_noise < 1:
         raise ValueError("n_noise must be >= 1")
     obs_times = _times(options, inference_scenario)

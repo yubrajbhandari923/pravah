@@ -71,7 +71,7 @@ def provenance(config: dict[str, Any], seeds: dict[str, Any], extra: dict[str, A
     return {
         "config": config,
         "seeds": seeds,
-        "versions": {p: _version(p) for p in ("numpy", "scipy", "xarray", "fipy", "pravah")},
+        "versions": {p: _version(p) for p in ("numpy", "scipy", "xarray", "fipy", "pandas", "matplotlib", "netCDF4", "pravah")},
         "python": sys.version,
         "platform": platform.platform(),
         "git_revision": rev,

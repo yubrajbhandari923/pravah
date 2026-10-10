@@ -190,17 +190,22 @@ pure overfitting measure):
 | random | test - design | 0.0055 | 0.0042 | 0.0041 | 5.2e-4 | 0.0013 |
 
 What this supports: in this matched synthetic setting a layout chosen with the model on separate design scenarios
-beat spread and random layouts on independent test scenarios on average at every budget, with the gap small from
-3 sensors up but large at 1 sensor (greedy: 0.0106 above its design score). Much of the advantage is simply avoiding
+beat spread and random layouts on independent test scenarios on average at every budget, with an absolute test-minus-design gap that is small from
+3 sensors up but large at 1 sensor (greedy: 0.0106 above its design score). Relative to its design score, greedy's
+test RMSE is 27-49% higher at b = 3, 5 and 8 (pooled test/design RMSE ratio 1.80, 0.88, 1.48, 1.27, 1.49 for b = 1..8),
+whereas spread's ratio is at or below 1.2; this positive gap is what selection-on-design optimism looks like, so the
+design-stage score of a greedy layout should not be quoted as its expected performance. Much of the advantage is simply avoiding
 plume-blind sites (identifiability), not fine optimisation. What it does not support: greedy winning every case
-(78-100% of pairs), greedy being optimal (it is a one-site-at-a-time heuristic; a tiny exhaustive fixture in the
-tests showed a gap of up to 3.7x), the population-weighted objective helping (it was worse at b = 2, indifferent
+(78-100% of pairs), greedy being optimal (it is a one-site-at-a-time heuristic; one tiny alpha = 0 exhaustive fixture in the
+tests showed greedy's design MSE 3.7x the optimum, i.e. about 1.9x in RMSE; a single fixture, not a range), the population-weighted objective helping (it was worse at b = 2, indifferent
 elsewhere), or any statement about real networks. With 6 + 6 scenarios and 3 noise draws the evidence is modest.
 
 ### Sensitivity: no prior (alpha = 0, `results/benchmark-unregularized`)
 
 The headline uses a weak ridge prior (alpha = 1, in units of q_scale = 1e5 ug/s). **That choice was made after
-seeing this alpha = 0 run**; it was not tuned (one value, chosen a priori), and the alpha = 0 run is kept as a
+seeing the alpha = 0 test results**, so it is not independent of them; it was not searched (one value tried) and
+it does not favour greedy (greedy is slightly worse with alpha = 1 at b = 8: 3.6e-4 vs 2.6e-4; the prior mainly rescues
+spread and random), and the alpha = 0 run is kept as a
 sensitivity result. Mean RMSE (median in brackets), uniform weights:
 
 | Method | b = 1 | b = 2 | b = 3 | b = 5 | b = 8 |
@@ -225,8 +230,8 @@ Fixed design-stage layouts from `results/benchmark` are evaluated on the same 6 
 changing one thing in the truth (the inversion keeps the matched model): **refined truth** (100 x 100 grid, dt/2,
 block-averaged back to the inference grid), **wind perturbed** (+20% speed and 15 deg counter-clockwise rotation in
 every segment, hidden from the inversion), **extra source** (a 4th source of 60000 ug/s at (3000, 4500) m, which is
-15.5% of emissions on average and absent from the inference model). One magnitude per kind; layouts weighted by
-population were not evaluated. Mean RMSE, ug/m^3:
+15.5% of emissions on average and absent from the inference model). One magnitude per kind; the `greedy_weighted` layouts are in the raw
+rows but were scored on the uniform metric only (the population-weighted metric was not computed under mismatch). Mean RMSE, ug/m^3:
 
 | Method | Condition | b = 1 | b = 2 | b = 3 | b = 5 | b = 8 |
 |---|---|---|---|---|---|---|
@@ -251,9 +256,12 @@ Paired mismatch minus matched (greedy; mean difference / sd / fraction of pairs 
 | wind perturbed | +0.0120 / 0.0078 / 100% | +0.0175 / 0.0059 / 100% | +0.0172 / 0.0042 / 100% | +0.0158 / 0.0043 / 100% | +0.0155 / 0.0041 / 100% |
 | extra source | +0.0078 / 0.0038 / 100% | +0.0079 / 0.0051 / 83% | +0.0100 / 0.0016 / 100% | +0.0102 / 0.0016 / 100% | +0.0101 / 0.0017 / 100% |
 
-Reading: the discretisation mismatch (refined truth) costs about 6e-4 ug/m^3 at b >= 3, so the matched benchmark was
-only mildly optimistic from the inverse crime; a hidden 20%/15 deg wind error or a missing source costs roughly 15-35
-times more and **more sensors do not fix it** (greedy b = 8 stays at 0.016 and 0.0105): the floor is model error. Under
+Reading: the discretisation mismatch (refined truth) costs about 6e-4 ug/m^3 at b >= 3, an absolute cost that is small next to the
+greedy-vs-spread gaps but a large relative one: for greedy at b = 5 and 8 the refined-truth RMSE is 2.6-2.9x the matched
+value (3.9e-4 to 1.0e-3; 3.6e-4 to 1.0e-3) and the b = 8 source error rises 1.7x (0.0089 to 0.015). The refined truth
+still uses the same scheme (same numerical diffusion), source shapes and boundary conditions, so this is a lower bound
+on the inverse-crime effect, not an estimate of it; a hidden 20%/15 deg wind error or a missing source costs roughly 15-35
+times more at b >= 2 (about 11x at b = 1) and **more sensors do not fix it** (greedy b = 8 stays at 0.016 and 0.0105): the floor is model error. Under
 the missing source the greedy source-attribution error (relative L2 on the three modelled amplitudes) rises from
 0.009 to 0.16 at b = 8. Under mismatch spread layouts at b >= 2 are worse than greedy in every condition, and for
 the wind error they are worse than at b = 1. Not every individual draw worsens (78-100% for refined truth).
@@ -289,14 +297,29 @@ Also available: `results/benchmark/figures/error_vs_sensors_population.png`,
 * **Inverse crime.** Matched experiments invert the same numerical model that generated the data. The mismatch study
   relaxes this in three specific ways only.
 * **Known-everything-but-q.** Wind, K, lambda, H, geometry, initial state and boundary values are assumed known.
-  The mismatch study shows how fast this assumption costs accuracy (wind error: roughly 15-35x the discretisation effect).
+  The mismatch study shows how fast this assumption costs accuracy (wind error: roughly 15-35x the refined-truth effect at b >= 2).
 * **Small samples.** 6 + 6 scenarios x 3 noise draws, one wind-ensemble definition, one noise level (0.005 ug/m^3),
   one magnitude per mismatch kind, one random-layout seed. sd values describe spread, not uncertainty of the mean.
 * **Prior choice.** alpha = 1 adopted after the alpha = 0 failure (disclosed above).
-* **Greedy is a heuristic**; no optimality claim. Weighted layouts were not evaluated under mismatch.
+* **Greedy is a heuristic**; no optimality claim. Weighted layouts were scored on the uniform metric only under mismatch.
 * **Not measured:** peak memory of `simulate`/`inverse`/verification; CPU contention during timing; behaviour on other
   machines or library versions; oblique-wind numerical diffusion; anything about real data.
 * **Synthetic verification vs empirical validation.** Everything above checks internal consistency and numerical
   accuracy against analytic and refined-model references. Empirical validation would compare model output with
   measurements of the real region; none exists in this repository, and the default parameters are demonstration values,
   not Belauri estimates. No claim in this document should be read as a statement about real air quality.
+
+## Notes added after the final review
+
+* Held-out evaluation sites (7 x 7 grid, `experiments.py`) never coincide with candidate sites but can lie within about
+  half a cell (~100 m) of a fitted one (e.g. (6429, 6429) m vs candidate c066). They are noiseless and use the same
+  bilinear operator, so held-out RMSE tracks regional RMSE closely and is weak independent evidence. Treat it as a
+  consistency check, not an independent test.
+* Paired tables count ties as "not better" (`frac_a_better`); the `greedy_weighted - greedy` row at b = 1 shows 0% only
+  because the two layouts are identical.
+* Provenance of the frozen runs records numpy/scipy/xarray/fipy/pravah versions and `git_dirty` but no diff. The pandas,
+  matplotlib and netCDF4 versions are in `requirements-lock.txt` (later runs also record them in provenance.json).
+  `results/mismatch` records the `layouts_from` path but no hash of the layouts file (it is identical to
+  `results/benchmark/layouts.json`).
+* Timings in the frozen run directories were measured while other jobs shared the CPU; an identical rerun of the
+  benchmark took 152 s versus the recorded 294 s with the same peak memory (~177 MB) and bit-identical raw metrics.
