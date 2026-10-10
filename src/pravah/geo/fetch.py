@@ -227,6 +227,19 @@ def nominatim_lookup(query: str, cache_dir: str | Path, *, session: Any = None, 
     return rec
 
 
+def nominatim_relation_polygon(osm_type: str, osm_id: int, cache_dir: str | Path, *, session: Any = None) -> dict[str, Any]:
+    """One Nominatim /lookup of an OSM object WITH its polygon (cached). Used only as the independent comparison polygon
+    for the boundary check (IoU against the geoBoundaries polygon), never as the study boundary."""
+    cache = Path(cache_dir)
+    prefix = {"relation": "R", "way": "W", "node": "N"}[osm_type]
+    params = {"osm_ids": f"{prefix}{osm_id}", "format": "geojson", "polygon_geojson": 1, "extratags": 1}
+    rec = http_get(NOMINATIM_URL.replace("/search", "/lookup"), cache / f"nominatim_lookup_{prefix}{osm_id}.geojson", timeout=60,
+                   max_bytes=20_000_000, session=session, params=params, license=OSM_LICENSE,
+                   attribution=OSM_ATTRIBUTION + " via Nominatim", rec_id=f"nominatim-lookup:{prefix}{osm_id}", cache_root=cache)
+    rec["url"] = f"{NOMINATIM_URL.replace('/search', '/lookup')}?{urlencode(params)}"
+    return rec
+
+
 def parse_nominatim(raw: Any) -> list[dict[str, Any]]:
     out = []
     for r in raw:
@@ -271,11 +284,25 @@ def osm_features(polygon_wgs84: Any, tags: dict[str, Any], cache_dir: str | Path
     now = _now()
     out: dict[str, dict[str, Any]] = {}
     used = {"url": overpass_urls[0]}
+    try:
+        previous = read_records(cache)
+    except FileNotFoundError:
+        previous = {}
+
+    def reuse(role: str) -> bool:
+        """Keep a layer that is already cached and whose recorded sha256 still matches the file (no network)."""
+        rec = previous.get(role)
+        f = cache / rec["file"] if rec else None
+        if rec and f is not None and f.exists() and sha256_file(f) == rec["sha256"]:
+            out[role] = rec
+            print(f"  OSM {role}: cached ({rec.get('feature_count', '?')} features, retrieved {rec['retrieved_utc']})", flush=True)
+            return True
+        return False
 
     def on_endpoints(fn: Any, what: str) -> Any:
         """Try each Overpass endpoint in order (bounded retries each); the endpoint that answered is recorded."""
         errors = []
-        for url in overpass_urls:
+        for url in sorted(overpass_urls, key=lambda u: u != used["url"]):  # last endpoint that answered goes first
             setattr(ox.settings, "overpass_url", url)
             try:
                 res = _retry(fn, f"{what}@{url}", attempts=2, base_sleep=15.0)
@@ -300,11 +327,12 @@ def osm_features(polygon_wgs84: Any, tags: dict[str, Any], cache_dir: str | Path
                             extra={"query": query, "feature_count": int(len(g)),
                                    "geometry_types": sorted(map(str, g.geom_type.unique()))})
 
-    print("  OSM roads (Overpass via osmnx) ...", flush=True)
-    graph = on_endpoints(lambda: ox.graph.graph_from_polygon(polygon_wgs84, network_type="all", simplify=True), "osm_roads")
-    save("osm_roads", ox.convert.graph_to_gdfs(graph, nodes=False), ("highway", "name", "length"), "network_type=all")
+    if not reuse("osm_roads"):
+        print("  OSM roads (Overpass via osmnx) ...", flush=True)
+        graph = on_endpoints(lambda: ox.graph.graph_from_polygon(polygon_wgs84, network_type="all", simplify=True), "osm_roads")
+        save("osm_roads", ox.convert.graph_to_gdfs(graph, nodes=False), ("highway", "name", "length"), "network_type=all")
     for role, key in (("osm_buildings", "buildings"), ("osm_landuse", "landuse"), ("osm_amenity", "amenity")):
-        if key not in tags:
+        if key not in tags or reuse(role):
             continue
         print(f"  OSM {role} (Overpass via osmnx) ...", flush=True)
         try:
@@ -409,7 +437,13 @@ def fetch_all(cfg: dict[str, Any], cache_dir: str | Path, *, session: Any = None
         save(role, fetch_geoboundaries_geojson(spec["iso"], spec["level"], cache, session=session))
     loc = study.get("independent_locator", {}).get("nominatim_query")
     if loc:
-        save("nominatim", nominatim_lookup(loc, cache, session=session))
+        nrec = nominatim_lookup(loc, cache, session=session)
+        save("nominatim", nrec)
+        want = gb["shapeName"].lower()
+        rels = [r for r in nrec["results"] if r.get("osm_type") == "relation" and want in str(r.get("display_name", "")).lower()
+                and str(r.get("extratags", {}).get("admin_level", "")) != ""]
+        if rels:  # independent comparison polygon: the OSM administrative relation of the same name
+            save("osm_relation", nominatim_relation_polygon("relation", int(rels[0]["osm_id"]), cache, session=session))
     import shapely
     feat = find_feature(load_geojson(cache / recs["study"]["file"]), gb["shapeName"], gb.get("shapeID"))
     poly = shapely.geometry.shape(feat["geometry"])

@@ -487,3 +487,54 @@ def test_cli_import_and_geo_help_do_not_import_gis() -> None:
     assert r.returncode == 0, r.stdout + r.stderr
     h = subprocess.run([sys.executable, "-m", "pravah", "geo", "--help"], capture_output=True, text=True)
     assert h.returncode == 0 and "prepare" in h.stdout and "fetch" in h.stdout
+
+
+# ---------------------------------------------------------------------------------------------
+# Boundary verification with a coarse district outline (synthetic geometry, not Belauri)
+# ---------------------------------------------------------------------------------------------
+def _verify_inputs(rel_shift_deg: float = 0.0):
+    import shapely
+    from pravah.geo.prepare import _project
+    study = shapely.box(80.30, 28.65, 80.40, 28.75)
+    cfg = {"geoboundaries": {"iso": "XXX", "level": "ADM3", "shapeName": "Synthetic Town", "shapeID": "X1"},
+           "expected": {"parent_district": "Synthetic District", "parent_aliases": ["Synthetic District"],
+                        "bbox_lonlat": [80.30, 28.65, 80.40, 28.75], "area_km2": None},
+           "tolerances": {"area_frac": 0.1, "bbox_deg": 0.03, "district_cover": 0.9, "osm_iou": 0.9},
+           "independent_locator": {"max_distance_km": 5.0, "require_osm_relation": True}}
+    study_m = _project(study, 4326, 32644)
+    cfg["expected"]["area_km2"] = study_m.area / 1e6
+    props = {"shapeName": "Synthetic Town", "shapeID": "X1"}
+    nom = [{"osm_type": "relation", "osm_id": 1, "lat": 28.70, "lon": 80.35,
+            "display_name": "Synthetic Town, Synthetic District, Nowhere", "extratags": {"admin_level": "7"}}]
+    rel = shapely.box(80.30 + rel_shift_deg, 28.65, 80.40 + rel_shift_deg, 28.75)
+    return study_m, study, props, cfg, nom, rel
+
+
+def test_coarse_district_outline_is_rescued_only_by_independent_evidence():
+    import shapely
+    from pravah.geo.prepare import verify_boundary
+    study_m, study, props, cfg, nom, rel = _verify_inputs()
+    coarse = shapely.box(80.30, 28.65, 80.40, 28.70)  # covers only half of the municipality
+    out = verify_boundary(study_m, study, props, cfg, 32644, coarse, nom, rel, other_districts_wgs84=[])
+    by = {c["name"]: c for c in out["checks"]}
+    assert by["adm2_geometric_coverage"]["ok"] is False and by["adm2_geometric_coverage"]["informational"]
+    assert by["osm_relation_agreement"]["ok"] is True and by["parent_district"]["ok"] is True
+    assert out["boundary_status"] == "verified"
+    # without the independent relation polygon the same coarse outline is NOT accepted
+    out2 = verify_boundary(study_m, study, props, cfg, 32644, coarse, nom, None, other_districts_wgs84=[])
+    assert out2["boundary_status"] == "approximate"
+
+
+def test_disagreeing_relation_or_a_competing_district_blocks_verification():
+    import shapely
+    from pravah.geo.prepare import verify_boundary
+    study_m, study, props, cfg, nom, rel_far = _verify_inputs(rel_shift_deg=0.05)  # half the width away: IoU ~ 0.33
+    coarse = shapely.box(80.30, 28.65, 80.40, 28.70)
+    out = verify_boundary(study_m, study, props, cfg, 32644, coarse, nom, rel_far, other_districts_wgs84=[])
+    assert {c["name"]: c["ok"] for c in out["checks"]}["osm_relation_agreement"] is False
+    assert out["boundary_status"] == "approximate"
+    study_m, study, props, cfg, nom, rel = _verify_inputs()
+    rival = shapely.box(80.30, 28.70, 80.40, 28.75)  # another district claims the other half
+    out2 = verify_boundary(study_m, study, props, cfg, 32644, coarse, nom, rel, other_districts_wgs84=[rival])
+    assert {c["name"]: c["ok"] for c in out2["checks"]}["parent_district"] is False
+    assert out2["boundary_status"] == "approximate"

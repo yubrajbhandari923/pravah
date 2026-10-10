@@ -1,0 +1,386 @@
+diff --git a/configs/belauri_geo.json b/configs/belauri_geo.json
+index 458ba74..1ee52cc 100644
+--- a/configs/belauri_geo.json
++++ b/configs/belauri_geo.json
+@@ -17,32 +17,95 @@
+     "expected": {
+       "parent_district": "Kanchanpur",
+       "province": "Sudurpashchim",
+-      "bbox_lonlat": [80.258, 28.628, 80.430, 28.773],
+-      "area_km2": 123
++      "bbox_lonlat": [
++        80.258,
++        28.628,
++        80.43,
++        28.773
++      ],
++      "area_km2": 123,
++      "parent_aliases": [
++        "Kanchanpur",
++        "कञ्चनपुर"
++      ]
++    },
++    "tolerances": {
++      "area_frac": 0.1,
++      "bbox_deg": 0.03,
++      "district_cover": 0.9,
++      "osm_iou": 0.9
+     },
+-    "tolerances": {"area_frac": 0.10, "bbox_deg": 0.03, "district_cover": 0.9},
+     "expected_epsg": 32644,
+     "independent_locator": {
+       "nominatim_query": "Belauri, Kanchanpur, Nepal",
+-      "max_distance_km": 5.0
++      "max_distance_km": 5.0,
++      "require_osm_relation": true
+     }
+   },
+-  "adm2": {"iso": "NPL", "level": "ADM2"},
++  "adm2": {
++    "iso": "NPL",
++    "level": "ADM2"
++  },
+   "adm0": [
+-    {"iso": "NPL", "level": "ADM0"},
+-    {"iso": "IND", "level": "ADM0"}
++    {
++      "iso": "NPL",
++      "level": "ADM0"
++    },
++    {
++      "iso": "IND",
++      "level": "ADM0"
++    }
+   ],
+-  "dem": {"product": "Copernicus GLO-30", "buffer_deg": 0.02, "max_window_pixels": 25000000, "min_valid_fraction": 0.95},
+-  "grid": {"buffer_m": 8000, "resolutions_m": [500, 250], "pad_to_m": 500},
++  "dem": {
++    "product": "Copernicus GLO-30",
++    "buffer_deg": 0.02,
++    "max_window_pixels": 25000000,
++    "min_valid_fraction": 0.95
++  },
++  "grid": {
++    "buffer_m": 8000,
++    "resolutions_m": [
++      500,
++      250
++    ],
++    "pad_to_m": 500
++  },
+   "osm": {
+     "margin_m": 2000,
+-    "overpass_urls": ["https://overpass-api.de/api", "https://maps.mail.ru/osm/tools/overpass/api"],
++    "overpass_urls": [
++      "https://overpass-api.de/api",
++      "https://maps.mail.ru/osm/tools/overpass/api"
++    ],
+     "tags": {
+-      "buildings": {"building": true},
+-      "landuse": {"landuse": "residential"},
+-      "amenity": {"amenity": ["school", "college", "kindergarten", "university", "hospital", "clinic", "doctors", "health_post"]}
++      "buildings": {
++        "building": true
++      },
++      "landuse": {
++        "landuse": "residential"
++      },
++      "amenity": {
++        "amenity": [
++          "school",
++          "college",
++          "kindergarten",
++          "university",
++          "hospital",
++          "clinic",
++          "doctors",
++          "health_post"
++        ]
++      }
+     },
+-    "facility_amenities": ["school", "college", "kindergarten", "university", "hospital", "clinic", "doctors", "health_post"]
++    "facility_amenities": [
++      "school",
++      "college",
++      "kindergarten",
++      "university",
++      "hospital",
++      "clinic",
++      "doctors",
++      "health_post"
++    ]
+   },
+   "external_patch": {
+     "comment": "synthetic hypothesis: Gaussian patch centred beyond_polygon_m outside the municipality edge, along the bearing from the centroid to the nearest national (ADM0) boundary point",
+diff --git a/src/pravah/geo/fetch.py b/src/pravah/geo/fetch.py
+index 7a5ee3b..05f5538 100644
+--- a/src/pravah/geo/fetch.py
++++ b/src/pravah/geo/fetch.py
+@@ -227,6 +227,19 @@ def nominatim_lookup(query: str, cache_dir: str | Path, *, session: Any = None,
+     return rec
+ 
+ 
++def nominatim_relation_polygon(osm_type: str, osm_id: int, cache_dir: str | Path, *, session: Any = None) -> dict[str, Any]:
++    """One Nominatim /lookup of an OSM object WITH its polygon (cached). Used only as the independent comparison polygon
++    for the boundary check (IoU against the geoBoundaries polygon), never as the study boundary."""
++    cache = Path(cache_dir)
++    prefix = {"relation": "R", "way": "W", "node": "N"}[osm_type]
++    params = {"osm_ids": f"{prefix}{osm_id}", "format": "geojson", "polygon_geojson": 1, "extratags": 1}
++    rec = http_get(NOMINATIM_URL.replace("/search", "/lookup"), cache / f"nominatim_lookup_{prefix}{osm_id}.geojson", timeout=60,
++                   max_bytes=20_000_000, session=session, params=params, license=OSM_LICENSE,
++                   attribution=OSM_ATTRIBUTION + " via Nominatim", rec_id=f"nominatim-lookup:{prefix}{osm_id}", cache_root=cache)
++    rec["url"] = f"{NOMINATIM_URL.replace('/search', '/lookup')}?{urlencode(params)}"
++    return rec
++
++
+ def parse_nominatim(raw: Any) -> list[dict[str, Any]]:
+     out = []
+     for r in raw:
+@@ -409,7 +422,13 @@ def fetch_all(cfg: dict[str, Any], cache_dir: str | Path, *, session: Any = None
+         save(role, fetch_geoboundaries_geojson(spec["iso"], spec["level"], cache, session=session))
+     loc = study.get("independent_locator", {}).get("nominatim_query")
+     if loc:
+-        save("nominatim", nominatim_lookup(loc, cache, session=session))
++        nrec = nominatim_lookup(loc, cache, session=session)
++        save("nominatim", nrec)
++        want = gb["shapeName"].lower()
++        rels = [r for r in nrec["results"] if r.get("osm_type") == "relation" and want in str(r.get("display_name", "")).lower()
++                and str(r.get("extratags", {}).get("admin_level", "")) != ""]
++        if rels:  # independent comparison polygon: the OSM administrative relation of the same name
++            save("osm_relation", nominatim_relation_polygon("relation", int(rels[0]["osm_id"]), cache, session=session))
+     import shapely
+     feat = find_feature(load_geojson(cache / recs["study"]["file"]), gb["shapeName"], gb.get("shapeID"))
+     poly = shapely.geometry.shape(feat["geometry"])
+diff --git a/src/pravah/geo/prepare.py b/src/pravah/geo/prepare.py
+index 91cae8e..2b6d1c2 100644
+--- a/src/pravah/geo/prepare.py
++++ b/src/pravah/geo/prepare.py
+@@ -7,6 +7,8 @@ reasons are listed. Emission "source hypotheses" are *synthetic spatial priors*
+ """
+ from __future__ import annotations
+ 
++from collections.abc import Sequence
++
+ import datetime as dt
+ import json
+ import math
+@@ -153,16 +155,24 @@ def classify_point(point: Any, study_polygon: Any, country_polygons: dict[str, A
+ 
+ # ---------------------------------------------------------------- boundary verification
+ def verify_boundary(study_m: Any, study_wgs84: Any, props: dict[str, Any], cfg_study: dict[str, Any], epsg: int,
+-                    district_wgs84: Any | None, nominatim_results: list[dict[str, Any]] | None) -> dict[str, Any]:
+-    """Run the boundary checks; each check is {name, ok (True/False/None=not performed), detail}. Status is 'verified'
+-    only if all are True."""
++                    district_wgs84: Any | None, nominatim_results: list[dict[str, Any]] | None,
++                    osm_relation_wgs84: Any | None = None, other_districts_wgs84: Sequence[Any] = ()) -> dict[str, Any]:
++    """Run the boundary checks; each check is {name, ok (True/False/None=not performed), detail[, informational]}. Status
++    is 'verified' only if every NON-informational check is True.
++
++    Parent district: the ADM2 layer of a geoBoundaries release can be a coarse outline (e.g. a 2006 district polygon with a
++    few dozen vertices), so geometric containment may fail although the municipality is correctly in that district. The
++    check passes if EITHER the ADM2 polygon covers >= district_cover of the study polygon OR independent evidence agrees:
++    the OSM administrative relation (matching polygon, see osm_relation_agreement) names the district in its hierarchy
++    and no OTHER district overlaps the study polygon by more than 1%. The raw ADM2 coverage is always recorded as the
++    informational check adm2_geometric_coverage (never hidden)."""
+     exp = cfg_study["expected"]
+     gb = cfg_study["geoboundaries"]
+     tol = cfg_study.get("tolerances", {})
+     checks: list[dict[str, Any]] = []
+ 
+-    def add(name: str, ok: bool | None, detail: str) -> None:
+-        checks.append({"name": name, "ok": ok, "detail": detail})
++    def add(name: str, ok: bool | None, detail: str, informational: bool = False) -> None:
++        checks.append({"name": name, "ok": ok, "detail": detail, **({"informational": True} if informational else {})})
+ 
+     add("name", props.get("shapeName") == gb["shapeName"], f"shapeName={props.get('shapeName')!r}")
+     add("shape_id", props.get("shapeID") == gb.get("shapeID") if gb.get("shapeID") else None, f"shapeID={props.get('shapeID')!r}")
+@@ -175,12 +185,39 @@ def verify_boundary(study_m: Any, study_wgs84: Any, props: dict[str, Any], cfg_s
+     ew, es, ee, en = exp["bbox_lonlat"]
+     dev = max(abs(w - ew), abs(s - es), abs(e - ee), abs(n - en))
+     add("bbox", dev <= bt, f"bbox=({w:.3f},{s:.3f},{e:.3f},{n:.3f}) max deviation {dev:.3f} deg (tol {bt})")
+-    if district_wgs84 is None:
+-        add("parent_district", None, "ADM2 layer not available")
+-    else:
++    cov: float | None = None
++    if district_wgs84 is not None:
+         cov = float(study_wgs84.intersection(district_wgs84).area / study_wgs84.area)
+-        add("parent_district", cov >= float(tol.get("district_cover", 0.9)),
+-            f"{cov:.1%} of the polygon lies inside the ADM2 feature {exp['parent_district']!r}")
++        add("adm2_geometric_coverage", cov >= float(tol.get("district_cover", 0.9)),
++            f"{cov:.1%} of the polygon lies inside the ADM2 feature {exp['parent_district']!r}", informational=True)
++    rel_ok: bool | None = None
++    need_rel = bool(cfg_study.get("independent_locator", {}).get("require_osm_relation", False))
++    if osm_relation_wgs84 is None:
++        add("osm_relation_agreement", None, "no OSM administrative relation polygon available (not performed)",
++            informational=not need_rel)
++    else:
++        a, b = study_m, _project(osm_relation_wgs84, 4326, epsg).buffer(0)
++        iou = float(a.intersection(b).area / a.union(b).area)
++        da = abs(a.area - b.area) / a.area
++        rel_ok = iou >= float(tol.get("osm_iou", 0.9)) and da <= float(tol.get("area_frac", 0.1))
++        add("osm_relation_agreement", rel_ok,
++            f"IoU {iou:.4f} with the OSM administrative relation polygon; area differs by {da:.2%}; "
++            f"Hausdorff distance {float(a.hausdorff_distance(b)):.0f} m", informational=False)
++    names = [str(r.get("display_name", "")) for r in (nominatim_results or [])
++             if gb["shapeName"].lower() in str(r.get("display_name", "")).lower()]
++    aliases = [str(x).lower() for x in exp.get("parent_aliases", [exp["parent_district"]])]
++    hierarchy_names = any(al in n.lower() for n in names for al in aliases)
++    other = max([float(study_wgs84.intersection(g).area / study_wgs84.area) for g in other_districts_wgs84], default=0.0)
++    if district_wgs84 is None and not names:
++        add("parent_district", None, "ADM2 layer and independent hierarchy not available")
++    elif cov is not None and cov >= float(tol.get("district_cover", 0.9)):
++        add("parent_district", True, f"{cov:.1%} of the polygon lies inside the ADM2 feature {exp['parent_district']!r}")
++    else:
++        ok = bool(rel_ok and hierarchy_names and other <= 0.01)
++        add("parent_district", ok,
++            f"ADM2 geometric coverage {cov if cov is None else format(cov, '.1%')} is below the threshold; independent evidence: "
++            f"OSM relation polygon agrees={rel_ok}, hierarchy names the district={hierarchy_names}, largest overlap with any "
++            f"OTHER district {other:.2%} (must be <= 1%)")
+     if nominatim_results is None:
+         add("independent_locator", None, "no Nominatim record available (not performed)")
+     else:
+@@ -197,7 +234,7 @@ def verify_boundary(study_m: Any, study_wgs84: Any, props: dict[str, Any], cfg_s
+                         "distance_km": d, "extratags": r.get("extratags", {})}
+         add("independent_locator", None if not nominatim_results else (best is not None and best["distance_km"] <= maxd),
+             f"nearest name-matching Nominatim result: {best}" if best else "no Nominatim result matched the name")
+-    status = "verified" if all(c["ok"] is True for c in checks) else "approximate"
++    status = "verified" if all(c["ok"] is True for c in checks if not c.get("informational")) else "approximate"
+     return {"boundary_status": status, "checks": checks,
+             "level_meaning": f"geoBoundaries {gb['level']} for {gb['iso']} = local-level unit (municipality / rural municipality)"}
+ 
+@@ -300,7 +337,13 @@ def prepare_region(cfg: dict[str, Any], raw_dir: str | Path, out_dir: str | Path
+         raise ValueError(f"ADM2 layer: {len(dsel)} features named {dname!r}; candidates {sorted({str(p.get('shapeName')) for p in dprops})[:20]}")
+     district_ll = districts[dsel[0]]
+     nom_res = parse_nominatim(json.loads((raw / recs["nominatim"]["file"]).read_text())) if "nominatim" in recs else None
+-    boundary = verify_boundary(study_m, poly_ll, props[k], study_cfg, epsg, district_ll, nom_res)
++    osm_rel_ll = None
++    if "osm_relation" in recs:
++        _fc = json.loads((raw / recs["osm_relation"]["file"]).read_text())
++        _geoms = [shapely.geometry.shape(f["geometry"]) for f in _fc.get("features", []) if f.get("geometry")]
++        osm_rel_ll = _geoms[0] if _geoms else None
++    others = [districts[i] for i in range(len(districts)) if i != dsel[0]]
++    boundary = verify_boundary(study_m, poly_ll, props[k], study_cfg, epsg, district_ll, nom_res, osm_rel_ll, others)
+     if boundary["boundary_status"] != "verified":
+         incomplete.append("boundary requirement: status is 'approximate' (see boundary.checks)")
+ 
+diff --git a/tests/test_geo.py b/tests/test_geo.py
+index 70d0a2a..37cf050 100644
+--- a/tests/test_geo.py
++++ b/tests/test_geo.py
+@@ -487,3 +487,54 @@ def test_cli_import_and_geo_help_do_not_import_gis() -> None:
+     assert r.returncode == 0, r.stdout + r.stderr
+     h = subprocess.run([sys.executable, "-m", "pravah", "geo", "--help"], capture_output=True, text=True)
+     assert h.returncode == 0 and "prepare" in h.stdout and "fetch" in h.stdout
++
++
++# ---------------------------------------------------------------------------------------------
++# Boundary verification with a coarse district outline (synthetic geometry, not Belauri)
++# ---------------------------------------------------------------------------------------------
++def _verify_inputs(rel_shift_deg: float = 0.0):
++    import shapely
++    from pravah.geo.prepare import _project
++    study = shapely.box(80.30, 28.65, 80.40, 28.75)
++    cfg = {"geoboundaries": {"iso": "XXX", "level": "ADM3", "shapeName": "Synthetic Town", "shapeID": "X1"},
++           "expected": {"parent_district": "Synthetic District", "parent_aliases": ["Synthetic District"],
++                        "bbox_lonlat": [80.30, 28.65, 80.40, 28.75], "area_km2": None},
++           "tolerances": {"area_frac": 0.1, "bbox_deg": 0.03, "district_cover": 0.9, "osm_iou": 0.9},
++           "independent_locator": {"max_distance_km": 5.0, "require_osm_relation": True}}
++    study_m = _project(study, 4326, 32644)
++    cfg["expected"]["area_km2"] = study_m.area / 1e6
++    props = {"shapeName": "Synthetic Town", "shapeID": "X1"}
++    nom = [{"osm_type": "relation", "osm_id": 1, "lat": 28.70, "lon": 80.35,
++            "display_name": "Synthetic Town, Synthetic District, Nowhere", "extratags": {"admin_level": "7"}}]
++    rel = shapely.box(80.30 + rel_shift_deg, 28.65, 80.40 + rel_shift_deg, 28.75)
++    return study_m, study, props, cfg, nom, rel
++
++
++def test_coarse_district_outline_is_rescued_only_by_independent_evidence():
++    import shapely
++    from pravah.geo.prepare import verify_boundary
++    study_m, study, props, cfg, nom, rel = _verify_inputs()
++    coarse = shapely.box(80.30, 28.65, 80.40, 28.70)  # covers only half of the municipality
++    out = verify_boundary(study_m, study, props, cfg, 32644, coarse, nom, rel, other_districts_wgs84=[])
++    by = {c["name"]: c for c in out["checks"]}
++    assert by["adm2_geometric_coverage"]["ok"] is False and by["adm2_geometric_coverage"]["informational"]
++    assert by["osm_relation_agreement"]["ok"] is True and by["parent_district"]["ok"] is True
++    assert out["boundary_status"] == "verified"
++    # without the independent relation polygon the same coarse outline is NOT accepted
++    out2 = verify_boundary(study_m, study, props, cfg, 32644, coarse, nom, None, other_districts_wgs84=[])
++    assert out2["boundary_status"] == "approximate"
++
++
++def test_disagreeing_relation_or_a_competing_district_blocks_verification():
++    import shapely
++    from pravah.geo.prepare import verify_boundary
++    study_m, study, props, cfg, nom, rel_far = _verify_inputs(rel_shift_deg=0.05)  # half the width away: IoU ~ 0.33
++    coarse = shapely.box(80.30, 28.65, 80.40, 28.70)
++    out = verify_boundary(study_m, study, props, cfg, 32644, coarse, nom, rel_far, other_districts_wgs84=[])
++    assert {c["name"]: c["ok"] for c in out["checks"]}["osm_relation_agreement"] is False
++    assert out["boundary_status"] == "approximate"
++    study_m, study, props, cfg, nom, rel = _verify_inputs()
++    rival = shapely.box(80.30, 28.70, 80.40, 28.75)  # another district claims the other half
++    out2 = verify_boundary(study_m, study, props, cfg, 32644, coarse, nom, rel, other_districts_wgs84=[rival])
++    assert {c["name"]: c["ok"] for c in out2["checks"]}["parent_district"] is False
++    assert out2["boundary_status"] == "approximate"
+
+# Untracked files (not included):
+#   data/belauri/manifest.json
+#   data/belauri/processed/builtup_fraction_250m.npy
+#   data/belauri/processed/builtup_fraction_500m.npy
+#   data/belauri/processed/dem_mean_250m.npy
+#   data/belauri/processed/dem_mean_500m.npy
+#   data/belauri/processed/dem_valid_fraction_250m.npy
+#   data/belauri/processed/dem_valid_fraction_500m.npy
+#   data/belauri/processed/facility_count_250m.npy
+#   data/belauri/processed/facility_count_500m.npy
+#   data/belauri/processed/hillshade_250m.npy
+#   data/belauri/processed/hillshade_500m.npy
+#   data/belauri/processed/profile_ew_z_250m.npy
+#   data/belauri/processed/profile_ew_z_500m.npy
+#   data/belauri/processed/profile_ns_z_250m.npy
+#   data/belauri/processed/profile_ns_z_500m.npy
+#   data/belauri/processed/road_length_m_250m.npy
+#   data/belauri/processed/road_length_m_500m.npy
+#   data/belauri/processed/slope_deg_250m.npy
+#   data/belauri/processed/slope_deg_500m.npy
+#   data/belauri/processed/study_fraction_250m.npy
+#   data/belauri/processed/study_fraction_500m.npy
+#   data/belauri/processed/w_builtup_250m.npy
+#   data/belauri/processed/w_builtup_500m.npy
+#   data/belauri/processed/w_external_patch_250m.npy
+#   data/belauri/processed/w_external_patch_500m.npy
+#   data/belauri/processed/w_facility_250m.npy
+#   data/belauri/processed/w_facility_500m.npy
+#   data/belauri/processed/w_road_250m.npy
+#   data/belauri/processed/w_road_500m.npy
+#   docs/transboundary.md
+#   notebooks/04_transboundary_pollution.ipynb
+#   results/transboundary/config.json
+#   results/transboundary/fields/arrival_times.csv
+#   results/transboundary/fields/fraction_timeseries.csv
+#   results/transboundary/fields/scenario_summary.csv
+#   results/transboundary/fields/wind_direction_sweep.csv
+#   results/transboundary/figures/arrival_times.png
+#   results/transboundary/figures/external_fraction_timeseries.png
+#   results/transboundary/figures/fields_snapshots.png
+#   results/transboundary/figures/recovery_alpha_selection.png
+#   results/transboundary/figures/recovery_rmse_by_layout.png
+#   results/transboundary/figures/special_confounded.png
+#   results/transboundary/figures/special_prior_sensitivity.png
+#   results/transboundary/figures/wind_direction_sweep.png
+#   results/transboundary/recovery/alpha_selected.json
+#   results/transboundary/recovery/cases.csv
+#   results/transboundary/recovery/layouts.csv
+#   results/transboundary/recovery/noise_levels_test.csv
+#   results/transboundary/recovery/noise_levels_validation.csv
+#   results/transboundary/recovery/paired.csv
+#   results/transboundary/recovery/summary.csv
+#   results/transboundary/recovery/test_raw.csv
+#   results/transboundary/recovery/validation_raw.csv
+#   results/transboundary/scenarios/param_table.csv
+#   results/transboundary/special/confounded.csv
+#   results/transboundary/special/diagnostics.json
+#   results/transboundary/special/no_arrival.csv
+#   results/transboundary/special/omitted_source.csv
+#   results/transboundary/special/prior_sensitivity.csv
+#   results/transboundary/special/wind_mismatch.csv

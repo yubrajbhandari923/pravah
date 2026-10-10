@@ -1,0 +1,89 @@
+{
+  "alphas": {
+    "none": 0.0,
+    "selected": 1.0,
+    "strong": 100000.0
+  },
+  "noise_fraction": 0.02,
+  "layout": "interior",
+  "alpha_default": 0.0,
+  "confounded": {
+    "signal_scale_ug_m3": 0.07638447248575106,
+    "sigma_ug_m3": 0.022915341745725317,
+    "identifiability_alpha0": {
+      "singular_values": [
+        14.659213025558694,
+        7.119064485974808,
+        0.9850396532434822
+      ],
+      "rank": 3,
+      "effective_rank": 2,
+      "condition": 14.881850671990389,
+      "params": [
+        {
+          "name": "L1",
+          "kind": "emission",
+          "units": "microgram/s",
+          "q_hat": 129849.3867223657,
+          "q_std": 70722.40344968597,
+          "q_scale": 100000.0,
+          "q_std_over_scale": 0.7072240344968597,
+          "column_norm": 10.56280012917197
+        },
+        {
+          "name": "L2",
+          "kind": "emission",
+          "units": "microgram/s",
+          "q_hat": 76878.63849014587,
+          "q_std": 14046.78577227541,
+          "q_scale": 100000.0,
+          "q_std_over_scale": 0.1404678577227541,
+          "column_norm": 7.119072574613542
+        },
+        {
+          "name": "E1c",
+          "kind": "emission",
+          "units": "microgram/s",
+          "q_hat": 187881.85063290302,
+          "q_std": 73150.08147971175,
+          "q_scale": 100000.0,
+          "q_std_over_scale": 0.7315008147971175,
+          "column_norm": 10.212245977804763
+        }
+      ],
+      "flags": [
+        "rank_deficient",
+        "confounded:L1,E1c"
+      ]
+    },
+    "column_cosines": [
+      [
+        0.9999999999999987,
+        0.001308412168572509,
+        0.990999706813115
+      ],
+      [
+        0.001308412168572509,
+        1.0,
+        0.001321720088838858
+      ],
+      [
+        0.990999706813115,
+        0.001321720088838858,
+        1.0000000000000007
+      ]
+    ],
+    "param_names": [
+      "L1",
+      "L2",
+      "E1c"
+    ]
+  },
+  "no_arrival": {
+    "signal_scale_ug_m3": 0.05040823312491073,
+    "sigma_ug_m3": 0.0010081646624982147,
+    "external_to_local_study_mean_ratio": 4.088289494582198e-06,
+    "max_allowed_ratio": 0.001,
+    "verified_by": "forward model (unit-source responses), not by assertion"
+  }
+}

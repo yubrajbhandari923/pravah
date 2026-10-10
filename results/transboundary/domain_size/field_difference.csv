@@ -1,0 +1,3 @@
+scenario,rmse_total_A_vs_B,peak_B_study_ug_m3,rmse_total_rel_to_peak,rmse_external_A_vs_B,external_fraction_A,external_fraction_B,note
+external_sources,0.0012949871042596186,0.13997393326833,0.009251630457344716,0.0012949871042596188,0.42887741582732936,0.42410331228876913,same physical sources; the open boundary is 5 km (A) vs 10 km (B) from the study region
+mixed,0.004682026129914398,0.14029664451927476,0.03337233150484333,0.004682026129914398,0.48421227297704483,0.43500509951581545,same physical sources; the open boundary is 5 km (A) vs 10 km (B) from the study region

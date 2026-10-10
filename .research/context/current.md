@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1300 tokens.
-> Generated 2026-10-10T12:01:34-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1465 tokens.
+> Generated 2026-10-10T13:09:38-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `a6fc42cf28` (uncommitted changes)
+Git: `master` @ `e7c6bf1746` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -25,6 +25,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Active & open questions
 
+- Q-005 [investigating] Can total synthetic concentration observations separate local from external contributions, when is the decomposition unidentifiable, and does an upwind/background site help?
 - Q-004 [investigating] Is the Belauri Municipality boundary, DEM and feature set acquired from public sources verifiable, and what does it show about the surrounding terrain and national border?
 - Q-003 [investigating] Does routing every workflow through one ForwardSolver interface leave all FiPy results bit-identical, and do injected solvers reach every call?
 - Q-002 [investigating] Can sparse noisy sensors reconstruct the regional field, and do random, spread and greedy layouts differ on independent cases?
@@ -45,13 +46,15 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Current experiments
 
-- EXP-009 [running] EXP geography acquisition and verification (Belauri) — runs 3, ⚠ 2 unsynthesized
+- EXP-009 [needs_review] EXP geography acquisition and verification (Belauri) — runs 6, ⚠ 2 unsynthesized
+- EXP-010 [needs_review] EXP external vs local identifiability (synthetic, domains A/B) — runs 1, ⚠ 1 unsynthesized
 
 ## Active plans
 
 - PLAN-002 PRAVAH phase 2: solver interchange, external/local, Belauri geography, geographic design — 5/11 tasks done · objective: Solver interchangeability; synthetic external vs local identifiability + indoor box; real Belauri geography and forward sims; geographic sensor design
   - next ready: T-017 B2: generalised inverse, attribution, indoor box, notebook 04, transboundary study (`research task context T-017`)
   - running: T-018 C2: acquire + verify Belauri geography; geometry checks; docs/geography.md (claimed by claude-code)
+  - running: T-020 E: Belauri forward scenarios, domain/mesh sensitivity, notebook 05 (claimed by claude-code)
 - PLAN-001 PRAVAH v0 baseline — 11/11 tasks done · objective: Runnable v0: forward model, inverse, sensor design, notebooks, CLI
 
 ## Needs attention (verification)
@@ -59,6 +62,11 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - [awaiting review] F-009 Solver routing refactor preserves every deterministic FiPy output bit-for-bit: Agent finding awaiting an independent review
 - [awaiting review] F-008 Greedy layouts optimised for the matched model are not robust to model error at small budgets: Agent finding awaiting an independent review
 - [awaiting review] F-007 FINAL: hidden wind error and unmodelled source dominate discretisation mismatch; poor layout unidentifiable: Agent finding awaiting an independent review
+
+## ⚠ Needs synthesis before new experiments
+
+- EXP-009 EXP geography acquisition and verification (Belauri) (2 unsynthesized runs)
+- EXP-010 EXP external vs local identifiability (synthetic, domains A/B) (1 unsynthesized runs)
 
 ## Active decisions
 

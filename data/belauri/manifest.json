@@ -1,0 +1,2159 @@
+{
+  "schema": 1,
+  "name": "Belauri",
+  "created_utc": "2026-10-10T17:07:49+00:00",
+  "boundary_status": "verified",
+  "boundary": {
+    "boundary_status": "verified",
+    "checks": [
+      {
+        "name": "name",
+        "ok": true,
+        "detail": "shapeName='Belauri'"
+      },
+      {
+        "name": "shape_id",
+        "ok": true,
+        "detail": "shapeID='92635248B27542858320702'"
+      },
+      {
+        "name": "geometry_valid",
+        "ok": true,
+        "detail": "shapely is_valid on the projected polygon"
+      },
+      {
+        "name": "area",
+        "ok": true,
+        "detail": "area=122.96 km2 (UTM 32644), expected 123.0 +/- 10%"
+      },
+      {
+        "name": "bbox",
+        "ok": true,
+        "detail": "bbox=(80.258,28.628,80.430,28.773) max deviation 0.000 deg (tol 0.03)"
+      },
+      {
+        "name": "adm2_geometric_coverage",
+        "ok": false,
+        "detail": "71.7% of the polygon lies inside the ADM2 feature 'Kanchanpur'",
+        "informational": true
+      },
+      {
+        "name": "osm_relation_agreement",
+        "ok": true,
+        "detail": "IoU 0.9384 with the OSM administrative relation polygon; area differs by 0.05%; Hausdorff distance 238 m"
+      },
+      {
+        "name": "parent_district",
+        "ok": true,
+        "detail": "ADM2 geometric coverage 71.7% is below the threshold; independent evidence: OSM relation polygon agrees=True, hierarchy names the district=True, largest overlap with any OTHER district 0.00% (must be <= 1%)"
+      },
+      {
+        "name": "independent_locator",
+        "ok": true,
+        "detail": "nearest name-matching Nominatim result: {'osm_type': 'relation', 'osm_id': 5927493, 'display_name': 'Belauri, \u0915\u091e\u094d\u091a\u0928\u092a\u0941\u0930 \u091c\u093f\u0932\u094d\u0932\u093e, \u0938\u0941\u0926\u0942\u0930\u092a\u0936\u094d\u091a\u093f\u092e \u092a\u094d\u0930\u0926\u0947\u0936, \u0928\u0947\u092a\u093e\u0932', 'distance_km': 0.0, 'extratags': {'admin_level': '7'}}"
+      }
+    ],
+    "level_meaning": "geoBoundaries ADM3 for NPL = local-level unit (municipality / rural municipality)"
+  },
+  "incomplete": [],
+  "warnings": [
+    "OSM completeness is unknown: absent roads/buildings in the data are mapping gaps, not zero sources.",
+    "external patch centre is in no (or several) ADM0 polygons: 'international' not asserted"
+  ],
+  "crs": {
+    "epsg": 32644,
+    "zone": 44,
+    "hemisphere": "N",
+    "axis_order": "geographic (lon, lat); projected (x=easting, y=northing); pyproj always_xy",
+    "roundtrip_error_m": 0.0
+  },
+  "georef": {
+    "epsg": 32644,
+    "x0": 419399.649701516,
+    "y0": 3158725.0300549963
+  },
+  "study": {
+    "name": "Belauri",
+    "area_km2": 122.95557734033926,
+    "centroid_lonlat": [
+      80.35420589620165,
+      28.700259181804167
+    ],
+    "bbox_lonlat": [
+      80.25788726371161,
+      28.62827820748707,
+      80.4297557009344,
+      28.772593770888847
+    ],
+    "bbox_m": [
+      427529.6789729934,
+      3166961.522634893,
+      444269.6204300386,
+      3182988.5374750993
+    ]
+  },
+  "grid_config": {
+    "buffer_m": 8000.0,
+    "resolutions_m": [
+      500.0,
+      250.0
+    ],
+    "pad_to_m": 500.0
+  },
+  "levels": [
+    {
+      "resolution_m": 500.0,
+      "tag": "500m",
+      "grid": {
+        "x0": 419399.649701516,
+        "y0": 3158725.0300549963,
+        "nx": 66,
+        "ny": 65,
+        "dx": 500.0,
+        "dy": 500.0,
+        "epsg": 32644
+      },
+      "files": {
+        "study_fraction": "processed/study_fraction_500m.npy",
+        "dem_mean": "processed/dem_mean_500m.npy",
+        "dem_valid_fraction": "processed/dem_valid_fraction_500m.npy",
+        "slope_deg": "processed/slope_deg_500m.npy",
+        "hillshade": "processed/hillshade_500m.npy",
+        "road_length_m": "processed/road_length_m_500m.npy",
+        "builtup_fraction": "processed/builtup_fraction_500m.npy",
+        "facility_count": "processed/facility_count_500m.npy",
+        "profile_ns_z": "processed/profile_ns_z_500m.npy",
+        "profile_ew_z": "processed/profile_ew_z_500m.npy",
+        "w_road": "processed/w_road_500m.npy",
+        "w_builtup": "processed/w_builtup_500m.npy",
+        "w_facility": "processed/w_facility_500m.npy",
+        "w_external_patch": "processed/w_external_patch_500m.npy"
+      },
+      "centroid_cell": {
+        "j": 32,
+        "i": 35
+      },
+      "polygon_cells": 584,
+      "origin_mass_inside": {
+        "road": 0.9490137543124582,
+        "builtup": 0.9772891730824264,
+        "facility": 0.9680689070992969,
+        "external_patch": 0.0016892925485672617
+      },
+      "external_patch_check_passed": true,
+      "relief": {
+        "min_m": 167.6508879131741,
+        "max_m": 204.35429745872548,
+        "range_m": 36.70340954555138,
+        "max_at_distance_km": 5.175489410182844,
+        "max_at_bearing_deg": 13.748651397187151,
+        "ns_profile_range_m": 40.4902444638704,
+        "ew_profile_range_m": 29.223707633182926
+      },
+      "mean_slope_deg_in_study": 0.21341335049923604
+    },
+    {
+      "resolution_m": 250.0,
+      "tag": "250m",
+      "grid": {
+        "x0": 419399.649701516,
+        "y0": 3158725.0300549963,
+        "nx": 132,
+        "ny": 130,
+        "dx": 250.0,
+        "dy": 250.0,
+        "epsg": 32644
+      },
+      "files": {
+        "study_fraction": "processed/study_fraction_250m.npy",
+        "dem_mean": "processed/dem_mean_250m.npy",
+        "dem_valid_fraction": "processed/dem_valid_fraction_250m.npy",
+        "slope_deg": "processed/slope_deg_250m.npy",
+        "hillshade": "processed/hillshade_250m.npy",
+        "road_length_m": "processed/road_length_m_250m.npy",
+        "builtup_fraction": "processed/builtup_fraction_250m.npy",
+        "facility_count": "processed/facility_count_250m.npy",
+        "profile_ns_z": "processed/profile_ns_z_250m.npy",
+        "profile_ew_z": "processed/profile_ew_z_250m.npy",
+        "w_road": "processed/w_road_250m.npy",
+        "w_builtup": "processed/w_builtup_250m.npy",
+        "w_facility": "processed/w_facility_250m.npy",
+        "w_external_patch": "processed/w_external_patch_250m.npy"
+      },
+      "centroid_cell": {
+        "j": 64,
+        "i": 70
+      },
+      "polygon_cells": 2147,
+      "origin_mass_inside": {
+        "road": 0.9719876238879553,
+        "builtup": 0.98903979995678,
+        "facility": 0.9863904575971569,
+        "external_patch": 0.0015526612303088752
+      },
+      "external_patch_check_passed": true,
+      "relief": {
+        "min_m": 167.3968276977539,
+        "max_m": 207.00365130106607,
+        "range_m": 39.606823603312165,
+        "max_at_distance_km": 4.879598401284126,
+        "max_at_bearing_deg": 25.555968588739365,
+        "ns_profile_range_m": 42.83482059902616,
+        "ew_profile_range_m": 32.27360577053494
+      },
+      "mean_slope_deg_in_study": 0.3107298267813524
+    }
+  ],
+  "datasets": [
+    {
+      "url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+      "id": "geoBoundaries:NPL-ADM3:NPL-ADM3-92635248",
+      "retrieved_utc": "2026-10-10T15:40:38+00:00",
+      "bytes": 46772255,
+      "sha256": "139e8622ca46c47c30ced88e09425d827fd890fa6a54b3fc2e8e3d5d2abd9c59",
+      "license": "Creative Commons Attribution-ShareAlike 4.0 International License",
+      "attribution": "geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "role": "study",
+      "kind": "raw",
+      "file": "raw/geoBoundaries-NPL-ADM3.geojson",
+      "release": {
+        "boundaryID": "NPL-ADM3-92635248",
+        "boundaryType": "ADM3",
+        "buildDate": "Dec 12, 2023",
+        "gjDownloadURL": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "license": "Creative Commons Attribution-ShareAlike 4.0 International License",
+        "licenseDetail": "nan",
+        "source": "Open Data Nepal, Ministry of Federal Affairs and General Administration",
+        "year": "2019"
+      },
+      "expected_commit": "9469f09",
+      "crs": "EPSG:4326",
+      "bbox_lonlat": [
+        80.25788726371161,
+        28.62827820748707,
+        80.4297557009344,
+        28.772593770888847
+      ],
+      "units": "degrees (lon, lat)",
+      "native_resolution": "vector",
+      "counts": {
+        "features_in_layer": 774
+      },
+      "assumptions": [
+        "polygon taken as authoritative only if boundary_status == 'verified'"
+      ],
+      "boundary": {
+        "boundary_status": "verified",
+        "checks": [
+          {
+            "name": "name",
+            "ok": true,
+            "detail": "shapeName='Belauri'"
+          },
+          {
+            "name": "shape_id",
+            "ok": true,
+            "detail": "shapeID='92635248B27542858320702'"
+          },
+          {
+            "name": "geometry_valid",
+            "ok": true,
+            "detail": "shapely is_valid on the projected polygon"
+          },
+          {
+            "name": "area",
+            "ok": true,
+            "detail": "area=122.96 km2 (UTM 32644), expected 123.0 +/- 10%"
+          },
+          {
+            "name": "bbox",
+            "ok": true,
+            "detail": "bbox=(80.258,28.628,80.430,28.773) max deviation 0.000 deg (tol 0.03)"
+          },
+          {
+            "name": "adm2_geometric_coverage",
+            "ok": false,
+            "detail": "71.7% of the polygon lies inside the ADM2 feature 'Kanchanpur'",
+            "informational": true
+          },
+          {
+            "name": "osm_relation_agreement",
+            "ok": true,
+            "detail": "IoU 0.9384 with the OSM administrative relation polygon; area differs by 0.05%; Hausdorff distance 238 m"
+          },
+          {
+            "name": "parent_district",
+            "ok": true,
+            "detail": "ADM2 geometric coverage 71.7% is below the threshold; independent evidence: OSM relation polygon agrees=True, hierarchy names the district=True, largest overlap with any OTHER district 0.00% (must be <= 1%)"
+          },
+          {
+            "name": "independent_locator",
+            "ok": true,
+            "detail": "nearest name-matching Nominatim result: {'osm_type': 'relation', 'osm_id': 5927493, 'display_name': 'Belauri, \u0915\u091e\u094d\u091a\u0928\u092a\u0941\u0930 \u091c\u093f\u0932\u094d\u0932\u093e, \u0938\u0941\u0926\u0942\u0930\u092a\u0936\u094d\u091a\u093f\u092e \u092a\u094d\u0930\u0926\u0947\u0936, \u0928\u0947\u092a\u093e\u0932', 'distance_km': 0.0, 'extratags': {'admin_level': '7'}}"
+          }
+        ],
+        "level_meaning": "geoBoundaries ADM3 for NPL = local-level unit (municipality / rural municipality)"
+      },
+      "resampling": "none (raw)",
+      "source_to_grid": "see processed entries"
+    },
+    {
+      "url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM2/geoBoundaries-NPL-ADM2.geojson",
+      "id": "geoBoundaries:NPL-ADM2:NPL-ADM2-79688334",
+      "retrieved_utc": "2026-10-10T15:40:40+00:00",
+      "bytes": 184415,
+      "sha256": "83e197db0b729f67c27deb3a09841fa048efe8bfffff73a0d448eaf296214da2",
+      "license": "Public Domain",
+      "attribution": "geoBoundaries gbOpen NPL ADM2; source: geoBoundaries, Wikimedia Commons",
+      "role": "adm2",
+      "kind": "raw",
+      "file": "raw/geoBoundaries-NPL-ADM2.geojson",
+      "release": {
+        "boundaryID": "NPL-ADM2-79688334",
+        "boundaryType": "ADM2",
+        "buildDate": "Dec 12, 2023",
+        "gjDownloadURL": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM2/geoBoundaries-NPL-ADM2.geojson",
+        "license": "Public Domain",
+        "licenseDetail": "nan",
+        "source": "geoBoundaries, Wikimedia Commons",
+        "year": "2006"
+      },
+      "expected_commit": null,
+      "crs": "EPSG:4326",
+      "bbox_lonlat": [
+        80.07078425278996,
+        28.601023535201705,
+        80.5543993742545,
+        29.147767704753562
+      ],
+      "units": "degrees",
+      "native_resolution": "vector",
+      "counts": {
+        "features_in_layer": 75
+      },
+      "assumptions": [
+        "parent-district check"
+      ],
+      "resampling": "none (raw)",
+      "source_to_grid": "see processed entries"
+    },
+    {
+      "url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM0/geoBoundaries-NPL-ADM0.geojson",
+      "id": "geoBoundaries:NPL-ADM0:NPL-ADM0-63295607",
+      "retrieved_utc": "2026-10-10T15:40:41+00:00",
+      "bytes": 2893276,
+      "sha256": "fc0f32802e64cb5e9c95a11af4ad2d3589df8406476707c974c4f8bb9ee07004",
+      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "attribution": "geoBoundaries gbOpen NPL ADM0; source: Geoboundaries, Open Data Nepal",
+      "role": "adm0_NPL",
+      "kind": "raw",
+      "file": "raw/geoBoundaries-NPL-ADM0.geojson",
+      "release": {
+        "boundaryID": "NPL-ADM0-63295607",
+        "boundaryType": "ADM0",
+        "buildDate": "Dec 12, 2023",
+        "gjDownloadURL": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM0/geoBoundaries-NPL-ADM0.geojson",
+        "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+        "licenseDetail": "nan",
+        "source": "Geoboundaries, Open Data Nepal",
+        "year": "2019"
+      },
+      "expected_commit": null,
+      "crs": "EPSG:4326",
+      "bbox_lonlat": [
+        80.0455726769963,
+        27.329387061603718,
+        83.42552774629388,
+        30.470207929379544
+      ],
+      "units": "degrees",
+      "native_resolution": "vector",
+      "counts": {},
+      "assumptions": [
+        "clipped to +-3 deg around the study centroid for distance computations only"
+      ],
+      "resampling": "none (raw)",
+      "source_to_grid": "see processed entries"
+    },
+    {
+      "url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/IND/ADM0/geoBoundaries-IND-ADM0.geojson",
+      "id": "geoBoundaries:IND-ADM0:IND-ADM0-67634026",
+      "retrieved_utc": "2026-10-10T15:40:42+00:00",
+      "bytes": 91616,
+      "sha256": "77fb5cb03be9970e638fa38d1bd6a377ea7e158b4dfd1a511067925442233443",
+      "license": "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
+      "attribution": "geoBoundaries gbOpen IND ADM0; source: geoBoundaries, Wikimedia Commons",
+      "role": "adm0_IND",
+      "kind": "raw",
+      "file": "raw/geoBoundaries-IND-ADM0.geojson",
+      "release": {
+        "boundaryID": "IND-ADM0-67634026",
+        "boundaryType": "ADM0",
+        "buildDate": "Dec 12, 2023",
+        "gjDownloadURL": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/IND/ADM0/geoBoundaries-IND-ADM0.geojson",
+        "license": "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
+        "licenseDetail": "nan",
+        "source": "geoBoundaries, Wikimedia Commons",
+        "year": "2014"
+      },
+      "expected_commit": null,
+      "crs": "EPSG:4326",
+      "bbox_lonlat": [
+        77.13989212278268,
+        25.65471787582578,
+        83.4933874548873,
+        31.72803080913466
+      ],
+      "units": "degrees",
+      "native_resolution": "vector",
+      "counts": {},
+      "assumptions": [
+        "clipped to +-3 deg around the study centroid for distance computations only"
+      ],
+      "resampling": "none (raw)",
+      "source_to_grid": "see processed entries"
+    },
+    {
+      "url": "https://nominatim.openstreetmap.org/search?q=Belauri%2C+Kanchanpur%2C+Nepal&format=jsonv2&limit=5&extratags=1&polygon_geojson=0&addressdetails=0",
+      "id": "nominatim:Belauri, Kanchanpur, Nepal",
+      "retrieved_utc": "2026-10-10T15:40:43+00:00",
+      "bytes": 1101,
+      "sha256": "20a138daed342873166733345ffe6e64b6ab47ed4b5d10aa882e533ec93a3481",
+      "license": "ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors via Nominatim",
+      "role": "nominatim",
+      "kind": "raw",
+      "file": "raw/nominatim_5f11d195f151.json",
+      "crs": "EPSG:4326",
+      "bbox_lonlat": [
+        80.25788726371161,
+        28.62827820748707,
+        80.4297557009344,
+        28.772593770888847
+      ],
+      "units": "degrees",
+      "native_resolution": "point",
+      "counts": {
+        "results": 2
+      },
+      "assumptions": [
+        "independent locator only; its geometry is not used"
+      ],
+      "resampling": "none (raw)",
+      "source_to_grid": "see processed entries"
+    },
+    {
+      "url": "https://maps.mail.ru/osm/tools/overpass/api",
+      "id": "overpass:osm_roads",
+      "retrieved_utc": "2026-10-10T16:56:34+00:00",
+      "bytes": 3106712,
+      "sha256": "43ead5e2e2b5d16890b9a965313e905e76c7fb15c3297d04fd8fe2893c253724",
+      "license": "ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors",
+      "role": "osm_roads",
+      "kind": "raw",
+      "file": "raw/osm_roads.geojson",
+      "feature_count": 8206,
+      "query": "network_type=all",
+      "crs": "EPSG:4326",
+      "bbox_lonlat": [
+        80.17506589477716,
+        28.555002772321068,
+        80.51202574324422,
+        28.845695587284034
+      ],
+      "units": "degrees",
+      "native_resolution": "vector",
+      "counts": {
+        "features": 8206
+      },
+      "assumptions": [
+        "OSM completeness unknown"
+      ],
+      "resampling": "none (raw)",
+      "source_to_grid": "see processed entries"
+    },
+    {
+      "url": "https://maps.mail.ru/osm/tools/overpass/api",
+      "id": "overpass:osm_buildings",
+      "retrieved_utc": "2026-10-10T16:56:34+00:00",
+      "bytes": 13772849,
+      "sha256": "dd07bb0ab2d127485ce8b45f41de8fb4be81c30e44aeb078895bc541cdebbf86",
+      "license": "ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors",
+      "role": "osm_buildings",
+      "kind": "raw",
+      "file": "raw/osm_buildings.geojson",
+      "feature_count": 50510,
+      "query": "{\"building\": true}",
+      "crs": "EPSG:4326",
+      "bbox_lonlat": [
+        80.17506589477716,
+        28.555002772321068,
+        80.51202574324422,
+        28.845695587284034
+      ],
+      "units": "degrees",
+      "native_resolution": "vector",
+      "counts": {
+        "features": 50510
+      },
+      "assumptions": [
+        "OSM completeness unknown"
+      ],
+      "resampling": "none (raw)",
+      "source_to_grid": "see processed entries"
+    },
+    {
+      "url": "https://maps.mail.ru/osm/tools/overpass/api",
+      "id": "overpass:osm_landuse",
+      "retrieved_utc": "2026-10-10T16:56:34+00:00",
+      "bytes": 847057,
+      "sha256": "c2785f9ed89b2e031fdab6cc27b78e759f7645cc683d3708a1c4e8c1cd5d4d0f",
+      "license": "ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors",
+      "role": "osm_landuse",
+      "kind": "raw",
+      "file": "raw/osm_landuse.geojson",
+      "feature_count": 1020,
+      "query": "{\"landuse\": \"residential\"}",
+      "crs": "EPSG:4326",
+      "bbox_lonlat": [
+        80.17506589477716,
+        28.555002772321068,
+        80.51202574324422,
+        28.845695587284034
+      ],
+      "units": "degrees",
+      "native_resolution": "vector",
+      "counts": {
+        "features": 1020
+      },
+      "assumptions": [
+        "OSM completeness unknown"
+      ],
+      "resampling": "none (raw)",
+      "source_to_grid": "see processed entries"
+    },
+    {
+      "url": "https://maps.mail.ru/osm/tools/overpass/api",
+      "id": "overpass:osm_amenity",
+      "retrieved_utc": "2026-10-10T16:56:34+00:00",
+      "bytes": 17696,
+      "sha256": "896a4a9eba492616f78598729a7c3c0a9b6aa728ef8f2ebe08c0578009675fff",
+      "license": "ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors",
+      "role": "osm_amenity",
+      "kind": "raw",
+      "file": "raw/osm_amenity.geojson",
+      "feature_count": 98,
+      "query": "{\"amenity\": [\"school\", \"college\", \"kindergarten\", \"university\", \"hospital\", \"clinic\", \"doctors\", \"health_post\"]}",
+      "crs": "EPSG:4326",
+      "bbox_lonlat": [
+        80.17506589477716,
+        28.555002772321068,
+        80.51202574324422,
+        28.845695587284034
+      ],
+      "units": "degrees",
+      "native_resolution": "vector",
+      "counts": {
+        "features": 98
+      },
+      "assumptions": [
+        "OSM completeness unknown"
+      ],
+      "resampling": "none (raw)",
+      "source_to_grid": "see processed entries"
+    },
+    {
+      "url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+      "id": "Copernicus GLO-30 DSM: Copernicus_DSM_COG_10_N28_00_E080_00_DEM",
+      "retrieved_utc": "2026-10-10T17:07:43+00:00",
+      "bytes": 5119890,
+      "sha256": "35e3176e19b0fe053e7220b0adc3868826840a498f1f182dca149a7fbadf41e5",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required)",
+      "attribution": "Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved",
+      "role": "dem",
+      "kind": "raw",
+      "file": "raw/dem_window.tif",
+      "tile_urls": [
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif"
+      ],
+      "crs": "EPSG:4326",
+      "bbox_lonlat": [
+        80.15506589477717,
+        28.535140031728478,
+        80.53201033922161,
+        28.865695587284034
+      ],
+      "units": "m (DSM)",
+      "native_resolution": {
+        "pixel_deg": [
+          0.0002777777777777778,
+          0.0002777777777777778
+        ],
+        "pixel_m_approx": [
+          27.12324142200542,
+          30.715
+        ],
+        "crs": "EPSG:4326"
+      },
+      "counts": {
+        "shape": [
+          1190,
+          1357
+        ],
+        "nodata": null,
+        "nodata_pixels": 0
+      },
+      "assumptions": [
+        "Copernicus GLO-30 is a surface model (DSM), not bare earth"
+      ],
+      "resampling": "mean of valid pixel centres per cell (aggregate_dem)",
+      "source_to_grid": "native DEM pixels -> grid cells by pixel centre"
+    }
+  ],
+  "processed": [
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 500.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          500.0,
+          500.0
+        ]
+      },
+      "kind": "processed",
+      "name": "study_fraction_500m",
+      "id": "study_fraction_500m.npy",
+      "file": "processed/study_fraction_500m.npy",
+      "sha256": "647ac463201402ce3628d141f65426a1bf082ca8c59fd4978debede03abb304c",
+      "array_sha256": "b17d1650fec3f55e3e75d18d6c72da993de72abf19769fd856ab384efad25606",
+      "shape": [
+        65,
+        66
+      ],
+      "units": "1 (area fraction)",
+      "resampling": "exact shapely polygon-cell intersection",
+      "source_to_grid": "ADM3 polygon -> cell area fraction"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 500.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          500.0,
+          500.0
+        ]
+      },
+      "kind": "processed",
+      "name": "dem_mean_500m",
+      "id": "dem_mean_500m.npy",
+      "file": "processed/dem_mean_500m.npy",
+      "sha256": "5be714be4ee2fc9242260f86a9411409dbfcfe0bea19f6194732f398feec14d9",
+      "array_sha256": "23ead879de0224b67f88122335d2e55e5da8ffff98c9ee4293a7f200229654eb",
+      "shape": [
+        65,
+        66
+      ],
+      "units": "m (DSM, EGM2008 heights)",
+      "resampling": "mean of valid source pixel centres in cell",
+      "source_to_grid": "pixel centre -> containing cell"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 500.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          500.0,
+          500.0
+        ]
+      },
+      "kind": "processed",
+      "name": "dem_valid_fraction_500m",
+      "id": "dem_valid_fraction_500m.npy",
+      "file": "processed/dem_valid_fraction_500m.npy",
+      "sha256": "886e324833a07467f743ef2b44c571beb702ebd8670e3246756187de0226981a",
+      "array_sha256": "991b1c79978961379706733d30f65da5cfe1cc68fa534876837f98b07aec39a8",
+      "shape": [
+        65,
+        66
+      ],
+      "units": "1",
+      "resampling": "valid pixels / pixels in cell",
+      "source_to_grid": "pixel centre -> containing cell"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 500.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          500.0,
+          500.0
+        ]
+      },
+      "kind": "processed",
+      "name": "slope_deg_500m",
+      "id": "slope_deg_500m.npy",
+      "file": "processed/slope_deg_500m.npy",
+      "sha256": "ec7f71c515f9d3ec29c979ceb426a54f66bb692db050477b879179a9bd51bcab",
+      "array_sha256": "95544c11e77876cb7be386bcc15896026d4cd3efa4dadf2f00999accf568384f",
+      "shape": [
+        65,
+        66
+      ],
+      "units": "degrees",
+      "resampling": "central differences of the aggregated DEM (understates native slopes)",
+      "source_to_grid": "from dem_mean"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 500.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          500.0,
+          500.0
+        ]
+      },
+      "kind": "processed",
+      "name": "hillshade_500m",
+      "id": "hillshade_500m.npy",
+      "file": "processed/hillshade_500m.npy",
+      "sha256": "82006a445d00d1293949a8fbd41924659c8ed7361fbb832bb8720abe479cc8f2",
+      "array_sha256": "72663e2ad606641b3909c65eda80487f729fca04f6bc9556765310a6e9673f2c",
+      "shape": [
+        65,
+        66
+      ],
+      "units": "1",
+      "resampling": "azimuth 315, altitude 45 on dem_mean",
+      "source_to_grid": "from dem_mean"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 500.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          500.0,
+          500.0
+        ]
+      },
+      "kind": "processed",
+      "name": "road_length_m_500m",
+      "id": "road_length_m_500m.npy",
+      "file": "processed/road_length_m_500m.npy",
+      "sha256": "bb019964d981402be37ea3c5eab17fe7fcc6f164dc88d6956a2ddaab1522f40a",
+      "array_sha256": "d03196f810e915c1a826c98d8f707c598436cc1ff435612134a55ddf3fdc53e2",
+      "shape": [
+        65,
+        66
+      ],
+      "units": "m of road per cell",
+      "resampling": "exact line-cell intersection (whole domain)",
+      "source_to_grid": "OSM edges -> cells"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 500.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          500.0,
+          500.0
+        ]
+      },
+      "kind": "processed",
+      "name": "builtup_fraction_500m",
+      "id": "builtup_fraction_500m.npy",
+      "file": "processed/builtup_fraction_500m.npy",
+      "sha256": "c2e83d610393340e0ed25235cbb355bc0f87d3ea9ebc219df46bdecd71690783",
+      "array_sha256": "156ad3c4ce42daafa7d7463046c2a55de73aa3b18720bc8eb9e3167f2ab61cf3",
+      "shape": [
+        65,
+        66
+      ],
+      "units": "1 (area fraction)",
+      "resampling": "union of footprints/residential landuse, exact intersection",
+      "source_to_grid": "OSM polygons -> cells"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 500.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          500.0,
+          500.0
+        ]
+      },
+      "kind": "processed",
+      "name": "facility_count_500m",
+      "id": "facility_count_500m.npy",
+      "file": "processed/facility_count_500m.npy",
+      "sha256": "5a295d2eca7eb26227641acbb7cce2367b8ea552d65259a9929367a8f6183c0e",
+      "array_sha256": "f2301c295095e875c23a9e360118f5fa3e7aec80b7ed4e6c24494d25fd620f90",
+      "shape": [
+        65,
+        66
+      ],
+      "units": "count per cell",
+      "resampling": "point in cell (polygons via point_on_surface)",
+      "source_to_grid": "OSM amenity -> cells"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 500.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          500.0,
+          500.0
+        ]
+      },
+      "kind": "processed",
+      "name": "profile_ns_z_500m",
+      "id": "profile_ns_z_500m.npy",
+      "file": "processed/profile_ns_z_500m.npy",
+      "sha256": "402730c7f4750b89464625d7f5c2c77128c1e72acef5a7ef41c5d3d749407e0c",
+      "array_sha256": "4020d949e00d5d76a1d027a7ae49844b7b353b97b33eface64ecdeecc33ded12",
+      "shape": [
+        65
+      ],
+      "units": "m",
+      "resampling": "column through the centroid cell",
+      "source_to_grid": "col 35"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 500.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          500.0,
+          500.0
+        ]
+      },
+      "kind": "processed",
+      "name": "profile_ew_z_500m",
+      "id": "profile_ew_z_500m.npy",
+      "file": "processed/profile_ew_z_500m.npy",
+      "sha256": "e7ee92891df90524123251076ec9f774d7ff7dd00666081c563e9416327ba5bc",
+      "array_sha256": "7f89ac6f9f14fa665967543443e3fe71651d09bc6971cd32f178c9ddeea0f7e7",
+      "shape": [
+        66
+      ],
+      "units": "m",
+      "resampling": "row through the centroid cell",
+      "source_to_grid": "row 32"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 500.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          500.0,
+          500.0
+        ]
+      },
+      "kind": "processed",
+      "name": "w_road_500m",
+      "id": "w_road_500m.npy",
+      "file": "processed/w_road_500m.npy",
+      "sha256": "1c0262d5a5965e7073a12bcfc3dbe72e79447748e1de2f19108850d8cc341435",
+      "array_sha256": "d922d8d83c2e9db611f18303364793192c0968f7addefcc82a9e5930173f61db",
+      "shape": [
+        65,
+        66
+      ],
+      "units": "1/m^2 (sum f*cell_area = 1)",
+      "resampling": "normalised raster weights",
+      "source_to_grid": "local: clipped to the polygon before rasterising; external: Gaussian at cell centres",
+      "group": "local",
+      "hypothesis": "synthetic spatial prior (real geometry, assumed emission pattern; not measured emissions)"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 500.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          500.0,
+          500.0
+        ]
+      },
+      "kind": "processed",
+      "name": "w_builtup_500m",
+      "id": "w_builtup_500m.npy",
+      "file": "processed/w_builtup_500m.npy",
+      "sha256": "999f2ea9db11b3e83b6523987064d06220ea0c1fcad114d2a04b21c58134ab18",
+      "array_sha256": "fd473c164178fec25a309d804d72d66f6e079afce68fceece0e2a1311e89a70d",
+      "shape": [
+        65,
+        66
+      ],
+      "units": "1/m^2 (sum f*cell_area = 1)",
+      "resampling": "normalised raster weights",
+      "source_to_grid": "local: clipped to the polygon before rasterising; external: Gaussian at cell centres",
+      "group": "local",
+      "hypothesis": "synthetic spatial prior (real geometry, assumed emission pattern; not measured emissions)"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 500.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          500.0,
+          500.0
+        ]
+      },
+      "kind": "processed",
+      "name": "w_facility_500m",
+      "id": "w_facility_500m.npy",
+      "file": "processed/w_facility_500m.npy",
+      "sha256": "21f31d47c7395126b91d0e021b5cdab95d64d5191f14a0c826c54f62524c72b3",
+      "array_sha256": "88af7dbe19d1abf40f9fae8310dd46b0276f5f5ee3b2bf8bae9312ff4d48e413",
+      "shape": [
+        65,
+        66
+      ],
+      "units": "1/m^2 (sum f*cell_area = 1)",
+      "resampling": "normalised raster weights",
+      "source_to_grid": "local: clipped to the polygon before rasterising; external: Gaussian at cell centres",
+      "group": "local",
+      "hypothesis": "synthetic spatial prior (real geometry, assumed emission pattern; not measured emissions)"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 500.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          500.0,
+          500.0
+        ]
+      },
+      "kind": "processed",
+      "name": "w_external_patch_500m",
+      "id": "w_external_patch_500m.npy",
+      "file": "processed/w_external_patch_500m.npy",
+      "sha256": "a97c1814250f673ad9e7741fe7c6334280ac373adae7323b9ce58175160866cc",
+      "array_sha256": "f11e6ba99dd8a9b11330a6f68c9b5b804ba8a08eb01dd0f612b8c5ffa2fd38f9",
+      "shape": [
+        65,
+        66
+      ],
+      "units": "1/m^2 (sum f*cell_area = 1)",
+      "resampling": "normalised raster weights",
+      "source_to_grid": "local: clipped to the polygon before rasterising; external: Gaussian at cell centres",
+      "group": "external",
+      "hypothesis": "synthetic spatial prior (real geometry, assumed emission pattern; not measured emissions)"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 250.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          250.0,
+          250.0
+        ]
+      },
+      "kind": "processed",
+      "name": "study_fraction_250m",
+      "id": "study_fraction_250m.npy",
+      "file": "processed/study_fraction_250m.npy",
+      "sha256": "e6add44521047cb6f605f71a97b69455b01594077134f7b386f5d107a11996ec",
+      "array_sha256": "7cde7dc6d16279554a43ff8f1f9bde2da5d96c30eb2717aa0a636cfbb84debe4",
+      "shape": [
+        130,
+        132
+      ],
+      "units": "1 (area fraction)",
+      "resampling": "exact shapely polygon-cell intersection",
+      "source_to_grid": "ADM3 polygon -> cell area fraction"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 250.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          250.0,
+          250.0
+        ]
+      },
+      "kind": "processed",
+      "name": "dem_mean_250m",
+      "id": "dem_mean_250m.npy",
+      "file": "processed/dem_mean_250m.npy",
+      "sha256": "b56abc4875872619e7ac68479f7605aa1c589446816cf7de25c0bd1c777d5288",
+      "array_sha256": "2518256482f232d30d5db0c5233559da6f7c02a7f29654d5b19d8acc5bd4e9b0",
+      "shape": [
+        130,
+        132
+      ],
+      "units": "m (DSM, EGM2008 heights)",
+      "resampling": "mean of valid source pixel centres in cell",
+      "source_to_grid": "pixel centre -> containing cell"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 250.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          250.0,
+          250.0
+        ]
+      },
+      "kind": "processed",
+      "name": "dem_valid_fraction_250m",
+      "id": "dem_valid_fraction_250m.npy",
+      "file": "processed/dem_valid_fraction_250m.npy",
+      "sha256": "d27aec8418f6d572be07d2a4a21ef195ba738fd68fb533daafd3d410660a3f33",
+      "array_sha256": "661dcddf7693fc117a4f0405392f852d1cf8bd6e1f6f59088ce990b904ccd87a",
+      "shape": [
+        130,
+        132
+      ],
+      "units": "1",
+      "resampling": "valid pixels / pixels in cell",
+      "source_to_grid": "pixel centre -> containing cell"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 250.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          250.0,
+          250.0
+        ]
+      },
+      "kind": "processed",
+      "name": "slope_deg_250m",
+      "id": "slope_deg_250m.npy",
+      "file": "processed/slope_deg_250m.npy",
+      "sha256": "11a13edd9c53d92bc92e9a137a041d6d3f643fa56afc72742a56c00d4cfe948c",
+      "array_sha256": "1746744cf9c5ff3a2733da5c19518942518beb2a5cdfcf7c1af91b4eadc21373",
+      "shape": [
+        130,
+        132
+      ],
+      "units": "degrees",
+      "resampling": "central differences of the aggregated DEM (understates native slopes)",
+      "source_to_grid": "from dem_mean"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 250.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          250.0,
+          250.0
+        ]
+      },
+      "kind": "processed",
+      "name": "hillshade_250m",
+      "id": "hillshade_250m.npy",
+      "file": "processed/hillshade_250m.npy",
+      "sha256": "f61d9a8591d69777f7c10af7eec1c7b778b80fc989ef583df58444b18961c844",
+      "array_sha256": "a3f8520e0ddb8e496a3578a66b99f265ce616b02285fe33a438254ad3bb38c0d",
+      "shape": [
+        130,
+        132
+      ],
+      "units": "1",
+      "resampling": "azimuth 315, altitude 45 on dem_mean",
+      "source_to_grid": "from dem_mean"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 250.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          250.0,
+          250.0
+        ]
+      },
+      "kind": "processed",
+      "name": "road_length_m_250m",
+      "id": "road_length_m_250m.npy",
+      "file": "processed/road_length_m_250m.npy",
+      "sha256": "caf0f5ca50f6eff944c19dffc65761b10e72602ef74a9aabc17ddd4570fdf39e",
+      "array_sha256": "559d5c78140e2625cf03d74ad10a1844a50449831f80dba362fe1bd0b40ed372",
+      "shape": [
+        130,
+        132
+      ],
+      "units": "m of road per cell",
+      "resampling": "exact line-cell intersection (whole domain)",
+      "source_to_grid": "OSM edges -> cells"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 250.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          250.0,
+          250.0
+        ]
+      },
+      "kind": "processed",
+      "name": "builtup_fraction_250m",
+      "id": "builtup_fraction_250m.npy",
+      "file": "processed/builtup_fraction_250m.npy",
+      "sha256": "b08d62a8677c6436916065dcd68d2df4c2b957fa65cb2d5d0dabb7fd9902a345",
+      "array_sha256": "5706f8b07b51d5b0187b92421afcc9f8b2737ecfde6375133ddbb5fe7169f0e6",
+      "shape": [
+        130,
+        132
+      ],
+      "units": "1 (area fraction)",
+      "resampling": "union of footprints/residential landuse, exact intersection",
+      "source_to_grid": "OSM polygons -> cells"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 250.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          250.0,
+          250.0
+        ]
+      },
+      "kind": "processed",
+      "name": "facility_count_250m",
+      "id": "facility_count_250m.npy",
+      "file": "processed/facility_count_250m.npy",
+      "sha256": "9a75b18c9a7a6b47722c6f27c13c895a3f583d138826e0195299f9b48ad03de7",
+      "array_sha256": "a1df87c4b4cce0dbc02e9d42acb19c2f5e31066e5e8d5302bdfc34b8d15c39ca",
+      "shape": [
+        130,
+        132
+      ],
+      "units": "count per cell",
+      "resampling": "point in cell (polygons via point_on_surface)",
+      "source_to_grid": "OSM amenity -> cells"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 250.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          250.0,
+          250.0
+        ]
+      },
+      "kind": "processed",
+      "name": "profile_ns_z_250m",
+      "id": "profile_ns_z_250m.npy",
+      "file": "processed/profile_ns_z_250m.npy",
+      "sha256": "4dc43f54e0347cc97c86953be5836670a57d9263a51684313df00ca814721d89",
+      "array_sha256": "7080f6fe42cb4a07bb9bb0c1929595b9ad73b8bf55be7410806daec71012ea6c",
+      "shape": [
+        130
+      ],
+      "units": "m",
+      "resampling": "column through the centroid cell",
+      "source_to_grid": "col 70"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 250.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          250.0,
+          250.0
+        ]
+      },
+      "kind": "processed",
+      "name": "profile_ew_z_250m",
+      "id": "profile_ew_z_250m.npy",
+      "file": "processed/profile_ew_z_250m.npy",
+      "sha256": "041b61cff976d2804a526b60f50e41cd147d513339b42ab4ad15fa7035519b45",
+      "array_sha256": "054715eef9b29bacb22ca191ebd1ac9ddee00f9f99e67e35b5286f7283f8cd49",
+      "shape": [
+        132
+      ],
+      "units": "m",
+      "resampling": "row through the centroid cell",
+      "source_to_grid": "row 64"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 250.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          250.0,
+          250.0
+        ]
+      },
+      "kind": "processed",
+      "name": "w_road_250m",
+      "id": "w_road_250m.npy",
+      "file": "processed/w_road_250m.npy",
+      "sha256": "d18a262cfb07a6006ad548f8338263dc1f821cde6cc41291b4e9a3957f8353bc",
+      "array_sha256": "858cbe85f7dd31a19f42539d7e79c762b33ee15d14a4fac4c8cab2d440f99990",
+      "shape": [
+        130,
+        132
+      ],
+      "units": "1/m^2 (sum f*cell_area = 1)",
+      "resampling": "normalised raster weights",
+      "source_to_grid": "local: clipped to the polygon before rasterising; external: Gaussian at cell centres",
+      "group": "local",
+      "hypothesis": "synthetic spatial prior (real geometry, assumed emission pattern; not measured emissions)"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 250.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          250.0,
+          250.0
+        ]
+      },
+      "kind": "processed",
+      "name": "w_builtup_250m",
+      "id": "w_builtup_250m.npy",
+      "file": "processed/w_builtup_250m.npy",
+      "sha256": "d9c524eb39f0b9e3e179da185de34009b0acfb036b60229dc4f2acb06680ffcc",
+      "array_sha256": "fdaee195b29209c3faa31387e4e6aef4f2dee93208311df2fb0111a1d7fb0670",
+      "shape": [
+        130,
+        132
+      ],
+      "units": "1/m^2 (sum f*cell_area = 1)",
+      "resampling": "normalised raster weights",
+      "source_to_grid": "local: clipped to the polygon before rasterising; external: Gaussian at cell centres",
+      "group": "local",
+      "hypothesis": "synthetic spatial prior (real geometry, assumed emission pattern; not measured emissions)"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 250.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          250.0,
+          250.0
+        ]
+      },
+      "kind": "processed",
+      "name": "w_facility_250m",
+      "id": "w_facility_250m.npy",
+      "file": "processed/w_facility_250m.npy",
+      "sha256": "35f6d88cfbca8fa08dbfcd31dcdc1852ec79ea5b706bb63386eb22083faaa90d",
+      "array_sha256": "3c026a4bb5f17fe410e1ee4c3e6f46e3653b880cfb2b663f015d017a690ba793",
+      "shape": [
+        130,
+        132
+      ],
+      "units": "1/m^2 (sum f*cell_area = 1)",
+      "resampling": "normalised raster weights",
+      "source_to_grid": "local: clipped to the polygon before rasterising; external: Gaussian at cell centres",
+      "group": "local",
+      "hypothesis": "synthetic spatial prior (real geometry, assumed emission pattern; not measured emissions)"
+    },
+    {
+      "url": [
+        "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/NPL/ADM3/geoBoundaries-NPL-ADM3.geojson",
+        "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
+        "https://maps.mail.ru/osm/tools/overpass/api"
+      ],
+      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
+      "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
+      "crs": "EPSG:32644",
+      "bbox_lonlat": [
+        80.17371615845883,
+        28.55286021643681,
+        80.51336488148617,
+        28.84783496196934
+      ],
+      "resolution_m": 250.0,
+      "assumptions": [
+        "synthetic spatial priors: weights follow real geometry, emissions are assumed",
+        "arrays are [y, x] = [j, i], j increasing northward; local x,y = UTM - (x0, y0)"
+      ],
+      "native_resolution": {
+        "dem": {
+          "pixel_deg": [
+            0.0002777777777777778,
+            0.0002777777777777778
+          ],
+          "pixel_m_approx": [
+            27.12324142200542,
+            30.715
+          ],
+          "crs": "EPSG:4326"
+        },
+        "grid_cell_m": [
+          250.0,
+          250.0
+        ]
+      },
+      "kind": "processed",
+      "name": "w_external_patch_250m",
+      "id": "w_external_patch_250m.npy",
+      "file": "processed/w_external_patch_250m.npy",
+      "sha256": "d798254262009c4613a4265b23b9ab60a5477ca44014ebbd033f424274244a27",
+      "array_sha256": "15999e3eccb4567dec5b2c53bb04803da90dfc5fb8b37f8b9070f3dcc0ee00a0",
+      "shape": [
+        130,
+        132
+      ],
+      "units": "1/m^2 (sum f*cell_area = 1)",
+      "resampling": "normalised raster weights",
+      "source_to_grid": "local: clipped to the polygon before rasterising; external: Gaussian at cell centres",
+      "group": "external",
+      "hypothesis": "synthetic spatial prior (real geometry, assumed emission pattern; not measured emissions)"
+    }
+  ],
+  "counts": {
+    "roads_segments_domain": 8206,
+    "road_km_domain": 2206.77723481106,
+    "road_km_in_study": 1024.9922653818953,
+    "buildings_domain": 50510,
+    "residential_landuse_polygons": 1020,
+    "builtup_km2_in_study": 6.88766929775032,
+    "facilities_domain": 98,
+    "facilities_in_study": 60
+  },
+  "external_patch": {
+    "hypothesis": "synthetic spatial prior (real geometry, assumed emission pattern; not measured emissions)",
+    "group": "external",
+    "centre_xy_m": [
+      430008.6725239701,
+      3173140.5894135074
+    ],
+    "centre_local_m": [
+      10609.022822454048,
+      14415.55935851112
+    ],
+    "centre_lonlat": [
+      80.28358376018163,
+      28.683586687518225
+    ],
+    "sigma_m": 1000.0,
+    "distance_to_polygon_km": 2.916222006882909,
+    "origin": {
+      "class": "unclassified",
+      "country": null,
+      "countries_containing": []
+    }
+  },
+  "international_border": {
+    "home": "NPL",
+    "study_fraction_inside_home": 0.9999999983906814,
+    "distance_to_home_boundary_km": 0.0,
+    "bearing_deg": 255.3451063141203,
+    "sector": "WSW",
+    "distance_by_side_km": {
+      "west": 0.0,
+      "east": 0.0,
+      "south": 0.0,
+      "north": 40.43374299842771
+    },
+    "facing_sides": [
+      "west",
+      "east",
+      "south"
+    ],
+    "neighbours": {
+      "IND": {
+        "distance_km": 0.0,
+        "touches": true,
+        "bearing_deg": 123.87165320700986,
+        "sector": "SE"
+      }
+    },
+    "note": "International means crossing the verified ADM0 boundary of the home country; the municipality edge is only a local/external (domestic) boundary."
+  },
+  "verification": {
+    "epsg_matches_expected": true,
+    "roundtrip_error_m": 0.0,
+    "features_in_layer": 774,
+    "polygon_area_rel_err_500m": 9.695313716498737e-16,
+    "polygon_area_rel_err_250m": 1.0907227931061079e-15
+  },
+  "assumptions": [
+    "synthetic spatial prior (real geometry, assumed emission pattern; not measured emissions)",
+    "DEM is a surface model used as context only unless a layer alters source geometry",
+    "local sources are clipped to the polygon; boundary cells count by area fraction"
+  ]
+}

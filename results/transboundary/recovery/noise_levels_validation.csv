@@ -1,0 +1,3 @@
+ensemble,noise_fraction,signal_scale_ug_m3,scale_layout,sigma_ug_m3,sigma_pct_of_scale
+validation,0.02,0.09946399149302051,interior,0.0019892798298604105,2.0000000000000004
+validation,0.1,0.09946399149302051,interior,0.009946399149302051,10.0

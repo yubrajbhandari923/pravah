@@ -7,6 +7,8 @@ reasons are listed. Emission "source hypotheses" are *synthetic spatial priors* 
 """
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 import datetime as dt
 import json
 import math
@@ -153,16 +155,24 @@ def classify_point(point: Any, study_polygon: Any, country_polygons: dict[str, A
 
 # ---------------------------------------------------------------- boundary verification
 def verify_boundary(study_m: Any, study_wgs84: Any, props: dict[str, Any], cfg_study: dict[str, Any], epsg: int,
-                    district_wgs84: Any | None, nominatim_results: list[dict[str, Any]] | None) -> dict[str, Any]:
-    """Run the boundary checks; each check is {name, ok (True/False/None=not performed), detail}. Status is 'verified'
-    only if all are True."""
+                    district_wgs84: Any | None, nominatim_results: list[dict[str, Any]] | None,
+                    osm_relation_wgs84: Any | None = None, other_districts_wgs84: Sequence[Any] = ()) -> dict[str, Any]:
+    """Run the boundary checks; each check is {name, ok (True/False/None=not performed), detail[, informational]}. Status
+    is 'verified' only if every NON-informational check is True.
+
+    Parent district: the ADM2 layer of a geoBoundaries release can be a coarse outline (e.g. a 2006 district polygon with a
+    few dozen vertices), so geometric containment may fail although the municipality is correctly in that district. The
+    check passes if EITHER the ADM2 polygon covers >= district_cover of the study polygon OR independent evidence agrees:
+    the OSM administrative relation (matching polygon, see osm_relation_agreement) names the district in its hierarchy
+    and no OTHER district overlaps the study polygon by more than 1%. The raw ADM2 coverage is always recorded as the
+    informational check adm2_geometric_coverage (never hidden)."""
     exp = cfg_study["expected"]
     gb = cfg_study["geoboundaries"]
     tol = cfg_study.get("tolerances", {})
     checks: list[dict[str, Any]] = []
 
-    def add(name: str, ok: bool | None, detail: str) -> None:
-        checks.append({"name": name, "ok": ok, "detail": detail})
+    def add(name: str, ok: bool | None, detail: str, informational: bool = False) -> None:
+        checks.append({"name": name, "ok": ok, "detail": detail, **({"informational": True} if informational else {})})
 
     add("name", props.get("shapeName") == gb["shapeName"], f"shapeName={props.get('shapeName')!r}")
     add("shape_id", props.get("shapeID") == gb.get("shapeID") if gb.get("shapeID") else None, f"shapeID={props.get('shapeID')!r}")
@@ -175,12 +185,39 @@ def verify_boundary(study_m: Any, study_wgs84: Any, props: dict[str, Any], cfg_s
     ew, es, ee, en = exp["bbox_lonlat"]
     dev = max(abs(w - ew), abs(s - es), abs(e - ee), abs(n - en))
     add("bbox", dev <= bt, f"bbox=({w:.3f},{s:.3f},{e:.3f},{n:.3f}) max deviation {dev:.3f} deg (tol {bt})")
-    if district_wgs84 is None:
-        add("parent_district", None, "ADM2 layer not available")
-    else:
+    cov: float | None = None
+    if district_wgs84 is not None:
         cov = float(study_wgs84.intersection(district_wgs84).area / study_wgs84.area)
-        add("parent_district", cov >= float(tol.get("district_cover", 0.9)),
-            f"{cov:.1%} of the polygon lies inside the ADM2 feature {exp['parent_district']!r}")
+        add("adm2_geometric_coverage", cov >= float(tol.get("district_cover", 0.9)),
+            f"{cov:.1%} of the polygon lies inside the ADM2 feature {exp['parent_district']!r}", informational=True)
+    rel_ok: bool | None = None
+    need_rel = bool(cfg_study.get("independent_locator", {}).get("require_osm_relation", False))
+    if osm_relation_wgs84 is None:
+        add("osm_relation_agreement", None, "no OSM administrative relation polygon available (not performed)",
+            informational=not need_rel)
+    else:
+        a, b = study_m, _project(osm_relation_wgs84, 4326, epsg).buffer(0)
+        iou = float(a.intersection(b).area / a.union(b).area)
+        da = abs(a.area - b.area) / a.area
+        rel_ok = iou >= float(tol.get("osm_iou", 0.9)) and da <= float(tol.get("area_frac", 0.1))
+        add("osm_relation_agreement", rel_ok,
+            f"IoU {iou:.4f} with the OSM administrative relation polygon; area differs by {da:.2%}; "
+            f"Hausdorff distance {float(a.hausdorff_distance(b)):.0f} m", informational=False)
+    names = [str(r.get("display_name", "")) for r in (nominatim_results or [])
+             if gb["shapeName"].lower() in str(r.get("display_name", "")).lower()]
+    aliases = [str(x).lower() for x in exp.get("parent_aliases", [exp["parent_district"]])]
+    hierarchy_names = any(al in n.lower() for n in names for al in aliases)
+    other = max([float(study_wgs84.intersection(g).area / study_wgs84.area) for g in other_districts_wgs84], default=0.0)
+    if district_wgs84 is None and not names:
+        add("parent_district", None, "ADM2 layer and independent hierarchy not available")
+    elif cov is not None and cov >= float(tol.get("district_cover", 0.9)):
+        add("parent_district", True, f"{cov:.1%} of the polygon lies inside the ADM2 feature {exp['parent_district']!r}")
+    else:
+        ok = bool(rel_ok and hierarchy_names and other <= 0.01)
+        add("parent_district", ok,
+            f"ADM2 geometric coverage {cov if cov is None else format(cov, '.1%')} is below the threshold; independent evidence: "
+            f"OSM relation polygon agrees={rel_ok}, hierarchy names the district={hierarchy_names}, largest overlap with any "
+            f"OTHER district {other:.2%} (must be <= 1%)")
     if nominatim_results is None:
         add("independent_locator", None, "no Nominatim record available (not performed)")
     else:
@@ -197,7 +234,7 @@ def verify_boundary(study_m: Any, study_wgs84: Any, props: dict[str, Any], cfg_s
                         "distance_km": d, "extratags": r.get("extratags", {})}
         add("independent_locator", None if not nominatim_results else (best is not None and best["distance_km"] <= maxd),
             f"nearest name-matching Nominatim result: {best}" if best else "no Nominatim result matched the name")
-    status = "verified" if all(c["ok"] is True for c in checks) else "approximate"
+    status = "verified" if all(c["ok"] is True for c in checks if not c.get("informational")) else "approximate"
     return {"boundary_status": status, "checks": checks,
             "level_meaning": f"geoBoundaries {gb['level']} for {gb['iso']} = local-level unit (municipality / rural municipality)"}
 
@@ -300,7 +337,13 @@ def prepare_region(cfg: dict[str, Any], raw_dir: str | Path, out_dir: str | Path
         raise ValueError(f"ADM2 layer: {len(dsel)} features named {dname!r}; candidates {sorted({str(p.get('shapeName')) for p in dprops})[:20]}")
     district_ll = districts[dsel[0]]
     nom_res = parse_nominatim(json.loads((raw / recs["nominatim"]["file"]).read_text())) if "nominatim" in recs else None
-    boundary = verify_boundary(study_m, poly_ll, props[k], study_cfg, epsg, district_ll, nom_res)
+    osm_rel_ll = None
+    if "osm_relation" in recs:
+        _fc = json.loads((raw / recs["osm_relation"]["file"]).read_text())
+        _geoms = [shapely.geometry.shape(f["geometry"]) for f in _fc.get("features", []) if f.get("geometry")]
+        osm_rel_ll = _geoms[0] if _geoms else None
+    others = [districts[i] for i in range(len(districts)) if i != dsel[0]]
+    boundary = verify_boundary(study_m, poly_ll, props[k], study_cfg, epsg, district_ll, nom_res, osm_rel_ll, others)
     if boundary["boundary_status"] != "verified":
         incomplete.append("boundary requirement: status is 'approximate' (see boundary.checks)")
 
