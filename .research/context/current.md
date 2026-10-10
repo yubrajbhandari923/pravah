@@ -1,17 +1,17 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1676 tokens.
-> Generated 2026-10-10T19:53:40-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1759 tokens.
+> Generated 2026-10-10T19:53:41-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `d7f3d19b14` (uncommitted changes)
+Git: `master` @ `1db6f4d7ff` (uncommitted changes)
 
 ## Latest checkpoint
 
-**CP-003** Checkpoint — 2026-10-10 (2026-10-10)
+**CP-004** Phase 2 wrap-up (reviewed) (2026-10-10)
 - **Understanding:** - Solver routing refactor preserves every deterministic FiPy output bit-for-bit (F-009, supported)
   - FINAL: hidden wind error and unmodelled source dominate discretisation mismatch; poor layout unidentifiable (F-007, supported)
   - FINAL: greedy layouts beat spread/random on fresh test scenarios with alpha frozen on validation (matched, synthetic) (F-006, supported)
@@ -20,7 +20,7 @@ Git: `master` @ `d7f3d19b14` (uncommitted changes)
   - Geographic sensor design on Belauri: small-budget rankings depend on the noise level and on the design noise used for selection; reference-site use depends on it too (synthetic, matched) (F-020, preliminary)
   - Forward scheme: mass-consistent, first order in time, observed spatial order ~1.4 in the periodic test (~2.2-2.7 in the steady strip), large numerical diffusion (F-016, preliminary)
   - Matched-design layouts are not robust at 2-3 sensors under model mismatch, but per-case counts are mixed (v0 mismatch, synthetic) (F-017, preliminary)
-- **Next step:** Final scientific review of the geographic results
+- **Next step:** Optional, only if the sensor-design conclusions matter: add a chi-square-per-dof model check to geodesign_robust and rerun geodesign + geodesign_robust with the test noise level fixed from the validation scale (about 1 h compute). Otherwise: decide whether to commit or clear the executed notebook outputs in the working tree (user-owned); apply or drop git stash G2-unshipped.
 
 ## Current baseline
 
