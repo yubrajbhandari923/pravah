@@ -1,0 +1,7 @@
+{"author_type": "agent", "name": "alpha_selected_validation", "ts": "2026-10-10T15:35:12-04:00", "value": 0.01}
+{"author_type": "agent", "name": "total_rmse_b1_greedy_attribution", "ts": "2026-10-10T15:35:13-04:00", "value": 0.0105}
+{"author_type": "agent", "name": "total_rmse_b1_greedy_total", "ts": "2026-10-10T15:35:13-04:00", "value": 0.0223}
+{"author_type": "agent", "name": "total_rmse_b1_spread", "ts": "2026-10-10T15:35:13-04:00", "value": 0.0148}
+{"author_type": "agent", "name": "total_rmse_b8_greedy_total", "ts": "2026-10-10T15:35:13-04:00", "value": 0.00272}
+{"author_type": "agent", "name": "total_rmse_b8_spread", "ts": "2026-10-10T15:35:13-04:00", "value": 0.00323}
+{"author_type": "agent", "name": "production_wall_min", "ts": "2026-10-10T15:35:13-04:00", "value": 11.8}

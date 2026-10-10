@@ -103,3 +103,119 @@ layouts, so it is not tuned to the greedy layouts.  Greedy sites depend on the d
 Distances to roads and facilities use OSM, which is incomplete.  Reference sites are only as realistic as the ADM0 outline.
 
 GEODESIGN_RESULTS: <to be filled by coordinator>
+
+
+# Stage F2b: robustness of the fixed layouts, numerical refinement, exports
+
+Real geography; synthetic emissions and meteorology.  Provisional simulation design, not field-validated.  Code:
+`src/pravah/geodesign_robust.py`; configs: `configs/geodesign_robust.json` (production) and
+`configs/geodesign_robust_smoke.json` (plumbing check); tests: `tests/test_geodesign_robust.py`; notebook:
+`notebooks/06_belauri_sensor_design.ipynb`.
+
+## Robustness
+The layouts and frozen alphas of a finished `geodesign` run (`layouts.csv`, `alpha_selected.json`, the candidate IDs; they were
+selected on DESIGN scenarios only) are **re-used verbatim**: nothing is re-selected, no alpha is re-chosen (a test patches every
+selection function to raise).  The TEST ensemble is regenerated deterministically (same scenario seeds, noise seeds and sigma =
+fraction x the MATCHED signal scale), so the matched rows are the main run's selected-alpha rows (checked against the main
+`test_raw.csv` to round-off and recorded in `provenance.json`; the run is refused otherwise).  The robustness config must describe
+the same study as the run's `config.json` (everything except name / notes / experiment / robust is compared).  The DESIGN ensemble
+is regenerated only for the attribution scales and is checked against `design_scores.csv`.  Each condition changes one thing, with
+the same noise arrays, so every row has a matched partner (paired on setting, noise fraction, layout, case, rep):
+
+| condition | truth | what the estimator is told |
+|---|---|---|
+| `matched` | the case's draw | its wind, all else known (baseline) |
+| `unseen_wind` | wind segments replaced: direction = nearest design sector centre +- 22.5 deg (random sign; the design draws are within +- 15 deg), speed U(2.6, 3.5) m/s (design U(0.8, 2.5)); segment times kept | the NOMINAL wind of the same case, i.e. the draw before the replacement |
+| `unseen_wind_declared` | the same unseen wind | the unseen wind (a pure distribution shift with the wind known; one extra response set per case) |
+| `hidden_wind_error` | declared wind with speed x (1 + 0.2), rotated 15 deg (`experiments.perturb_wind`) | the declared (unperturbed) wind |
+| `boundary_time_profile` | the bg inflow profile `[[0,0],[14400,0.5],[21600,1]]` instead of the assumed onset 7200 s | the assumed profile |
+| `omitted_facility` | an extra LOCAL source: the OSM facility raster `w_facility`, 5e5 ug/s | the model without it |
+| `omitted_external` | an extra EXTERNAL Gaussian (sigma 1000 m, 5e5 ug/s, same onset as the patch) at 12 % / 88 % of the domain | the model without it |
+| `refined_truth` | the same fields on a 2x finer grid (250 m, dt 50 s): raster weights replicated onto the fine cells, so only the numerics differ | the 500 m model |
+
+Truth parameters are matched to the inference parameters by kind block inside `design.build_case` (emissions first, then inflow; the
+extra source is appended after the inference sources so the blocks line up; the extra source's origin tag is checked).  Truth
+components (local / external) come from the truth itself: `total` and `local` by two direct solves, `external = total - local`
+(exact because background and initial field are zero).  For `refined_truth` the fine total, local and external fields are
+block-averaged (`experiments.block_average`) to the 500 m grid for the regional error and the local / external components; sensors
+read the FINE field.  This is the inverse-crime contrast (same scheme on a finer mesh, so a LOWER bound on the effect of model
+error); the 500 m inference scenario is handed to `build_case` as the truth scenario only for the parameter table / source-signature
+check (`truth_field` carries the fine solution).
+
+Outputs (`out_dir`): `test_raw.csv` (every row, column `condition`), `summary.csv` (means and sds per condition, setting, regime,
+noise fraction, method, budget), `paired_rows.csv` (condition minus matched per (layout, case, rep) for total / local / external
+RMSE, attribution error, external-fraction error, emission relative error, bg inflow error and the per-parameter absolute errors,
+emission in ug/s and inflow in ug/m3 never mixed), `paired_mismatch.csv` (layouts of a method averaged first; mean, sd, pairs,
+`n_cases_worse` of `n_cases`, fraction of pairs worse; worsening in every draw is NOT required), `contrasts.csv` (the method
+contrasts of `paired.csv`: greedy_total vs spread / random mean, greedy_attribution vs greedy_total, with_reference vs
+interior_only, consecutive budgets, recomputed under each condition) and `ranking_changes.csv` (does the sign agree with matched?),
+`flags_vs_error.csv`, `cases.csv` (truth and nominal wind, Courant number of the truth, unmodelled emission share), `timings.json`,
+`provenance.json`, `figures/`.
+
+**Identifiability flags cannot detect a wrong model.**  `attribution.identifiability_report` is a function of the sensor
+operator and sigma only; it never sees the data.  So for every mismatch condition that keeps the inference model (all but
+`unseen_wind_declared`) the flags of a row equal those of its matched partner (`flags_same`, `frac_flags_equal_matched` = 1) while the
+error changes (`flags_vs_error.csv` lists the flagged fraction next to `rmse_ratio_to_matched`).  A clean flag set therefore says the
+data would have constrained the MODEL's parameters, not that the model is right.
+
+Methods compared in every table: random (mean over its layouts), spread, greedy_total, greedy_attribution, and with_reference
+vs interior_only at the same budget.  Only the standard regime and the selected-alpha rows are evaluated by default
+(`robust.regimes`, `robust.alpha_labels`).
+
+## Numerical refinement
+*Numerical diffusion.*  `numerical_diffusion.{csv,json}` give K_eff/K = 1 + `geo.scenarios.numerical_diffusion_estimate` (exponential
+convection + backward Euler, along-axis Fourier estimate) for the speeds actually drawn in the three ensembles, reference speeds and
+the unseen-wind maximum, at the design mesh (500 m, 100 s) and the refined mesh (250 m, 50 s).  At 500 m / 100 s the excess is large
+(for example K_eff/K about 2.4 at 0.8 m/s, about 9.4 at 2.5 m/s and about 14.9 at 3.5 m/s) because the cell Peclet number is 4-18: the
+numerical spreading exceeds the physical K = 100 m2/s for almost every wind of the study.  The physical K is **not tuned**; the
+numerical spreading is reported separately and is part of truth and inference alike in the matched experiments (which is why the
+matched results are optimistic and the refined-truth contrast, with about half the excess, is informative).  For oblique winds the
+number is only a scalar-speed approximation.
+
+*Layouts selected on the 500 m problem against 250 m truth* is the `refined_truth` condition above.
+
+*Re-selection on the 250 m model* (`robust.refinement.enabled`, expensive): design cases are built on the 250 m grid (real 250 m
+rasters, fine inference model; `refinement.n_design_fine` <= 6, the first design draws and noise seeds of the main run), the design
+sigma and frozen alpha of the main run are used, and `greedy_total` / `greedy_attribution` layouts are selected for the budget subset
+`refinement.budgets` in `refinement.settings` (the candidate pool is the same 500 m pool).  Outputs: `refinement_layouts_250m.csv`,
+`refinement_overlap.csv` (Jaccard index of the site sets, shared sites, mean and maximum nearest-site distance in metres, symmetrised
+over both directions), `refinement_test_raw.csv` and `refinement_gap.csv` (250 m-selected minus 500 m-selected layouts on the SAME
+fine test truth, fine inference model, sigma of the matched test ensemble; negative = the 250 m layouts do better; cases won),
+`refinement_info.json` (cost).  Its `attr_err` uses the fine design cases' attribution scales and is not comparable with the 500 m
+tables.  Cost: each 250 m response set is about 8 solves of ~30 s at production size (measured: one fine case, i.e. its response set,
+direct truth and base parts, takes about 4 min; the smoke profile uses the cropped domain and about 25 s per case).
+
+## Exports and how to reproduce
+```
+# smoke (about 40 s + about 2 min under load; cropped domain; plumbing only)
+.venv/bin/python -m pravah benchmark --config configs/geodesign_smoke.json --out <empty dir A>
+# edit "robust.layouts_from" in a copy of configs/geodesign_robust_smoke.json to <dir A>, then
+.venv/bin/python -m pravah benchmark --config <that copy> --out <empty dir B>
+
+# production
+.venv/bin/python -m pravah benchmark --config configs/geodesign.json --out results/geodesign
+.venv/bin/python -m pravah benchmark --config configs/geodesign_robust.json --out results/geodesign-robust   # robust.layouts_from = "results/geodesign"
+```
+Cost (measured at production size on a loaded laptop core; the production `geodesign` run took 12 min): the robustness study without
+the 250 m re-selection takes about 22 min (design regeneration 3.7 min, matched test cases free after that, `unseen_wind_declared`
+3.6 min = 6 cases x 8 solves, `refined_truth` 6 min = 6 cases x 2 solves of ~30 s, each of the other four mismatch conditions 1 min,
+evaluation of all rows about 4 s per condition); the 250 m re-selection adds about 4 min per fine design case and 4 min per fine
+test case (3 + 3 cases: about 25 min).  Non-empty output directories are refused.  Set `robust.refinement.enabled` to `false` to skip the expensive 250 m part,
+`robust.conditions` to run a subset (`matched` is always kept: it is the pairing baseline).  Every directory carries
+`config.json`, `provenance.json` (config hash, seeds, sha256 of the layouts / alpha files used, the check against the main run)
+and `timings.json`.  The notebook `notebooks/06_belauri_sensor_design.ipynb` runs both smoke profiles in about 2.5 minutes and, if
+present, shows the saved production tables and figures.
+
+## Limitations (F2b)
+- Each condition is a single, hand-set perturbation (one wind error, one profile, one facility cluster, one extra Gaussian,
+  one refinement factor); other sizes, shapes or locations may behave differently.  Amplitudes of the omitted sources are
+  chosen, not measured.
+- The unseen winds reach u dt/dx = 0.7 at 3.5 m/s (the design winds: up to 0.5; forward-study guideline 0.3); `cases.csv` has the
+  Courant number of every truth.  Those truths carry more numerical spreading than the nominal ones.
+- `refined_truth` replicates the 500 m raster weights onto the fine cells: it isolates the numerics, not finer geography.
+  Re-selection on the 250 m model does use the real 250 m rasters, so its layouts differ from the 500 m ones in two ways.
+- Only 6 test cases and 3 noise repetitions (3 + 3 fine cases): differences are descriptive; sds are never confidence intervals.
+- The 250 m re-selection uses at most 6 design cases; greedy layouts are heuristics and can change with the cases drawn.
+- Still synthetic: uniform winds, no terrain-driven flow, no instrument bias, no source-shape uncertainty beyond the above.
+
+GEODESIGN_ROBUST_RESULTS: <to be filled by coordinator>

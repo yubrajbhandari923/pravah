@@ -1,0 +1,3731 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "label": "Real geography; synthetic emissions and meteorology",
+    "provenance": "provisional simulation design, not field-validated",
+    "manifest_sha256": "7ff8b8b9b1615a87fcef5377c839862367c1e341b75b9902750fe162ef883970",
+    "raw_sha256": {
+      "study": "139e8622ca46c47c30ced88e09425d827fd890fa6a54b3fc2e8e3d5d2abd9c59",
+      "adm0_NPL": "fc0f32802e64cb5e9c95a11af4ad2d3589df8406476707c974c4f8bb9ee07004",
+      "osm_roads": "43ead5e2e2b5d16890b9a965313e905e76c7fb15c3297d04fd8fe2893c253724",
+      "osm_amenity": "896a4a9eba492616f78598729a7c3c0a9b6aa728ef8f2ebe08c0578009675fff"
+    },
+    "config_hash": "c2dd5db3af7705d7a2509737652be31cbe9a9521d15816ff5ad57df514ff8896",
+    "assumptions": [
+      "mapped accessibility is not permission/power/security/connectivity",
+      "OSM gaps are not absence of feasible sites",
+      "sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+    ],
+    "candidate_config": {
+      "interior_spacing_m": 1500.0,
+      "reference_spacing_m": 3000.0,
+      "reference_inset_m": 500.0,
+      "road_near_m": 100.0,
+      "facility_amenities": [
+        "school",
+        "college",
+        "kindergarten",
+        "university",
+        "hospital",
+        "clinic",
+        "doctors",
+        "health_post"
+      ]
+    },
+    "hypothetical_in_experiments": false
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.37487517503718,
+          28.63515751562987
+        ]
+      },
+      "properties": {
+        "id": "int_c006013",
+        "category": "interior",
+        "utm_x": 438899.649701516,
+        "utm_y": 3167725.0300549963,
+        "local_x": 19500.0,
+        "local_y": 9000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 19.606756029439744,
+        "dist_facility_m": 1173.7445471391798,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.39022112654621,
+          28.635227439536767
+        ]
+      },
+      "properties": {
+        "id": "int_c006014",
+        "category": "interior",
+        "utm_x": 440399.649701516,
+        "utm_y": 3167725.0300549963,
+        "local_x": 21000.0,
+        "local_y": 9000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 2.849141601637418,
+        "dist_facility_m": 1020.8833997755335,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.40556713202236,
+          28.635295625787926
+        ]
+      },
+      "properties": {
+        "id": "int_c006015",
+        "category": "interior",
+        "utm_x": 441899.649701516,
+        "utm_y": 3167725.0300549963,
+        "local_x": 22500.0,
+        "local_y": 9000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 18.841128690634857,
+        "dist_facility_m": 1202.1343628248014,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.35944703951591,
+          28.648624676958676
+        ]
+      },
+      "properties": {
+        "id": "int_c007012",
+        "category": "interior",
+        "utm_x": 437399.649701516,
+        "utm_y": 3169225.0300549963,
+        "local_x": 18000.0,
+        "local_y": 10500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 230.56763710061745,
+        "dist_facility_m": 1661.4300355041003,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.37479490586584,
+          28.648696378571344
+        ]
+      },
+      "properties": {
+        "id": "int_c007013",
+        "category": "interior",
+        "utm_x": 438899.649701516,
+        "utm_y": 3169225.0300549963,
+        "local_x": 19500.0,
+        "local_y": 10500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 52.15213883745556,
+        "dist_facility_m": 381.61798379192624,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.39014282757084,
+          28.64876634157941
+        ]
+      },
+      "properties": {
+        "id": "int_c007014",
+        "category": "interior",
+        "utm_x": 440399.649701516,
+        "utm_y": 3169225.0300549963,
+        "local_x": 21000.0,
+        "local_y": 10500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 126.97067408118242,
+        "dist_facility_m": 921.534513125877,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.40549080327234,
+          28.648834565960094
+        ]
+      },
+      "properties": {
+        "id": "int_c007015",
+        "category": "interior",
+        "utm_x": 441899.649701516,
+        "utm_y": 3169225.0300549963,
+        "local_x": 22500.0,
+        "local_y": 10500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 25.506153940956356,
+        "dist_facility_m": 854.8067865163879,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.42083883161176,
+          28.64890105169121
+        ]
+      },
+      "properties": {
+        "id": "int_c007016",
+        "category": "interior",
+        "utm_x": 443399.649701516,
+        "utm_y": 3169225.0300549963,
+        "local_x": 24000.0,
+        "local_y": 10500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 43.57731879227921,
+        "dist_facility_m": 1223.743226908694,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.3440149623354,
+          28.66208999128807
+        ]
+      },
+      "properties": {
+        "id": "int_c008011",
+        "category": "interior",
+        "utm_x": 435899.649701516,
+        "utm_y": 3170725.0300549963,
+        "local_x": 16500.0,
+        "local_y": 12000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 59.74999765742039,
+        "dist_facility_m": 1326.6889391321063,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.35936474346515,
+          28.662163472536722
+        ]
+      },
+      "properties": {
+        "id": "int_c008012",
+        "category": "interior",
+        "utm_x": 437399.649701516,
+        "utm_y": 3170725.0300549963,
+        "local_x": 18000.0,
+        "local_y": 12000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 70.82057658187777,
+        "dist_facility_m": 614.0332038525746,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.37471458133943,
+          28.66223521423224
+        ]
+      },
+      "properties": {
+        "id": "int_c008013",
+        "category": "interior",
+        "utm_x": 438899.649701516,
+        "utm_y": 3170725.0300549963,
+        "local_x": 19500.0,
+        "local_y": 12000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 73.62804197816367,
+        "dist_facility_m": 526.4876967773746,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.39006447459896,
+          28.662305216351267
+        ]
+      },
+      "properties": {
+        "id": "int_c008014",
+        "category": "interior",
+        "utm_x": 440399.649701516,
+        "utm_y": 3170725.0300549963,
+        "local_x": 21000.0,
+        "local_y": 12000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 62.53796471347176,
+        "dist_facility_m": 400.430569227118,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.40541442188442,
+          28.662373478871036
+        ]
+      },
+      "properties": {
+        "id": "int_c008015",
+        "category": "interior",
+        "utm_x": 441899.649701516,
+        "utm_y": 3170725.0300549963,
+        "local_x": 22500.0,
+        "local_y": 12000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 52.555529880854536,
+        "dist_facility_m": 116.60304339987184,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.32857894084042,
+          28.67555345568725
+        ]
+      },
+      "properties": {
+        "id": "int_c009010",
+        "category": "interior",
+        "utm_x": 434399.649701516,
+        "utm_y": 3172225.0300549963,
+        "local_x": 15000.0,
+        "local_y": 13500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 93.9521661356026,
+        "dist_facility_m": 1655.462755578708,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.34393063668742,
+          28.675628718502207
+        ]
+      },
+      "properties": {
+        "id": "int_c009011",
+        "category": "interior",
+        "utm_x": 435899.649701516,
+        "utm_y": 3172225.0300549963,
+        "local_x": 16500.0,
+        "local_y": 13500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 73.2820345034003,
+        "dist_facility_m": 1370.055320278397,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.35928239066986,
+          28.675702240815845
+        ]
+      },
+      "properties": {
+        "id": "int_c009012",
+        "category": "interior",
+        "utm_x": 437399.649701516,
+        "utm_y": 3172225.0300549963,
+        "local_x": 18000.0,
+        "local_y": 13500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 51.149185575896524,
+        "dist_facility_m": 390.26540977769787,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.37463420142778,
+          28.675774022604244
+        ]
+      },
+      "properties": {
+        "id": "int_c009013",
+        "category": "interior",
+        "utm_x": 438899.649701516,
+        "utm_y": 3172225.0300549963,
+        "local_x": 19500.0,
+        "local_y": 13500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 201.77429679266587,
+        "dist_facility_m": 685.1199641144103,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.38998606760111,
+          28.675844063844053
+        ]
+      },
+      "properties": {
+        "id": "int_c009014",
+        "category": "interior",
+        "utm_x": 440399.649701516,
+        "utm_y": 3172225.0300549963,
+        "local_x": 21000.0,
+        "local_y": 13500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 101.40619622239967,
+        "dist_facility_m": 504.28038605283336,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.40533798782987,
+          28.67591236451246
+        ]
+      },
+      "properties": {
+        "id": "int_c009015",
+        "category": "interior",
+        "utm_x": 441899.649701516,
+        "utm_y": 3172225.0300549963,
+        "local_x": 22500.0,
+        "local_y": 13500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 31.31954808152223,
+        "dist_facility_m": 123.94848940193741,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.32849258287601,
+          28.689092113536237
+        ]
+      },
+      "properties": {
+        "id": "int_c010010",
+        "category": "interior",
+        "utm_x": 434399.649701516,
+        "utm_y": 3173725.0300549963,
+        "local_x": 15000.0,
+        "local_y": 15000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 68.92697800177538,
+        "dist_facility_m": 1003.1890795384504,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.34384625290397,
+          28.6891674183988
+        ]
+      },
+      "properties": {
+        "id": "int_c010011",
+        "category": "interior",
+        "utm_x": 435899.649701516,
+        "utm_y": 3173725.0300549963,
+        "local_x": 16500.0,
+        "local_y": 15000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 160.82105301920444,
+        "dist_facility_m": 539.774616833271,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.3591999810991,
+          28.689240981787723
+        ]
+      },
+      "properties": {
+        "id": "int_c010012",
+        "category": "interior",
+        "utm_x": 437399.649701516,
+        "utm_y": 3173725.0300549963,
+        "local_x": 18000.0,
+        "local_y": 15000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 97.06326882437162,
+        "dist_facility_m": 572.9164083178647,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.37455376610066,
+          28.68931280367907
+        ]
+      },
+      "properties": {
+        "id": "int_c010013",
+        "category": "interior",
+        "utm_x": 438899.649701516,
+        "utm_y": 3173725.0300549963,
+        "local_x": 19500.0,
+        "local_y": 15000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 58.26336558309905,
+        "dist_facility_m": 852.114991238275,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.3899076065479,
+          28.689382884049458
+        ]
+      },
+      "properties": {
+        "id": "int_c010014",
+        "category": "interior",
+        "utm_x": 440399.649701516,
+        "utm_y": 3173725.0300549963,
+        "local_x": 21000.0,
+        "local_y": 15000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 23.239857990461502,
+        "dist_facility_m": 616.2782586478755,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.32840616538375,
+          28.702630744048797
+        ]
+      },
+      "properties": {
+        "id": "int_c011010",
+        "category": "interior",
+        "utm_x": 434399.649701516,
+        "utm_y": 3175225.0300549963,
+        "local_x": 15000.0,
+        "local_y": 16500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 67.121899451991,
+        "dist_facility_m": 1942.2203076639264,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.34376181095338,
+          28.70270609096952
+        ]
+      },
+      "properties": {
+        "id": "int_c011011",
+        "category": "interior",
+        "utm_x": 435899.649701516,
+        "utm_y": 3175225.0300549963,
+        "local_x": 16500.0,
+        "local_y": 16500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 63.27775497311161,
+        "dist_facility_m": 859.5273449168393,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.35911751472192,
+          28.702779695444043
+        ]
+      },
+      "properties": {
+        "id": "int_c011012",
+        "category": "interior",
+        "utm_x": 437399.649701516,
+        "utm_y": 3175225.0300549963,
+        "local_x": 18000.0,
+        "local_y": 16500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 144.38947182559644,
+        "dist_facility_m": 721.9238911531074,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.37447327532789,
+          28.702851557448405
+        ]
+      },
+      "properties": {
+        "id": "int_c011013",
+        "category": "interior",
+        "utm_x": 438899.649701516,
+        "utm_y": 3175225.0300549963,
+        "local_x": 19500.0,
+        "local_y": 16500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 156.4386638764454,
+        "dist_facility_m": 193.29457559641514,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.38982909140978,
+          28.702921676959214
+        ]
+      },
+      "properties": {
+        "id": "int_c011014",
+        "category": "interior",
+        "utm_x": 440399.649701516,
+        "utm_y": 3175225.0300549963,
+        "local_x": 21000.0,
+        "local_y": 16500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 57.685736780285396,
+        "dist_facility_m": 705.1131406662298,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.28224718391867,
+          28.715932719982472
+        ]
+      },
+      "properties": {
+        "id": "int_c012007",
+        "category": "interior",
+        "utm_x": 429899.649701516,
+        "utm_y": 3176725.0300549963,
+        "local_x": 10500.0,
+        "local_y": 18000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 24.652837023249443,
+        "dist_facility_m": 924.5690956247842,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.29760462352641,
+          28.716013339079424
+        ]
+      },
+      "properties": {
+        "id": "int_c012008",
+        "category": "interior",
+        "utm_x": 431399.649701516,
+        "utm_y": 3176725.0300549963,
+        "local_x": 12000.0,
+        "local_y": 18000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 19.05377020842201,
+        "dist_facility_m": 532.7559203785457,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.31296212545126,
+          28.716092214832695
+        ]
+      },
+      "properties": {
+        "id": "int_c012009",
+        "category": "interior",
+        "utm_x": 432899.649701516,
+        "utm_y": 3176725.0300549963,
+        "local_x": 13500.0,
+        "local_y": 18000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 45.37297258328493,
+        "dist_facility_m": 108.0179491412876,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.32831968833113,
+          28.716169347216617
+        ]
+      },
+      "properties": {
+        "id": "int_c012010",
+        "category": "interior",
+        "utm_x": 434399.649701516,
+        "utm_y": 3176725.0300549963,
+        "local_x": 15000.0,
+        "local_y": 18000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 46.27327354548904,
+        "dist_facility_m": 1367.4426646886209,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.34367731080387,
+          28.716244736206068
+        ]
+      },
+      "properties": {
+        "id": "int_c012011",
+        "category": "interior",
+        "utm_x": 435899.649701516,
+        "utm_y": 3176725.0300549963,
+        "local_x": 16500.0,
+        "local_y": 18000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 57.227074253264774,
+        "dist_facility_m": 1933.1578099031397,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.35903499150729,
+          28.71631838177651
+        ]
+      },
+      "properties": {
+        "id": "int_c012012",
+        "category": "interior",
+        "utm_x": 437399.649701516,
+        "utm_y": 3176725.0300549963,
+        "local_x": 18000.0,
+        "local_y": 18000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 81.55412383960649,
+        "dist_facility_m": 1876.0293083924237,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.37439272907916,
+          28.716390283903966
+        ]
+      },
+      "properties": {
+        "id": "int_c012013",
+        "category": "interior",
+        "utm_x": 438899.649701516,
+        "utm_y": 3176725.0300549963,
+        "local_x": 19500.0,
+        "local_y": 18000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 167.86442301755918,
+        "dist_facility_m": 1347.006211041681,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.38975052215726,
+          28.716460442565023
+        ]
+      },
+      "properties": {
+        "id": "int_c012014",
+        "category": "interior",
+        "utm_x": 440399.649701516,
+        "utm_y": 3176725.0300549963,
+        "local_x": 21000.0,
+        "local_y": 18000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 65.4100886450237,
+        "dist_facility_m": 490.0465976834925,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.4051083693793,
+          28.71652885773684
+        ]
+      },
+      "properties": {
+        "id": "int_c012015",
+        "category": "interior",
+        "utm_x": 441899.649701516,
+        "utm_y": 3176725.0300549963,
+        "local_x": 22500.0,
+        "local_y": 18000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 208.21262076827145,
+        "dist_facility_m": 530.5788571536683,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.26679535861646,
+          28.72938875533548
+        ]
+      },
+      "properties": {
+        "id": "int_c013006",
+        "category": "interior",
+        "utm_x": 428399.649701516,
+        "utm_y": 3178225.0300549963,
+        "local_x": 9000.0,
+        "local_y": 19500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 31.65307899202714,
+        "dist_facility_m": 735.8878441735832,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.2821547126756,
+          28.729471163721197
+        ]
+      },
+      "properties": {
+        "id": "int_c013007",
+        "category": "interior",
+        "utm_x": 429899.649701516,
+        "utm_y": 3178225.0300549963,
+        "local_x": 10500.0,
+        "local_y": 19500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 40.14861586054016,
+        "dist_facility_m": 632.7039139813807,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.29751413044873,
+          28.729551827816504
+        ]
+      },
+      "properties": {
+        "id": "int_c013008",
+        "category": "interior",
+        "utm_x": 431399.649701516,
+        "utm_y": 3178225.0300549963,
+        "local_x": 12000.0,
+        "local_y": 19500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 40.76520758613693,
+        "dist_facility_m": 545.6071886307863,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.31287361057304,
+          28.72963074759514
+        ]
+      },
+      "properties": {
+        "id": "int_c013009",
+        "category": "interior",
+        "utm_x": 432899.649701516,
+        "utm_y": 3178225.0300549963,
+        "local_x": 13500.0,
+        "local_y": 19500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 64.02943553934335,
+        "dist_facility_m": 330.6201070621319,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.32823315168565,
+          28.729707923031395
+        ]
+      },
+      "properties": {
+        "id": "int_c013010",
+        "category": "interior",
+        "utm_x": 434399.649701516,
+        "utm_y": 3178225.0300549963,
+        "local_x": 15000.0,
+        "local_y": 19500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 71.5709487565369,
+        "dist_facility_m": 1259.382732333296,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.34359275242367,
+          28.72978335410015
+        ]
+      },
+      "properties": {
+        "id": "int_c013011",
+        "category": "interior",
+        "utm_x": 435899.649701516,
+        "utm_y": 3178225.0300549963,
+        "local_x": 16500.0,
+        "local_y": 19500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 221.96374056120908,
+        "dist_facility_m": 686.311815597891,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.35895241142418,
+          28.729857040776835
+        ]
+      },
+      "properties": {
+        "id": "int_c013012",
+        "category": "interior",
+        "utm_x": 437399.649701516,
+        "utm_y": 3178225.0300549963,
+        "local_x": 18000.0,
+        "local_y": 19500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 128.24985021436012,
+        "dist_facility_m": 1963.6707845153853,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.37431212732422,
+          28.72992898303747
+        ]
+      },
+      "properties": {
+        "id": "int_c013013",
+        "category": "interior",
+        "utm_x": 438899.649701516,
+        "utm_y": 3178225.0300549963,
+        "local_x": 19500.0,
+        "local_y": 19500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 173.37487895396714,
+        "dist_facility_m": 1234.4410886098035,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.3896718987608,
+          28.729999180858613
+        ]
+      },
+      "properties": {
+        "id": "int_c013014",
+        "category": "interior",
+        "utm_x": 440399.649701516,
+        "utm_y": 3178225.0300549963,
+        "local_x": 21000.0,
+        "local_y": 19500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 211.24553793293543,
+        "dist_facility_m": 330.41869681343655,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.28206217771853,
+          28.743009580065372
+        ]
+      },
+      "properties": {
+        "id": "int_c014007",
+        "category": "interior",
+        "utm_x": 429899.649701516,
+        "utm_y": 3179725.0300549963,
+        "local_x": 10500.0,
+        "local_y": 21000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 71.18257560876478,
+        "dist_facility_m": 1575.7319024892108,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.29742357501989,
+          28.743090289170343
+        ]
+      },
+      "properties": {
+        "id": "int_c014008",
+        "category": "interior",
+        "utm_x": 431399.649701516,
+        "utm_y": 3179725.0300549963,
+        "local_x": 12000.0,
+        "local_y": 21000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 67.31948455003116,
+        "dist_facility_m": 1024.0310209458087,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.31278503470651,
+          28.743169252985403
+        ]
+      },
+      "properties": {
+        "id": "int_c014009",
+        "category": "interior",
+        "utm_x": 432899.649701516,
+        "utm_y": 3179725.0300549963,
+        "local_x": 13500.0,
+        "local_y": 21000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 118.47970771044912,
+        "dist_facility_m": 688.5846540195844,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.37423147003274,
+          28.74346765484064
+        ]
+      },
+      "properties": {
+        "id": "int_c014013",
+        "category": "interior",
+        "utm_x": 438899.649701516,
+        "utm_y": 3179725.0300549963,
+        "local_x": 19500.0,
+        "local_y": 21000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 230.11587856269946,
+        "dist_facility_m": 319.28165350182667,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.38959322119081,
+          28.74353789183172
+        ]
+      },
+      "properties": {
+        "id": "int_c014014",
+        "category": "interior",
+        "utm_x": 440399.649701516,
+        "utm_y": 3179725.0300549963,
+        "local_x": 21000.0,
+        "local_y": 21000.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 85.65204649474386,
+        "dist_facility_m": 1037.0873710745743,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.31269639781833,
+          28.756707730995178
+        ]
+      },
+      "properties": {
+        "id": "int_c015009",
+        "category": "interior",
+        "utm_x": 432899.649701516,
+        "utm_y": 3181225.0300549963,
+        "local_x": 13500.0,
+        "local_y": 22500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 0.5500320071750335,
+        "dist_facility_m": 365.52434318247515,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.3587870805283,
+          28.756934276747923
+        ]
+      },
+      "properties": {
+        "id": "int_c015012",
+        "category": "interior",
+        "utm_x": 437399.649701516,
+        "utm_y": 3181225.0300549963,
+        "local_x": 18000.0,
+        "local_y": 22500.0,
+        "in_polygon": true,
+        "in_nepal_adm0": true,
+        "dist_road_m": 131.01272714551624,
+        "dist_facility_m": 744.4974612582804,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.48243073836626,
+          28.608532177343793
+        ]
+      },
+      "properties": {
+        "id": "refd_c002010",
+        "category": "reference_domestic",
+        "utm_x": 449399.649701516,
+        "utm_y": 3164725.0300549963,
+        "local_x": 30000.0,
+        "local_y": 6000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 3287.4111122117697,
+        "dist_facility_m": 5615.857426370467,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.45160545867476,
+          28.635489758388044
+        ]
+      },
+      "properties": {
+        "id": "refd_c003009",
+        "category": "reference_domestic",
+        "utm_x": 446399.649701516,
+        "utm_y": 3167725.0300549963,
+        "local_x": 27000.0,
+        "local_y": 9000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 493.52294805162785,
+        "dist_facility_m": 1448.6500270870677,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.4822979213838,
+          28.635610491451253
+        ]
+      },
+      "properties": {
+        "id": "refd_c003010",
+        "category": "reference_domestic",
+        "utm_x": 449399.649701516,
+        "utm_y": 3167725.0300549963,
+        "local_x": 30000.0,
+        "local_y": 9000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 3424.580240103999,
+        "dist_facility_m": 3837.4482951291457,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.42076442183648,
+          28.662440001769333
+        ]
+      },
+      "properties": {
+        "id": "refd_c004008",
+        "category": "reference_domestic",
+        "utm_x": 443399.649701516,
+        "utm_y": 3170725.0300549963,
+        "local_x": 24000.0,
+        "local_y": 12000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 1.6229285080291895,
+        "dist_facility_m": 254.0746102812036,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.45146457430292,
+          28.662567828615504
+        ]
+      },
+      "properties": {
+        "id": "refd_c004009",
+        "category": "reference_domestic",
+        "utm_x": 446399.649701516,
+        "utm_y": 3170725.0300549963,
+        "local_x": 27000.0,
+        "local_y": 12000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 318.5417393612533,
+        "dist_facility_m": 722.6055531862914,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.48216492112304,
+          28.662688696723418
+        ]
+      },
+      "properties": {
+        "id": "refd_c004010",
+        "category": "reference_domestic",
+        "utm_x": 449399.649701516,
+        "utm_y": 3170725.0300549963,
+        "local_x": 30000.0,
+        "local_y": 12000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 3194.650414969381,
+        "dist_facility_m": 3432.843944297928,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.42061544833619,
+          28.689517820136718
+        ]
+      },
+      "properties": {
+        "id": "refd_c005008",
+        "category": "reference_domestic",
+        "utm_x": 443399.649701516,
+        "utm_y": 3173725.0300549963,
+        "local_x": 24000.0,
+        "local_y": 15000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 154.92078750525837,
+        "dist_facility_m": 505.1700872046991,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.45132349557733,
+          28.68964578987384
+        ]
+      },
+      "properties": {
+        "id": "refd_c005009",
+        "category": "reference_domestic",
+        "utm_x": 446399.649701516,
+        "utm_y": 3173725.0300549963,
+        "local_x": 27000.0,
+        "local_y": 15000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 172.0837428942993,
+        "dist_facility_m": 1331.1419031458663,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.48203173738419,
+          28.689766793094204
+        ]
+      },
+      "properties": {
+        "id": "refd_c005010",
+        "category": "reference_domestic",
+        "utm_x": 449399.649701516,
+        "utm_y": 3173725.0300549963,
+        "local_x": 30000.0,
+        "local_y": 15000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 3169.1254565103422,
+        "dist_facility_m": 3793.9547570390623,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.42046626938298,
+          28.716595529397146
+        ]
+      },
+      "properties": {
+        "id": "refd_c006008",
+        "category": "reference_domestic",
+        "utm_x": 443399.649701516,
+        "utm_y": 3176725.0300549963,
+        "local_x": 24000.0,
+        "local_y": 18000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 878.680754986791,
+        "dist_facility_m": 1473.4355083697787,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.45118222228591,
+          28.716723642096976
+        ]
+      },
+      "properties": {
+        "id": "refd_c006009",
+        "category": "reference_domestic",
+        "utm_x": 446399.649701516,
+        "utm_y": 3176725.0300549963,
+        "local_x": 27000.0,
+        "local_y": 18000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 1554.2469548367153,
+        "dist_facility_m": 831.5601441446805,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.48189836996706,
+          28.716844780497652
+        ]
+      },
+      "properties": {
+        "id": "refd_c006010",
+        "category": "reference_domestic",
+        "utm_x": 449399.649701516,
+        "utm_y": 3176725.0300549963,
+        "local_x": 30000.0,
+        "local_y": 18000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 3701.9796546135626,
+        "dist_facility_m": 3215.74210613382,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.32814655541475,
+          28.74324647148482
+        ]
+      },
+      "properties": {
+        "id": "refd_c007005",
+        "category": "reference_domestic",
+        "utm_x": 434399.649701516,
+        "utm_y": 3179725.0300549963,
+        "local_x": 15000.0,
+        "local_y": 21000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 246.86240662211765,
+        "dist_facility_m": 674.7052878464343,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.35886977444154,
+          28.743395672436733
+        ]
+      },
+      "properties": {
+        "id": "refd_c007006",
+        "category": "reference_domestic",
+        "utm_x": 437399.649701516,
+        "utm_y": 3179725.0300549963,
+        "local_x": 18000.0,
+        "local_y": 21000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 368.2947896294535,
+        "dist_facility_m": 1758.5610985677488,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.42031688475251,
+          28.74367312948451
+        ]
+      },
+      "properties": {
+        "id": "refd_c007008",
+        "category": "reference_domestic",
+        "utm_x": 443399.649701516,
+        "utm_y": 3179725.0300549963,
+        "local_x": 24000.0,
+        "local_y": 21000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 1790.2374283791542,
+        "dist_facility_m": 591.9816595108714,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.45104075421622,
+          28.74380138521892
+        ]
+      },
+      "properties": {
+        "id": "refd_c007009",
+        "category": "reference_domestic",
+        "utm_x": 446399.649701516,
+        "utm_y": 3179725.0300549963,
+        "local_x": 27000.0,
+        "local_y": 21000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 4431.835885362394,
+        "dist_facility_m": 3260.9472764079956,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.48176481867104,
+          28.74392265886788
+        ]
+      },
+      "properties": {
+        "id": "refd_c007010",
+        "category": "reference_domestic",
+        "utm_x": 449399.649701516,
+        "utm_y": 3179725.0300549963,
+        "local_x": 30000.0,
+        "local_y": 21000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 5701.870035189035,
+        "dist_facility_m": 4928.27575201151,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.20505109885478,
+          28.769656127129238
+        ]
+      },
+      "properties": {
+        "id": "refd_c008001",
+        "category": "reference_domestic",
+        "utm_x": 422399.649701516,
+        "utm_y": 3182725.0300549963,
+        "local_x": 3000.0,
+        "local_y": 24000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 3112.511660359979,
+        "dist_facility_m": 8235.59934559151,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.23578122354647,
+          28.769833449904993
+        ]
+      },
+      "properties": {
+        "id": "refd_c008002",
+        "category": "reference_domestic",
+        "utm_x": 425399.649701516,
+        "utm_y": 3182725.0300549963,
+        "local_x": 6000.0,
+        "local_y": 24000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 145.43610200683773,
+        "dist_facility_m": 6113.270980616811,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.26651161989228,
+          28.770003784167574
+        ]
+      },
+      "properties": {
+        "id": "refd_c008003",
+        "category": "reference_domestic",
+        "utm_x": 428399.649701516,
+        "utm_y": 3182725.0300549963,
+        "local_x": 9000.0,
+        "local_y": 24000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 135.4546478825904,
+        "dist_facility_m": 4294.78613900488,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.29724227697236,
+          28.770167129695
+        ]
+      },
+      "properties": {
+        "id": "refd_c008004",
+        "category": "reference_domestic",
+        "utm_x": 431399.649701516,
+        "utm_y": 3182725.0300549963,
+        "local_x": 12000.0,
+        "local_y": 24000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 89.40849105824364,
+        "dist_facility_m": 1785.4537125280444,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.32797318386633,
+          28.770323486274435
+        ]
+      },
+      "properties": {
+        "id": "refd_c008005",
+        "category": "reference_domestic",
+        "utm_x": 434399.649701516,
+        "utm_y": 3182725.0300549963,
+        "local_x": 15000.0,
+        "local_y": 24000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 1172.6680421804044,
+        "dist_facility_m": 2278.3089173591557,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.35870432965329,
+          28.770472853702124
+        ]
+      },
+      "properties": {
+        "id": "refd_c008006",
+        "category": "reference_domestic",
+        "utm_x": 437399.649701516,
+        "utm_y": 3182725.0300549963,
+        "local_x": 18000.0,
+        "local_y": 24000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 3.9677812170628934,
+        "dist_facility_m": 781.9866670559303,
+        "on_or_near_road": true,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.3894357034118,
+          28.770615231783417
+        ]
+      },
+      "properties": {
+        "id": "refd_c008007",
+        "category": "reference_domestic",
+        "utm_x": 440399.649701516,
+        "utm_y": 3182725.0300549963,
+        "local_x": 21000.0,
+        "local_y": 24000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 690.9495201793089,
+        "dist_facility_m": 776.1122060397822,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.42016729421995,
+          28.770750620332787
+        ]
+      },
+      "properties": {
+        "id": "refd_c008008",
+        "category": "reference_domestic",
+        "utm_x": 443399.649701516,
+        "utm_y": 3182725.0300549963,
+        "local_x": 24000.0,
+        "local_y": 24000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 2941.029176045751,
+        "dist_facility_m": 2069.5525030439653,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.45089909115536,
+          28.77087901917379
+        ]
+      },
+      "properties": {
+        "id": "refd_c008009",
+        "category": "reference_domestic",
+        "utm_x": 446399.649701516,
+        "utm_y": 3182725.0300549963,
+        "local_x": 27000.0,
+        "local_y": 24000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 5623.067999370719,
+        "dist_facility_m": 4629.76724261543,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.48163108329518,
+          28.77100042813911
+        ]
+      },
+      "properties": {
+        "id": "refd_c008010",
+        "category": "reference_domestic",
+        "utm_x": 449399.649701516,
+        "utm_y": 3182725.0300549963,
+        "local_x": 30000.0,
+        "local_y": 24000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 8260.326762071752,
+        "dist_facility_m": 7208.276547797001,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.20484574042199,
+          28.796732288207266
+        ]
+      },
+      "properties": {
+        "id": "refd_c009001",
+        "category": "reference_domestic",
+        "utm_x": 422399.649701516,
+        "utm_y": 3185725.0300549963,
+        "local_x": 3000.0,
+        "local_y": 27000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 3467.458061640203,
+        "dist_facility_m": 10323.60342568603,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.23558380167735,
+          28.796909808713284
+        ]
+      },
+      "properties": {
+        "id": "refd_c009002",
+        "category": "reference_domestic",
+        "utm_x": 425399.649701516,
+        "utm_y": 3185725.0300549963,
+        "local_x": 6000.0,
+        "local_y": 27000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 778.5904134101836,
+        "dist_facility_m": 8341.0031755247,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.26632213488422,
+          28.79708033291394
+        ]
+      },
+      "properties": {
+        "id": "refd_c009003",
+        "category": "reference_domestic",
+        "utm_x": 428399.649701516,
+        "utm_y": 3185725.0300549963,
+        "local_x": 9000.0,
+        "local_y": 27000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 715.4251807860682,
+        "dist_facility_m": 6024.642627394804,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.29706072911084,
+          28.797243860586953
+        ]
+      },
+      "properties": {
+        "id": "refd_c009004",
+        "category": "reference_domestic",
+        "utm_x": 431399.649701516,
+        "utm_y": 3185725.0300549963,
+        "local_x": 12000.0,
+        "local_y": 27000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 1295.7826331595977,
+        "dist_facility_m": 4505.893425450668,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.32779957342484,
+          28.79740039151915
+        ]
+      },
+      "properties": {
+        "id": "refd_c009005",
+        "category": "reference_domestic",
+        "utm_x": 434399.649701516,
+        "utm_y": 3185725.0300549963,
+        "local_x": 15000.0,
+        "local_y": 27000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 1791.7812560682928,
+        "dist_facility_m": 4016.1143850234093,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.35853865689339,
+          28.797549925506516
+        ]
+      },
+      "properties": {
+        "id": "refd_c009006",
+        "category": "reference_domestic",
+        "utm_x": 437399.649701516,
+        "utm_y": 3185725.0300549963,
+        "local_x": 18000.0,
+        "local_y": 27000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 770.7119548347774,
+        "dist_facility_m": 2351.0840298404396,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.3892779685831,
+          28.79769246235409
+        ]
+      },
+      "properties": {
+        "id": "refd_c009007",
+        "category": "reference_domestic",
+        "utm_x": 440399.649701516,
+        "utm_y": 3185725.0300549963,
+        "local_x": 21000.0,
+        "local_y": 27000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 3028.687184375115,
+        "dist_facility_m": 1564.5258442425695,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.42001749756008,
+          28.797828001876077
+        ]
+      },
+      "properties": {
+        "id": "refd_c009008",
+        "category": "reference_domestic",
+        "utm_x": 443399.649701516,
+        "utm_y": 3185725.0300549963,
+        "local_x": 24000.0,
+        "local_y": 27000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 4817.221716783424,
+        "dist_facility_m": 3938.5378168587813,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.45075723289001,
+          28.797956543895797
+        ]
+      },
+      "properties": {
+        "id": "refd_c009009",
+        "category": "reference_domestic",
+        "utm_x": 446399.649701516,
+        "utm_y": 3185725.0300549963,
+        "local_x": 27000.0,
+        "local_y": 27000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 7056.361156759,
+        "dist_facility_m": 6310.548510574652,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.48149716363807,
+          28.798078088245664
+        ]
+      },
+      "properties": {
+        "id": "refd_c009010",
+        "category": "reference_domestic",
+        "utm_x": 449399.649701516,
+        "utm_y": 3185725.0300549963,
+        "local_x": 30000.0,
+        "local_y": 27000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 9645.333691540898,
+        "dist_facility_m": 8718.93517908621,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.20464009910643,
+          28.823808339298775
+        ]
+      },
+      "properties": {
+        "id": "refd_c010001",
+        "category": "reference_domestic",
+        "utm_x": 422399.649701516,
+        "utm_y": 3188725.0300549963,
+        "local_x": 3000.0,
+        "local_y": 30000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 5002.090017067489,
+        "dist_facility_m": 12517.966287238429,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.23538610785664,
+          28.823986057634805
+        ]
+      },
+      "properties": {
+        "id": "refd_c010002",
+        "category": "reference_domestic",
+        "utm_x": 425399.649701516,
+        "utm_y": 3188725.0300549963,
+        "local_x": 6000.0,
+        "local_y": 30000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 3683.8203962261814,
+        "dist_facility_m": 10266.683623062754,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.26613238885635,
+          28.82415677186936
+        ]
+      },
+      "properties": {
+        "id": "refd_c010003",
+        "category": "reference_domestic",
+        "utm_x": 428399.649701516,
+        "utm_y": 3188725.0300549963,
+        "local_x": 9000.0,
+        "local_y": 30000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 3701.4876007945045,
+        "dist_facility_m": 8450.535449884932,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.29687893116183,
+          28.824320481779843
+        ]
+      },
+      "properties": {
+        "id": "refd_c010004",
+        "category": "reference_domestic",
+        "utm_x": 431399.649701516,
+        "utm_y": 3188725.0300549963,
+        "local_x": 12000.0,
+        "local_y": 30000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 4070.35560048979,
+        "dist_facility_m": 7444.347262417231,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.32762572382873,
+          28.824477187152777
+        ]
+      },
+      "properties": {
+        "id": "refd_c010005",
+        "category": "reference_domestic",
+        "utm_x": 434399.649701516,
+        "utm_y": 3188725.0300549963,
+        "local_x": 15000.0,
+        "local_y": 30000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 4268.174897897304,
+        "dist_facility_m": 6549.229397683562,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.35837275591226,
+          28.82462688778383
+        ]
+      },
+      "properties": {
+        "id": "refd_c010006",
+        "category": "reference_domestic",
+        "utm_x": 437399.649701516,
+        "utm_y": 3188725.0300549963,
+        "local_x": 18000.0,
+        "local_y": 30000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 3768.3334964979153,
+        "dist_facility_m": 4670.390851461443,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.38912001646703,
+          28.824769583477785
+        ]
+      },
+      "properties": {
+        "id": "refd_c010007",
+        "category": "reference_domestic",
+        "utm_x": 440399.649701516,
+        "utm_y": 3188725.0300549963,
+        "local_x": 21000.0,
+        "local_y": 30000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 4774.253829199438,
+        "dist_facility_m": 4328.1284300892585,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.4198674945472,
+          28.82490527404857
+        ]
+      },
+      "properties": {
+        "id": "refd_c010008",
+        "category": "reference_domestic",
+        "utm_x": 443399.649701516,
+        "utm_y": 3188725.0300549963,
+        "local_x": 24000.0,
+        "local_y": 30000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 7026.510571132609,
+        "dist_facility_m": 5801.1068520825465,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.45061517920642,
+          28.82503395931924
+        ]
+      },
+      "properties": {
+        "id": "refd_c010009",
+        "category": "reference_domestic",
+        "utm_x": 446399.649701516,
+        "utm_y": 3188725.0300549963,
+        "local_x": 27000.0,
+        "local_y": 30000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 9050.596570860635,
+        "dist_facility_m": 8149.957675552036,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.48136305949798,
+          28.825155639121963
+        ]
+      },
+      "properties": {
+        "id": "refd_c010010",
+        "category": "reference_domestic",
+        "utm_x": 449399.649701516,
+        "utm_y": 3188725.0300549963,
+        "local_x": 30000.0,
+        "local_y": 30000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": true,
+        "dist_road_m": 11264.094067206304,
+        "dist_facility_m": 10552.86678802383,
+        "on_or_near_road": false,
+        "hypothetical": false,
+        "available_default": true,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.20648071307596,
+          28.580119925586125
+        ]
+      },
+      "properties": {
+        "id": "refh_c001001",
+        "category": "reference_hypothetical",
+        "utm_x": 422399.649701516,
+        "utm_y": 3161725.0300549963,
+        "local_x": 3000.0,
+        "local_y": 3000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 11748.679763232236,
+        "dist_facility_m": 14801.496201864695,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.2371555868944,
+          28.580295867029246
+        ]
+      },
+      "properties": {
+        "id": "refh_c001002",
+        "category": "reference_hypothetical",
+        "utm_x": 425399.649701516,
+        "utm_y": 3161725.0300549963,
+        "local_x": 6000.0,
+        "local_y": 3000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 9013.192477592554,
+        "dist_facility_m": 12255.580878737532,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.26783073030137,
+          28.580464874394952
+        ]
+      },
+      "properties": {
+        "id": "refh_c001003",
+        "category": "reference_hypothetical",
+        "utm_x": 428399.649701516,
+        "utm_y": 3161725.0300549963,
+        "local_x": 9000.0,
+        "local_y": 3000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 6514.890720286821,
+        "dist_facility_m": 9965.652790296232,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.29850613246006,
+          28.58062694746355
+        ]
+      },
+      "properties": {
+        "id": "refh_c001004",
+        "category": "reference_hypothetical",
+        "utm_x": 431399.649701516,
+        "utm_y": 3161725.0300549963,
+        "local_x": 12000.0,
+        "local_y": 3000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 4652.952133476947,
+        "dist_facility_m": 8150.411547780953,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.32918178253311,
+          28.580782086024314
+        ]
+      },
+      "properties": {
+        "id": "refh_c001005",
+        "category": "reference_hypothetical",
+        "utm_x": 434399.649701516,
+        "utm_y": 3161725.0300549963,
+        "local_x": 15000.0,
+        "local_y": 3000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 3633.3457327238557,
+        "dist_facility_m": 7179.427641508977,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.3598576696826,
+          28.580930289875575
+        ]
+      },
+      "properties": {
+        "id": "refh_c001006",
+        "category": "reference_hypothetical",
+        "utm_x": 437399.649701516,
+        "utm_y": 3161725.0300549963,
+        "local_x": 18000.0,
+        "local_y": 3000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 4070.0523093143634,
+        "dist_facility_m": 7216.9750652317525,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.39053378307014,
+          28.58107155882464
+        ]
+      },
+      "properties": {
+        "id": "refh_c001007",
+        "category": "reference_hypothetical",
+        "utm_x": 440399.649701516,
+        "utm_y": 3161725.0300549963,
+        "local_x": 21000.0,
+        "local_y": 3000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 3231.93377124034,
+        "dist_facility_m": 6842.083830541516,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.42121011185684,
+          28.581205892687862
+        ]
+      },
+      "properties": {
+        "id": "refh_c001008",
+        "category": "reference_hypothetical",
+        "utm_x": 443399.649701516,
+        "utm_y": 3161725.0300549963,
+        "local_x": 24000.0,
+        "local_y": 3000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 3311.7224538863557,
+        "dist_facility_m": 6787.462889961023,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.45188664520334,
+          28.581333291290587
+        ]
+      },
+      "properties": {
+        "id": "refh_c001009",
+        "category": "reference_hypothetical",
+        "utm_x": 446399.649701516,
+        "utm_y": 3161725.0300549963,
+        "local_x": 27000.0,
+        "local_y": 3000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 3384.417485509765,
+        "dist_facility_m": 6711.09596938427,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.48256337226984,
+          28.581453754467184
+        ]
+      },
+      "properties": {
+        "id": "refh_c001010",
+        "category": "reference_hypothetical",
+        "utm_x": 449399.649701516,
+        "utm_y": 3161725.0300549963,
+        "local_x": 30000.0,
+        "local_y": 3000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 4986.763152731101,
+        "dist_facility_m": 7874.51368263295,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.2062773261946,
+          28.607196854693235
+        ]
+      },
+      "properties": {
+        "id": "refh_c002001",
+        "category": "reference_hypothetical",
+        "utm_x": 422399.649701516,
+        "utm_y": 3164725.0300549963,
+        "local_x": 3000.0,
+        "local_y": 6000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 11033.007097876505,
+        "dist_facility_m": 13616.593453685424,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.23696006039168,
+          28.607372993172966
+        ]
+      },
+      "properties": {
+        "id": "refh_c002002",
+        "category": "reference_hypothetical",
+        "utm_x": 425399.649701516,
+        "utm_y": 3164725.0300549963,
+        "local_x": 6000.0,
+        "local_y": 6000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 8058.12683450327,
+        "dist_facility_m": 10794.748266838407,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.26764306447063,
+          28.607542189810435
+        ]
+      },
+      "properties": {
+        "id": "refh_c002003",
+        "category": "reference_hypothetical",
+        "utm_x": 428399.649701516,
+        "utm_y": 3164725.0300549963,
+        "local_x": 9000.0,
+        "local_y": 6000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 5112.687213206967,
+        "dist_facility_m": 8101.948099430954,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.29832632758287,
+          28.607704444385607
+        ]
+      },
+      "properties": {
+        "id": "refh_c002004",
+        "category": "reference_hypothetical",
+        "utm_x": 431399.649701516,
+        "utm_y": 3164725.0300549963,
+        "local_x": 12000.0,
+        "local_y": 6000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 2312.0841246023783,
+        "dist_facility_m": 5723.332584022606,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.32900983887922,
+          28.607859756687475
+        ]
+      },
+      "properties": {
+        "id": "refh_c002005",
+        "category": "reference_hypothetical",
+        "utm_x": 434399.649701516,
+        "utm_y": 3164725.0300549963,
+        "local_x": 15000.0,
+        "local_y": 6000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 789.0442435369949,
+        "dist_facility_m": 4227.470724771128,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.35969358750998,
+          28.60800812651405
+        ]
+      },
+      "properties": {
+        "id": "refh_c002006",
+        "category": "reference_hypothetical",
+        "utm_x": 437399.649701516,
+        "utm_y": 3164725.0300549963,
+        "local_x": 18000.0,
+        "local_y": 6000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 1228.4406254586622,
+        "dist_facility_m": 4483.288569044545,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.39037756262499,
+          28.60814955367239
+        ]
+      },
+      "properties": {
+        "id": "refh_c002007",
+        "category": "reference_hypothetical",
+        "utm_x": 440399.649701516,
+        "utm_y": 3164725.0300549963,
+        "local_x": 21000.0,
+        "local_y": 6000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 466.6926339367016,
+        "dist_facility_m": 3863.6973264021935,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.42106175337354,
+          28.608284037978557
+        ]
+      },
+      "properties": {
+        "id": "refh_c002008",
+        "category": "reference_hypothetical",
+        "utm_x": 443399.649701516,
+        "utm_y": 3164725.0300549963,
+        "local_x": 24000.0,
+        "local_y": 6000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 808.9800693319595,
+        "dist_facility_m": 3949.625473123349,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.45174614890449,
+          28.60841157925765
+        ]
+      },
+      "properties": {
+        "id": "refh_c002009",
+        "category": "reference_hypothetical",
+        "utm_x": 446399.649701516,
+        "utm_y": 3164725.0300549963,
+        "local_x": 27000.0,
+        "local_y": 6000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 750.0382784887516,
+        "dist_facility_m": 3816.8963839266817,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.20607365858322,
+          28.634273674283623
+        ]
+      },
+      "properties": {
+        "id": "refh_c003001",
+        "category": "reference_hypothetical",
+        "utm_x": 422399.649701516,
+        "utm_y": 3167725.0300549963,
+        "local_x": 3000.0,
+        "local_y": 9000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 8665.959012417185,
+        "dist_facility_m": 12002.776388505383,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.23676426400698,
+          28.634450009898575
+        ]
+      },
+      "properties": {
+        "id": "refh_c003002",
+        "category": "reference_hypothetical",
+        "utm_x": 425399.649701516,
+        "utm_y": 3167725.0300549963,
+        "local_x": 6000.0,
+        "local_y": 9000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 7431.377907111863,
+        "dist_facility_m": 10042.60512086105,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.26745513960654,
+          28.634619395902515
+        ]
+      },
+      "properties": {
+        "id": "refh_c003003",
+        "category": "reference_hypothetical",
+        "utm_x": 428399.649701516,
+        "utm_y": 3167725.0300549963,
+        "local_x": 9000.0,
+        "local_y": 9000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 4916.298693612822,
+        "dist_facility_m": 7068.867693980883,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.29814627452146,
+          28.634781832075102
+        ]
+      },
+      "properties": {
+        "id": "refh_c003004",
+        "category": "reference_hypothetical",
+        "utm_x": 431399.649701516,
+        "utm_y": 3167725.0300549963,
+        "local_x": 12000.0,
+        "local_y": 9000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 2225.7639226581045,
+        "dist_facility_m": 4133.263037415917,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.32883765789082,
+          28.63493731820502
+        ]
+      },
+      "properties": {
+        "id": "refh_c003005",
+        "category": "reference_hypothetical",
+        "utm_x": 434399.649701516,
+        "utm_y": 3167725.0300549963,
+        "local_x": 15000.0,
+        "local_y": 9000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 132.79940490140476,
+        "dist_facility_m": 1482.84732792378,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.35952927885306,
+          28.635085854089983
+        ]
+      },
+      "properties": {
+        "id": "refh_c003006",
+        "category": "reference_hypothetical",
+        "utm_x": 437399.649701516,
+        "utm_y": 3167725.0300549963,
+        "local_x": 18000.0,
+        "local_y": 9000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 78.88758194667938,
+        "dist_facility_m": 2305.1700716851096,
+        "on_or_near_road": true,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.42091319010777,
+          28.635362074361176
+        ]
+      },
+      "properties": {
+        "id": "refh_c003008",
+        "category": "reference_hypothetical",
+        "utm_x": 443399.649701516,
+        "utm_y": 3167725.0300549963,
+        "local_x": 24000.0,
+        "local_y": 9000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 76.33137690784912,
+        "dist_facility_m": 1769.0195796801177,
+        "on_or_near_road": true,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.20586970993612,
+          28.661350384289907
+        ]
+      },
+      "properties": {
+        "id": "refh_c004001",
+        "category": "reference_hypothetical",
+        "utm_x": 422399.649701516,
+        "utm_y": 3170725.0300549963,
+        "local_x": 3000.0,
+        "local_y": 12000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 6214.16720976655,
+        "dist_facility_m": 9634.22711701314,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.23656819744639,
+          28.66152691713884
+        ]
+      },
+      "properties": {
+        "id": "refh_c004002",
+        "category": "reference_hypothetical",
+        "utm_x": 425399.649701516,
+        "utm_y": 3170725.0300549963,
+        "local_x": 6000.0,
+        "local_y": 12000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 4580.748149556992,
+        "dist_facility_m": 7897.171496398924,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.26726695542696,
+          28.661696492604136
+        ]
+      },
+      "properties": {
+        "id": "refh_c004003",
+        "category": "reference_hypothetical",
+        "utm_x": 428399.649701516,
+        "utm_y": 3170725.0300549963,
+        "local_x": 9000.0,
+        "local_y": 12000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 3693.180708985303,
+        "dist_facility_m": 6782.941458328467,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.29796597300556,
+          28.66185911046512
+        ]
+      },
+      "properties": {
+        "id": "refh_c004004",
+        "category": "reference_hypothetical",
+        "utm_x": 431399.649701516,
+        "utm_y": 3170725.0300549963,
+        "local_x": 12000.0,
+        "local_y": 12000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 1149.6969345184623,
+        "dist_facility_m": 4405.8132967254105,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.3286652393094,
+          28.66201477051017
+        ]
+      },
+      "properties": {
+        "id": "refh_c004005",
+        "category": "reference_hypothetical",
+        "utm_x": 434399.649701516,
+        "utm_y": 3170725.0300549963,
+        "local_x": 15000.0,
+        "local_y": 12000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 78.47786941262007,
+        "dist_facility_m": 2127.4782412669856,
+        "on_or_near_road": true,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.20566547994697,
+          28.688426984644778
+        ]
+      },
+      "properties": {
+        "id": "refh_c005001",
+        "category": "reference_hypothetical",
+        "utm_x": 422399.649701516,
+        "utm_y": 3173725.0300549963,
+        "local_x": 3000.0,
+        "local_y": 15000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 4429.564898835841,
+        "dist_facility_m": 7718.161908895168,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.23637186041542,
+          28.688603714826613
+        ]
+      },
+      "properties": {
+        "id": "refh_c005002",
+        "category": "reference_hypothetical",
+        "utm_x": 425399.649701516,
+        "utm_y": 3173725.0300549963,
+        "local_x": 6000.0,
+        "local_y": 15000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 1998.6535109504748,
+        "dist_facility_m": 5396.017860725132,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.26707851164925,
+          28.688773479848294
+        ]
+      },
+      "properties": {
+        "id": "refh_c005003",
+        "category": "reference_hypothetical",
+        "utm_x": 428399.649701516,
+        "utm_y": 3173725.0300549963,
+        "local_x": 9000.0,
+        "local_y": 15000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 1641.5240269024976,
+        "dist_facility_m": 4082.155589221085,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.29778542276433,
+          28.6889362794888
+        ]
+      },
+      "properties": {
+        "id": "refh_c005004",
+        "category": "reference_hypothetical",
+        "utm_x": 431399.649701516,
+        "utm_y": 3173725.0300549963,
+        "local_x": 12000.0,
+        "local_y": 15000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 410.0126949843802,
+        "dist_facility_m": 3315.9896677101365,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.20546096830881,
+          28.715503475281018
+        ]
+      },
+      "properties": {
+        "id": "refh_c006001",
+        "category": "reference_hypothetical",
+        "utm_x": 422399.649701516,
+        "utm_y": 3176725.0300549963,
+        "local_x": 3000.0,
+        "local_y": 18000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 3435.314828784499,
+        "dist_facility_m": 6657.455547102761,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.23617525261898,
+          28.715680402894854
+        ]
+      },
+      "properties": {
+        "id": "refh_c006002",
+        "category": "reference_hypothetical",
+        "utm_x": 425399.649701516,
+        "utm_y": 3176725.0300549963,
+        "local_x": 6000.0,
+        "local_y": 18000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 811.9903839957698,
+        "dist_facility_m": 3724.0703353983026,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.26688980799017,
+          28.715850357568094
+        ]
+      },
+      "properties": {
+        "id": "refh_c006003",
+        "category": "reference_hypothetical",
+        "utm_x": 428399.649701516,
+        "utm_y": 3176725.0300549963,
+        "local_x": 9000.0,
+        "local_y": 18000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 74.88166826278821,
+        "dist_facility_m": 1189.8257705806948,
+        "on_or_near_road": true,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.20525617471414,
+          28.742579856131506
+        ]
+      },
+      "properties": {
+        "id": "refh_c007001",
+        "category": "reference_hypothetical",
+        "utm_x": 422399.649701516,
+        "utm_y": 3179725.0300549963,
+        "local_x": 3000.0,
+        "local_y": 21000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 3180.9548288496667,
+        "dist_facility_m": 6861.006155905875,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.23597837376141,
+          28.742756981276596
+        ]
+      },
+      "properties": {
+        "id": "refh_c007002",
+        "category": "reference_hypothetical",
+        "utm_x": 425399.649701516,
+        "utm_y": 3179725.0300549963,
+        "local_x": 6000.0,
+        "local_y": 21000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 284.50456581216025,
+        "dist_facility_m": 4076.8113732085553,
+        "on_or_near_road": false,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.26670084416597,
+          28.742927125696756
+        ]
+      },
+      "properties": {
+        "id": "refh_c007003",
+        "category": "reference_hypothetical",
+        "utm_x": 428399.649701516,
+        "utm_y": 3179725.0300549963,
+        "local_x": 9000.0,
+        "local_y": 21000.0,
+        "in_polygon": false,
+        "in_nepal_adm0": false,
+        "dist_road_m": 35.18283427392271,
+        "dist_facility_m": 2041.4153115098711,
+        "on_or_near_road": true,
+        "hypothetical": true,
+        "available_default": false,
+        "assumption_flags": "mapped accessibility is not permission/power/security/connectivity; OSM gaps are not absence of feasible sites; sites outside the Nepal ADM0 polygon are hypothetical (international access is not assumed)"
+      }
+    }
+  ]
+}

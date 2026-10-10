@@ -1,0 +1,160 @@
+{
+  "alpha_by_noise_fraction": {
+    "0.05": 0.01,
+    "0.15": 0.01
+  },
+  "alpha_grid": [
+    0.0,
+    0.0001,
+    0.001,
+    0.01,
+    0.1,
+    1.0,
+    10.0,
+    100.0,
+    1000.0
+  ],
+  "tables": {
+    "0.05": [
+      {
+        "alpha": 0.0,
+        "criterion_mean_rmse": 1457306026.4528127,
+        "median_rmse": 0.010444600842134572,
+        "n_rows": 3780
+      },
+      {
+        "alpha": 0.0001,
+        "criterion_mean_rmse": 0.016984506633991453,
+        "median_rmse": 0.005909645424114103,
+        "n_rows": 3780
+      },
+      {
+        "alpha": 0.001,
+        "criterion_mean_rmse": 0.014178400515162982,
+        "median_rmse": 0.005631540665449993,
+        "n_rows": 3780
+      },
+      {
+        "alpha": 0.01,
+        "criterion_mean_rmse": 0.012822219020263738,
+        "median_rmse": 0.005192709457615238,
+        "n_rows": 3780
+      },
+      {
+        "alpha": 0.1,
+        "criterion_mean_rmse": 0.015718631252023354,
+        "median_rmse": 0.0065484766168552345,
+        "n_rows": 3780
+      },
+      {
+        "alpha": 1.0,
+        "criterion_mean_rmse": 0.029675033335128522,
+        "median_rmse": 0.014126403593675443,
+        "n_rows": 3780
+      },
+      {
+        "alpha": 10.0,
+        "criterion_mean_rmse": 0.06550730992489517,
+        "median_rmse": 0.05434947877116349,
+        "n_rows": 3780
+      },
+      {
+        "alpha": 100.0,
+        "criterion_mean_rmse": 0.11656545891968134,
+        "median_rmse": 0.10307862191225647,
+        "n_rows": 3780
+      },
+      {
+        "alpha": 1000.0,
+        "criterion_mean_rmse": 0.14514858721249693,
+        "median_rmse": 0.12592233094647776,
+        "n_rows": 3780
+      }
+    ],
+    "0.15": [
+      {
+        "alpha": 0.0,
+        "criterion_mean_rmse": 164733614.54473573,
+        "median_rmse": 0.019645414993903897,
+        "n_rows": 3780
+      },
+      {
+        "alpha": 0.0001,
+        "criterion_mean_rmse": 0.0268467064528625,
+        "median_rmse": 0.01369741595523193,
+        "n_rows": 3780
+      },
+      {
+        "alpha": 0.001,
+        "criterion_mean_rmse": 0.022858452896955005,
+        "median_rmse": 0.012739170029379925,
+        "n_rows": 3780
+      },
+      {
+        "alpha": 0.01,
+        "criterion_mean_rmse": 0.021332600600129425,
+        "median_rmse": 0.011524972102933061,
+        "n_rows": 3780
+      },
+      {
+        "alpha": 0.1,
+        "criterion_mean_rmse": 0.030451907538840264,
+        "median_rmse": 0.015198192842700726,
+        "n_rows": 3780
+      },
+      {
+        "alpha": 1.0,
+        "criterion_mean_rmse": 0.06359713377792349,
+        "median_rmse": 0.05207613160664803,
+        "n_rows": 3780
+      },
+      {
+        "alpha": 10.0,
+        "criterion_mean_rmse": 0.11456925513982955,
+        "median_rmse": 0.101884998863913,
+        "n_rows": 3780
+      },
+      {
+        "alpha": 100.0,
+        "criterion_mean_rmse": 0.14449454969242906,
+        "median_rmse": 0.12547909058479922,
+        "n_rows": 3780
+      },
+      {
+        "alpha": 1000.0,
+        "criterion_mean_rmse": 0.15139194398700248,
+        "median_rmse": 0.13145846702408037,
+        "n_rows": 3780
+      }
+    ]
+  },
+  "criterion": "mean over alpha-independent layouts (random + spread, every setting, standard regime), budgets, VALIDATION cases and noise reps of the total regional RMSE (study-area x time weighted, ug/m^3); lowest wins, exact ties go to the smaller alpha",
+  "units": "alpha acts in scaled units (q / q_scale, emission 1e5 ug/s, inflow 0.05 ug/m^3), prior mean 0",
+  "validation": {
+    "seed": 202,
+    "noise_seed": 2000,
+    "n_cases": 6,
+    "signal_scale_ug_m3": 0.2509620444363941,
+    "sigma_ug_m3": {
+      "0.05": 0.012548102221819705,
+      "0.15": 0.037644306665459114
+    }
+  },
+  "noise_reps": 3,
+  "n_random": 20,
+  "layout_seed": 7,
+  "budgets": [
+    1,
+    2,
+    3,
+    5,
+    8
+  ],
+  "settings": [
+    "interior_only",
+    "with_reference"
+  ],
+  "label": "Real geography; synthetic emissions and meteorology",
+  "config_hash_without_test_ensemble": "31b8f9c52f17f54bc95354adb89d2d7fde35099089daacb55bcaec84778ac717",
+  "uses_test_ensemble": false
+}

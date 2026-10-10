@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1535 tokens.
-> Generated 2026-10-10T14:29:35-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1651 tokens.
+> Generated 2026-10-10T15:35:37-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `91282a789b` (uncommitted changes)
+Git: `master` @ `4618e16556` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -25,16 +25,17 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Active & open questions
 
+- Q-007 [investigating] On the Belauri geography, do greedy layouts selected for regional reconstruction or for local/external attribution outperform random and spread layouts on independent scenarios, and does an external reference site help at equal budget?
 - Q-006 [investigating] How does the Belauri flow field respond to wind direction, outer-domain size and mesh/time-step choices when emissions and meteorology are synthetic, and how large is numerical diffusion relative to the nominal K?
 - Q-005 [investigating] Can total synthetic concentration observations separate local from external contributions, when is the decomposition unidentifiable, and does an upwind/background site help?
 - Q-004 [investigating] Is the Belauri Municipality boundary, DEM and feature set acquired from public sources verifiable, and what does it show about the surrounding terrain and national border?
 - Q-003 [investigating] Does routing every workflow through one ForwardSolver interface leave all FiPy results bit-identical, and do injected solvers reach every call?
 - Q-002 [investigating] Can sparse noisy sensors reconstruct the regional field, and do random, spread and greedy layouts differ on independent cases?
 - Q-001 [investigating] Does the FiPy forward model reproduce analytical, conservation and refinement behaviour?
-- Q-007 [open] On the Belauri geography, do greedy layouts selected for regional reconstruction or for local/external attribution outperform random and spread layouts on independent scenarios, and does an external reference site help at equal budget?
 
 ## Established findings (what we believe)
 
+- F-013 [preliminary, medium] Geographic sensor design on Belauri: greedy layouts help most at 1-3 sensors; attribution-objective layouts are not worse on total error at small budgets; external reference sites are not a clear win at equal budget (synthetic, matched) — evidence: EXP-013, RUN-0026
 - F-012 [preliminary, medium] Boundary-condition input (whole-side bases) removes only part of the error from an omitted localised external plume (synthetic) — evidence: EXP-011, RUN-0024
 - F-011 [preliminary, high] Belauri forward simulations: wind direction and numerical diffusion dominate; terrain layers are context only (real geography, synthetic emissions and meteorology) — evidence: EXP-012, RUN-0025
 - F-009 [preliminary, high] Solver routing refactor preserves every deterministic FiPy output bit-for-bit — evidence: EXP-008, RUN-0012, RUN-0013
@@ -60,9 +61,9 @@ _none_
 
 ## Needs attention (verification)
 
+- [awaiting review] F-013 Geographic sensor design on Belauri: greedy layouts help most at 1-3 sensors; attribution-objective layouts are not worse on total error at small budgets; external reference sites are not a clear win at equal budget (synthetic, matched): Agent finding awaiting an independent review
 - [awaiting review] F-012 Boundary-condition input (whole-side bases) removes only part of the error from an omitted localised external plume (synthetic): Agent finding awaiting an independent review
 - [awaiting review] F-011 Belauri forward simulations: wind direction and numerical diffusion dominate; terrain layers are context only (real geography, synthetic emissions and meteorology): Agent finding awaiting an independent review
-- [awaiting review] F-009 Solver routing refactor preserves every deterministic FiPy output bit-for-bit: Agent finding awaiting an independent review
 
 ## Active decisions
 

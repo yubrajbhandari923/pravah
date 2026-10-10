@@ -1,0 +1,21 @@
+{
+  "stages_s": {
+    "geography_s": 3.748573362827301e-07,
+    "design_validation_cases_s": 407.70388674992137,
+    "alpha_selection_s": 17.992613332811743,
+    "layouts_s": 26.887435792014003,
+    "design_scores_s": 7.397588999941945,
+    "test_cases_s": 222.8459927078802,
+    "test_evaluation_s": 18.192586333025247,
+    "figures_s": 1.5859293749090284,
+    "total_s": 708.1975437910296
+  },
+  "total_s": 708.1975437910296,
+  "peak_memory_mb": 354.271232,
+  "n_response_sets": 18,
+  "n_cases": {
+    "design": 6,
+    "validation": 6,
+    "test": 6
+  }
+}

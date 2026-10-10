@@ -1,0 +1,267 @@
+{
+  "config": {
+    "name": "geodesign",
+    "experiment": "geodesign",
+    "notes": "Stage F2a geographic sensor design. Real geography; synthetic emissions and meteorology. Matched synthetic experiment on the prepared Belauri 500 m grid (66 x 65): parameters theta = [road (local, ug/s), builtup (local, ug/s), external_patch (external, ug/s), bg (uniform inflow basis, ug/m3)]. Winds are prescribed uniform fields (courant u*dt/dx up to 0.5 at 2.5 m/s, 100 s, 500 m; the 0.3 guideline of the forward study is exceeded for the fastest winds, recorded per case in cases.csv). K, lam, H nominal. Candidate sites and layouts are a provisional simulation design, not field-validated: mapped accessibility is not permission, power, security or connectivity.",
+    "region": {
+      "manifest": "data/belauri/manifest.json",
+      "crop_buffer_m": null,
+      "study": {
+        "shapeName": "Belauri",
+        "shapeID": "92635248B27542858320702"
+      }
+    },
+    "mesh": {
+      "resolution_m": 500.0,
+      "dt_s": 100.0
+    },
+    "physics": {
+      "K": 100.0,
+      "lam": 4.6296296296296294e-05,
+      "H": 500.0,
+      "T": 28800.0,
+      "output_interval": 900.0,
+      "t_exclude": 7200.0
+    },
+    "model": {
+      "groups": [
+        "road",
+        "builtup",
+        "external"
+      ],
+      "base_amplitudes_ug_s": {
+        "road": 1500000.0,
+        "builtup": 1000000.0,
+        "external": 500000.0
+      },
+      "external_profile": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          7200.0,
+          1.0
+        ]
+      ],
+      "bg": {
+        "sides": [
+          "west",
+          "east",
+          "south",
+          "north"
+        ],
+        "profile": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            7200.0,
+            1.0
+          ]
+        ]
+      }
+    },
+    "ensemble": {
+      "amplitude_factor_range": [
+        0.5,
+        1.5
+      ],
+      "patch_factor_range": [
+        0.0,
+        2.0
+      ],
+      "bg_range": [
+        0.0,
+        0.05
+      ],
+      "speed_range": [
+        0.8,
+        2.5
+      ],
+      "n_sectors": 8,
+      "sector_half_width_deg": 15.0,
+      "two_segment_every": 3,
+      "switch_step_s": 3600.0
+    },
+    "ensembles": {
+      "design": {
+        "n_cases": 6,
+        "seed": 101,
+        "noise_seed": 1000
+      },
+      "validation": {
+        "n_cases": 6,
+        "seed": 202,
+        "noise_seed": 2000
+      },
+      "test": {
+        "n_cases": 6,
+        "seed": 303,
+        "noise_seed": 3000
+      }
+    },
+    "noise": {
+      "fractions": [
+        0.05,
+        0.15
+      ],
+      "reps": 3,
+      "obs_interval_s": 1800.0
+    },
+    "candidates": {
+      "interior_spacing_m": 1500.0,
+      "reference_spacing_m": 3000.0,
+      "reference_inset_m": 500.0,
+      "road_near_m": 100.0,
+      "facility_amenities": [
+        "school",
+        "college",
+        "kindergarten",
+        "university",
+        "hospital",
+        "clinic",
+        "doctors",
+        "health_post"
+      ]
+    },
+    "settings": {
+      "max_reference": 2,
+      "hypothetical": false
+    },
+    "methods": {
+      "budgets": [
+        1,
+        2,
+        3,
+        5,
+        8
+      ],
+      "n_random": 20,
+      "layout_seed": 7
+    },
+    "alpha": {
+      "grid": [
+        0.0,
+        0.0001,
+        0.001,
+        0.01,
+        0.1,
+        1.0,
+        10.0,
+        100.0,
+        1000.0
+      ],
+      "strong_prior": 1000.0
+    },
+    "heldout": {
+      "n_random_points": 20,
+      "random_seed": 404,
+      "block": {
+        "n_blocks_x": 3,
+        "n_blocks_y": 1,
+        "which": 2,
+        "spacing_m": 1000.0,
+        "lattice_offset_m": [
+          333.0,
+          217.0
+        ],
+        "exclusion_radius_m": 2000.0
+      }
+    },
+    "figures": {
+      "enabled": true
+    },
+    "solver": {}
+  },
+  "seeds": {
+    "design": {
+      "scenario_seed": 101,
+      "first_noise_seed": 1000,
+      "n_cases": 6
+    },
+    "validation": {
+      "scenario_seed": 202,
+      "first_noise_seed": 2000,
+      "n_cases": 6
+    },
+    "test": {
+      "scenario_seed": 303,
+      "first_noise_seed": 3000,
+      "n_cases": 6
+    },
+    "layout_seed": 7,
+    "heldout_random_seed": 404
+  },
+  "versions": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "xarray": "2026.9.0",
+    "fipy": "4.0.3",
+    "pandas": "3.0.6",
+    "matplotlib": "3.11.2",
+    "netCDF4": "1.7.4",
+    "pravah": "0.1.0"
+  },
+  "python": "3.12.7 (main, Oct  1 2024, 02:05:46) [Clang 16.0.0 (clang-1600.0.26.3)]",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "git_revision": "4618e16556cb7ec39cc9e5ff0b973399bc982458",
+  "git_dirty": true,
+  "git_diff_hash": "002de7bd7b05",
+  "git_dirty_files": [
+    "research/context/current.md",
+    ".research/events.jsonl",
+    ".research/questions/Q-007.md",
+    "src/pravah/cli.py",
+    ".research/experiments/EXP-013.md",
+    ".research/runs/RUN-0026/",
+    "configs/geodesign_robust.json",
+    "configs/geodesign_robust_smoke.json",
+    "results/geodesign/",
+    "src/pravah/geodesign_robust.py",
+    "tests/test_geodesign_robust.py"
+  ],
+  "git_dirty_n_files": 11,
+  "timestamp_utc": "2026-10-10T18:41:32.582212+00:00",
+  "extra": {
+    "experiment": "geodesign",
+    "label": "Real geography; synthetic emissions and meteorology",
+    "status": "provisional simulation design, not field-validated",
+    "manifest": "data/belauri/manifest.json",
+    "manifest_sha256": "7ff8b8b9b1615a87fcef5377c839862367c1e341b75b9902750fe162ef883970",
+    "raw_sha256": {
+      "study": "139e8622ca46c47c30ced88e09425d827fd890fa6a54b3fc2e8e3d5d2abd9c59",
+      "adm0_NPL": "fc0f32802e64cb5e9c95a11af4ad2d3589df8406476707c974c4f8bb9ee07004",
+      "osm_roads": "43ead5e2e2b5d16890b9a965313e905e76c7fb15c3297d04fd8fe2893c253724",
+      "osm_amenity": "896a4a9eba492616f78598729a7c3c0a9b6aa728ef8f2ebe08c0578009675fff"
+    },
+    "alpha_selected_sha256": "721bb53a5104eddf380de4b76fc27df367856131449e1166aaca9a0d675e576a",
+    "config_hash": "c2dd5db3af7705d7a2509737652be31cbe9a9521d15816ff5ad57df514ff8896",
+    "alpha_by_noise_fraction": {
+      "0.05": 0.01,
+      "0.15": 0.01
+    },
+    "noise_sigma_ug_m3": {
+      "design": {
+        "0.05": 0.015370246235841238,
+        "0.15": 0.04611073870752371
+      },
+      "validation": {
+        "0.05": 0.012548102221819705,
+        "0.15": 0.037644306665459114
+      },
+      "test": {
+        "0.05": 0.015817370752031802,
+        "0.15": 0.0474521122560954
+      }
+    },
+    "infeasible_budgets": {
+      "interior_only|standard": [],
+      "interior_only|block_holdout": [],
+      "with_reference|standard": [],
+      "with_reference|block_holdout": []
+    },
+    "note": "emissions, inflow, winds and noise are SYNTHETIC; layouts are greedy heuristics, never called optimal"
+  }
+}

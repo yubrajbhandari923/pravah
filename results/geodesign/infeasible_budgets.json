@@ -1,0 +1,20 @@
+{
+  "settings": [
+    "interior_only",
+    "with_reference"
+  ],
+  "budgets": [
+    1,
+    2,
+    3,
+    5,
+    8
+  ],
+  "infeasible": {
+    "interior_only|standard": {},
+    "interior_only|block_holdout": {},
+    "with_reference|standard": {},
+    "with_reference|block_holdout": {}
+  },
+  "note": "a budget is infeasible when the allowed sites (after the exclusion radius and category caps) cannot hold it; layouts are not produced for it"
+}

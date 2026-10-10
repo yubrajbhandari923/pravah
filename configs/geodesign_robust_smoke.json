@@ -1,0 +1,11 @@
+{
+  "extends": "geodesign_smoke.json",
+  "name": "geodesign_robust_smoke",
+  "experiment": "geodesign_robust",
+  "notes": "Plumbing check of the robustness study, not for scientific conclusions: the geodesign smoke profile (outer domain cropped to a 2 km buffer, T = 7200 s, 2 + 2 + 2 cases) with the boundary profile shifted within T, refinement on the cropped 250 m grid with 1 + 2 cases, budgets 1 and 3. layouts_from must be given (CLI: robust.layouts_from, set below to a smoke geodesign run). Real geography; synthetic emissions and meteorology.",
+  "robust": {
+    "layouts_from": "results/geodesign-smoke",
+    "boundary_time_profile": {"bg_profile": [[0.0, 0.0], [3600.0, 0.5], [5400.0, 1.0]]},
+    "refinement": {"enabled": true, "n_design_fine": 1, "n_test_fine": 2, "budgets": [1, 3]}
+  }
+}

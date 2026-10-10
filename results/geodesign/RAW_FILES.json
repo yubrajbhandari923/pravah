@@ -1,0 +1,12 @@
+{
+  "test_raw.csv": {
+    "bytes": 28952428,
+    "sha256": "2f537e49c7db4237518b027c7ce47dc412a80afaf73f633ae605c946430fb2d0",
+    "regenerate": "python -m pravah benchmark --config configs/geodesign.json --out results/geodesign (deterministic given seeds)"
+  },
+  "validation_raw.csv": {
+    "bytes": 30438715,
+    "sha256": "ac35b1a1a781a2b64fdc9e74d4b8059418171d3d81cc2b1d21ea9e0819f0f7e7",
+    "regenerate": "python -m pravah benchmark --config configs/geodesign.json --out results/geodesign (deterministic given seeds)"
+  }
+}
