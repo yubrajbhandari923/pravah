@@ -1,0 +1,6 @@
+{
+  "extends": "smoke.json",
+  "name": "smoke_mismatch",
+  "experiment": "mismatch",
+  "notes": "Plumbing check of the mismatch experiment on the coarse smoke problem; layouts come from a smoke benchmark run (mismatch.layouts_from, overridable). Not for scientific conclusions."
+}
