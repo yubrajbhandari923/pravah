@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import hashlib
 import importlib.metadata as md
 import json
 import math
@@ -65,6 +66,18 @@ def _git(*args: str) -> str | None:
     return r.stdout.strip() if r.returncode == 0 else None
 
 
+def _dirty_info(rev: str | None) -> dict[str, Any]:
+    """Additive: short sha256 of ``git diff HEAD`` and the list of changed/untracked files (None outside a git repo),
+    so a run from a dirty tree can be identified."""
+    if not rev:
+        return {"git_diff_hash": None, "git_dirty_files": None, "git_dirty_n_files": None}
+    diff = _git("diff", "HEAD")
+    status = _git("status", "--porcelain")
+    files = [ln[3:] for ln in status.splitlines()] if status else []
+    h = hashlib.sha256(diff.encode()).hexdigest()[:12] if diff else None
+    return {"git_diff_hash": h, "git_dirty_files": files[:200], "git_dirty_n_files": len(files)}
+
+
 def provenance(config: dict[str, Any], seeds: dict[str, Any], extra: dict[str, Any] | None = None) -> dict[str, Any]:
     rev = _git("rev-parse", "HEAD")
     status = _git("status", "--porcelain") if rev else None
@@ -76,6 +89,7 @@ def provenance(config: dict[str, Any], seeds: dict[str, Any], extra: dict[str, A
         "platform": platform.platform(),
         "git_revision": rev,
         "git_dirty": None if status is None else bool(status),
+        **_dirty_info(rev),
         "timestamp_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
         "extra": extra or {},
     }

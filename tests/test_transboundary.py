@@ -58,6 +58,50 @@ def test_named_scenarios_are_valid_on_both_domains() -> None:
     assert groups == {"L1": "local", "L2": "local", "E1": "external"}
 
 
+def test_uniform_wind_rounds_roundoff_components() -> None:
+    w = tb.uniform_wind(1.0, 180.0)[0]
+    assert w.u == -1.0 and w.v == 0.0 and not math.copysign(1.0, w.v) < 0  # sin(pi) = 1.2e-16 -> exactly +0.0
+    w = tb.uniform_wind(5.0, 90.0)[0]
+    assert w.u == 0.0 and w.v == 5.0
+
+
+def test_zero_parts_refuses_nonzero_base() -> None:
+    scn, _, _ = tb.build_scenario(SMOKE, "mixed")
+    ok = ResponseCache().get(scn)
+    tb._zero_parts(ok)
+    bg = dataclasses.replace(scn, boundary=dataclasses.replace(scn.boundary, background=0.1))
+    with pytest.raises(ValueError, match="nonzero"):
+        tb._zero_parts(ResponseCache().get(bg))
+
+
+def test_layouts_refer_to_the_same_study_relative_sites_in_a_and_b() -> None:
+    """B1 regression: sensors are declared at the same STUDY-RELATIVE sites in both domains.  A field that is a known
+    function of study-relative coordinates is read identically through the A and the B layout; the A layout applied to
+    B's field (the old bug) reads somewhere else."""
+    from pravah.observations import sample
+    from pravah.sources import cell_centres
+    a, _, _ = tb.build_scenario(SMOKE, "external_sources", "A")
+    b, _, _ = tb.build_scenario(SMOKE, "external_sources", "B")
+    assert isinstance(a.study, StudyRegion) and isinstance(b.study, StudyRegion)
+
+    def field(scn: Any) -> Any:
+        import xarray as xr
+        x, y = cell_centres(scn)
+        xs, ys = x[None, :] - scn.study.x0, y[:, None] - scn.study.y0  # study-relative coordinates
+        v = 1.0 + np.sin(xs / 3000.0) * np.cos(ys / 2500.0) + 1e-4 * xs
+        return xr.DataArray(np.stack([v, 2 * v]), dims=("time", "y", "x"), coords={"time": [0.0, 600.0], "x": x, "y": y})
+
+    la, lb = tb._layouts(SMOKE, a)["interior"], tb._layouts(SMOKE, b)["interior"]
+    ta = (0.0, 600.0)
+    ra, rb = sample(field(a), la, ta).values, sample(field(b), lb, ta).values
+    assert np.allclose(ra, rb, rtol=1e-12, atol=0)
+    assert not np.allclose(sample(field(b), la, ta).values, rb)  # A coordinates in B: different physical sites
+    # the relocation helper keeps readings and only re-declares the sites
+    obs = observe(field(b), lb, ObservationSpec(ta, 0.0, 1))
+    moved = tb._relocate(obs, la)
+    assert np.array_equal(moved.values.values, obs.values.values) and moved.layout is la
+
+
 def test_scenario_composition() -> None:
     def names(n: str) -> list[str]:
         return [p.name for p in tb.build_scenario(FULL, n)[0].param_table()]
@@ -163,7 +207,7 @@ def test_no_arrival_is_verified_by_the_model_and_not_recovered() -> None:
     rows, _ = tb._case_rows(run, "na", scn, theta, scn, lay, 0.02, {"selected": 1.0, "none": 0.0}, 40400, 2)
     df = pd.DataFrame(rows)
     assert df["flags"].str.contains("unidentifiable:E1").all()
-    assert df["flags"].str.contains("rank_deficient").all()
+    assert df["flags"].str.contains("rank_deficient").all()  # condition number is huge as well
     sel = df[df["alpha_role"] == "selected"]
     assert (sel["theta_hat_E1"] == 0.0).all()  # equals the prior (0): not recovered
     assert (sel["emission_rel_err_external"] == 1.0).all()  # the true E1 amplitude is missed completely
@@ -291,3 +335,31 @@ def test_full_smoke_run_all_studies(tmp_path: Path) -> None:
     assert {"A_E1_explicit_true_theta", "A_local_only", "A_uniform_basis", "A_sector_bases"} == set(eq["model"])
     dsz = pd.read_csv(out / "domain_size/field_difference.csv")
     assert (dsz["rmse_total_rel_to_peak"] < 0.1).all()
+    assert "moved forcing" in dsz.loc[dsz["scenario"] == "mixed", "note"].iloc[0]
+    assert "pure domain truncation" in dsz.loc[dsz["scenario"] == "external_sources", "note"].iloc[0]
+    # B1 regression: with the observation layout in the truth domain the fitted LOCAL amplitudes are close to the truth
+    # (truth L1 = 1e5, L2 = 0.7e5; reviewer's corrected numbers: L1 ~ 1.09e5, L2 ~ 6.8e4, RMSE/peak ~ 0.08-0.10)
+    fits = eq[eq["model"] != "A_E1_explicit_true_theta"]
+    assert ((fits["theta_hat_L1"] / 1e5 - 1).abs() < 0.3).all() and ((fits["theta_hat_L2"] / 0.7e5 - 1).abs() < 0.3).all()
+    assert (fits["theta_hat_L1"] > 0).all()  # the old bug returned L1 = 0 for every fit
+    assert fits["rmse_total_rel_to_peak"].between(0.05, 0.15).all()
+    # M3: two basis onsets (E1's true onset 1800 s and 3600 s); the model without a basis is fitted once
+    wb = fits[fits["model"] != "A_local_only"]
+    assert set(wb["basis_onset_s"]) == {1800.0, 3600.0} and set(wb.loc[wb["onset_matches_e1"], "basis_onset_s"]) == {1800.0}
+    assert fits.loc[fits["model"] == "A_local_only", "basis_onset_s"].isna().all()
+    u = wb[wb["model"] == "A_uniform_basis"].set_index("basis_onset_s")["rmse_total_rel_to_peak"]
+    assert u[1800.0] != u[3600.0]  # the assumed basis onset matters
+    # M1: confounded diagnostics are stored per noise level
+    conf = strict["confounded"]["by_noise_fraction"]
+    assert set(conf) == {"0.02", "0.3"} and conf["0.02"]["sigma_ug_m3"] < conf["0.3"]["sigma_ug_m3"]
+    # M2: scale sensitivity (test ensemble only); the baseline reproduces the main 'selected' rows
+    ss = pd.read_csv(out / "recovery/scale_sensitivity.csv")
+    assert set(ss["variant"]) == {"baseline", "inflow_x0.1", "inflow_x10", "emission_x0.1", "emission_x10"}
+    raw = pd.read_csv(out / "recovery/test_raw.csv")
+    main = raw[(raw["layout"] == "interior8") & (raw["alpha_role"] == "selected")].sort_values(["noise_fraction", "case", "rep"])
+    base = ss[ss["variant"] == "baseline"].sort_values(["noise_fraction", "case", "rep"])
+    assert np.allclose(main["rmse_total"].to_numpy(), base["rmse_total"].to_numpy(), rtol=1e-9)
+    assert {"rmse_total", "emission_rel_err_local", "emission_rel_err_external", "effective_rank"} <= set(ss.columns)
+    # provenance identifies a dirty tree
+    prov = json.loads((out / "provenance.json").read_text())
+    assert {"git_dirty", "git_diff_hash", "git_dirty_files"} <= set(prov)

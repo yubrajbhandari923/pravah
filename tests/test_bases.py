@@ -268,3 +268,24 @@ def test_legacy_reference_bit_identical():
     res = simulate(scenario_from_dict(cfg["scenario"]), cfg["q"])
     with xr.open_dataarray(frozen) as ref:
         assert np.array_equal(values(res), ref.values)
+
+
+def test_tangential_faces_ignore_roundoff_wind() -> None:
+    """|u.n| < 1e-12 is exactly tangential: a south basis under wind angle 180 deg (v = 1.2e-16 from sin(pi)) acts
+    identically to v = 0, and v = +1e-16 equals v = -1e-16 (no inflow through the south side in either case)."""
+    import math
+    south = (InflowBasis("s", ("south",), ((0.0, 1.0),)),)
+    v_sin = math.sin(math.pi)  # 1.2246e-16
+    assert 0 < v_sin < 1e-12
+
+    def run(v: float) -> np.ndarray:
+        sc = scen(wind=(WindSegment(0.0, -1.0, v),), bases=south, T=1800.0)
+        return np.asarray(simulate(sc, np.array([1e5, 0.05])).concentration.values)
+
+    f0, fs, fp_, fm = run(0.0), run(v_sin), run(1e-16), run(-1e-16)
+    assert np.array_equal(f0, fs) and np.array_equal(fp_, fm) and np.array_equal(f0, fp_)
+    # the south basis delivered nothing: the field equals the source-only field
+    only = scen(wind=(WindSegment(0.0, -1.0, 0.0),), T=1800.0)
+    assert np.array_equal(f0, np.asarray(simulate(only, np.array([1e5])).concentration.values))
+    # a real (non-tangential) southerly inflow does act
+    assert not np.array_equal(f0, run(0.01))

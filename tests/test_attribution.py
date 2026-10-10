@@ -286,6 +286,7 @@ def test_no_arrival_is_flagged_not_hidden(cache):
     rep0 = identifiability_report(fit0)
     assert fit0.column_norms[1] < 1e-6 * fit0.column_norms[0]
     assert "rank_deficient" in rep0["flags"] and "unidentifiable:E" in rep0["flags"]
+    assert "weakly_constrained" in rep0["flags"]
     assert "unidentifiable:L" not in rep0["flags"]
     fit1 = fit_sources(sc, o, InferenceOptions(alpha=1e-3), cache)
     assert abs(fit1.q_hat[1]) < 1e-6 * fit1.q_scale[1]  # = prior (0): the data say nothing, the estimate is not recovered
@@ -302,3 +303,14 @@ def test_collinear_sources_are_flagged(cache):
     fit = fit_sources(sc, obs_from(truth, layout), InferenceOptions(), cache)
     assert fit.column_cosines[0, 1] > 0.99
     assert "confounded:A,B" in identifiability_report(fit)["flags"]
+
+
+def test_weakly_constrained_is_separate_from_rank_deficient(cache):
+    truth = simulate(SC, THETA).concentration
+    # very large stated noise: all whitened scaled singular values fall below 1, but the problem is not singular
+    fit = fit_sources(SC, obs_from(truth, GOOD, sigma=1e3), InferenceOptions(), cache)
+    rep = identifiability_report(fit)
+    assert fit.rank == 3 and fit.condition < 1e6 and fit.effective_rank < 3
+    assert "weakly_constrained" in rep["flags"] and "rank_deficient" not in rep["flags"]
+    ok = identifiability_report(fit_sources(SC, obs_from(truth, GOOD), InferenceOptions(), cache))
+    assert "weakly_constrained" not in ok["flags"] and "rank_deficient" not in ok["flags"]

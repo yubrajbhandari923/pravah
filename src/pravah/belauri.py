@@ -728,7 +728,7 @@ def run_belauri_forward(cfg: dict[str, Any], out_dir: Path | str, overwrite: boo
     if cfg.get("plotting_only", {}).get("enabled", True):
         chk = plotting_only_check(study.region, lambda r: study.case(ref, region=r))
         tot, _ = study.direct(chk["case_b"], "plotting_only:scrambled_layers")
-        base_tot = results[ref].fields.total
+        base_tot, _ = study.direct(chk["case_a"], "plotting_only:original_layers")
         m = _metric_triplet(Fields(results[ref].fields.times, tot - results[ref].fields.external, results[ref].fields.external, tot),
                             results[ref].case, study.t_exclude)
         plot_check = {**m, "scenario_identical": chk["scenario_identical"], "max_abs_change": float(np.abs(tot - base_tot).max()),

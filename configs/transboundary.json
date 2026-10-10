@@ -58,7 +58,8 @@
       "interior+upwind": [[2000, 2500], [5000, 1500], [8000, 3000], [2000, 7000], [5000, 5500], [8000, 8000], [-4500, 1500], [-4500, 6500]],
       "interior8": [[2000, 2500], [5000, 1500], [8000, 3000], [2000, 7000], [5000, 5500], [8000, 8000], [3500, 4500], [6500, 6500]]
     },
-    "paired": [["interior8", "interior+upwind"], ["interior", "interior+upwind"]]
+    "paired": [["interior8", "interior+upwind"], ["interior", "interior+upwind"]],
+    "scale_sensitivity": {"enabled": true, "layout": "interior8", "factors": [0.1, 10.0]}
   },
   "special": {
     "enabled": true,
@@ -81,7 +82,7 @@
         "A_uniform_basis": {"sources": ["L1", "L2"], "bases": ["uniform"]},
         "A_sector_bases": {"sources": ["L1", "L2"], "bases": ["west", "south", "east", "north"]}
       },
-      "basis_onset_s": 3600.0
+      "basis_onsets_s": [3600.0, 7200.0]
     }
   }
 }

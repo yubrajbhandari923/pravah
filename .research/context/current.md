@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1484 tokens.
-> Generated 2026-10-10T13:16:40-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1396 tokens.
+> Generated 2026-10-10T13:36:09-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `54b4fb07e2` (uncommitted changes)
+Git: `master` @ `4450830c4e` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -47,13 +47,12 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Current experiments
 
-- EXP-009 [needs_review] EXP geography acquisition and verification (Belauri) — runs 7, ⚠ 3 unsynthesized
+_none_
 
 ## Active plans
 
-- PLAN-002 PRAVAH phase 2: solver interchange, external/local, Belauri geography, geographic design — 5/11 tasks done · objective: Solver interchangeability; synthetic external vs local identifiability + indoor box; real Belauri geography and forward sims; geographic sensor design
+- PLAN-002 PRAVAH phase 2: solver interchange, external/local, Belauri geography, geographic design — 6/11 tasks done · objective: Solver interchangeability; synthetic external vs local identifiability + indoor box; real Belauri geography and forward sims; geographic sensor design
   - next ready: T-017 B2: generalised inverse, attribution, indoor box, notebook 04, transboundary study (`research task context T-017`)
-  - running: T-018 C2: acquire + verify Belauri geography; geometry checks; docs/geography.md (claimed by claude-code)
   - running: T-020 E: Belauri forward scenarios, domain/mesh sensitivity, notebook 05 (claimed by claude-code)
 - PLAN-001 PRAVAH v0 baseline — 11/11 tasks done · objective: Runnable v0: forward model, inverse, sensor design, notebooks, CLI
 
@@ -62,10 +61,6 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - [awaiting review] F-010 External vs local decomposition from total observations: recoverable when well conditioned, flagged when not; boundary input cannot mimic a localised plume (synthetic): Agent finding awaiting an independent review
 - [awaiting review] F-009 Solver routing refactor preserves every deterministic FiPy output bit-for-bit: Agent finding awaiting an independent review
 - [awaiting review] F-008 Greedy layouts optimised for the matched model are not robust to model error at small budgets: Agent finding awaiting an independent review
-
-## ⚠ Needs synthesis before new experiments
-
-- EXP-009 EXP geography acquisition and verification (Belauri) (3 unsynthesized runs)
 
 ## Active decisions
 

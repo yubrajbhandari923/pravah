@@ -173,20 +173,24 @@ def identifiability_report(fit: FitResult) -> dict[str, Any]:
     """Identifiability summary with explicit flags (nothing is hidden behind a prior).
 
     Whitened, scaled columns a_j = A_j * q_scale_j / sigma (norm ``column_norm``); flags:
-    * 'rank_deficient': numerical rank < n_params, or effective rank < n_params (a direction constrained worse than one
-      q_scale at the stated noise), or condition > 1e6;
+    * 'rank_deficient': numerical rank < n_params or condition > 1e6 (the unregularised problem is singular or nearly so);
+    * 'weakly_constrained': effective rank < n_params (some direction is constrained worse than one q_scale at the stated
+      noise); this depends on the q_scale choice, so it is a statement about the scaled problem, not a singularity;
     * 'unidentifiable:<name>': column norm < 1 (the data constrain the parameter worse than one q_scale at the stated
       noise) or q_std / q_scale > 10.  With all sigma == 0 the norm is in ug/m^3 and the 1.0 threshold is not
       meaningful; use a realistic noise_std;
-    * 'confounded:<a>,<b>': |cos angle| between a_a and a_b > 0.99 (columns with negligible norm are skipped)."""
+    * 'confounded:<a>,<b>': |cos angle| between a_a and a_b > 0.99 (columns with negligible norm are skipped).  This is
+      PAIRWISE: a column lying in the span of two or more others (without being close to any one) is not flagged."""
     n = len(fit.q_hat)
     names = fit.param_names or tuple(f"p{j}" for j in range(n))
     kinds = fit.param_kinds or ("emission",) * n
     units = fit.param_units or ("",) * n
     norms = fit.column_norms
     flags: list[str] = []
-    if fit.rank < n or fit.effective_rank < n or fit.condition > COND_MAX:
+    if fit.rank < n or fit.condition > COND_MAX:
         flags.append("rank_deficient")
+    if fit.effective_rank < n:
+        flags.append("weakly_constrained")
     params = []
     for j in range(n):
         ratio = float(fit.q_std[j] / fit.q_scale[j])

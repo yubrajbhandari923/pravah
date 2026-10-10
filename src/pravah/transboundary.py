@@ -7,7 +7,9 @@ transboundary*.json`` are DEMONSTRATION values, not estimates for any place.
 
 Coordinates in the config are STUDY-RELATIVE metres (origin = south-west corner of the study region).  The simulation
 domain adds a buffer on every side (domain A: 5 km, domain B: 10 km by default) so that sources and study region keep
-the same absolute positions relative to each other and A, B hold the same physical problem.
+the same positions relative to each other.  A and B hold the same physical sources and study region, but the open
+boundary (and so any boundary basis) sits 5 km vs 10 km from the study region: for scenarios without boundary bases the
+A-B difference is pure domain truncation; for scenarios with bases ('mixed') it mixes truncation with a MOVED forcing.
 
 Contents
 * ``build_scenario(cfg, name, domain, wind)`` -> (Scenario, theta_true, labels) for the named scenarios, with
@@ -15,6 +17,17 @@ Contents
 * ``draw_cases`` / ``check_ensembles``: validation / test ensembles with disjoint scenario seeds and noise-seed ranges;
 * ``run_transboundary(cfg, out_dir, ...)``: four switchable studies (fields, recovery from total observations,
   special cases, domain-size / boundary-basis equivalence); everything is written with ``pravah.io``.
+
+KNOWN inputs of the inversion (not estimated): wind (speed, direction, switch times), K, lam, H, source positions and
+widths, boundary-basis shapes AND the TEMPORAL PROFILES: E1 switches on 0 -> 1 at its true onset (3600 s in the default
+config) and every basis uses a step profile 0 -> 1 at ``basis_onset_s`` (7200 s in the scenarios; the equivalence study
+runs the basis at E1's true onset and, as a sensitivity check, at a different onset).  Only the amplitudes are
+estimated, so the recovery numbers are conditional on these profiles being right.
+
+Scales.  ``inverse.SCALE_BY_KIND`` (emission 1e5 ug/s, inflow 0.05 ug/m^3) is a numerical scaling at alpha = 0, but a
+PRIOR WIDTH when alpha > 0 (penalty alpha (a/0.05)^2 for an inflow amplitude, alpha (q/1e5)^2 for an emission), and the
+emission scale 1e5 equals the true L1 amplitude.  ``recovery/scale_sensitivity.csv`` reruns the fits with the scales
+multiplied by 0.1 and 10.
 
 Honesty rules.  The inversion sees only ``Observations`` (readings + noise std + layout) and declared model inputs
 (wind, K, lam, H, source geometry, basis shapes); origin tags are used only afterwards, to evaluate.  The ridge strength
@@ -44,7 +57,7 @@ from .config import (Boundary, Domain, GaussianSource, InflowBasis, Scenario, So
                      Transport, WindSegment)
 from .experiments import perturb_wind
 from .forward import FIPY
-from .inverse import InferenceOptions, ResponseCache, Responses, fit_sources, run_forward
+from .inverse import SCALE_BY_KIND, InferenceOptions, ResponseCache, Responses, fit_sources, run_forward
 from .io import make_run_dir, provenance, write_csv, write_json
 from .metrics import field_rmse, quadrature_weights
 from .observations import ObservationSpec, Observations, SensorLayout, observe, sample
@@ -61,10 +74,16 @@ def _say(progress: Progress, msg: str) -> None:
 
 
 # ------------------------------------------------------------------ scenarios
+def _r12(x: float) -> float:
+    """Round a direction-derived wind component to 1e-12 m/s (kills sin(pi) = 1.2e-16 style round-off)."""
+    return round(float(x), 12) + 0.0  # + 0.0 turns -0.0 into 0.0
+
+
 def uniform_wind(speed: float, toward_deg: float) -> tuple[WindSegment, ...]:
-    """One constant wind segment: ``speed`` m/s toward ``toward_deg`` (counter-clockwise from +x = east)."""
+    """One constant wind segment: ``speed`` m/s toward ``toward_deg`` (counter-clockwise from +x = east); components are
+    rounded to 1e-12 m/s so that a side that is exactly tangential is tangential in the float representation too."""
     th = math.radians(toward_deg)
-    return (WindSegment(0.0, speed * math.cos(th), speed * math.sin(th)),)
+    return (WindSegment(0.0, _r12(speed * math.cos(th)), _r12(speed * math.sin(th))),)
 
 
 def _nominal_angle(cfg: dict[str, Any], spec: dict[str, Any]) -> float:
@@ -189,7 +208,7 @@ def draw_cases(cfg: dict[str, Any], base: Scenario, theta0: np.ndarray, n: int, 
     def draw_wind() -> tuple[float, float]:
         sp = rng.uniform(*e["speed_range"])
         th = th0 + math.radians(rng.uniform(-e["direction_spread_deg"], e["direction_spread_deg"]))
-        return float(sp * math.cos(th)), float(sp * math.sin(th))
+        return _r12(sp * math.cos(th)), _r12(sp * math.sin(th))
 
     out = []
     for i in range(n):
@@ -249,7 +268,10 @@ def _arr(da: xr.DataArray) -> np.ndarray:
 
 
 def _zero_parts(resp: Responses) -> dict[str, np.ndarray]:
-    """base_parts for scenarios with zero initial field and zero static background (all scenarios here)."""
+    """base_parts for scenarios with zero initial field and zero static background (all scenarios here).  Raises if the
+    response has a nonzero base, because then the tags would no longer sum to the total."""
+    if np.any(resp.base):
+        raise ValueError("scenario has a nonzero initial field or background: _zero_parts would lose it from the tags")
     z = np.zeros_like(resp.base)
     return {"initial": z, "background": z}
 
@@ -374,10 +396,21 @@ def _study_peak(contrib: dict[str, xr.DataArray], scn: Scenario, t_exclude: floa
     return float(_arr(total_field(contrib))[times >= t_exclude][:, w > 0].max())
 
 
+def _scaled(model: Scenario, emission_mult: float, inflow_mult: float) -> tuple[float, ...] | None:
+    """q_scale per parameter = default SCALE_BY_KIND x multiplier of its kind; None when both multipliers are 1."""
+    if emission_mult == 1.0 and inflow_mult == 1.0:
+        return None
+    mult = {"emission": emission_mult, "inflow": inflow_mult}
+    return tuple(SCALE_BY_KIND[p.kind] * mult[p.kind] for p in model.param_table())
+
+
 def _fit_and_score(run: _Run, model: Scenario, truth: Scenario, theta_true: np.ndarray,
-                   truth_contrib: dict[str, xr.DataArray], obs: Observations, alpha: float) -> dict[str, Any]:
-    """Fit on Observations only, then evaluate against the truth tags (the inversion never sees them)."""
-    fit = fit_sources(model, obs, InferenceOptions(alpha=alpha, solver=run.solver), run.cache)
+                   truth_contrib: dict[str, xr.DataArray], obs: Observations, alpha: float,
+                   emission_mult: float = 1.0, inflow_mult: float = 1.0) -> dict[str, Any]:
+    """Fit on Observations only, then evaluate against the truth tags (the inversion never sees them).  The multipliers
+    scale the default per-kind q_scale (prior width when alpha > 0; see the module docstring)."""
+    fit = fit_sources(model, obs, InferenceOptions(alpha=alpha, solver=run.solver,
+                                                   q_scale=_scaled(model, emission_mult, inflow_mult)), run.cache)
     resp = _get_resp(run.cache, model, run.solver)
     est = contributions(resp, fit.q_hat, _zero_parts(resp))
     ce = component_errors(est, truth_contrib, model, run.t_exclude)
@@ -697,10 +730,38 @@ def _study_recovery(run: _Run) -> None:
     traw = pd.DataFrame(trows)
     run.tim["recovery_test_fits_s"] = time.perf_counter() - t0
     write_csv(d2 / "test_raw.csv", traw)
+    ss = rec.get("scale_sensitivity", {})
+    if ss.get("enabled", True):
+        _scale_sensitivity(run, tb, layouts[ss.get("layout", "interior8")], ss.get("layout", "interior8"), tscale, frozen,
+                           [float(x) for x in ss.get("factors", [0.1, 10.0])], fractions, reps, seeds["test_noise_seed"], d2)
     summ, paired = summarise_recovery(traw, [tuple(p) for p in rec["paired"]])
     write_csv(d2 / "summary.csv", summ)
     write_csv(d2 / "paired.csv", paired)
     _recovery_figures(run, pd.DataFrame([{"noise_fraction": float(k), **r} for k, t in tables.items() for r in t]), summ, selected)
+
+
+def _scale_sensitivity(run: _Run, tb: list[_Built], layout: SensorLayout, layout_name: str, tscale: float,
+                       frozen: dict[str, Any], factors: list[float], fractions: list[float], reps: int, noise_seed0: int,
+                       d2: Path) -> None:
+    """TEST ensemble only: refit ``layout_name`` at each noise level with the emission and then the inflow q_scale
+    multiplied by each factor (alpha as selected at the baseline scales, NOT reselected).  Same noise draws as the main
+    test fits, so the baseline rows reproduce the 'selected' rows of ``test_raw.csv``."""
+    _say(run.progress, "recovery: scale sensitivity")
+    variants = [("baseline", 1.0, 1.0)] + [(f"{kind}_x{fac:g}", fac if kind == "emission" else 1.0,
+                                           fac if kind == "inflow" else 1.0)
+                                          for kind in ("inflow", "emission") for fac in factors]
+    rows = []
+    for f in fractions:
+        sigma, alpha = f * tscale, float(frozen[f"{f:g}"])
+        for i, b in enumerate(tb):
+            for r in range(reps):
+                obs = _observation(b, layout, sigma, noise_seed0 + i * reps + r, run)
+                for name, em, inf in variants:
+                    row = _fit_and_score(run, b.case.scenario, b.case.scenario, b.case.theta, b.contrib, obs, alpha, em, inf)
+                    row.update({"variant": name, "emission_scale_mult": em, "inflow_scale_mult": inf, "layout": layout_name,
+                                "case": b.case.name, "rep": r, "noise_fraction": f, "alpha_role": "selected"})
+                    rows.append(row)
+    write_csv(d2 / "scale_sensitivity.csv", pd.DataFrame(rows))
 
 
 RECOVERY_METRICS = ("rmse_total", "rmse_local", "rmse_external", "f_ext_error", "emission_rel_err_local",
@@ -716,12 +777,13 @@ def summarise_recovery(raw: pd.DataFrame, pairs: list[tuple[str, str]]) -> tuple
     """Per (layout, noise_fraction, alpha_role): n, mean, median, sd of each metric (|f_ext_error| for the fraction);
     paired differences (second layout minus first) on identical (case, rep, noise_fraction, alpha_role) rows."""
     df: Any = raw.copy()
+    metrics = list(RECOVERY_METRICS) + sorted(c for c in raw.columns if c.startswith("inflow_abs_err_ug_m3_"))
     df["f_ext_error"] = _num(df["f_ext_error"]).abs()
     rows = []
     for key, g in df.groupby(["layout", "noise_fraction", "alpha_role"]):  # key: tuple
         row: dict[str, Any] = dict(zip(["layout", "noise_fraction", "alpha_role"], key))
         row["n_rows"] = len(g)
-        for m in RECOVERY_METRICS:
+        for m in metrics:
             v = _num(g[m])
             row.update({f"{m}_mean": v.mean(), f"{m}_median": v.median(), f"{m}_sd": v.std(ddof=1) if v.notna().sum() > 1 else np.nan,
                         f"{m}_n_defined": int(v.notna().sum())})
@@ -735,7 +797,7 @@ def summarise_recovery(raw: pd.DataFrame, pairs: list[tuple[str, str]]) -> tuple
             row = {"layout_a": a, "layout_b": b, "noise_fraction": f, "alpha_role": role, "n_pairs": len(g),
                    "n_sensors_a": int(g["n_sensors_a"].iloc[0]), "n_sensors_b": int(g["n_sensors_b"].iloc[0]),
                    "equal_budget": bool(g["n_sensors_a"].iloc[0] == g["n_sensors_b"].iloc[0]), "spread_label": SD_LABEL}
-            for m in RECOVERY_METRICS:
+            for m in metrics:
                 d = _num(g[f"{m}_b"]) - _num(g[f"{m}_a"])
                 row.update({f"{m}_diff_mean": d.mean(), f"{m}_diff_sd": d.std(ddof=1) if d.notna().sum() > 1 else np.nan,
                             f"{m}_n_b_lower": int((d < 0).sum())})
@@ -808,17 +870,20 @@ def _study_special(run: _Run) -> None:
     _say(run.progress, "special: confounded")
     scn, theta, _ = build_scenario(cfg, "confounded", "A")
     rows = []
-    det: dict[str, Any] = {}
+    by_noise: dict[str, Any] = {}
+    truth_da = run_forward(FIPY, scn, theta, run.solver).concentration
     for cf in cfracs:
-        r_, det = _case_rows(run, "confounded", scn, theta, scn, c_layout, cf, _special_alphas(run, cf), next_seed(), reps)
+        cseed = next_seed()
+        r_, det = _case_rows(run, "confounded", scn, theta, scn, c_layout, cf, _special_alphas(run, cf), cseed, reps)
         rows += r_
+        # diagnostics of the FIRST noise draw of THIS noise level (alpha = 0); one entry per noise level
+        fit0 = fit_sources(scn, observe(truth_da, c_layout, ObservationSpec(_obs_times(cfg), det["sigma_ug_m3"], cseed)),
+                           InferenceOptions(alpha=0.0, solver=run.solver), run.cache)
+        by_noise[f"{cf:g}"] = {**det, "noise_seed": cseed, "identifiability_alpha0": identifiability_report(fit0),
+                               "column_cosines": fit0.column_cosines.tolist(), "param_names": list(fit0.param_names)}
     conf: Any = pd.DataFrame(rows)
     write_csv(d3 / "confounded.csv", conf)
-    fit0 = fit_sources(scn, observe(run_forward(FIPY, scn, theta, run.solver).concentration, c_layout,
-                                    ObservationSpec(_obs_times(cfg), det["sigma_ug_m3"], seed0)),
-                       InferenceOptions(alpha=0.0, solver=run.solver), run.cache)
-    details["confounded"] = {**det, "identifiability_alpha0": identifiability_report(fit0),
-                             "column_cosines": fit0.column_cosines.tolist(), "param_names": list(fit0.param_names)}
+    details["confounded"] = {"by_noise_fraction": by_noise}
     # --- no arrival (verified with the model)
     _say(run.progress, "special: no_arrival")
     scn, theta, labels = build_scenario(cfg, "no_arrival", "A")
@@ -894,6 +959,7 @@ def _study_domain(run: _Run) -> None:
         blocks, ext_blocks, fe = {}, {}, {}
         for dom in ("A", "B"):
             scn, theta, _ = build_scenario(cfg, nm, dom)
+            scn_has_bases = bool(scn.boundary.bases)
             resp = _get_resp(run.cache, scn, run.solver)
             c = contributions(resp, theta, _zero_parts(resp))
             blocks[dom] = _study_block(total_field(c), scn)
@@ -905,7 +971,10 @@ def _study_domain(run: _Run) -> None:
         re = _block_rmse(ext_blocks["A"], ext_blocks["B"], times, run.t_exclude)
         rows.append({"scenario": nm, "rmse_total_A_vs_B": rm, "peak_B_study_ug_m3": peak, "rmse_total_rel_to_peak": rm / peak,
                      "rmse_external_A_vs_B": re, "external_fraction_A": fe["A"], "external_fraction_B": fe["B"],
-                     "note": "same physical sources; the open boundary is 5 km (A) vs 10 km (B) from the study region"})
+                     "note": ("same sources and study region; the open boundary is 5 km (A) vs 10 km (B) from it: pure domain "
+                              "truncation" if not scn_has_bases else
+                              "same sources and study region, but the boundary basis sits at the domain edge (5 km vs 10 km "
+                              "away): truncation mixed with a moved forcing")})
         fields[nm] = (blocks["A"], blocks["B"])
     write_csv(d4 / "field_difference.csv", pd.DataFrame(rows))
     fig, axes = plt.subplots(len(fields), 3, figsize=(10, 3.2 * len(fields)), squeeze=False)
@@ -923,10 +992,29 @@ def _study_domain(run: _Run) -> None:
         _equivalence(run, eq)
 
 
+def _e1_true_onset(cfg: dict[str, Any]) -> float:
+    """First time at which E1's configured emission profile is positive (its true onset)."""
+    prof = _profile(cfg["sources"]["E1"].get("onset", ((0.0, 1.0),)))
+    return next(t for t, v in prof if v > 0)
+
+
+def _relocate(obs: Observations, layout: SensorLayout) -> Observations:
+    """The same readings, declared at the sites ``layout`` (the model's coordinates of the same physical sites)."""
+    vals = obs.values.assign_coords(x=("sensor", np.asarray(layout.x, dtype=float)),
+                                    y=("sensor", np.asarray(layout.y, dtype=float)))
+    return Observations(vals, obs.noise_std, layout, obs.times)
+
+
 def _equivalence(run: _Run, eq: dict[str, Any]) -> None:
-    """The SAME physical external source E1 is (i) explicit in domain B (truth) and (ii) represented by boundary-basis
-    inflow in domain A, fitted to synthetic study observations of (i).  An APPROXIMATION study: E1 is never present in the
-    fitted model, and each basis carries ``represents`` = E1's footprint, so no plume is counted twice."""
+    """The SAME physical external source E1 is (i) explicit in domain B (the TRUTH) and (ii) represented by whole-side
+    boundary-basis inflow in domain A, fitted to synthetic study observations of (i).  An APPROXIMATION study: E1 is
+    never present in the fitted model, and each basis carries ``represents`` = E1's footprint, so no plume is counted
+    twice.  The sensors sit at the same STUDY-RELATIVE sites in both domains: the observations are sampled from the
+    truth with the layout shifted by B's study origin, and declared to the fit at A's coordinates of the same sites.
+
+    The basis temporal profile is a KNOWN input: it is run at each onset of ``eq['basis_onsets_s']``; the one equal to
+    E1's true onset (3600 s) gives the basis the true timing, any other onset measures the sensitivity to that
+    assumption."""
     cfg = run.cfg
     d4 = run.sub("domain_size")
     _say(run.progress, "domain_size: boundary-basis equivalence")
@@ -935,9 +1023,10 @@ def _equivalence(run: _Run, eq: dict[str, Any]) -> None:
     tc = contributions(tresp, theta, _zero_parts(tresp))
     tda = run_forward(FIPY, truth, theta, run.solver).concentration
     ref_a, ref_theta, _ = build_scenario(cfg, eq["truth_scenario"], "A")
-    layout = _layouts(cfg, ref_a)[eq["layout"]]
+    layout_truth = _layouts(cfg, truth)[eq["layout"]]  # study-relative sites in B coordinates (where the truth is)
+    layout_fit = _layouts(cfg, ref_a)[eq["layout"]]  # the same sites in A coordinates (what the fit declares)
     times = _obs_times(cfg)
-    scale = float(np.max(sample(tda, layout, times).values))
+    scale = float(np.max(sample(tda, layout_truth, times).values))
     sigma = float(eq["noise_fraction"]) * scale
     a_sel = run.alpha_for(float(eq["noise_fraction"]))
     alpha, a_src = (a_sel, "frozen validation choice (recovery study)") if a_sel is not None else (
@@ -955,32 +1044,40 @@ def _equivalence(run: _Run, eq: dict[str, Any]) -> None:
     rows.append({"model": "A_E1_explicit_true_theta", "rep": 0, "rmse_total": rm, "rmse_total_rel_to_peak": rm / peak,
                  "rmse_external": _block_rmse(_study_block(external_part(rc), ref_a), tblock_ext, ttimes, run.t_exclude),
                  "alpha": None, "note": "reference: domain effect only (E1 explicit in A, true amplitudes, no fit)"})
-    bo = float(eq["basis_onset_s"])
-    for mname, spec in eq["models"].items():
-        spec = dict(spec)
-        spec["represents"] = eq["represents"]
-        model, _, _ = build_model(cfg, spec, "A")
-        model = dataclasses.replace(model, boundary=dataclasses.replace(
-            model.boundary, bases=tuple(dataclasses.replace(b, profile=((0.0, 0.0), (bo, 1.0))) for b in model.boundary.bases)))
-        if any(s.name == "E1" for s in model.sources):
-            raise ValueError("double count: E1 must not be an explicit source of a boundary-basis model")
-        resp = _get_resp(run.cache, model, run.solver)
-        for r in range(int(eq["noise_reps"])):
-            obs = observe(tda, layout, ObservationSpec(times, sigma, int(eq["noise_seed"]) + r))
-            fit = fit_sources(model, obs, InferenceOptions(alpha=float(alpha), solver=run.solver), run.cache)
-            est = contributions(resp, fit.q_hat, _zero_parts(resp))
-            mrm = _block_rmse(_study_block(total_field(est), model), tblock, ttimes, run.t_exclude)
-            ident = identifiability_report(fit)
-            row = {"model": mname, "rep": r, "rmse_total": mrm, "rmse_total_rel_to_peak": mrm / peak,
-                   "rmse_external": _block_rmse(_study_block(external_part(est), model), tblock_ext, ttimes, run.t_exclude),
-                   "alpha": float(alpha), "alpha_source": a_src, "noise_fraction": float(eq["noise_fraction"]),
-                   "sigma_ug_m3": sigma, "signal_scale_ug_m3": scale, "flags": ";".join(ident["flags"]),
-                   "effective_rank": ident["effective_rank"], "condition": ident["condition"]}
-            for j, p in enumerate(model.param_table()):
-                row[f"theta_hat_{p.name}"] = float(fit.q_hat[j])
-            rows.append(row)
-            if r == 0 and mname == "A_sector_bases":
-                fit_block = _study_block(total_field(est), model)[-1]
+    e1_onset = _e1_true_onset(cfg)
+    onsets = [float(x) for x in eq["basis_onsets_s"]]
+    if e1_onset not in onsets:
+        raise ValueError(f"basis_onsets_s must contain E1's true onset {e1_onset}")
+    for bo in onsets:
+        for mname, spec in eq["models"].items():
+            spec = dict(spec)
+            spec["represents"] = eq["represents"]
+            model, _, _ = build_model(cfg, spec, "A")
+            model = dataclasses.replace(model, boundary=dataclasses.replace(
+                model.boundary, bases=tuple(dataclasses.replace(b, profile=((0.0, 0.0), (bo, 1.0))) for b in model.boundary.bases)))
+            if any(s.name == "E1" for s in model.sources):
+                raise ValueError("double count: E1 must not be an explicit source of a boundary-basis model")
+            has_basis = bool(model.boundary.bases)
+            if not has_basis and bo != e1_onset:
+                continue  # no basis, so no onset: this model is fitted once
+            resp = _get_resp(run.cache, model, run.solver)
+            for r in range(int(eq["noise_reps"])):
+                obs = _relocate(observe(tda, layout_truth, ObservationSpec(times, sigma, int(eq["noise_seed"]) + r)), layout_fit)
+                fit = fit_sources(model, obs, InferenceOptions(alpha=float(alpha), solver=run.solver), run.cache)
+                est = contributions(resp, fit.q_hat, _zero_parts(resp))
+                mrm = _block_rmse(_study_block(total_field(est), model), tblock, ttimes, run.t_exclude)
+                ident = identifiability_report(fit)
+                row = {"model": mname, "rep": r, "basis_onset_s": bo if has_basis else None, "e1_true_onset_s": e1_onset,
+                       "onset_matches_e1": (bo == e1_onset) if has_basis else None, "rmse_total": mrm, "rmse_total_rel_to_peak": mrm / peak,
+                       "rmse_external": _block_rmse(_study_block(external_part(est), model), tblock_ext, ttimes, run.t_exclude),
+                       "alpha": float(alpha), "alpha_source": a_src, "noise_fraction": float(eq["noise_fraction"]),
+                       "sigma_ug_m3": sigma, "signal_scale_ug_m3": scale, "flags": ";".join(ident["flags"]),
+                       "effective_rank": ident["effective_rank"], "condition": ident["condition"]}
+                for j, p in enumerate(model.param_table()):
+                    row[f"theta_hat_{p.name}"] = float(fit.q_hat[j])
+                rows.append(row)
+                if r == 0 and mname == "A_sector_bases" and bo == e1_onset:
+                    fit_block = _study_block(total_field(est), model)[-1]
     write_csv(d4 / "boundary_basis_equivalence.csv", pd.DataFrame(rows))
     fig, axes = plt.subplots(1, 3, figsize=(10, 3.2))
     for ax, arr_, ttl in zip(axes, (tblock[-1], fit_block, fit_block - tblock[-1]), ("truth: E1 explicit in B", "A, sector bases (fit)", "fit - truth")):

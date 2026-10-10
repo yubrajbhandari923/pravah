@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "name": "Belauri",
-  "created_utc": "2026-10-10T17:07:49+00:00",
+  "created_utc": "2026-10-10T17:35:22+00:00",
   "boundary_status": "verified",
   "boundary": {
     "boundary_status": "verified",
@@ -58,7 +58,7 @@
   "incomplete": [],
   "warnings": [
     "OSM completeness is unknown: absent roads/buildings in the data are mapping gaps, not zero sources.",
-    "external patch centre is in no (or several) ADM0 polygons: 'international' not asserted"
+    "external patch centre lies outside the home ADM0 polygon near the shared boundary but inside no neighbour ADM0 polygon (the neighbour outline is coarse): class 'external_outside_home'; 'international' is not asserted"
   ],
   "crs": {
     "epsg": 32644,
@@ -621,7 +621,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -673,7 +673,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -725,7 +725,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -777,7 +777,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -829,7 +829,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -881,7 +881,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -933,7 +933,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -985,7 +985,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1037,7 +1037,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1088,7 +1088,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1139,7 +1139,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1193,7 +1193,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1247,7 +1247,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1301,7 +1301,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1355,7 +1355,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1407,7 +1407,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1459,7 +1459,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1511,7 +1511,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1563,7 +1563,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1615,7 +1615,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1667,7 +1667,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1719,7 +1719,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1771,7 +1771,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1822,7 +1822,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1873,7 +1873,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1927,7 +1927,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -1981,7 +1981,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -2035,7 +2035,7 @@
         "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N28_00_E080_00_DEM/Copernicus_DSM_COG_10_N28_00_E080_00_DEM.tif",
         "https://maps.mail.ru/osm/tools/overpass/api"
       ],
-      "retrieved_utc": "2026-10-10T17:07:49+00:00",
+      "retrieved_utc": "2026-10-10T17:35:22+00:00",
       "license": "Copernicus DEM GLO-30 (ESA/EU Copernicus programme licence: free use, attribution required); Creative Commons Attribution-ShareAlike 4.0 International License; ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)",
       "attribution": "(c) OpenStreetMap contributors | Contains modified Copernicus DEM GLO-30 data, (c) DLR e.V. 2010-2014 and (c) Airbus Defence and Space GmbH 2014-2018, provided under COPERNICUS by the European Union and ESA; all rights reserved | geoBoundaries gbOpen NPL ADM3; source: Open Data Nepal, Ministry of Federal Affairs and General Administration",
       "crs": "EPSG:32644",
@@ -2112,9 +2112,10 @@
     "sigma_m": 1000.0,
     "distance_to_polygon_km": 2.916222006882909,
     "origin": {
-      "class": "unclassified",
+      "class": "external_outside_home",
       "country": null,
-      "countries_containing": []
+      "distance_to_home_boundary_m": 2916.221950895782,
+      "note": "outside the home ADM0 polygon near the shared boundary; the neighbour outline is too coarse to assert containment, so 'international' is not claimed"
     }
   },
   "international_border": {

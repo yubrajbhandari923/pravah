@@ -16,6 +16,13 @@ piecewise-constant profile (its breakpoints are step-plan breakpoints).  The bud
 total, so the residual still closes to round-off.  Classification is per face and per wind segment: a wind reversal
 flips which faces (hence which bases) act.  ``Boundary.background`` acts on all inflow faces as before.
 
+Tangential faces.  A face with |u.n| < ``UN_TOL`` (1e-12 m/s, absolute) is tangential and neither inflow nor outflow:
+without this, round-off such as sin(pi) = 1.2e-16 would make a side "inflow" and give it the full 2K/h Dirichlet term.
+Wind components and stream-function face velocities below the tolerance are set to exactly 0 before use.  Note that
+the inflow coefficient (|u.n| + 2K/h) JUMPS from 0 to |u.n| + 2K/h as u.n changes sign: this is a property of the
+Dirichlet-inflow treatment (a prescribed face value), not a bug; a wind that is almost tangential to a side therefore
+has a discontinuous effect of that side's basis.
+
 Stream-function wind (``WindSegment.psi``, cell-corner values, shape (ny+1, nx+1), m^2/s).  Conventions u = d psi/dy,
 v = -d psi/dx, giving the face normal velocities  u_f[j, i] = (psi[j+1, i] - psi[j, i]) / dy  on the x-normal face
 between cells (i-1, i) of row j, and  v_f[j, i] = -(psi[j, i+1] - psi[j, i]) / dx  on the y-normal face between cells
@@ -46,6 +53,7 @@ from .sources import cell_centres, emission_profile, piecewise_value, source_fie
 fp: Any = _fipy  # FiPy is untyped; use it through Any
 
 _TOL = 1e-9  # s; times closer than this are the same breakpoint
+UN_TOL = 1e-12  # m/s, ABSOLUTE; |wind component| or |u.n| below this is treated as exactly 0 (see module docstring)
 _FIPY_VERSION = str(getattr(_fipy, "__version__", "unknown"))
 
 
@@ -86,13 +94,22 @@ def psi_face_fluxes(scenario: Scenario, psi: np.ndarray) -> tuple[np.ndarray, np
     return (p[1:, :] - p[:-1, :]) / d.dy, -(p[:, 1:] - p[:, :-1]) / d.dx
 
 
+def _snap(x: Any) -> Any:
+    """Exactly 0 where |x| < UN_TOL (round-off wind components / face velocities), else x unchanged."""
+    a = np.asarray(x, dtype=float)
+    return np.where(np.abs(a) < UN_TOL, 0.0, a)
+
+
 def _side_normal_velocities(scenario: Scenario, w: WindSegment) -> dict[str, np.ndarray]:
-    """Outward-normal velocity u.n along each boundary side (west/south: length ny/nx arrays in cell order)."""
+    """Outward-normal velocity u.n along each boundary side (west/south: length ny/nx arrays in cell order); values
+    below ``UN_TOL`` are exactly 0 (tangential)."""
     d = scenario.domain
     if w.psi is None:
-        return {"west": np.full(d.ny, -w.u), "east": np.full(d.ny, w.u),
-                "south": np.full(d.nx, -w.v), "north": np.full(d.nx, w.v)}
+        u, v = float(_snap(w.u)), float(_snap(w.v))
+        return {"west": np.full(d.ny, -u), "east": np.full(d.ny, u),
+                "south": np.full(d.nx, -v), "north": np.full(d.nx, v)}
     uf, vf = psi_face_fluxes(scenario, w.psi)
+    uf, vf = _snap(uf), _snap(vf)
     return {"west": -uf[:, 0], "east": uf[:, -1], "south": -vf[0, :], "north": vf[-1, :]}
 
 
@@ -145,6 +162,7 @@ def _psi_face_velocity(scenario: Scenario, grid: Any, psi: np.ndarray) -> np.nda
     np.add.at(seen, (np.where(xface, 0, 1), j, i), 1)
     if seen.sum() != nf or seen.max() != 1 or seen[0].sum() != (d.nx + 1) * d.ny or seen[1].sum() != d.nx * (d.ny + 1):
         raise RuntimeError("face mapping from the stream function to FiPy faces is not one-to-one")
+    uf, vf = _snap(uf), _snap(vf)
     vel = np.zeros((2, nf))
     vel[0, xface] = uf[j[xface], i[xface]]
     vel[1, ~xface] = vf[j[~xface], i[~xface]]
@@ -171,7 +189,7 @@ class _Segment:
                     tot += unit[name]
                 self.basis_s.append(tot)
         if w.psi is None:
-            face_u = fp.FaceVariable(mesh=grid, rank=1, value=[[w.u], [w.v]])
+            face_u = fp.FaceVariable(mesh=grid, rank=1, value=[[float(_snap(w.u))], [float(_snap(w.v))]])
         else:
             face_u = fp.FaceVariable(mesh=grid, rank=1, value=_psi_face_velocity(scenario, grid, w.psi))
         if not self.periodic:

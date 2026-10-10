@@ -1,7 +1,7 @@
 {
   "region": "Belauri",
   "manifest": "data/belauri/manifest.json",
-  "manifest_created_utc": "2026-10-10T17:07:49+00:00",
+  "manifest_created_utc": "2026-10-10T17:35:22+00:00",
   "boundary_status": "verified",
   "elevation_semantics": "m a.s.l. from the Copernicus GLO-30 DSM (surface model: includes canopy and buildings), EGM2008 heights; cell values are means of valid 30 m pixel centres in each cell",
   "relief_statement": "Within the domain the DSM spans 161.9 to 241.3 m (range 79.4 m at 500 m cells); inside the polygon 167.7 to 204.4 m. The domain maximum (241.3 m) lies 19.3 km NE of the centroid, on the domain edge, so terrain may keep rising outside the domain. Cells above the 90th percentile centre 11.0 km towards NNE (30 deg) of the polygon centroid. Whether higher terrain (e.g. Siwalik hills) lies beyond the domain cannot be read from this DEM window, which extends only a small margin beyond the domain; the data show a plane-fit rise of 32.4 m across the domain, toward NNE.",
@@ -303,9 +303,10 @@
     "sigma_m": 1000.0,
     "distance_to_polygon_km": 2.916222006882909,
     "origin": {
-      "class": "unclassified",
+      "class": "external_outside_home",
       "country": null,
-      "countries_containing": []
+      "distance_to_home_boundary_m": 2916.221950895782,
+      "note": "outside the home ADM0 polygon near the shared boundary; the neighbour outline is too coarse to assert containment, so 'international' is not claimed"
     },
     "label": "synthetic hypothesis"
   },
@@ -420,7 +421,7 @@
   ],
   "manifest_warnings": [
     "OSM completeness is unknown: absent roads/buildings in the data are mapping gaps, not zero sources.",
-    "external patch centre is in no (or several) ADM0 polygons: 'international' not asserted"
+    "external patch centre lies outside the home ADM0 polygon near the shared boundary but inside no neighbour ADM0 polygon (the neighbour outline is coarse): class 'external_outside_home'; 'international' is not asserted"
   ],
   "boundary_checks": [
     {

@@ -17,7 +17,7 @@ import numpy as np
 from pravah.config import (Boundary, Domain, Initial, Scenario, Times, Transport, WindSegment, load_config,
                            scenario_from_dict)
 from pravah.config import SolverOptions
-from pravah.forward import FIPY  # physics verification OF the FiPy reference: FiPy is used explicitly
+from pravah.forward import FIPY, simulate  # physics verification OF the FiPy reference: FiPy is used explicitly
 from pravah.sources import cell_centres, quadrature_ratio
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -47,7 +47,7 @@ def keff_excess(nx: int, dt: float, conv: str, T: float = 3600.0) -> tuple[float
                   boundary=Boundary("periodic"), times=Times(T, dt, T))
     x = (np.arange(nx) + 0.5) * L / nx
     k = 2 * math.pi / L
-    c = FIPY(sc, [0, 0, 0], SolverOptions(conv), initial_field=np.tile(1 + np.cos(k * x), (4, 1)))
+    c = simulate(sc, [0, 0, 0], SolverOptions(conv), initial_field=np.tile(1 + np.cos(k * x), (4, 1)))
     a = abs(np.mean(c.concentration.values[-1] * np.exp(-1j * k * x)[None, :]))
     pe = u * (L / nx) / K
     spatial = 0.5 * pe / math.tanh(0.5 * pe) - 1 if conv == "exponential" else 0.5 * pe
