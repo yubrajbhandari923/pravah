@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1219 tokens.
-> Generated 2026-10-10T10:52:09-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1197 tokens.
+> Generated 2026-10-10T11:12:37-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `cb8146e813`
+Git: `master` @ `699b76e950` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -31,6 +31,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Established findings (what we believe)
 
+- F-009 [preliminary, high] Solver routing refactor preserves every deterministic FiPy output bit-for-bit — evidence: EXP-008, RUN-0012, RUN-0013
 - F-008 [preliminary, medium] Greedy layouts optimised for the matched model are not robust to model error at small budgets — evidence: EXP-007, RUN-0011
 - F-006 [preliminary, medium] FINAL: greedy layouts beat spread/random on fresh test scenarios with alpha frozen on validation (matched, synthetic) — evidence: EXP-005, EXP-006, RUN-0008, RUN-0009
 - F-007 [preliminary, medium] FINAL: hidden wind error and unmodelled source dominate discretisation mismatch; poor layout unidentifiable — evidence: EXP-007, RUN-0011
@@ -43,23 +44,19 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Current experiments
 
-- EXP-008 [needs_review] EXP solver routing regression (FiPy before/after) — runs 1, ⚠ 1 unsynthesized
+_none_
 
 ## Active plans
 
-- PLAN-002 PRAVAH phase 2: solver interchange, external/local, Belauri geography, geographic design — 1/11 tasks done · objective: Solver interchangeability; synthetic external vs local identifiability + indoor box; real Belauri geography and forward sims; geographic sensor design
-  - running: T-013 A2: route every workflow through ForwardSolver; routing tests; compare_runs; docs (claimed by claude-code)
+- PLAN-002 PRAVAH phase 2: solver interchange, external/local, Belauri geography, geographic design — 2/11 tasks done · objective: Solver interchangeability; synthetic external vs local identifiability + indoor box; real Belauri geography and forward sims; geographic sensor design
+  - next ready: T-014 Contracts: config/source extensions (groups, raster, study, bases, param_table) (`research task context T-014`)
 - PLAN-001 PRAVAH v0 baseline — 11/11 tasks done · objective: Runnable v0: forward model, inverse, sensor design, notebooks, CLI
 
 ## Needs attention (verification)
 
+- [awaiting review] F-009 Solver routing refactor preserves every deterministic FiPy output bit-for-bit: Agent finding awaiting an independent review
 - [awaiting review] F-008 Greedy layouts optimised for the matched model are not robust to model error at small budgets: Agent finding awaiting an independent review
 - [awaiting review] F-007 FINAL: hidden wind error and unmodelled source dominate discretisation mismatch; poor layout unidentifiable: Agent finding awaiting an independent review
-- [awaiting review] F-006 FINAL: greedy layouts beat spread/random on fresh test scenarios with alpha frozen on validation (matched, synthetic): Agent finding awaiting an independent review
-
-## ⚠ Needs synthesis before new experiments
-
-- EXP-008 EXP solver routing regression (FiPy before/after) (1 unsynthesized runs)
 
 ## Active decisions
 

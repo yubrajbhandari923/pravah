@@ -1,0 +1,126 @@
+{
+  "git_revision": "699b76e950d0ed00cecdbbdcdea232b414f3b6e6",
+  "jobs": [
+    {
+      "job": "simulate",
+      "cmd": [
+        "/Users/yubraj/Code/pravah/.venv/bin/python",
+        "-m",
+        "pravah",
+        "simulate",
+        "--config",
+        "configs/reference.json",
+        "--out",
+        "results/solver-regression/after/simulate"
+      ],
+      "returncode": 0,
+      "wall_s": 3.9982173329917714,
+      "stdout_tail": "simulate: 240 steps, 2.4 s, max budget residual 1.64e-14, 0 negative cells -> results/solver-regression/after/simulate\n",
+      "stderr_tail": ""
+    },
+    {
+      "job": "inverse",
+      "cmd": [
+        "/Users/yubraj/Code/pravah/.venv/bin/python",
+        "-m",
+        "pravah",
+        "inverse",
+        "--config",
+        "configs/reference.json",
+        "--direct",
+        "--out",
+        "results/solver-regression/after/inverse"
+      ],
+      "returncode": 0,
+      "wall_s": 74.25851695798337,
+      "stdout_tail": "inverse: q_hat=[97531.0, 146718.0, 78807.0] true=[100000.0, 150000.0, 80000.0] rank=3 cond=5.62 regional_rmse=0.000969 -> results/solver-regression/after/inverse\n",
+      "stderr_tail": ""
+    },
+    {
+      "job": "smoke",
+      "cmd": [
+        "/Users/yubraj/Code/pravah/.venv/bin/python",
+        "-m",
+        "pravah",
+        "benchmark",
+        "--config",
+        "configs/smoke.json",
+        "--out",
+        "results/solver-regression/after/smoke"
+      ],
+      "returncode": 0,
+      "wall_s": 10.377915584016591,
+      "stdout_tail": "building 2 design + 2 test cases\ngreedy selection (design cases only)\nevaluating on test cases (uniform metric)\nevaluating on test cases (population metric)\nbenchmark written to results/solver-regression/after/smoke\n",
+      "stderr_tail": ""
+    },
+    {
+      "job": "smoke-alpha",
+      "cmd": [
+        "/Users/yubraj/Code/pravah/.venv/bin/python",
+        "-m",
+        "pravah",
+        "benchmark",
+        "--config",
+        "configs/smoke_alpha_selection.json",
+        "--out",
+        "results/solver-regression/after/smoke-alpha"
+      ],
+      "returncode": 0,
+      "wall_s": 5.681585207930766,
+      "stdout_tail": "building 2 validation cases\nalpha = 0\nalpha = 1\nalpha = 100\nselected alpha = 1 (criterion 0.01377)\nalpha_selection written to results/solver-regression/after/smoke-alpha\n",
+      "stderr_tail": ""
+    },
+    {
+      "job": "smoke-mismatch",
+      "cmd": [
+        "/Users/yubraj/Code/pravah/.venv/bin/python",
+        "-m",
+        "pravah",
+        "benchmark",
+        "--config",
+        "results/solver-regression/after/smoke_mismatch.local.json",
+        "--out",
+        "results/solver-regression/after/smoke-mismatch"
+      ],
+      "returncode": 0,
+      "wall_s": 10.130632708081976,
+      "stdout_tail": "condition matched\ncondition refined_truth\ncondition wind_perturbed\ncondition extra_source\nmismatch written to results/solver-regression/after/smoke-mismatch\n",
+      "stderr_tail": ""
+    }
+  ],
+  "file_sha256": {
+    "inverse/inverse_metrics.json": "28efc05e45f389c88b167576af9f9e77ef771a91a9815af16b44594ec1a70a33",
+    "inverse/provenance.json": "0beb2a0934d19c3095c260f82114bcae49afbac32d021f14ca8a6e9c14308442",
+    "simulate/budget.nc": "da4d9e8eb45e90670a11cd267ac939b087f9426777769c8e774cf153439eb8f0",
+    "simulate/concentration.nc": "53f5a60da850b1758153b819c894755acd7e1f0e064b3229813928ef73c707c3",
+    "simulate/metrics.json": "c08bb8f6233bd8defaba92929da475ff1721cf3b4a6a5ff624b7a138748b7881",
+    "simulate/provenance.json": "cad54ad50333c237c0b1d853e8ae10711b509750c1e4c115266758075f160b50",
+    "smoke/config.json": "9478daf797553ac9d351f8059170eaad0a1a9b389da042db16e120053fdee89e",
+    "smoke/design_scores.csv": "270e342b1b044ae13511324f717771f234ca1294b9ae54d2111242bd0bc9b273",
+    "smoke/layouts.json": "9a6a90566b13d7307d78a70403c2d48a45011afa817e6f22fc15b940c65a894e",
+    "smoke/paired_comparisons.csv": "daa96eb9f0c9d249a2ad9dfe2d0e7c854761798cf75466fc8920e578366f6662",
+    "smoke/provenance.json": "347b2208b7656c608ad3b3e7518373b4915118e3c8d6a969202aef3f46e3732e",
+    "smoke/raw_metrics.csv": "cf8c7e2e57fdf6d7067a6e83b28f3e75adb1f654646b61d3af4227d9f7c65c7e",
+    "smoke/summary.csv": "5f062929026d98b4406f15a9c741e2b66dc54ee386483935ad5784b968a3e140",
+    "smoke/summary.json": "0ba0712f3945fb74be6cdd76b4dad5953daac085ef36d5ef8a49c7b4e0c658ac",
+    "smoke/timings.json": "329037b4e231c38ea4fe547ef4aef4d601fab8d3a0b9a2b56c84555ca69c54ce",
+    "smoke-alpha/alpha_selected.json": "8de3c9573ce198197618787432fcb8f00975e433713b6201a6cd5ea36164674e",
+    "smoke-alpha/config.json": "3eb0e786b2141eeb3e272794f95ffe3f681f0439023f804f4b9ceaec827763ae",
+    "smoke-alpha/layouts.json": "ff575c5af7b7490dc2645909e1c676188de2a8aa16eb74cd523e3f7ce29020ce",
+    "smoke-alpha/provenance.json": "06c1fc629abb4cf91ec2167fc20bf94009ac5becdac4f9b8563c767f8748516b",
+    "smoke-alpha/timings.json": "b6a24d8eaf5c116e309639b70cb730fe78afe5b3a122ceb32659b2fe005c287a",
+    "smoke-alpha/validation_raw.csv": "aa8af2ba0e30e4e891f6e316bd3e74b63d19f00903026a7bbb4c019f12e3fc5c",
+    "smoke-mismatch/config.json": "1c90bb9c5fe0361214f75c59af070fa2eafeb3f8d022bf234ed96fc1acf5162c",
+    "smoke-mismatch/layouts.json": "05dab2113effb016c498466c00d7c7c94936f724937760839d9530b631d72b8f",
+    "smoke-mismatch/paired_mismatch.csv": "131b3e33bab8883ab7664102e06252bd5da0fd7c96de2c0cf5b44a41786922f5",
+    "smoke-mismatch/paired_mismatch_rows.csv": "5a3d7f0193707b2b1a37d5592f7a668d871deb720277385a497e5205b39a8252",
+    "smoke-mismatch/poor_layout_diagnostics.csv": "5f12253d9910787840d89ec0543c2683258fb3640a22641ed410ae75209208ac",
+    "smoke-mismatch/poor_layout_paired.csv": "ae2ee7afb995df1e1960915e3fecbafc02dfb2002aefacdd074fb456a8ff921c",
+    "smoke-mismatch/provenance.json": "21f15070b32daa7eefb381177f4c7054c4b2cb163e44130985fbd4903fbd0d2f",
+    "smoke-mismatch/raw_metrics.csv": "1784c4eb16018f1965abfd52436480397b03e7bcb5d9a8a3bb7a5f063dccba30",
+    "smoke-mismatch/summary.csv": "c437d36433345fad5b40bf24efc0302c303c092dba1b604d3106a114fc728c1b",
+    "smoke-mismatch/summary.json": "555ac59dec758a72d63762cc12e39cc2795e4bed045eea3e27f4a6ce9eb2174e",
+    "smoke-mismatch/timings.json": "4770a0fedfddba26b61a610346661f86b45c17afeaf17abf2203f805eb9b8969",
+    "smoke_mismatch.local.json": "87ef39b5aefae39986a522a0596dbc47a280edbd9ccbf007d780441051a102b1"
+  }
+}

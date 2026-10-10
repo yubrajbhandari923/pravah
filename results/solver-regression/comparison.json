@@ -1,0 +1,92 @@
+{
+  "before": "results/solver-regression/before",
+  "after": "results/solver-regression/after",
+  "compared": {
+    "inverse/inverse_metrics.json": {
+      "identical": true,
+      "differences": []
+    },
+    "simulate/budget.nc": {
+      "identical": true,
+      "differences": []
+    },
+    "simulate/concentration.nc": {
+      "identical": true,
+      "differences": []
+    },
+    "simulate/metrics.json": {
+      "identical": true,
+      "differences": []
+    },
+    "smoke/design_scores.csv": {
+      "identical": true,
+      "differences": []
+    },
+    "smoke/layouts.json": {
+      "identical": true,
+      "differences": []
+    },
+    "smoke/paired_comparisons.csv": {
+      "identical": true,
+      "differences": []
+    },
+    "smoke/raw_metrics.csv": {
+      "identical": true,
+      "differences": []
+    },
+    "smoke/summary.csv": {
+      "identical": true,
+      "differences": []
+    },
+    "smoke/summary.json": {
+      "identical": true,
+      "differences": []
+    },
+    "smoke-alpha/alpha_selected.json": {
+      "identical": true,
+      "differences": []
+    },
+    "smoke-alpha/layouts.json": {
+      "identical": true,
+      "differences": []
+    },
+    "smoke-alpha/validation_raw.csv": {
+      "identical": true,
+      "differences": []
+    },
+    "smoke-mismatch/layouts.json": {
+      "identical": true,
+      "differences": []
+    },
+    "smoke-mismatch/paired_mismatch.csv": {
+      "identical": true,
+      "differences": []
+    },
+    "smoke-mismatch/paired_mismatch_rows.csv": {
+      "identical": true,
+      "differences": []
+    },
+    "smoke-mismatch/poor_layout_diagnostics.csv": {
+      "identical": true,
+      "differences": []
+    },
+    "smoke-mismatch/poor_layout_paired.csv": {
+      "identical": true,
+      "differences": []
+    },
+    "smoke-mismatch/raw_metrics.csv": {
+      "identical": true,
+      "differences": []
+    },
+    "smoke-mismatch/summary.csv": {
+      "identical": true,
+      "differences": []
+    },
+    "smoke-mismatch/summary.json": {
+      "identical": true,
+      "differences": []
+    }
+  },
+  "n_differences": 0,
+  "n_files": 21
+}

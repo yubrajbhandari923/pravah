@@ -95,4 +95,17 @@ those written before this change (old `.npz` entries are simply not found and ar
 
 ## Regression comparison
 
-REGRESSION_RESULT: <to be filled by coordinator>
+Measured by the coordinator (EXP-008, RUN-0012 before / RUN-0013 after, `scripts/capture_regression.py` +
+`scripts/compare_runs.py`; code revisions `cb8146e` -> `699b76e`, fixed seeds, default FiPy):
+
+* **21 files compared, 0 differ** — reference field (`concentration.nc`, `budget.nc`), `metrics.json`, inverse
+  (linear and direct, `inverse_metrics.json`), smoke benchmark (raw metrics, summaries, paired tables, `layouts.json`),
+  smoke alpha selection (`alpha_selected.json`, `validation_raw.csv`) and smoke mismatch (raw, paired, poor-layout tables).
+* Excluded as volatile: runtime/wall-time keys and columns, timestamps, git state, paths, `provenance.json`,
+  `timings.json`, `config.json`, `manifest.json`, figures, and the new `backend` entries (additive metadata).
+* The baseline itself is deterministic: two independent captures of the *old* code also compared 21 files, 0 differ.
+* Negative control: running the same simulate job with `FipyForward(convection="upwind")` (a real alternate FiPy
+  configuration) is flagged — max concentration 0.1608 -> 0.1517 ug/m^3 and different budget terms — so the comparison
+  can detect differences. This control is not a physics claim about either scheme.
+* Result files: `results/solver-regression/{before,after}/manifest.json`, `results/solver-regression/comparison.json`.
+* Tests: 218 passed (196 earlier + 22 in `tests/test_solver_routing.py`), Pyright 0 errors.
