@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~1759 tokens.
-> Generated 2026-10-10T19:53:41-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2057 tokens.
+> Generated 2026-10-10T23:50:02-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `1db6f4d7ff` (uncommitted changes)
+Git: `master` @ `5d7a68334a` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -28,7 +28,11 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Active & open questions
 
-_none_
+- Q-009 [open] Q-B: When does population-weighted sensor placement help, and what does it cost region-wide and in attribution?
+- Q-010 [open] Q-C: How do prescribed spatiotemporal winds (idealised ridge/reversal) change plume arrival, boundary flux and local/external attribution?
+- Q-011 [open] Q-D: Do inverse conclusions and sensor selections converge with mesh, dt and scheme?
+- Q-012 [open] Q-E: How does wind error limit source inference (known / wrong-fixed / uncertain-wind estimators)?
+- Q-008 [open] Q-A: Can a new region run the same pipeline by changing only config + assets?
 
 ## Established findings (what we believe)
 
@@ -53,6 +57,9 @@ _none_
 
 ## Active plans
 
+- PLAN-003 PRAVAH phase 3: portability, population-aware design, numerical convergence of decisions, wind uncertainty — 0/10 tasks done · objective: Transferable framework whose sensor decisions are robust to discretisation and wind uncertainty, with population-aware design; testbed only, no empirical validation
+  - next ready: T-023 S1a Transfer audit + second synthetic region fixture and transfer test (`research task context T-023`)
+  - running: T-024 S1b Population layer: grid-aligned loader, conservative regrid, 5 synthetic fixtures, area/population metrics, source registry (claimed by claude-code)
 - PLAN-002 PRAVAH phase 2: solver interchange, external/local, Belauri geography, geographic design — 11/11 tasks done · objective: Solver interchangeability; synthetic external vs local identifiability + indoor box; real Belauri geography and forward sims; geographic sensor design
 - PLAN-001 PRAVAH v0 baseline — 11/11 tasks done · objective: Runnable v0: forward model, inverse, sensor design, notebooks, CLI
 
