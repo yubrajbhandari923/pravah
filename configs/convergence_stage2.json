@@ -1,0 +1,18 @@
+{
+  "extends": "geodesign.json",
+  "name": "convergence_stage2",
+  "notes": "EXP-015 stage 2: sensor-design decision stability across mesh/dt. Real geography; synthetic emissions and meteorology. Candidate sites defined once in UTM metres from the candidate_mesh table; alpha frozen; noise sigma = fraction x frozen validation signal scale.",
+  "noise": {"fractions": [0.05, 0.15]},
+  "stage2": {
+    "meshes": [[500, 100], [500, 50], [250, 100], [250, 50]],
+    "reference": [250, 50],
+    "candidate_mesh": [500, 100],
+    "budgets": [3, 5, 8],
+    "alpha": 0.01,
+    "alpha_file": "results/geodesign/alpha_selected.json",
+    "noise_scale_file": "results/geodesign/noise_levels.csv",
+    "tau_m": [500.0, 1000.0],
+    "replicates": {"n": 8, "n_cases": 6, "seed0": 1101, "noise_seed0": 4000, "noise_seed_stride": 100},
+    "map_budget": 5
+  }
+}

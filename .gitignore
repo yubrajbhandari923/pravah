@@ -12,3 +12,4 @@ results/geodesign/validation_raw.csv
 results/geodesign-robust/test_raw.csv
 results/geodesign-robust/paired_rows.csv
 results/phase3-bench/geo125/
+results/phase3-convergence/stage2_work/
