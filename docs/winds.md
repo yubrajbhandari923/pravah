@@ -104,7 +104,11 @@ https://cds.climate.copernicus.eu/datasets/reanalysis-era5-pressure-levels .
 
 ## 5. EXP-021: converged re-run and corrected interpretation (prescribed wind, not terrain-derived)
 
-Built, not yet run in production (`scripts/prescribed_winds_converged.py`, `configs/prescribed_winds_converged.json`). Independent review of EXP-018
+Run in production as RUN-0034 (`scripts/prescribed_winds_converged.py`, `configs/prescribed_winds_converged.json`; results in
+`results/phase3-winds-converged/`, finding F-031). Reading of the results after independent review: only the three reversal cases depend on domain size
+(the outflow face has no diffusive flux, so everything else is identical at every size); the half-width needed for <1% exposure is set by the return
+window (~UT/2 for T = 12 h), not by U/lambda; returned mass is good to ~10% (dx dependence); the channel_step effect (-43%) comes from where the plume
+centreline sits relative to the box, not from a general channel property. Independent review of EXP-018
 found four problems; this section states how EXP-021 addresses each and how the EXP-018 results must be read.
 
 1. **Domain truncation.** The 2x reference was not converged (mass left east before the reversal). EXP-021 keeps the study box and source fixed in
