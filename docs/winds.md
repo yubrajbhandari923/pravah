@@ -101,3 +101,36 @@ https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=dow
 https://cds.climate.copernicus.eu/how-to-api ;
 https://confluence.ecmwf.int/display/CKB/ERA5%3A+data+documentation ;
 https://cds.climate.copernicus.eu/datasets/reanalysis-era5-pressure-levels .
+
+## 5. EXP-021: converged re-run and corrected interpretation (prescribed wind, not terrain-derived)
+
+Built, not yet run in production (`scripts/prescribed_winds_converged.py`, `configs/prescribed_winds_converged.json`). Independent review of EXP-018
+found four problems; this section states how EXP-021 addresses each and how the EXP-018 results must be read.
+
+1. **Domain truncation.** The 2x reference was not converged (mass left east before the reversal). EXP-021 keeps the study box and source fixed in
+   physical space and varies only the outer half-width (declared set; y half-width capped at `y_half_cap_m`, x is the long direction). The largest
+   declared half-width must be >= 2 x U x duration (the plume advection distance; checked at start). After the declared set, the exposure of the study box
+   is compared between the two largest domains for EVERY scenario; if any differs by >= 1 % the half-width is enlarged (x1.5, rounded) up to a declared cap and the result
+   is reported (`checks.json`: `converged`, `enlarged_half_widths_m`).
+2. **Source too close to the boundary.** The source must be >= 6 cells and >= 6 km from every boundary of the SMALLEST domain (hard check). The 1x-truncation
+   effect in EXP-018 was confounded by the ~2 % loss through the west Dirichlet face; per-side losses are reported for every case (`leave_<side>_frac`).
+   Numerical diffusion is separated from truncation by running the base scenario at dx, dx/2 and dx/2 with dt/2 on the smallest domain (`numerical_check_raw.csv`).
+3. **Returned mass.** The EXP-018 Eulerian net-flux definition is kept (`returned_eul`). It starts counting when the box mass has fallen 5 % below its maximum, so the
+   tail of the first passage still entering the box is counted as "returned", and decay shrinks late returns. The second definition uses the box-mass series only: first passage
+   ends at `t_exit` (mass < `exit_frac` = 2 % of its first-passage peak P1); `ret_residence_ratio` = integral after `t_exit` of max(m - `floor_frac` P1, 0) over the
+   first-passage integral of m, and `ret_mass_frac` = ratio x mass that entered in the first passage / emitted (exact for equal transit times; the floor clips about
+   9 % of a 0.5-height hump in the synthetic test). `ret_eul_after_exit` is the EXP-018 sum restarted at `t_exit`. If the plume has not exited by the end of the run, all are NaN and `not_yet_exited` is true
+   (not 0); `end_inside` marks a return cut off by the end of the run; `tail_inside_at_tr` / `exited_before_tr` / `box_frac_at_tr` state whether the plume had left before each reversal. Reversal times
+   are meant to follow the exit time of the steady case (exit time is reported per scenario).
+4. **Ridge interpretation.** In EXP-018 `psi = u y + A exp(-r^2/2 sigma^2)` is a localised vortex: psi returns to `u y` far away, so there is no net deflection by
+   construction, and the "ridge" and the "eddy" are one function with different amplitude (the "ridge" is a sub-critical vortex: a bend that returns, not a deflection around an obstacle).
+   Conclusions drawn in F-024/F-027 about "ridge deflection" apply to a sub-critical vortex only.
+
+New builder `winds.deflected_channel(domain, u, x0, width, offset, kind)`: `psi = u (y - h(x))`, wind `u_x = u`, `v = u h'(x)`, divergence free, streamlines `y = const + h(x)`.
+`kind="step"`: smooth step (tanh) with NET downstream displacement `offset` (the flow is turned and stays displaced); peak turning angle `atan(offset/(2 width))`. `kind="bump"`: Gaussian,
+returns to the original y (zero net), peak angle `atan(offset/(width sqrt(e)))`. It is prescribed: no DEM, no blocking or pressure dynamics. Tests: `tests/test_winds_channel.py`.
+
+Scenarios: `steady`, `reversal` (u -> -u at t_r), `channel_step`, `channel_bump` (between source and box), `vortex` (upstream of the box, centre >= 2 sigma outside it). External source only
+(no local solve; the quantity is external exposure of the study box). Outputs in `results/phase3-winds-converged[-smoke|-pilot]/`: `cases_raw.csv`, `timeseries_raw.csv`, `numerical_check_raw.csv`
+(raw), `convergence.csv`, `vs_reference.csv`, `checks.json`, `provenance.json`, `summary.md`, three figures stamped `EXP-021 prescribed wind, not terrain-derived`.
+Stop rule: closure > 1e-8 or negativity > 1e-9 exits non-zero after writing the files.
