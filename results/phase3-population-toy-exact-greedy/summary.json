@@ -1,0 +1,81 @@
+{
+  "n_settings": 1920,
+  "n_identical_layout": 70,
+  "excludes": "uniform fixture",
+  "frac_greedy_worse_test": {
+    "pop_rmse": 0.8234375,
+    "area_rmse": 0.7885416666666667,
+    "lowq_rmse": 0.8166666666666667,
+    "worst_cell_rmse": 0.7708333333333334
+  },
+  "frac_greedy_worse_matched_by_budget": {
+    "2": 0.8828125,
+    "3": 0.9505208333333334,
+    "4": 0.8880208333333334,
+    "5": 0.7161458333333334,
+    "8": 0.6692708333333334
+  },
+  "area_objective_area_rmse_ratio_by_budget_type": {
+    "2|dense_core_sparse_surround": 3.270029457274186,
+    "2|mixed_rural_urban": 3.270029457274186,
+    "2|one_town": 3.270029457274186,
+    "2|separated_settlements": 3.270029457274186,
+    "3|dense_core_sparse_surround": 6.787052980878897,
+    "3|mixed_rural_urban": 6.787052980878897,
+    "3|one_town": 6.787052980878897,
+    "3|separated_settlements": 6.787052980878897,
+    "4|dense_core_sparse_surround": 2.4563078336069926,
+    "4|mixed_rural_urban": 2.4563078336069926,
+    "4|one_town": 2.4563078336069926,
+    "4|separated_settlements": 2.4563078336069926,
+    "5|dense_core_sparse_surround": 1.1481031418051595,
+    "5|mixed_rural_urban": 1.1481031418051595,
+    "5|one_town": 1.1481031418051595,
+    "5|separated_settlements": 1.1481031418051595,
+    "8|dense_core_sparse_surround": 1.0789818836506961,
+    "8|mixed_rural_urban": 1.0789818836506961,
+    "8|one_town": 1.0789818836506961,
+    "8|separated_settlements": 1.0789818836506961
+  },
+  "area_objective_area_rmse_ratio_by_budget": {
+    "2": 3.270029457274186,
+    "3": 6.787052980878897,
+    "4": 2.4563078336069926,
+    "5": 1.1481031418051595,
+    "8": 1.0789818836506961
+  },
+  "spearman_design_gap_vs_test_rel_diff": {
+    "pooled": 0.8088892302670739,
+    "budget_2": 0.6657351237460454,
+    "budget_3": 0.5377313686778201,
+    "budget_4": 0.8543816973420482,
+    "budget_5": 0.5254396203010586,
+    "budget_8": -0.21840760666550046
+  },
+  "test_rel_diff_by_design_gap_bin": {
+    "0": {
+      "n": 70,
+      "median": 0.0,
+      "mean": 0.0,
+      "frac_worse": 0.0
+    },
+    "(0,0.1]": {
+      "n": 148,
+      "median": 0.03949553549024376,
+      "mean": 0.09016889537854764,
+      "frac_worse": 0.6891891891891891
+    },
+    "(0.1,1]": {
+      "n": 663,
+      "median": 0.0738705435541438,
+      "mean": 0.0767025330498283,
+      "frac_worse": 0.7149321266968326
+    },
+    ">1": {
+      "n": 1039,
+      "median": 1.898238595752043,
+      "mean": 2.478060224231815,
+      "frac_worse": 0.9634263715110684
+    }
+  }
+}
