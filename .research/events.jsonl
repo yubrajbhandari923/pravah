@@ -577,3 +577,4 @@
 {"action": "synthesized", "author_name": "claude-code", "author_type": "agent", "entity_id": "EXP-022", "entity_type": "experiment", "summary": "EXP-022 synthesized (0 runs covered, 0 new)", "ts": "2026-10-11T11:58:49-04:00"}
 {"action": "status", "author_name": "claude-code", "author_type": "agent", "entity_id": "EXP-022", "entity_type": "experiment", "summary": "EXP-022: proposed → completed", "ts": "2026-10-11T11:58:49-04:00"}
 {"action": "created", "author_name": "claude-code", "author_type": "agent", "entity_id": "RUN-0035", "entity_type": "run", "summary": "RUN-0035 registered under EXP-022 [greedy-vs-exact-test]", "ts": "2026-10-11T11:58:54-04:00"}
+{"action": "updated", "author_name": "claude-code", "author_type": "agent", "entity_id": "F-032", "entity_type": "finding", "summary": "F-032: links changed", "ts": "2026-10-11T11:59:02-04:00"}
