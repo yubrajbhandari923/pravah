@@ -1,0 +1,21 @@
+{
+ "max_closure_rel": 3.265741480438904e-14,
+ "closure_limit": 1e-08,
+ "closure_ok": true,
+ "max_negative_rel_to_max_conc": 5e-324,
+ "negative_limit": 1e-09,
+ "negative_ok": true,
+ "max_side_vs_budget_rel": 0.005458827875346475,
+ "advection_distance_m": 86400.0,
+ "reference_half_width_m": 175000.0,
+ "reference_over_2UT": 1.0127314814814814,
+ "worst_exposure_rel_diff_two_largest": 1.3555702168349213e-16,
+ "convergence_tol": 0.01,
+ "converged": true,
+ "enlarged_half_widths_m": [],
+ "enlarge_cap_m": 300000.0,
+ "numerical_exposure_rel_dx_vs_finest": -0.005245049403118237,
+ "numerical_exposure_rel_dx2_vs_finest": -4.617070487634071e-15,
+ "truncation_exposure_rel_smallest_vs_ref_base": -2.32070746914287e-15,
+ "reversals_with_plume_not_cleared": []
+}

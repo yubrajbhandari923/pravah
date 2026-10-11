@@ -1,0 +1,62 @@
+{
+  "alpha": 0.1,
+  "table": [
+    {
+      "alpha": 0.0001,
+      "criterion": 0.08046972103324795,
+      "median_rmse": 0.022374077347361652
+    },
+    {
+      "alpha": 0.001,
+      "criterion": 0.039465397739652096,
+      "median_rmse": 0.021630933874379157
+    },
+    {
+      "alpha": 0.01,
+      "criterion": 0.023129175915072978,
+      "median_rmse": 0.02033026425507556
+    },
+    {
+      "alpha": 0.1,
+      "criterion": 0.01856164396252525,
+      "median_rmse": 0.018841126966111517
+    },
+    {
+      "alpha": 1.0,
+      "criterion": 0.0192428551627248,
+      "median_rmse": 0.020304681903857896
+    },
+    {
+      "alpha": 10.0,
+      "criterion": 0.02149242748394524,
+      "median_rmse": 0.021998140085771105
+    },
+    {
+      "alpha": 100.0,
+      "criterion": 0.024552587668967358,
+      "median_rmse": 0.024516236286943202
+    },
+    {
+      "alpha": 1000.0,
+      "criterion": 0.028902890242976254,
+      "median_rmse": 0.028895065488935875
+    }
+  ],
+  "criterion": "mean regional RMSE (area weights) over budgets, random+spread layouts, validation cases, noise reps; exact tie -> smaller alpha",
+  "objective": "area",
+  "config_hash_without_alpha": "26e32a9efa3005a81d09d4136e3342ff171e23b1699f3de665273a69ac85ae4f",
+  "sources": [
+    [
+      7898.9,
+      8297.9
+    ],
+    [
+      7041.6,
+      3603.6
+    ],
+    [
+      5253.8,
+      7857.1
+    ]
+  ]
+}

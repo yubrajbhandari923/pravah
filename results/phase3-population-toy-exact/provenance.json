@@ -1,0 +1,453 @@
+{
+  "config": {
+    "name": "population_toy_exact",
+    "scenario": {
+      "domain": {
+        "lx": 10000.0,
+        "ly": 10000.0,
+        "nx": 50,
+        "ny": 50
+      },
+      "sources": [
+        {
+          "name": "S1",
+          "x": 2500.0,
+          "y": 2500.0,
+          "sigma": 500.0
+        },
+        {
+          "name": "S2",
+          "x": 4000.0,
+          "y": 6000.0,
+          "sigma": 500.0
+        },
+        {
+          "name": "S3",
+          "x": 6500.0,
+          "y": 3500.0,
+          "sigma": 500.0
+        }
+      ],
+      "transport": {
+        "wind": [
+          {
+            "t_start": 0.0,
+            "u": 1.0,
+            "v": 0.3
+          }
+        ],
+        "K": 100.0,
+        "lam": 4.6296296296296294e-05,
+        "H": 500.0
+      },
+      "boundary": {
+        "mode": "open",
+        "background": 0.0
+      },
+      "initial": {
+        "kind": "zero"
+      },
+      "times": {
+        "duration": 14400.0,
+        "dt": 60.0,
+        "output_interval": 300.0
+      }
+    },
+    "q": [
+      100000.0,
+      150000.0,
+      80000.0
+    ],
+    "solver": {
+      "convection": "exponential",
+      "tolerance": 1e-12
+    },
+    "inverse": {
+      "sensor_interval": 600.0,
+      "noise_std": 0.005,
+      "seed": 1,
+      "heldout_ids": [
+        "S5"
+      ],
+      "sensors": [
+        [
+          2500,
+          4500
+        ],
+        [
+          5000,
+          5000
+        ],
+        [
+          7500,
+          4500
+        ],
+        [
+          4000,
+          7500
+        ],
+        [
+          6000,
+          2000
+        ]
+      ]
+    },
+    "notes": "EXP-020 follow-up to EXP-017: exact (budgets <= exact_max_budget) or greedy+swap+restarts (larger budgets) minimisation of each weighted design objective; 4 source placements x 6 fixture draws per fixture type. Seeds 44xx / 44xxxx are fresh (not Phase 1/2/EXP-017/018/019). alpha selected once per placement on VALIDATION (area objective, alpha-independent layouts) and frozen. 'run' and 'pilot' select what a profile executes and are not part of the frozen hash. Exact enumeration needs alpha > 0 (unique bounded fit), so the grid excludes 0.",
+    "design": {
+      "candidates_n": 10,
+      "budgets": [
+        2,
+        3,
+        4,
+        5,
+        8
+      ],
+      "n_design": 8,
+      "n_validation": 8,
+      "n_test": 16,
+      "noise_reps": 3,
+      "n_random": 20,
+      "heldout_n": 7,
+      "t_exclude": 0.0,
+      "layout_seed": 7,
+      "design_seed": 4401,
+      "validation_seed": 4402,
+      "test_seed": 4403,
+      "design_noise_seed": 441000,
+      "validation_noise_seed": 442000,
+      "test_noise_seed": 443000,
+      "alpha_grid": [
+        0.0001,
+        0.001,
+        0.01,
+        0.1,
+        1.0,
+        10.0,
+        100.0,
+        1000.0
+      ]
+    },
+    "population": {
+      "total": 250000,
+      "epsg": 32645,
+      "fixture_seeds": {
+        "uniform": 0
+      },
+      "betas": [
+        0.0,
+        0.5,
+        1.0
+      ],
+      "cap_c": 3.0,
+      "lowpop_quantile": 0.25,
+      "support_min": 1.0
+    },
+    "replicates": {
+      "types": [
+        "one_town",
+        "separated_settlements",
+        "dense_core_sparse_surround",
+        "mixed_rural_urban"
+      ],
+      "n_placements": 4,
+      "placement_seed": 4400,
+      "margin": 0.15,
+      "min_sep": 2000.0,
+      "fixture_draw_seeds": [
+        4411,
+        4412,
+        4413,
+        4414,
+        4415,
+        4416
+      ],
+      "seed_stride": 10,
+      "noise_stride": 100
+    },
+    "search": {
+      "exact_max_budget": 4,
+      "n_restarts": 20,
+      "restart_seed": 4450,
+      "near_tie_frac": 0.01,
+      "keep": 2000,
+      "chunk": 40000,
+      "search_check_draws": 1,
+      "verify_layouts": 3
+    },
+    "stats": {
+      "n_boot": 10000,
+      "boot_seed": 0,
+      "level": 0.95
+    },
+    "figures": {
+      "layout_budget": 5
+    },
+    "run": {
+      "types": null,
+      "placements": null,
+      "draws": null,
+      "workers": 6
+    },
+    "pilot": {
+      "design": {
+        "design_seed": 4801,
+        "validation_seed": 4802,
+        "test_seed": 4803,
+        "design_noise_seed": 481000,
+        "validation_noise_seed": 482000,
+        "test_noise_seed": 483000
+      },
+      "replicates": {
+        "placement_seed": 4800,
+        "fixture_draw_seeds": [
+          4811,
+          4812,
+          4813,
+          4814,
+          4815,
+          4816
+        ]
+      },
+      "run": {
+        "placements": [
+          0
+        ],
+        "draws": [
+          0,
+          1
+        ]
+      }
+    }
+  },
+  "seeds": {
+    "layout_seed": 7,
+    "design_seed": 4401,
+    "validation_seed": 4402,
+    "test_seed": 4403,
+    "design_noise_seed": 441000,
+    "validation_noise_seed": 442000,
+    "test_noise_seed": 443000
+  },
+  "versions": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "xarray": "2026.9.0",
+    "fipy": "4.0.3",
+    "pandas": "3.0.6",
+    "matplotlib": "3.11.2",
+    "netCDF4": "1.7.4",
+    "pravah": "0.1.0"
+  },
+  "python": "3.12.7 (main, Oct  1 2024, 02:05:46) [Clang 16.0.0 (clang-1600.0.26.3)]",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "git_revision": "13bbc490539ad3ff978bc291010d24471275c306",
+  "git_dirty": true,
+  "git_diff_hash": "b7b7bbe544b5",
+  "git_dirty_files": [
+    "research/context/current.md",
+    ".research/events.jsonl",
+    ".research/experiments/EXP-020.md",
+    ".research/experiments/EXP-021.md",
+    ".research/runs/RUN-0033/",
+    ".research/runs/RUN-0034/",
+    "results/phase3-population-toy-exact/",
+    "results/phase3-wind-error-toy/smoke/",
+    "results/phase3-wind-error-toy/work_smoke/"
+  ],
+  "git_dirty_n_files": 9,
+  "timestamp_utc": "2026-10-11T14:05:08.362787+00:00",
+  "extra": {
+    "experiment": "EXP-020",
+    "profile": "production",
+    "note": "synthetic idealised experiment"
+  },
+  "frozen_config_hash": "6b9ad3573f762cc6b8d2ddbc86365c5e9b29c4a705dfdf63b2f649ff65495bdd",
+  "frozen_payload": {
+    "scenario": {
+      "domain": {
+        "lx": 10000.0,
+        "ly": 10000.0,
+        "nx": 50,
+        "ny": 50
+      },
+      "sources": [
+        {
+          "name": "S1",
+          "x": 2500.0,
+          "y": 2500.0,
+          "sigma": 500.0
+        },
+        {
+          "name": "S2",
+          "x": 4000.0,
+          "y": 6000.0,
+          "sigma": 500.0
+        },
+        {
+          "name": "S3",
+          "x": 6500.0,
+          "y": 3500.0,
+          "sigma": 500.0
+        }
+      ],
+      "transport": {
+        "wind": [
+          {
+            "t_start": 0.0,
+            "u": 1.0,
+            "v": 0.3
+          }
+        ],
+        "K": 100.0,
+        "lam": 4.6296296296296294e-05,
+        "H": 500.0
+      },
+      "boundary": {
+        "mode": "open",
+        "background": 0.0
+      },
+      "initial": {
+        "kind": "zero"
+      },
+      "times": {
+        "duration": 14400.0,
+        "dt": 60.0,
+        "output_interval": 300.0
+      }
+    },
+    "q": [
+      100000.0,
+      150000.0,
+      80000.0
+    ],
+    "solver": {
+      "convection": "exponential",
+      "tolerance": 1e-12
+    },
+    "inverse": {
+      "sensor_interval": 600.0,
+      "noise_std": 0.005,
+      "seed": 1,
+      "heldout_ids": [
+        "S5"
+      ],
+      "sensors": [
+        [
+          2500,
+          4500
+        ],
+        [
+          5000,
+          5000
+        ],
+        [
+          7500,
+          4500
+        ],
+        [
+          4000,
+          7500
+        ],
+        [
+          6000,
+          2000
+        ]
+      ]
+    },
+    "design": {
+      "candidates_n": 10,
+      "budgets": [
+        2,
+        3,
+        4,
+        5,
+        8
+      ],
+      "n_design": 8,
+      "n_validation": 8,
+      "n_test": 16,
+      "noise_reps": 3,
+      "n_random": 20,
+      "heldout_n": 7,
+      "t_exclude": 0.0,
+      "layout_seed": 7,
+      "design_seed": 4401,
+      "validation_seed": 4402,
+      "test_seed": 4403,
+      "design_noise_seed": 441000,
+      "validation_noise_seed": 442000,
+      "test_noise_seed": 443000,
+      "alpha_grid": [
+        0.0001,
+        0.001,
+        0.01,
+        0.1,
+        1.0,
+        10.0,
+        100.0,
+        1000.0
+      ]
+    },
+    "population": {
+      "total": 250000,
+      "epsg": 32645,
+      "fixture_seeds": {
+        "uniform": 0
+      },
+      "betas": [
+        0.0,
+        0.5,
+        1.0
+      ],
+      "cap_c": 3.0,
+      "lowpop_quantile": 0.25,
+      "support_min": 1.0
+    },
+    "replicates": {
+      "types": [
+        "one_town",
+        "separated_settlements",
+        "dense_core_sparse_surround",
+        "mixed_rural_urban"
+      ],
+      "n_placements": 4,
+      "placement_seed": 4400,
+      "margin": 0.15,
+      "min_sep": 2000.0,
+      "fixture_draw_seeds": [
+        4411,
+        4412,
+        4413,
+        4414,
+        4415,
+        4416
+      ],
+      "seed_stride": 10,
+      "noise_stride": 100
+    },
+    "search": {
+      "exact_max_budget": 4,
+      "n_restarts": 20,
+      "restart_seed": 4450,
+      "near_tie_frac": 0.01,
+      "keep": 2000,
+      "chunk": 40000,
+      "search_check_draws": 1,
+      "verify_layouts": 3
+    },
+    "alphas": {
+      "0": 0.1,
+      "1": 0.1,
+      "2": 0.1,
+      "3": 0.1
+    }
+  },
+  "alphas": {
+    "0": 0.1,
+    "1": 0.1,
+    "2": 0.1,
+    "3": 0.1
+  },
+  "frozen_before_test_utc": "2026-10-11T14:05:08.367175+00:00",
+  "freeze_guard_passed_after_test": true
+}

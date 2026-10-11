@@ -1,0 +1,8 @@
+scenario,t_r_s,hw_second_m,hw_ref_m,exposure_rel_diff,ok
+channel_bump,,80000.0,175000.0,1.3555702168349213e-16,True
+channel_step,,80000.0,175000.0,0.0,True
+reversal,18000.0,80000.0,175000.0,0.0,True
+reversal,22500.0,80000.0,175000.0,0.0,True
+reversal,27000.0,80000.0,175000.0,0.0,True
+steady,,80000.0,175000.0,0.0,True
+vortex,,80000.0,175000.0,0.0,True

@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2519 tokens.
-> Generated 2026-10-11T09:49:41-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2643 tokens.
+> Generated 2026-10-11T10:29:13-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `aff02aeb53`
+Git: `master` @ `13bbc49053`
 
 ## Latest checkpoint
 
@@ -57,6 +57,8 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Current experiments
 
+- EXP-021 [needs_review] EXP toy prescribed winds, converged reference domain and deflecting channel (pre-registered) — runs 1
+- EXP-020 [needs_review] EXP toy population design with exact selection and replicated settings (pre-registered) — runs 1
 - EXP-015 [needs_review] EXP convergence of sensor-design decisions with mesh, time step and scheme (pre-registered) — runs 1
 - EXP-016 [proposed] EXP population-aware sensor placement: area vs population vs mixed vs capped objectives (pre-registered) — runs 0
 
@@ -64,8 +66,8 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 - PLAN-003 PRAVAH phase 3: portability, population-aware design, numerical convergence of decisions, wind uncertainty — 1/10 tasks done · objective: Transferable framework whose sensor decisions are robust to discretisation and wind uncertainty, with population-aware design; testbed only, no empirical validation
   - next ready: T-025 S1c Experiment contracts: ensembles/seeds/freeze rules, cheap preflight, cache-key audit, benchmark of one Belauri solve at 500/250/125 m (`research task context T-025`)
-  - running: T-024 S1b Population layer: grid-aligned loader, conservative regrid, 5 synthetic fixtures, area/population metrics, source registry (claimed by claude-code) — STALE, idle 10.0h
-  - running: T-026 S2a Less-diffusive convection scheme (flux-limited) with verification: MMS/periodic, conservation, positivity, order (claimed by claude-code) — STALE, idle 9.6h
+  - running: T-024 S1b Population layer: grid-aligned loader, conservative regrid, 5 synthetic fixtures, area/population metrics, source registry (claimed by claude-code) — STALE, idle 10.6h
+  - running: T-026 S2a Less-diffusive convection scheme (flux-limited) with verification: MMS/periodic, conservation, positivity, order (claimed by claude-code) — STALE, idle 10.2h
 - PLAN-002 PRAVAH phase 2: solver interchange, external/local, Belauri geography, geographic design — 11/11 tasks done · objective: Solver interchangeability; synthetic external vs local identifiability + indoor box; real Belauri geography and forward sims; geographic sensor design
 - PLAN-001 PRAVAH v0 baseline — 11/11 tasks done · objective: Runnable v0: forward model, inverse, sensor design, notebooks, CLI
 
@@ -78,6 +80,8 @@ EXP-002 — EXP inverse recovery (frozen reference)
 ## ⚠ Needs synthesis before new experiments
 
 - EXP-015 EXP convergence of sensor-design decisions with mesh, time step and scheme (pre-registered) (0 unsynthesized runs)
+- EXP-020 EXP toy population design with exact selection and replicated settings (pre-registered) (0 unsynthesized runs)
+- EXP-021 EXP toy prescribed winds, converged reference domain and deflecting channel (pre-registered) (0 unsynthesized runs)
 
 ## Active decisions
 

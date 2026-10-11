@@ -1,0 +1,25 @@
+{
+  "config_hash_without_alpha": "26e32a9efa3005a81d09d4136e3342ff171e23b1699f3de665273a69ac85ae4f",
+  "selection": {
+    "types": [
+      "one_town",
+      "separated_settlements",
+      "dense_core_sparse_surround",
+      "mixed_rural_urban"
+    ],
+    "placements": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "draws": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  }
+}
