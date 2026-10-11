@@ -160,6 +160,15 @@ FIXTURES: dict[str, Callable[[GridSpec, int, int], np.ndarray]] = {
     f.__name__: f for f in (uniform, one_town, separated_settlements, dense_core_sparse_surround, mixed_rural_urban)}
 
 
+def mask_to_study(counts: np.ndarray, study_fraction: np.ndarray, total: float) -> np.ndarray:
+    """People per cell inside the study polygon only: counts * study_fraction (partial border cells keep their inside
+    share), rescaled so the study holds exactly ``total`` people. Fractional people per cell are kept (not rounded)."""
+    c = np.asarray(counts, float) * np.asarray(study_fraction, float)
+    if c.shape != np.shape(study_fraction) or np.any(c < 0) or not c.sum() > 0 or not total > 0:
+        raise ValueError("need counts >= 0 with positive mass inside the study, matching shapes and total > 0")
+    return c * (float(total) / c.sum())
+
+
 # ---------------------------------------------------------------- weights and metrics
 def _as_area(area: float | np.ndarray, shape: tuple[int, int]) -> np.ndarray:
     return np.broadcast_to(np.asarray(area, float), shape)
