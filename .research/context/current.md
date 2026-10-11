@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2773 tokens.
-> Generated 2026-10-11T11:54:43-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2765 tokens.
+> Generated 2026-10-11T11:58:49-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `8f2730bde7` (uncommitted changes)
+Git: `master` @ `4acbf3e51c` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -34,6 +34,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - F-007 [supported, medium] FINAL: hidden wind error and unmodelled source dominate discretisation mismatch; poor layout unidentifiable — evidence: EXP-007, RUN-0011
 - F-006 [supported, medium] FINAL: greedy layouts beat spread/random on fresh test scenarios with alpha frozen on validation (matched, synthetic) — evidence: EXP-005, EXP-006, RUN-0008, RUN-0009
 - F-002 [supported, high] Matched synthetic recovery of three amplitudes works; cached and direct routes agree — evidence: EXP-002, RUN-0003
+- F-032 [preliminary, medium] Toy: greedy layouts cost test error at 2-4 sensors (area RMSE 3.3x / 6.8x / 2.5x the best-found layout at 2 / 3 / 4 sensors, ~1.1x at 5-8); a large design-objective gap carries over to test; uniform stop check passes — evidence: EXP-022
 - F-031 [preliminary, medium] Toy prescribed winds, converged domain: for T = 12 h an outer half-width of ~UT/2 (40 km here) suffices (<1% exposure); smaller domains cut off the return of the plume; channel and vortex effects depend on placement; returned mass is good to ~10% — evidence: EXP-021, RUN-0034
 - F-030 [preliminary, medium] Toy population design with exact selection: greedy is far from optimal at 2-4 sensors; population weighting helps test population RMSE only at 2 sensors on concentrated fixtures and then costs 6-35x area RMSE; at 8 sensors it overfits the design cases — evidence: EXP-020, RUN-0033
 - F-029 [preliminary, medium] Toy wind-error response (corrected after review): direction error raises nominal-wind error ~3-4x at 30 deg and exceeds the sensor-count effect for >=10 deg; chi2/dof detects it; ensemble helps only when the truth is near a prior member — evidence: EXP-019, RUN-0031, RUN-0032
@@ -44,7 +45,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - F-016 [preliminary, high] Forward scheme: mass-consistent, first order in time, observed spatial order ~1.4 in the periodic test (~2.2-2.7 in the steady strip), large numerical diffusion — evidence: EXP-001, RUN-0001
 - F-017 [preliminary, medium] Matched-design layouts are not robust at 2-3 sensors under model mismatch, but per-case counts are mixed (v0 mismatch, synthetic) — evidence: EXP-007, RUN-0011
 - F-018 [preliminary, high] Belauri forward: the external patch reaches the municipality whenever the wind carries it from the WSW side (initially or throughout), not under steady north/east winds; numerical diffusion dominates the nominal K (real geography, synthetic emissions/meteorology) — evidence: EXP-012, RUN-0025
-- F-019 [preliminary, medium] Boundary-condition input (whole-side bases) removes part of the error from an omitted localised external plume (synthetic; corrected values) — evidence: EXP-011, RUN-0024
+- … 1 more (`research finding list`)
 
 ## Failed directions (do not repeat without a new reason)
 
@@ -56,7 +57,6 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - EXP-020 [needs_review] EXP toy population design with exact selection and replicated settings (pre-registered) — runs 1
 - EXP-015 [needs_review] EXP convergence of sensor-design decisions with mesh, time step and scheme (pre-registered) — runs 1
 - EXP-023 [proposed] EXP toy wind-error controls from F-029 review (alpha, offset prior grid, model error, base wind) (pre-registered) — runs 0
-- EXP-022 [proposed] EXP toy greedy vs exact layouts scored on test, uniform stop check (pre-registered) — runs 0
 - EXP-016 [proposed] EXP population-aware sensor placement: area vs population vs mixed vs capped objectives (pre-registered) — runs 0
 
 ## Active plans
@@ -70,9 +70,9 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Needs attention (verification)
 
+- [awaiting review] F-032 Toy: greedy layouts cost test error at 2-4 sensors (area RMSE 3.3x / 6.8x / 2.5x the best-found layout at 2 / 3 / 4 sensors, ~1.1x at 5-8); a large design-objective gap carries over to test; uniform stop check passes: Agent finding awaiting an independent review
 - [awaiting review] F-031 Toy prescribed winds, converged domain: for T = 12 h an outer half-width of ~UT/2 (40 km here) suffices (<1% exposure); smaller domains cut off the return of the plume; channel and vortex effects depend on placement; returned mass is good to ~10%: Agent finding awaiting an independent review
 - [awaiting review] F-030 Toy population design with exact selection: greedy is far from optimal at 2-4 sensors; population weighting helps test population RMSE only at 2 sensors on concentrated fixtures and then costs 6-35x area RMSE; at 8 sensors it overfits the design cases: Agent finding awaiting an independent review
-- [awaiting review] F-029 Toy wind-error response (corrected after review): direction error raises nominal-wind error ~3-4x at 30 deg and exceeds the sensor-count effect for >=10 deg; chi2/dof detects it; ensemble helps only when the truth is near a prior member: Agent finding awaiting an independent review
 
 ## ⚠ Needs synthesis before new experiments
 
