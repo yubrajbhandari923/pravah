@@ -26,6 +26,7 @@ from __future__ import annotations
 import dataclasses
 import hashlib
 import json
+import os
 import time as _time
 from collections.abc import Sequence
 from dataclasses import dataclass, field
@@ -180,8 +181,14 @@ class ResponseCache:
             self.misses += 1
             if path is not None:
                 path.parent.mkdir(parents=True, exist_ok=True)
-                np.savez(path, base=resp.base, g=resp.g, times=resp.times, x=resp.x, y=resp.y, q_ref=resp.q_ref,
-                         refs=resp.refs)
+                tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")  # atomic: concurrent writers of one key are safe
+                try:
+                    with open(tmp, "wb") as fh:
+                        np.savez(fh, base=resp.base, g=resp.g, times=resp.times, x=resp.x, y=resp.y, q_ref=resp.q_ref,
+                                 refs=resp.refs)
+                    os.replace(tmp, path)
+                finally:
+                    tmp.unlink(missing_ok=True)
         self._mem[key] = resp
         return resp
 

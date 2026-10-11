@@ -406,3 +406,18 @@ def test_population_weight():
     w = metrics.population_weight(Domain(nx=30, ny=20))
     assert w.shape == (20, 30) and np.all(w > 0) and w.mean() == pytest.approx(1.0)
     assert w.max() > 3 * w.min()
+
+
+def test_response_cache_write_is_atomic(tmp_path, monkeypatch):
+    """The .npz appears only by os.replace of a finished temp file: a failed write leaves nothing, a good one leaves no temp."""
+    d = tmp_path / "c"
+    monkeypatch.setattr(np, "savez", lambda *a, **k: (_ for _ in ()).throw(OSError("disk full")))
+    with pytest.raises(OSError):
+        ResponseCache(d).get(SC)
+    assert list(d.iterdir()) == []
+    monkeypatch.undo()
+    r1 = ResponseCache(d).get(SC)
+    files = list(d.iterdir())
+    assert len(files) == 1 and files[0].suffix == ".npz"
+    c2 = ResponseCache(d)
+    assert np.array_equal(c2.get(SC).g, r1.g) and c2.hits == 1
