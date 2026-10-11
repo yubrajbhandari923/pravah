@@ -1,0 +1,123 @@
+{
+ "label": "EXP-018 prescribed wind, not terrain-derived",
+ "profile": "production",
+ "config": {
+  "name": "prescribed_winds",
+  "label": "EXP-018 prescribed wind, not terrain-derived. Synthetic emissions and winds.",
+  "domain": {
+   "dx": 750.0,
+   "study_side_m": 9000.0,
+   "base_side_m": 27000.0
+  },
+  "transport": {
+   "u": 2.0,
+   "v": 0.0,
+   "K": 100.0,
+   "lam": 4.6296296296296294e-05,
+   "H": 500.0
+  },
+  "times": {
+   "duration": 43200.0,
+   "dt": 100.0,
+   "output_interval": 300.0
+  },
+  "sources": {
+   "external": {
+    "offset_m": [
+     -12000.0,
+     1500.0
+    ],
+    "sigma_m": 1000.0,
+    "rate_ug_s": 3000000.0,
+    "on_s": 1800.0,
+    "off_s": 5400.0
+   },
+   "local": {
+    "offset_m": [
+     0.0,
+     -1000.0
+    ],
+    "sigma_m": 600.0,
+    "rate_ug_s": 200000.0
+   }
+  },
+  "winds": {
+   "ridge": {
+    "offset_m": [
+     -5500.0,
+     0.0
+    ],
+    "sigma_m": 3000.0,
+    "peak_speed_m_s": 1.0
+   },
+   "eddy": {
+    "offset_m": [
+     2000.0,
+     -3000.0
+    ],
+    "sigma_m": 2500.0,
+    "peak_speed_m_s": 3.5
+   }
+  },
+  "scenarios": [
+   "steady",
+   "reversal",
+   "ridge",
+   "ridge_reversal",
+   "eddy"
+  ],
+  "size_factors": [
+   1.0,
+   1.5,
+   2.0
+  ],
+  "t_r_s": [
+   12600.0,
+   16200.0,
+   19800.0
+  ],
+  "thresholds": {
+   "arrival_fraction": 0.1,
+   "arrival_abs_ug_m3": 0.05,
+   "returned_a_min": 0.001,
+   "returned_theta": 0.05
+  },
+  "checks": {
+   "closure_rel": 1e-08,
+   "negative_rel": 1e-09
+  },
+  "profiles": {
+   "smoke": {
+    "domain": {
+     "dx": 1500.0,
+     "study_side_m": 9000.0,
+     "base_side_m": 27000.0
+    },
+    "times": {
+     "duration": 43200.0,
+     "dt": 300.0,
+     "output_interval": 300.0
+    },
+    "size_factors": [
+     1.0,
+     2.0
+    ],
+    "t_r_s": [
+     12600.0
+    ]
+   },
+   "pilot": {
+    "scenarios": [
+     "ridge_reversal"
+    ],
+    "t_r_s": [
+     16200.0
+    ]
+   }
+  }
+ },
+ "n_cases": 27,
+ "python": "3.12.7",
+ "platform": "macOS-26.5.2-arm64-arm-64bit",
+ "wall_s": 306.0912430000026
+}

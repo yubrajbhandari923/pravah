@@ -1,0 +1,9 @@
+{
+ "max_closure_rel": 3.888638069232305e-11,
+ "closure_limit": 1e-08,
+ "closure_ok": true,
+ "max_negative_rel_to_max_conc": -0.0,
+ "negative_limit": 1e-09,
+ "negative_ok": true,
+ "max_side_vs_budget_rel": 0.007192018737462273
+}

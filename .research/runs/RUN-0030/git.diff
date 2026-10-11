@@ -1,0 +1,75 @@
+diff --git a/.gitignore b/.gitignore
+index 0a55bbc..370384f 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -13,3 +13,6 @@ results/geodesign-robust/test_raw.csv
+ results/geodesign-robust/paired_rows.csv
+ results/phase3-bench/geo125/
+ results/phase3-convergence/stage2_work/
++results/phase3-*/work/
++results/phase3-*-smoke/
++results/phase3-*-pilot/
+
+# Untracked files (not included):
+#   results/phase3-wind-error-toy/smoke/README.md
+#   results/phase3-wind-error-toy/smoke/figures/C_minus_B_by_budget.png
+#   results/phase3-wind-error-toy/smoke/figures/amplitude_error_vs_vector_error.png
+#   results/phase3-wind-error-toy/smoke/figures/chi2_and_flags_vs_vector_error.png
+#   results/phase3-wind-error-toy/smoke/figures/coverage_vs_vector_error.png
+#   results/phase3-wind-error-toy/smoke/figures/heldout_rmse_vs_vector_error.png
+#   results/phase3-wind-error-toy/smoke/figures/local_vs_external_rmse_B.png
+#   results/phase3-wind-error-toy/smoke/figures/pop_weighted_rmse_vs_vector_error.png
+#   results/phase3-wind-error-toy/smoke/figures/rmse_vs_direction_error.png
+#   results/phase3-wind-error-toy/smoke/figures/rmse_vs_speed_error.png
+#   results/phase3-wind-error-toy/smoke/figures/rmse_vs_vector_error.png
+#   results/phase3-wind-error-toy/smoke/freeze.json
+#   results/phase3-wind-error-toy/smoke/layouts.json
+#   results/phase3-wind-error-toy/smoke/provenance.json
+#   results/phase3-wind-error-toy/smoke/raw/d+000.0_s+000.0.csv
+#   results/phase3-wind-error-toy/smoke/raw/d+000.0_s+015.0.csv
+#   results/phase3-wind-error-toy/smoke/raw/d+000.0_s-030.0.csv
+#   results/phase3-wind-error-toy/smoke/raw/d+010.0_s+000.0.csv
+#   results/phase3-wind-error-toy/smoke/raw/d+015.0_s+015.0.csv
+#   results/phase3-wind-error-toy/smoke/raw/d+015.0_s-015.0.csv
+#   results/phase3-wind-error-toy/smoke/raw/d-015.0_s+015.0.csv
+#   results/phase3-wind-error-toy/smoke/raw/d-015.0_s-015.0.csv
+#   results/phase3-wind-error-toy/smoke/raw/d-030.0_s+000.0.csv
+#   results/phase3-wind-error-toy/smoke/tables/calibration.csv
+#   results/phase3-wind-error-toy/smoke/tables/identifiability_demo.json
+#   results/phase3-wind-error-toy/smoke/tables/paired_differences.csv
+#   results/phase3-wind-error-toy/smoke/tables/posterior_weight_spread.csv
+#   results/phase3-wind-error-toy/smoke/tables/response_curves.csv
+#   results/phase3-wind-error-toy/smoke/timing.json
+#   results/phase3-wind-error-toy/smoke/validation.json
+#   results/phase3-wind-error-toy/work_smoke/04000a7535028daeda14065139a40111b1a529dc4a18ff00c28bab3c2bf6dc91.npz
+#   results/phase3-wind-error-toy/work_smoke/048f9faa95e18e411bfde603ca6cb3f38759847266c0ed08dd6741166927c648.npz
+#   results/phase3-wind-error-toy/work_smoke/08b6e8ff85f67a69b15ecb9a79ac885368e27d4ffc13f7c709c86e9996a6160a.npz
+#   results/phase3-wind-error-toy/work_smoke/0c88fb9784afa00691945864f27aa7390b70d967a230af578c465506a23c0e25.npz
+#   results/phase3-wind-error-toy/work_smoke/1174b10dd6866dd5b59bc2ed5ffbdf671d33a8b9ceb20a725e10b6f048364cce.npz
+#   results/phase3-wind-error-toy/work_smoke/197e9876b9526c77198f06ed33697927aadb476ed31d02765b6f197ce3a8fa03.npz
+#   results/phase3-wind-error-toy/work_smoke/278c716c8ade6f6ba2753e4041289e083affe9a82253031e5c6c784f1f176bd6.npz
+#   results/phase3-wind-error-toy/work_smoke/32e423ce6219b1650e4c3a87dc2dd7e82df7aebae8694501945b06809a2df5b7.npz
+#   results/phase3-wind-error-toy/work_smoke/41d87b5f2e63c75cf989222c8d30d3c38a24cbda880639b2f553e3086f64f68f.npz
+#   results/phase3-wind-error-toy/work_smoke/44399fd63ad21f2d02a4ebc4c4d70f83b02f17781105905c7c6adc69421dda2f.npz
+#   results/phase3-wind-error-toy/work_smoke/497ed10421c35c97ffe14084f77f442aba9deb572c778bcd61f6a968135e0b02.npz
+#   results/phase3-wind-error-toy/work_smoke/4c33851e053341bdfa71cf79d31602f723315447d20bc6f9b6672b0b4481ee6f.npz
+#   results/phase3-wind-error-toy/work_smoke/60c60ad80f22b4d0e60ca236366f00785c3d33d4a15a34e4c7873b1a89ffb1e3.npz
+#   results/phase3-wind-error-toy/work_smoke/6bb8d651b72d09bc7b3175d7d9e6053575d9c3e130b955799b30c4ee5d47843c.npz
+#   results/phase3-wind-error-toy/work_smoke/70d0956b6cccdc2f5e8fe917bfc9e91fa8a6bfc5a482cb4d9b2e909fbfea37d5.npz
+#   results/phase3-wind-error-toy/work_smoke/7110ea69707d7595af5dd1f2bcd45e59d1dc3bc36db5e89c7598bca80df43e5c.npz
+#   results/phase3-wind-error-toy/work_smoke/71295e531cb10bbdaaa5160bb4d9f09332bf4de2ec9162e3b41911fe602c6a1a.npz
+#   results/phase3-wind-error-toy/work_smoke/85c3294e10418c08eaee6d93fa2f7047e84bf4261a3bf8a6f71df8c048680ff0.npz
+#   results/phase3-wind-error-toy/work_smoke/8689ce959abe036e6403caab46de5bc107b62a6ecd536509c671f8d6f1fede5c.npz
+#   results/phase3-wind-error-toy/work_smoke/9f533937c6478d121a3bf14a6b632469a96ca1df8b0c4e0f231483ca3b9b1bdd.npz
+#   results/phase3-wind-error-toy/work_smoke/a3974a1b955b183b02fb87ab4a8dc63ae91953e961c963f780d5ad6366174a5c.npz
+#   results/phase3-wind-error-toy/work_smoke/a64af46a6200bcedb4adcf7f8c4ee2d33b08f3a5c8d5e97934c6652da35d6405.npz
+#   results/phase3-wind-error-toy/work_smoke/a65009519ec7dc3bfa94d332ea9ee87bed78eadbccbdd7e3209e2e15ec166b33.npz
+#   results/phase3-wind-error-toy/work_smoke/b8fabe6c36d242efc21f7352e05877d5e62f0f95059a429639ac97d8e2f57aed.npz
+#   results/phase3-wind-error-toy/work_smoke/bda1ef50c194a05fa007ca3a5d95ba2914178284cb4e3fb5dfbd21e143f094f0.npz
+#   results/phase3-wind-error-toy/work_smoke/beb635ba5c5c5eaea3c0de6c3099808cb5ca60d6c285021b366ae206d11bc561.npz
+#   results/phase3-wind-error-toy/work_smoke/c9b84c967868820c7acfa1cdb690fe5b47c9e1f88b07818e65f290976266b481.npz
+#   results/phase3-wind-error-toy/work_smoke/d73eff4a4d2da1dbf01cf161321a6adac02ca08dd936ea5b1222d0b40af6df6a.npz
+#   results/phase3-wind-error-toy/work_smoke/e1442b37918a95a02993262967bda4eaeb20f1724f58c0caae99b043c762e1c7.npz
+#   results/phase3-wind-error-toy/work_smoke/f76e30137da8deae72014f43a0788b3a28eb27d343970e7f9d95fa0c8393f446.npz
+#   results/phase3-wind-error-toy/work_smoke/fbcf82ff29b818fa4315702431dfa55d3f375726d9281ccc4b44ee2783c67c4f.npz
+#   results/phase3-wind-error-toy/work_smoke/ff0abd38725cec8597f760723c8f89415d272388a7a3ebba948e1c4811ac0edb.npz
