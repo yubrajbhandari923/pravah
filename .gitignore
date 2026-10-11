@@ -13,3 +13,6 @@ results/geodesign-robust/test_raw.csv
 results/geodesign-robust/paired_rows.csv
 results/phase3-bench/geo125/
 results/phase3-convergence/stage2_work/
+results/phase3-*/work/
+results/phase3-*-smoke/
+results/phase3-*-pilot/
