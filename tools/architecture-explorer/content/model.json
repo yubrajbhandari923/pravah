@@ -1,0 +1,5282 @@
+{
+ "schemaVersion": 1,
+ "title": "PRAVAH research architecture",
+ "curatedAt": "2026-10-10",
+ "reviewLegend": {
+  "verified-scan": "Implementation (code/test/config/result) located and read in the last curation scan. Tests were not executed by the explorer.",
+  "docs-only": "Rests on repository documentation; no implementing code located, or the capability is documented as proposed.",
+  "needs-inspection": "Flagged for a human or a refresh session to re-inspect."
+ },
+ "nodes": [
+  {
+   "id": "s.transport",
+   "perspective": "science",
+   "parent": null,
+   "kind": "concept",
+   "title": "Physical transport model",
+   "role": "Advection–diffusion–removal PDE with sources and boundary inflow",
+   "purpose": "A 2-D depth-averaged air-quality model: pollutant concentration is carried by a prescribed wind, spread by diffusion, removed at a first-order rate, and fed by emission sources and by inflow at the domain edge. Everything quantitative in PRAVAH is synthetic.",
+   "technical": "One fixed-depth layer; piecewise-constant uniform wind (plus one stream-function demo); constant K and λ; Gaussian or raster sources normalised on the grid; open, periodic or closed boundaries per face.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "equation": "∂c/∂t + ∇·(u c) = ∇·(K ∇c) + Σ_j q_j s_j(t) f_j(x,y)/H − λ c\nΣ_cells f_j · dA = 1  (grid-normalised sources)",
+   "inputs": [
+    "wind u(t)",
+    "K, λ, H (nominal)",
+    "source shapes f_j, profiles s_j(t)",
+    "boundary mode / inflow bases"
+   ],
+   "outputs": [
+    "c(x,y,t) in µg/m³ via the forward solver"
+   ],
+   "assumptions": [
+    "Single well-mixed layer of fixed depth H",
+    "Wind, K, λ uniform in space",
+    "No chemistry, no terrain dynamics"
+   ],
+   "limitations": [
+    {
+     "text": "Fixed mixing depth, uniform meteorology, no chemistry or terrain coupling",
+     "severity": "high",
+     "impact": "Results describe an idealised system; nothing here is an estimate for any real place."
+    }
+   ],
+   "evidence": [
+    "ev.spec.equation",
+    "ev.fw.equation",
+    "ev.src.fields",
+    "ev.arch.param",
+    "ev.readme.limits"
+   ],
+   "mirrors": [
+    "w.scenario"
+   ],
+   "tags": [
+    "PDE",
+    "advection",
+    "diffusion",
+    "removal",
+    "mixing depth",
+    "boundary conditions",
+    "sources"
+   ]
+  },
+  {
+   "id": "s.forward",
+   "perspective": "science",
+   "parent": null,
+   "kind": "concept",
+   "title": "Forward solution",
+   "role": "FiPy finite-volume solve; truth vs inference solver roles",
+   "purpose": "Turns the transport model and an emission/inflow parameter vector θ into concentration fields and a mass budget. The same solver code plays two roles: generating synthetic truth and building the model the inversion uses.",
+   "technical": "Backward Euler in time, exponential-scheme finite volume in space (FiPy). All boundary physics is explicit so the budget uses exactly the coefficients of the equation. A ForwardSolver protocol lets another solver replace FiPy for either role.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "inputs": [
+    "Scenario",
+    "θ = emission amplitudes (µg/s) then inflow-basis amplitudes (µg/m³)"
+   ],
+   "outputs": [
+    "FieldResult: concentration (time,y,x), budget, diagnostics, BackendInfo"
+   ],
+   "assumptions": [
+    "Truth and inference use the same equations in matched experiments"
+   ],
+   "limitations": [
+    {
+     "text": "First-order scheme with large numerical diffusion (K_eff ≈ 1.6 K at the default mesh; 2.4–9.4 K at the Belauri design mesh)",
+     "severity": "high",
+     "impact": "Plumes are smoother than the nominal K says; sensor-design conclusions describe the numerically diffusive model."
+    }
+   ],
+   "evidence": [
+    "ev.fw.docstring",
+    "ev.arch.flow"
+   ],
+   "mirrors": [
+    "w.solver"
+   ],
+   "tags": [
+    "FiPy",
+    "finite volume",
+    "backward Euler",
+    "solver",
+    "truth",
+    "inference"
+   ]
+  },
+  {
+   "id": "s.observations",
+   "perspective": "science",
+   "parent": null,
+   "kind": "concept",
+   "title": "Sensors and observations",
+   "role": "Sampling the field at sensors; known Gaussian noise",
+   "purpose": "What an instrument would see: the model field read at sensor positions and times, with measurement noise. The inversion sees only these readings.",
+   "technical": "Bilinear interpolation on the cell-centre grid at the sensor times, plus independent Gaussian noise with known standard deviation from a seeded generator.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "inputs": [
+    "concentration field",
+    "SensorLayout (ids, x, y)",
+    "sample times",
+    "noise sd, seed"
+   ],
+   "outputs": [
+    "Observations (readings, sd, layout, times)"
+   ],
+   "assumptions": [
+    "Noise is iid Gaussian with known sd",
+    "No sensor bias, drift or location error"
+   ],
+   "limitations": [
+    {
+     "text": "Idealised sensor model",
+     "severity": "medium",
+     "impact": "Real sensors have bias, drift, representativeness error; none is modelled."
+    }
+   ],
+   "evidence": [
+    "ev.obs.doc",
+    "ev.obs.observe"
+   ],
+   "mirrors": [
+    "w.obs"
+   ],
+   "tags": [
+    "sensors",
+    "interpolation",
+    "noise",
+    "observations"
+   ]
+  },
+  {
+   "id": "s.inverse",
+   "perspective": "science",
+   "parent": null,
+   "kind": "concept",
+   "title": "Inverse source estimation",
+   "role": "Non-negative, regularised estimation of source amplitudes",
+   "purpose": "Given noisy sensor readings and a known transport model, estimate how much each source emits (and inflow amplitudes) and say how well the data constrain each one.",
+   "technical": "Because the model is linear in θ, one batch of unit-response solves gives y = b + Aθ; the fit is a bounded (θ ≥ 0) ridge least-squares in scaled units, with diagnostics (effective rank, posterior std).",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "equation": "min_{q ≥ 0}  ‖(b + A q − y)/σ‖² + α ‖q/q_scale − prior/q_scale‖²",
+   "inputs": [
+    "Observations",
+    "ResponseCache (b, A)",
+    "α, scales, prior mean (0)"
+   ],
+   "outputs": [
+    "FitResult: q̂, effective_rank, q_std, condition"
+   ],
+   "assumptions": [
+    "Wind, K, λ, H, source geometry, temporal profiles and boundary forcing are KNOWN",
+    "Only amplitudes are unknown"
+   ],
+   "limitations": [
+    {
+     "text": "A good field fit does not imply correct attribution",
+     "severity": "high",
+     "impact": "Ill-posed directions are only flagged by diagnostics; see identifiability."
+    }
+   ],
+   "evidence": [
+    "ev.spec.inverse",
+    "ev.inv.solve"
+   ],
+   "mirrors": [
+    "w.inverse"
+   ],
+   "tags": [
+    "inverse",
+    "Tikhonov",
+    "non-negativity",
+    "identifiability",
+    "least squares"
+   ]
+  },
+  {
+   "id": "s.design",
+   "perspective": "science",
+   "parent": null,
+   "kind": "concept",
+   "title": "Sensor-placement design",
+   "role": "Choosing and evaluating layouts on held-out scenarios",
+   "purpose": "Where should a limited number of sensors go? Layouts are chosen on design scenarios and judged on fresh test scenarios, because design-stage scores overstate real performance.",
+   "technical": "Random, farthest-point (spread) and greedy layouts over a candidate set with constraints; greedy uses cached quadratic forms so no PDE solve per candidate. Role guards (design / validation / test) and disjoint seeds prevent leakage.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "inputs": [
+    "Candidates + Constraints",
+    "design cases",
+    "frozen α"
+   ],
+   "outputs": [
+    "layouts per budget",
+    "held-out error tables, paired comparisons"
+   ],
+   "assumptions": [
+    "Matched model unless a mismatch experiment says otherwise",
+    "Small ensembles (6 design + 6 test scenarios)"
+   ],
+   "limitations": [
+    {
+     "text": "Small-budget layout rankings are unresolved with 6 test scenarios",
+     "severity": "high",
+     "impact": "Do not rank methods at 1–3 sensors on the shipped results."
+    }
+   ],
+   "evidence": [
+    "ev.des.header",
+    "ev.gd.methods"
+   ],
+   "mirrors": [
+    "w.design",
+    "w.cli",
+    "w.out"
+   ],
+   "tags": [
+    "sensor placement",
+    "greedy",
+    "spread",
+    "random",
+    "held-out",
+    "layouts"
+   ]
+  },
+  {
+   "id": "s.attribution",
+   "perspective": "science",
+   "parent": null,
+   "kind": "concept",
+   "title": "External vs local attribution",
+   "role": "Origin tags, boundary-inflow bases, one-way indoor box",
+   "purpose": "Separate pollution emitted inside the study area (local) from what arrives from outside (external), and ask whether sensors can tell them apart. Also a small indoor box driven by outdoor air.",
+   "technical": "Linear superposition of unit responses gives origin tags that sum to the total field; external input is either an explicit source or a boundary-inflow basis (different units); a concentration-derived external fraction summarises the split.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "inputs": [
+    "Responses with parameter kinds",
+    "study mask"
+   ],
+   "outputs": [
+    "origin-tagged fields",
+    "external fraction F_ext",
+    "per-kind errors"
+   ],
+   "assumptions": [
+    "The inversion is given the TRUE temporal profiles and wind history"
+   ],
+   "limitations": [
+    {
+     "text": "Synthetic only; F_ext holds for one wind history",
+     "severity": "high",
+     "impact": "No statement about any real border, place or emitter is supported."
+    }
+   ],
+   "evidence": [
+    "ev.tb.model",
+    "ev.attr.contrib",
+    "ev.tb.not"
+   ],
+   "mirrors": [
+    "w.inverse",
+    "w.design"
+   ],
+   "tags": [
+    "external",
+    "local",
+    "transboundary",
+    "indoor",
+    "origin tags",
+    "boundary basis"
+   ]
+  },
+  {
+   "id": "s.belauri",
+   "perspective": "science",
+   "parent": null,
+   "kind": "concept",
+   "title": "Belauri geography and scenarios",
+   "role": "Real geometry under synthetic emissions and meteorology",
+   "purpose": "Places the model on the real Belauri (Nepal) municipality: polygon, roads, buildings, facilities, DEM context, national outline. Only the geometry is real.",
+   "technical": "Offline preparation turns raw layers into grid arrays and a hashed manifest; scenarios use per-cell study-area fractions and raster sources; forward runs and sensor design reuse the same solver.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "inputs": [
+    "data/belauri/manifest.json",
+    "synthetic emission amplitudes",
+    "prescribed synthetic winds"
+   ],
+   "outputs": [
+    "Region",
+    "BelauriCase scenarios",
+    "candidate sensor sites"
+   ],
+   "assumptions": [
+    "OSM layer completeness is unknown (a missing road is a mapping gap, not a zero source)"
+   ],
+   "limitations": [
+    {
+     "text": "Real geography alone validates nothing; terrain is plotting context only",
+     "severity": "high",
+     "impact": "No terrain-driven flow; relief starts about 20 km north of the polygon."
+    }
+   ],
+   "evidence": [
+    "ev.geo.doc",
+    "ev.geo.scenarios",
+    "ev.bf.real"
+   ],
+   "mirrors": [
+    "w.scenario",
+    "w.design"
+   ],
+   "tags": [
+    "Belauri",
+    "Nepal",
+    "geography",
+    "DEM",
+    "OSM",
+    "UTM"
+   ]
+  },
+  {
+   "id": "s.validation",
+   "perspective": "science",
+   "parent": null,
+   "kind": "concept",
+   "title": "Verification, benchmarks and robustness",
+   "role": "What was checked, on what data, and what it does not establish",
+   "purpose": "Separates numerical verification (conservation, convergence, exact solutions) from matched-model synthetic benchmarks and from model-mismatch experiments, and keeps exploratory runs apart from the final chain.",
+   "technical": "Frozen result directories with provenance, a FiPy bit-identity regression gate, mismatch and robustness studies, and an honest ledger of known issues. Nothing is validated against measurements.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "inputs": [
+    "configs",
+    "frozen results/"
+   ],
+   "outputs": [
+    "tables, findings with review status, known-issue ledger"
+   ],
+   "limitations": [
+    {
+     "text": "No empirical validation; ensembles are small; sd is not a confidence interval",
+     "severity": "high",
+     "impact": "Treat all statistics as descriptive."
+    }
+   ],
+   "evidence": [
+    "ev.p2.limits",
+    "ev.ver.script",
+    "ev.test.effdiff",
+    "ev.p2.reqtable",
+    "ev.agents.state"
+   ],
+   "mirrors": [
+    "w.verify",
+    "w.cli",
+    "w.out"
+   ],
+   "tags": [
+    "verification",
+    "benchmark",
+    "mismatch",
+    "robustness",
+    "inverse crime",
+    "provenance"
+   ]
+  },
+  {
+   "id": "s.transport.pde",
+   "perspective": "science",
+   "parent": "s.transport",
+   "kind": "mechanism",
+   "title": "Governing PDE and grid-normalised sources",
+   "role": "What is solved, in which units",
+   "purpose": "The concentration equation, with every source normalised so its integrated emission equals q_j regardless of resolution.",
+   "technical": "Gaussian shapes are sampled at cell centres and divided by their discrete integral (Σ f dA = 1); raster sources use their prepared weights. Emission enters as q_j s_j(t) f_j / H (µg/m³/s).",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "equation": "∂c/∂t + ∇·(u c) = ∇·(K ∇c) + Σ_j q_j s_j(t) f_j/H − λ c   [x,y m; t s; c µg/m³; q µg/s; f 1/m²]",
+   "inputs": [
+    "q_j (µg/s)",
+    "s_j(t)",
+    "f_j"
+   ],
+   "outputs": [
+    "source term S_q (µg/m³/s)"
+   ],
+   "chosen": "Discrete normalisation of f_j on the grid",
+   "why": "Makes the integrated emission resolution-invariant; the quadrature effect is reported as a discrete-vs-continuous ratio (docs).",
+   "alternatives": [
+    "Continuous Gaussian integral with domain truncation (erf)"
+   ],
+   "assumptions": [
+    "Sources are steady in space; s_j(t) piecewise constant"
+   ],
+   "evidence": [
+    "ev.spec.equation",
+    "ev.src.fields",
+    "ev.fw.timeloop",
+    "ev.test.srcint",
+    "ev.test.closedmass"
+   ],
+   "mirrors": [
+    "w.scn.sources",
+    "w.solver.fipy"
+   ],
+   "tags": [
+    "normalisation",
+    "emission",
+    "units"
+   ]
+  },
+  {
+   "id": "s.transport.boundary",
+   "perspective": "science",
+   "parent": "s.transport",
+   "kind": "mechanism",
+   "title": "Boundary treatment per face",
+   "role": "Inflow carries input, outflow exports, tangential faces do nothing",
+   "purpose": "Each domain face is classified each wind segment by the sign of u·n. Only inflow faces carry a prescribed concentration (background or inflow-basis amplitudes).",
+   "technical": "FiPy's own convection is zeroed on exterior faces; inflow/outflow terms are added explicitly as coefficient arrays (a_in, a_out, s_in) and the budget reuses them. |u·n| below 1e-12 m/s is tangential. The inflow coefficient jumps from 0 to |u·n|+2K/h as u·n changes sign (a property of the Dirichlet treatment).",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "inputs": [
+    "wind segment",
+    "Boundary.mode / background / InflowBasis"
+   ],
+   "outputs": [
+    "a_in, a_out, s_in arrays; budget inflow/outflow terms"
+   ],
+   "chosen": "Explicit boundary physics",
+   "why": "Keeps the diagnostics identical to the equation actually solved.",
+   "alternatives": [
+    "Letting FiPy impose boundary conditions",
+    "Wall (closed) boundaries around the study area (rejected: the polygon is a mask, never a wall)"
+   ],
+   "assumptions": [
+    "Inflow is a prescribed concentration; outflow has zero diffusive gradient"
+   ],
+   "limitations": [
+    {
+     "text": "A nearly tangential wind gives a discontinuous effect of that side's basis",
+     "severity": "medium",
+     "impact": "Boundary-basis results near tangential wind are sensitive."
+    }
+   ],
+   "evidence": [
+    "ev.fw.docstring",
+    "ev.spec.boundaries",
+    "ev.fw.untol",
+    "ev.cfg.inflow",
+    "ev.test.windrev",
+    "ev.test.steady"
+   ],
+   "mirrors": [
+    "w.solver.fipy",
+    "w.scn.model"
+   ],
+   "tags": [
+    "open boundary",
+    "inflow",
+    "periodic",
+    "closed",
+    "tangential"
+   ]
+  },
+  {
+   "id": "s.transport.depth",
+   "perspective": "science",
+   "parent": "s.transport",
+   "kind": "decision",
+   "title": "Decision: fixed mixing depth and uniform meteorology",
+   "role": "One layer, constant H, K, λ",
+   "purpose": "The model is depth-averaged with a fixed effective mixing depth H = 500 m (nominal). Wind and K are uniform in space.",
+   "technical": "H appears only as 1/H in the emission term. There is no boundary-layer evolution, stability dependence or vertical structure.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Single fixed-depth layer with nominal parameters",
+   "why": "Keeps the problem linear and cheap enough for ensembles and for the unit-response approach.",
+   "alternatives": [
+    "Time-varying mixing height",
+    "Spatially varying K and wind",
+    "Chemistry/removal beyond first order"
+   ],
+   "assumptions": [
+    "H = 500 m, K = 100 m²/s, λ = 1/21600 s⁻¹ in the demo configs"
+   ],
+   "limitations": [
+    {
+     "text": "H, K, λ are nominal demonstration values",
+     "severity": "high",
+     "impact": "The physical K is never tuned; numerical diffusion exceeds it (see Forward solution)."
+    }
+   ],
+   "evidence": [
+    "ev.spec.equation",
+    "ev.readme.limits",
+    "ev.cfg.wind"
+   ],
+   "mirrors": [
+    "w.scn.model"
+   ],
+   "tags": [
+    "mixing depth",
+    "H",
+    "uniform wind",
+    "nominal"
+   ]
+  },
+  {
+   "id": "s.transport.met",
+   "perspective": "science",
+   "parent": "s.transport",
+   "kind": "decision",
+   "title": "Decision: prescribed synthetic winds",
+   "role": "Meteorology is an input, not a model",
+   "purpose": "Winds are piecewise-constant uniform vectors (plus one divergence-free stream-function demo). Terrain does not influence the flow.",
+   "technical": "A stream function ψ gives face velocities that are exactly divergence-free per cell; uniform wind is ψ = u·y − v·x. Reversals flip which faces act as inflow.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Prescribed winds",
+   "why": "Real meteorology is outside scope; the experiments vary wind direction and speed on purpose.",
+   "alternatives": [
+    "Terrain-coupled or reanalysis winds (not implemented)"
+   ],
+   "limitations": [
+    {
+     "text": "No terrain-coupled flow",
+     "severity": "high",
+     "impact": "Katabatic/channelled flow is not represented; the DEM is plotting context only."
+    }
+   ],
+   "evidence": [
+    "ev.cfg.wind",
+    "ev.geo.wind",
+    "ev.cfg.windchange",
+    "ev.bf.limits"
+   ],
+   "mirrors": [
+    "w.scn.geo",
+    "w.scn.model",
+    "w.cli.config"
+   ],
+   "tags": [
+    "wind",
+    "stream function",
+    "meteorology",
+    "terrain"
+   ]
+  },
+  {
+   "id": "s.forward.scheme",
+   "perspective": "science",
+   "parent": "s.forward",
+   "kind": "decision",
+   "title": "Decision: FiPy finite volume, exponential scheme, backward Euler",
+   "role": "Discretisation actually solved",
+   "purpose": "TransientTerm + ExponentialConvectionTerm == DiffusionTerm − ImplicitSourceTerm + source, advanced with backward Euler on a uniform Grid2D.",
+   "technical": "Unconditionally stable and non-negative in practice (negatives are counted in diagnostics, concentrations are never clipped). The upwind variant is selectable through SolverOptions.convection.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Backward Euler + exponential convection",
+   "why": "Documented as the v0 baseline; implicit stepping tolerates the long steps the ensembles need. (Rationale beyond the docs is not recorded.)",
+   "alternatives": [
+    "Upwind convection (selectable)",
+    "Higher-order time stepping or flux-limited schemes (not implemented)"
+   ],
+   "limitations": [
+    {
+     "text": "First order in time; observed spatial order ~1.4 in the periodic test",
+     "severity": "medium",
+     "impact": "Finer meshes reduce but do not remove the error; F-016 is preliminary."
+    }
+   ],
+   "evidence": [
+    "ev.fw.docstring",
+    "ev.fw.equation",
+    "ev.fw.timeloop",
+    "ev.cfg.solveropts",
+    "ev.impl.decisions",
+    "ev.test.spatialconv",
+    "ev.p2.f016"
+   ],
+   "mirrors": [
+    "w.solver.fipy"
+   ],
+   "tags": [
+    "backward Euler",
+    "exponential convection",
+    "upwind",
+    "order of accuracy"
+   ]
+  },
+  {
+   "id": "s.forward.numdiff",
+   "perspective": "science",
+   "parent": "s.forward",
+   "kind": "mechanism",
+   "title": "Numerical diffusion of the scheme",
+   "role": "Effective diffusivity exceeds the nominal K",
+   "purpose": "The discretisation adds artificial diffusion, so plumes spread as if K were larger than stated. K is therefore a nominal input.",
+   "technical": "For a Fourier mode and wind along a grid axis: K_eff/K − 1 ≈ (Pe/2)coth(Pe/2) − 1 + u²Δt/(2K), Pe = |u|Δx/K. Measured by Fourier-mode projection (periodic, λ=0): +0.606 at 50 cells, Δt=60 s, i.e. K_eff ≈ 1.6 K; the test asserts agreement with theory to 3%. At Belauri meshes (u=1.5 m/s) docs give K_eff ≈ 253–488 m²/s; AGENTS/phase-2 wrap-up give K_eff/K ≈ 2.4–9.4 over the drawn winds at the design mesh.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "equation": "K_eff/K − 1 ≈ (Pe/2)·coth(Pe/2) − 1 + u²·Δt/(2K),   Pe = |u|·Δx/K",
+   "inputs": [
+    "u, Δx, Δt, K"
+   ],
+   "outputs": [
+    "excess diffusivity estimate (scalar-speed approximation for oblique wind)"
+   ],
+   "chosen": "Report it separately from K rather than tune K",
+   "why": "The physical K is not constrained by any data here.",
+   "alternatives": [
+    "Finer mesh / smaller Δt (reduces, does not remove)",
+    "Higher-order scheme (not implemented)"
+   ],
+   "limitations": [
+    {
+     "text": "Numerical diffusion dominates the nominal K",
+     "severity": "high",
+     "impact": "Sensor-design conclusions and arrival times are properties of the numerically diffusive model and are mesh-dependent."
+    },
+    {
+     "text": "Theory is exact only for wind along a grid axis",
+     "severity": "low",
+     "impact": "For oblique wind the estimate is an approximation; the robustness run tabulates it for the drawn winds."
+    }
+   ],
+   "evidence": [
+    "ev.spec.numdiff",
+    "ev.verif.nd",
+    "ev.test.effdiff",
+    "ev.scn.nde",
+    "ev.test.nde",
+    "ev.bf.nd",
+    "ev.val.nd",
+    "ev.gr.nd",
+    "ev.res.robustnd",
+    "ev.p2.wrapnd"
+   ],
+   "mirrors": [
+    "w.solver.fipy",
+    "w.scn.geo"
+   ],
+   "tags": [
+    "numerical diffusion",
+    "K_eff",
+    "Peclet",
+    "measurement",
+    "theory"
+   ],
+   "reviewNote": "Measurement (Fourier-mode projection, asserted to 3% against theory in tests) vs theory (closed form) are distinct evidence; the 2.4–9.4 range is a documented figure from the geodesign robustness table, not re-derived in this scan."
+  },
+  {
+   "id": "s.forward.budget",
+   "perspective": "science",
+   "parent": "s.forward",
+   "kind": "mechanism",
+   "title": "Mass budget and no clipping",
+   "role": "Every run closes its own books",
+   "purpose": "Each result carries emission, removal, inflow, outflow and mass-change terms and their residual, using the same implicit boundary coefficients as the solve.",
+   "technical": "Concentrations are never clipped; negatives are counted in diagnostics. Tests check closure for closed, periodic and open cases.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Budget from the solved coefficients",
+   "why": "Makes budget closure a real check of the discretisation rather than a bookkeeping identity.",
+   "evidence": [
+    "ev.fw.budget",
+    "ev.test.closedmass",
+    "ev.test.openbudget"
+   ],
+   "mirrors": [
+    "w.solver.fipy"
+   ],
+   "tags": [
+    "mass conservation",
+    "budget",
+    "residual"
+   ]
+  },
+  {
+   "id": "s.forward.interchange",
+   "perspective": "science",
+   "parent": "s.forward",
+   "kind": "decision",
+   "title": "Decision: replaceable forward solver, truth ≠ inference roles",
+   "role": "ForwardSolver protocol with declared capabilities",
+   "purpose": "Every workflow takes an injected solver. Truth and inference roles can differ, and a backend must declare whether superposition is valid before the fast cached route is allowed.",
+   "technical": "BackendInfo(name, version, settings, capabilities) is part of every cache key. check_field_result validates dims, coordinates, units and finiteness. FiPy results are bit-identical before and after the refactor (21 files, 0 differ). Only FiPy variants and test doubles exist.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Protocol + explicit capability opt-in",
+   "why": "So a non-FiPy solver cannot silently reuse FiPy responses or assume linearity.",
+   "alternatives": [
+    "Hard-wired FiPy"
+   ],
+   "limitations": [
+    {
+     "text": "No alternative physics solver exists; a surrogate is only illustrated with a test stand-in",
+     "severity": "medium",
+     "impact": "Interchangeability is an interface claim, tested with wrappers and the upwind variant, not a demonstrated surrogate."
+    },
+    {
+     "text": "linear=True is the author's claim; the framework does not test linearity",
+     "severity": "medium",
+     "impact": "A wrong declaration would corrupt the fast route."
+    }
+   ],
+   "evidence": [
+    "ev.fw.protocol",
+    "ev.fw.getforward",
+    "ev.si.doc",
+    "ev.si.regression",
+    "ev.test.siroutes",
+    "ev.test.sicaps",
+    "ev.test.sicache",
+    "ev.test.fi",
+    "ev.ext.surrogate"
+   ],
+   "mirrors": [
+    "w.solver.iface",
+    "w.cli.main"
+   ],
+   "tags": [
+    "interface",
+    "capabilities",
+    "BackendInfo",
+    "surrogate",
+    "truth",
+    "inference"
+   ]
+  },
+  {
+   "id": "s.obs.sampling",
+   "perspective": "science",
+   "parent": "s.observations",
+   "kind": "mechanism",
+   "title": "Sensor sampling",
+   "role": "Bilinear read-out on the cell-centre grid",
+   "purpose": "Reads the field at arbitrary sensor positions and requested times.",
+   "technical": "Bilinear weights on the cell-centre lattice, exact for fields affine in x and y; sensors outside the candidate hull are rejected.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "inputs": [
+    "field",
+    "SensorLayout",
+    "times"
+   ],
+   "outputs": [
+    "clean readings"
+   ],
+   "chosen": "Bilinear interpolation",
+   "why": "Simple, exact for affine fields, differentiable weights reused by the linear operator.",
+   "alternatives": [
+    "Nearest-cell value"
+   ],
+   "limitations": [
+    {
+     "text": "Interpolation error is ignored in the matched model",
+     "severity": "low",
+     "impact": "Truth and operator use the same bilinear operator, so interpolation error is invisible."
+    }
+   ],
+   "evidence": [
+    "ev.obs.doc",
+    "ev.obs.interp",
+    "ev.test.obs"
+   ],
+   "mirrors": [
+    "w.obs.sample"
+   ],
+   "tags": [
+    "bilinear",
+    "sampling",
+    "layout"
+   ]
+  },
+  {
+   "id": "s.obs.noise",
+   "perspective": "science",
+   "parent": "s.observations",
+   "kind": "mechanism",
+   "title": "Measurement noise",
+   "role": "Seeded iid Gaussian with known sd",
+   "purpose": "Adds noise to clean readings; the estimator is told the noise level.",
+   "technical": "Noise sd is a scalar or per sensor; draws come from default_rng(seed). In geodesign the sd is a fraction (0.05, 0.15) of each ensemble's signal scale, with common random numbers across layouts.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Known-sd Gaussian",
+   "why": "Gives a well-posed weighted least-squares problem.",
+   "alternatives": [
+    "Unknown or heteroscedastic noise; bias terms (not modelled)"
+   ],
+   "limitations": [
+    {
+     "text": "Test noise level was computed from the test ensemble (0.0158 vs design 0.0154, +2.6%)",
+     "severity": "medium",
+     "impact": "A mild independence leak; sensor-design test numbers may be slightly optimistic. Fix not shipped."
+    }
+   ],
+   "evidence": [
+    "ev.obs.observe",
+    "ev.test.noise",
+    "ev.cfg.reference",
+    "ev.gd.noise",
+    "ev.gd.noisefn",
+    "ev.p2.noiseleak"
+   ],
+   "mirrors": [
+    "w.obs.noise"
+   ],
+   "tags": [
+    "noise",
+    "sigma",
+    "seed",
+    "signal scale"
+   ]
+  },
+  {
+   "id": "s.inverse.linear",
+   "perspective": "science",
+   "parent": "s.inverse",
+   "kind": "mechanism",
+   "title": "Linear superposition and the response cache",
+   "role": "n+1 solves instead of one per iterate",
+   "purpose": "Concentrations are affine in θ, so readings are y = b + Aθ. b is the zero-emission response; column j of A is the response to a unit amplitude of parameter j.",
+   "technical": "ResponseCache computes the n_params+1 solves once per scenario (key includes scenario, solver options, schema, reference amplitudes and BackendInfo) and Responses.operator(layout, times) returns (b, A) for any layout. A 'direct' route re-solves at each optimiser iterate for comparison.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "equation": "y = b + A θ + ε",
+   "chosen": "Cached linear operator",
+   "why": "Makes layouts, seeds and noise draws cheap; direct and cached routes agree in tests.",
+   "alternatives": [
+    "Direct nonlinear least squares with finite-difference Jacobian (kept as a check)"
+   ],
+   "assumptions": [
+    "Backend declares capabilities['linear']",
+    "Wind, K, λ, H, source geometry fixed and known"
+   ],
+   "evidence": [
+    "ev.inv.responses",
+    "ev.test.recover",
+    "ev.si.doc"
+   ],
+   "mirrors": [
+    "w.inv.responses"
+   ],
+   "tags": [
+    "superposition",
+    "unit response",
+    "operator",
+    "cache"
+   ]
+  },
+  {
+   "id": "s.inverse.nnls",
+   "perspective": "science",
+   "parent": "s.inverse",
+   "kind": "decision",
+   "title": "Decision: non-negative ridge with zero-mean prior and scaled units",
+   "role": "Bounded least squares in θ = q/q_scale",
+   "purpose": "Amplitudes are constrained non-negative and shrunk toward a zero prior mean; the penalty depends only on α/q_scale².",
+   "technical": "Solved by bounded-variable least squares (scipy lsq_linear, bvls). Scales: emission 1e5 µg/s, inflow 0.05 µg/m³ — numerical at α=0, but a prior width when α>0. The prior mean never uses the true emission.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "equation": "min_{θ ≥ 0}  ‖(b + A S θ − y)/σ‖² + α ‖θ − θ_prior‖²,  θ = q/S",
+   "chosen": "Ridge + non-negativity",
+   "why": "Regularisation stabilises layouts that are blind to some sources; non-negativity is physical.",
+   "alternatives": [
+    "Unregularised bounded LS (unstable for blind layouts — failed direction F-005)",
+    "Non-zero prior from truth (explicitly not used)"
+   ],
+   "limitations": [
+    {
+     "text": "Scales act as prior widths; effective_rank also depends on them",
+     "severity": "medium",
+     "impact": "Reported fits must state the scales; raw emission and inflow magnitudes are never compared."
+    }
+   ],
+   "evidence": [
+    "ev.inv.solve",
+    "ev.inv.scale",
+    "ev.spec.inverse",
+    "ev.test.tik",
+    "ev.val.alpha"
+   ],
+   "mirrors": [
+    "w.inv.fit"
+   ],
+   "tags": [
+    "Tikhonov",
+    "ridge",
+    "non-negativity",
+    "bounded least squares",
+    "prior",
+    "scale"
+   ]
+  },
+  {
+   "id": "s.inverse.alpha",
+   "perspective": "science",
+   "parent": "s.inverse",
+   "kind": "decision",
+   "title": "Decision: α chosen on a validation ensemble, frozen, then tested fresh",
+   "role": "Hyper-parameter selection without test leakage",
+   "purpose": "α is chosen from {0,1e-4,…,1e3} by mean regional RMSE of alpha-independent layouts (random + spread) on a separate validation ensemble (seeds 44/9000) and frozen in alpha_selected.json before the test ensemble (33/7000) is run. Benchmarks read the file and record its sha256.",
+   "technical": "α=0.1 selected; the criterion is flat between 0.1 (0.01431) and 1 (0.01457), so it is a plateau point. Greedy layouts depend on α, so they are excluded from the selection. Runs with a numeric α and no selection file are labelled 'not selected: sensitivity'.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Validation-frozen α",
+   "why": "Earlier exploratory runs chose α=1 after seeing test results; the final chain replaced them.",
+   "alternatives": [
+    "Choose α on the test ensemble (rejected, leakage)",
+    "Cross-validation on design cases"
+   ],
+   "limitations": [
+    {
+     "text": "Flat criterion; a small validation ensemble",
+     "severity": "low",
+     "impact": "α=0.1 is not a sharp optimum."
+    }
+   ],
+   "evidence": [
+    "ev.cfg.alphasel",
+    "ev.cfg.benchmark",
+    "ev.exp.alpha",
+    "ev.exp.resolve",
+    "ev.test.alphaind",
+    "ev.test.alphafile",
+    "ev.val.alpha",
+    "ev.res.alpha",
+    "ev.val.procedure",
+    "ev.readme.exploratory"
+   ],
+   "mirrors": [
+    "w.des.exp",
+    "w.cli.configs"
+   ],
+   "tags": [
+    "alpha",
+    "validation ensemble",
+    "frozen",
+    "leakage",
+    "hyper-parameter"
+   ]
+  },
+  {
+   "id": "s.inverse.ident",
+   "perspective": "science",
+   "parent": "s.inverse",
+   "kind": "mechanism",
+   "title": "Identifiability diagnostics",
+   "role": "Do the data actually constrain each parameter?",
+   "purpose": "Reports numerical rank, condition number, effective rank (whitened, scaled singular values above 1) and a linear-Gaussian std per parameter, plus a weakly-constrained flag.",
+   "technical": "Optimiser success is not identifiability. The std ignores the q ≥ 0 bound and assumes σ is right. The flags depend only on the sensitivity matrix, scales and σ — never on the data — so they cannot detect a wrong model.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Report diagnostics beside the estimate",
+   "why": "A good field reconstruction can hide wrong attribution.",
+   "limitations": [
+    {
+     "text": "Flags are saturated in the geodesign runs and carry no information",
+     "severity": "high",
+     "impact": "Emission scale 1e5 µg/s is small next to true emissions (0.75–2.25e6), so weakly_constrained fires on every row; 'flags equal matched' holds by construction."
+    },
+    {
+     "text": "Gaussian std ignores the non-negativity bound",
+     "severity": "low",
+     "impact": "Unreliable when q̂ sits at 0."
+    }
+   ],
+   "evidence": [
+    "ev.inv.diag",
+    "ev.inv.post",
+    "ev.attr.ident",
+    "ev.test.rank",
+    "ev.test.rank2",
+    "ev.test.flagsrobust",
+    "ev.p2.flags",
+    "ev.res.flags"
+   ],
+   "mirrors": [
+    "w.inv.fit",
+    "w.inv.attr"
+   ],
+   "tags": [
+    "identifiability",
+    "effective rank",
+    "q_std",
+    "condition number",
+    "weakly constrained"
+   ]
+  },
+  {
+   "id": "s.design.candidates",
+   "perspective": "science",
+   "parent": "s.design",
+   "kind": "mechanism",
+   "title": "Candidates and constraints",
+   "role": "Where a sensor could go, and what may be combined",
+   "purpose": "A candidate set with categories and flags, and Constraints (minimum separation, per-category caps). Geographic candidates come from a lattice clipped to the municipality plus reference sites outside it.",
+   "technical": "interior (1500 m lattice, IDs stable under cropping), reference_domestic (inside Nepal ADM0, outside the polygon), reference_hypothetical (across the border; excluded by default, only a labelled sensitivity setting). Mapped accessibility is not permission, power, security or connectivity.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Constraint-aware lattice candidates",
+   "why": "Layouts are reproducible by stable IDs.",
+   "alternatives": [
+    "Continuous placement",
+    "Population- or road-weighted placement (weights exist as options, not the headline)"
+   ],
+   "limitations": [
+    {
+     "text": "OSM gaps are not absence of feasible sites; accessibility is only mapped",
+     "severity": "medium",
+     "impact": "Candidate availability is a proxy."
+    }
+   ],
+   "evidence": [
+    "ev.des.constraints",
+    "ev.gd.cand",
+    "ev.gd.candfn",
+    "ev.test.gdind"
+   ],
+   "mirrors": [
+    "w.des.design",
+    "w.des.geo"
+   ],
+   "tags": [
+    "candidates",
+    "constraints",
+    "reference sites",
+    "hypothetical"
+   ]
+  },
+  {
+   "id": "s.design.methods",
+   "perspective": "science",
+   "parent": "s.design",
+   "kind": "decision",
+   "title": "Decision: random, spread and greedy — greedy is a heuristic",
+   "role": "Layout methods and what they optimise",
+   "purpose": "Random (20 seeded feasible layouts), spread (farthest point), greedy_total and greedy_attribution (add the site that most lowers the design objective). One greedy trace to the largest budget is truncated to every budget.",
+   "technical": "A tiny exhaustive-search fixture showed greedy design MSE at 3.7× the optimum (about 1.9× in RMSE; a single fixture, not a range). The tests compare greedy steps with exhaustive search on tiny fixtures.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Greedy on cached quadratic forms",
+   "why": "Fast: no new PDE solve per candidate.",
+   "alternatives": [
+    "Exhaustive search (infeasible at scale)",
+    "Convex relaxations / D-optimal design (not implemented)"
+   ],
+   "limitations": [
+    {
+     "text": "Greedy is not optimal and depends on α and design noise",
+     "severity": "medium",
+     "impact": "Selected sites are mesh- and noise-dependent."
+    }
+   ],
+   "evidence": [
+    "ev.des.layouts",
+    "ev.des.greedy",
+    "ev.des.quadform",
+    "ev.test.greedyexh",
+    "ev.test.gdheur",
+    "ev.gd.methods",
+    "ev.val.greedy"
+   ],
+   "mirrors": [
+    "w.des.design"
+   ],
+   "tags": [
+    "greedy",
+    "spread",
+    "random",
+    "heuristic",
+    "optimality"
+   ]
+  },
+  {
+   "id": "s.design.heldout",
+   "perspective": "science",
+   "parent": "s.design",
+   "kind": "mechanism",
+   "title": "Roles, leakage guards and held-out evaluation",
+   "role": "Design ≠ validation ≠ test",
+   "purpose": "Cases carry a role. Layout selection accepts only design cases; α selection only validation cases; evaluation only test cases. Seeds, noise ranges, draws and case names are pairwise disjoint and checked.",
+   "technical": "Block hold-out regimes hold out sensor locations; the greedy objective still integrates the block area on design cases (known issue 5). The 'random' held-out points are only guaranteed > 1 m from a candidate (measured min 220 m).",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Role-tagged DesignCase objects",
+   "why": "Turns a convention into a runtime error.",
+   "alternatives": [
+    "Convention-only separation"
+   ],
+   "limitations": [
+    {
+     "text": "Held-out sites and the 'per added sensor' rows for random layouts are weak evidence",
+     "severity": "low",
+     "impact": "Non-nested layouts; held-out RMSE tracks regional RMSE closely for a bilinear operator."
+    }
+   ],
+   "evidence": [
+    "ev.des.header",
+    "ev.des.roles",
+    "ev.des.guard",
+    "ev.des.disjoint",
+    "ev.des.heldout",
+    "ev.exp.ens",
+    "ev.gd.ens",
+    "ev.test.roleguard",
+    "ev.gd.heldout",
+    "ev.p2.issues"
+   ],
+   "mirrors": [
+    "w.des.design"
+   ],
+   "tags": [
+    "leakage",
+    "held-out",
+    "roles",
+    "validation",
+    "test",
+    "seeds"
+   ]
+  },
+  {
+   "id": "s.design.gap",
+   "perspective": "science",
+   "parent": "s.design",
+   "kind": "mechanism",
+   "title": "Design-stage vs test performance",
+   "role": "Design scores overstate expected error",
+   "purpose": "Greedy layouts are fit to design scenarios, so their design RMSE is optimistic. At 2 sensors the mean test RMSE is about 2.6× the design RMSE (pooled 3.2×); spread layouts show no such gap.",
+   "technical": "Recorded in the matched benchmark (alpha 0.1, test seeds 33/7000, 18 rows per layout). Greedy's advantage over spread is clear from 3 sensors but not established at 1–2 sensors (wins in 78% and 61% of 18 paired rows, difference smaller than the sd of differences).",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Report design and test scores side by side",
+   "why": "Design-stage scores should not be quoted as expected performance.",
+   "limitations": [
+    {
+     "text": "Counts are modest (6 design + 6 test scenarios, 3 noise draws)",
+     "severity": "high",
+     "impact": "The sd is a spread of results, not a confidence interval; win fractions are not significance tests."
+    }
+   ],
+   "evidence": [
+    "ev.val.greedy",
+    "ev.val.ratio",
+    "ev.res.bench",
+    "ev.cfg.bench2",
+    "ev.exp.bench",
+    "ev.metrics",
+    "ev.readme.matched"
+   ],
+   "mirrors": [
+    "w.des.exp",
+    "w.out.metrics"
+   ],
+   "tags": [
+    "overfitting",
+    "design vs test",
+    "ratio",
+    "RMSE",
+    "synthetic matched"
+   ]
+  },
+  {
+   "id": "s.design.geo",
+   "perspective": "science",
+   "parent": "s.design",
+   "kind": "mechanism",
+   "title": "Geographic design on Belauri",
+   "role": "Real candidate sites, synthetic truth, two settings",
+   "purpose": "Applies the design pipeline to the Belauri 500 m grid with parameters [road, builtup, external_patch, bg] under 6+6+6 synthetic scenarios, at two noise levels and two settings (interior only; with ≤ 2 reference sites).",
+   "technical": "Alpha is chosen per noise fraction on validation and frozen before the test ensemble exists; layouts are compared with paired tables. Rankings at small budgets depend on noise and on the design noise used for selection (F-020, preliminary).",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Frozen α per noise fraction",
+   "why": "Same leakage discipline as the synthetic benchmark.",
+   "limitations": [
+    {
+     "text": "Provisional simulation design, not field-validated",
+     "severity": "high",
+     "impact": "Specific sites and the 'beyond 5 sensors is within noise' statement are mesh-dependent."
+    }
+   ],
+   "evidence": [
+    "ev.gd.setup",
+    "ev.gd.alpha",
+    "ev.gd.select",
+    "ev.gd.run",
+    "ev.cfg.geodesign",
+    "ev.res.geodesign",
+    "ev.res.gdalpha",
+    "ev.p2.c5",
+    "ev.gd.limits",
+    "ev.des.attrscale",
+    "ev.nb06"
+   ],
+   "mirrors": [
+    "w.des.geo"
+   ],
+   "tags": [
+    "geodesign",
+    "Belauri",
+    "F-020",
+    "noise level",
+    "reference sites"
+   ]
+  },
+  {
+   "id": "s.attr.tags",
+   "perspective": "science",
+   "parent": "s.attribution",
+   "kind": "mechanism",
+   "title": "Origin tags and the external fraction",
+   "role": "Where did the mass come from?",
+   "purpose": "By linearity the field splits into local, external_sources, boundary, background and initial parts that sum to the total. A tag is the origin of the mass, not the last boundary crossing — a local plume that leaves and re-enters stays local.",
+   "technical": "External fraction F_ext = Σ_w(external+boundary+background) / Σ_w(total), study-weighted and trapezoid time-weighted; it is a concentration share (not a flux fraction) and is None when the time-mean total is negligible. Tags are used only to evaluate; fit_sources receives only Observations.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "equation": "F_ext = Σ_w (c_ext + c_bnd + c_bg) / Σ_w c_total",
+   "chosen": "Superposition tags",
+   "why": "Exact for a linear model and free of extra solves.",
+   "limitations": [
+    {
+     "text": "F_ext is a concentration share for one wind history",
+     "severity": "medium",
+     "impact": "It is not a property of the place."
+    }
+   ],
+   "evidence": [
+    "ev.attr.contrib",
+    "ev.attr.frac",
+    "ev.tb.model",
+    "ev.test.tagsum",
+    "ev.test.tbnotag"
+   ],
+   "mirrors": [
+    "w.inv.attr",
+    "w.scn.sources"
+   ],
+   "tags": [
+    "origin tags",
+    "external fraction",
+    "superposition",
+    "attribution"
+   ]
+  },
+  {
+   "id": "s.attr.bases",
+   "perspective": "science",
+   "parent": "s.attribution",
+   "kind": "decision",
+   "title": "Decision: boundary-inflow bases vs explicit external sources",
+   "role": "Two kinds of external input with different units",
+   "purpose": "Distant unresolved sources are represented by an inflow concentration (µg/m³) on chosen domain sides; nearby ones by an explicit source (µg/s). Never both for the same plume.",
+   "technical": "check_no_double_count refuses a basis that represents a region containing an explicit source. In the smoke equivalence study, whole-side bases (one or four) did not reproduce a localised external plume; boundary-basis input removed part of the error from an omitted localised plume (F-019, preliminary).",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Separate parameter kinds with per-kind errors",
+   "why": "Raw magnitudes of µg/s and µg/m³ are not comparable.",
+   "alternatives": [
+    "A single unified external source parameter"
+   ],
+   "limitations": [
+    {
+     "text": "Only whole-side basis shapes were tested",
+     "severity": "medium",
+     "impact": "Other basis shapes are unexplored; a basis stands for unresolved distant sources only."
+    }
+   ],
+   "evidence": [
+    "ev.arch.param",
+    "ev.cfg.inflow",
+    "ev.tb.dbl",
+    "ev.tb.equiv",
+    "ev.attr.emerr",
+    "ev.test.kinds",
+    "ev.tb.not",
+    "ev.p2.c2"
+   ],
+   "mirrors": [
+    "w.scn.model",
+    "w.des.tb"
+   ],
+   "tags": [
+    "boundary basis",
+    "inflow",
+    "double count",
+    "parameter kinds",
+    "equivalence"
+   ]
+  },
+  {
+   "id": "s.attr.indoor",
+   "perspective": "science",
+   "parent": "s.attribution",
+   "kind": "mechanism",
+   "title": "One-way indoor box",
+   "role": "Indoor air driven by outdoor concentration",
+   "purpose": "A building air volume exchanging with outdoors; it reads the outdoor field and never feeds back. Not part of the outdoor inverse problem.",
+   "technical": "Exact piecewise-linear integration of the box ODE; helpers fit an indoor emission and demonstrate misattribution when indoor and outdoor drivers are confounded.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Separate, exact ODE",
+   "why": "Keeps the outdoor linear structure untouched.",
+   "limitations": [
+    {
+     "text": "Illustrative box, synthetic parameters",
+     "severity": "low",
+     "impact": "No indoor measurement or building physics beyond the box."
+    }
+   ],
+   "evidence": [
+    "ev.indoor",
+    "ev.indoor.doc",
+    "ev.test.indoor",
+    "ev.nb04"
+   ],
+   "mirrors": [
+    "w.des.tb"
+   ],
+   "tags": [
+    "indoor",
+    "box model",
+    "misattribution"
+   ]
+  },
+  {
+   "id": "s.attr.terms",
+   "perspective": "science",
+   "parent": "s.attribution",
+   "kind": "decision",
+   "title": "Decision: exact vocabulary — local, external, international transboundary, indoor",
+   "role": "What 'transboundary' does not establish",
+   "purpose": "Local = emitted inside the study polygon; external = outside it; international transboundary only across a verified national boundary (ADM0); indoor = inside a building.",
+   "technical": "The study polygon is a mask, never a PDE wall. The synthetic domain has no verified national boundary, so 'transboundary' is not used there. At Belauri the Indian outline in geoBoundaries is coarse; the external patch is not asserted to be on the Indian side.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Literal definitions",
+   "why": "Stops local/external splits being read as claims about real borders or emitters.",
+   "limitations": [
+    {
+     "text": "Nothing in the results establishes international transboundary transport",
+     "severity": "high",
+     "impact": "No real emitter is identified; classification near the border is uncertain."
+    }
+   ],
+   "evidence": [
+    "ev.tb.terms",
+    "ev.arch.region",
+    "ev.geo.intl",
+    "ev.tb.not",
+    "ev.agents"
+   ],
+   "mirrors": [
+    "w.scn.geo",
+    "w.des.tb"
+   ],
+   "tags": [
+    "transboundary",
+    "ADM0",
+    "border",
+    "local",
+    "external",
+    "study polygon"
+   ]
+  },
+  {
+   "id": "s.belauri.geo",
+   "perspective": "science",
+   "parent": "s.belauri",
+   "kind": "mechanism",
+   "title": "Prepared Belauri geography",
+   "role": "From raw layers to a hashed grid manifest",
+   "purpose": "An offline step turns the raw polygon, roads, buildings, facilities, outline and DEM into arrays on UTM 32644 grids and a manifest of sha256 hashes and licences. The municipality polygon is a per-cell area fraction.",
+   "technical": "Boundary verification cross-checks geoBoundaries ADM3 against OpenStreetMap by name, area and bbox. The ADM2 coverage check fails (71.7%), explained but not resolved. The survey-department boundary was not obtained.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Verify against independent open data",
+   "why": "No official survey product available.",
+   "limitations": [
+    {
+     "text": "Boundary is verified against open sources only; OSM and the Nominatim hierarchy are the same source",
+     "severity": "medium",
+     "impact": "Independence is between geoBoundaries and OSM; 28% of the polygon lies outside every ADM2 polygon."
+    }
+   ],
+   "evidence": [
+    "ev.geo.prepare",
+    "ev.geo.regionio",
+    "ev.geo.manifest",
+    "ev.geo.doc",
+    "ev.geo.blocked",
+    "ev.test.geo",
+    "ev.test.geoverify",
+    "ev.p2.c3",
+    "ev.res.geography"
+   ],
+   "mirrors": [
+    "w.scn.geo"
+   ],
+   "tags": [
+    "manifest",
+    "UTM",
+    "polygon",
+    "OSM",
+    "geoBoundaries",
+    "verification"
+   ]
+  },
+  {
+   "id": "s.belauri.synthetic",
+   "perspective": "science",
+   "parent": "s.belauri",
+   "kind": "decision",
+   "title": "Decision: real geography, synthetic emissions and meteorology",
+   "role": "Only geometry is real",
+   "purpose": "Source layers (road, built-up, facility) and an external patch are placed on real geometry, but every amplitude, onset profile and wind is a synthetic demonstration value.",
+   "technical": "The external patch (≈ 2.9 km from the polygon, outside it) is a spatial prior, not an identified emitter. About 5% of a local layer's mass sits in boundary cells outside the polygon and is tagged local (tolerance 6%).",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Synthetic amplitudes on real layers",
+   "why": "There is no emission or measurement data.",
+   "limitations": [
+    {
+     "text": "No empirical content",
+     "severity": "high",
+     "impact": "Do not read concentrations as Belauri estimates."
+    }
+   ],
+   "evidence": [
+    "ev.bf.real",
+    "ev.geo.scenarios",
+    "ev.cfg.belauri",
+    "ev.p2.limits"
+   ],
+   "mirrors": [
+    "w.des.bel"
+   ],
+   "tags": [
+    "synthetic",
+    "real geometry",
+    "external patch",
+    "amplitudes"
+   ]
+  },
+  {
+   "id": "s.belauri.dem",
+   "perspective": "science",
+   "parent": "s.belauri",
+   "kind": "decision",
+   "title": "Decision: DEM is plotting context, not a flow solver input",
+   "role": "Relief changes no number",
+   "purpose": "DEM, hillshade, slope and elevation profiles are drawn on maps; no solver input reads them.",
+   "technical": "plotting_only_check substitutes constants for those layers, shows the Scenario is identical and the concentration change is exactly 0. Relief begins about 20 km north of the polygon.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Terrain as context only",
+   "why": "No terrain-coupled flow model exists.",
+   "alternatives": [
+    "Terrain-driven wind (not implemented)"
+   ],
+   "limitations": [
+    {
+     "text": "No katabatic or channelled flow",
+     "severity": "high",
+     "impact": "Wind structure near terrain is unrepresented."
+    }
+   ],
+   "evidence": [
+    "ev.bel.plotonly",
+    "ev.test.plotonly",
+    "ev.bf.real",
+    "ev.geo.layers",
+    "ev.cfg.belauri"
+   ],
+   "mirrors": [
+    "w.des.bel"
+   ],
+   "tags": [
+    "DEM",
+    "hillshade",
+    "slope",
+    "terrain",
+    "plotting only"
+   ]
+  },
+  {
+   "id": "s.belauri.forward",
+   "perspective": "science",
+   "parent": "s.belauri",
+   "kind": "mechanism",
+   "title": "Belauri forward runs",
+   "role": "Winds, outer-domain size, mesh sensitivity",
+   "purpose": "Forward simulations of local and external parts under several prescribed winds; sensitivity to the outer domain and the mesh.",
+   "technical": "The external patch reaches the municipality whenever the wind carries it from the WSW side, not under steady north/east winds (F-018, preliminary). Outer-domain distance changes results when the wind reverses. Numerical diffusion dominates nominal K at these meshes.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "500 m production mesh with a 250 m comparison",
+   "why": "Cost versus resolution; the 250 m comparison covers one wind.",
+   "limitations": [
+    {
+     "text": "Arrival times are resolved to the 900 s output interval; 250 m comparison for one wind only",
+     "severity": "low",
+     "impact": "Fine timing statements are not supported."
+    }
+   ],
+   "evidence": [
+    "ev.bel.run",
+    "ev.bel.what",
+    "ev.bf.limits",
+    "ev.cfg.belauri",
+    "ev.res.belauri",
+    "ev.res.beloutput",
+    "ev.p2.c4",
+    "ev.test.belbudget",
+    "ev.nb05"
+   ],
+   "mirrors": [
+    "w.des.bel"
+   ],
+   "tags": [
+    "Belauri forward",
+    "outer domain",
+    "mesh",
+    "wind",
+    "arrival"
+   ]
+  },
+  {
+   "id": "s.val.verification",
+   "perspective": "science",
+   "parent": "s.validation",
+   "kind": "mechanism",
+   "title": "Numerical verification",
+   "role": "Exact solutions, conservation, convergence",
+   "purpose": "Checks against mathematics rather than data: uniform field stays uniform, removal-only formula, closed-domain mass conservation, budget closure, steady throughflow, convergence in space and time, effective diffusion versus theory.",
+   "technical": "Tests assert tolerances; scripts/verification.py writes the verification table. The README states nothing is verified against measurements.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Verify against mathematics",
+   "why": "No observations exist.",
+   "limitations": [
+    {
+     "text": "Verification of the discretisation says nothing about physical realism",
+     "severity": "medium",
+     "impact": "Smoke-sized fixtures dominate the CI-style tests."
+    }
+   ],
+   "evidence": [
+    "ev.test.closedmass",
+    "ev.test.openbudget",
+    "ev.test.spatialconv",
+    "ev.test.effdiff",
+    "ev.ver.script",
+    "ev.res.verification",
+    "ev.val.verif",
+    "ev.p2.tolerances"
+   ],
+   "mirrors": [
+    "w.ver.tests",
+    "w.ver.scripts"
+   ],
+   "tags": [
+    "verification",
+    "conservation",
+    "convergence",
+    "tests",
+    "tolerance"
+   ]
+  },
+  {
+   "id": "s.val.crime",
+   "perspective": "science",
+   "parent": "s.validation",
+   "kind": "decision",
+   "title": "Decision: matched-model benchmarks are an 'inverse crime' and are labelled so",
+   "role": "Truth and inference share solver, grid and physics",
+   "purpose": "Recovery and design results in matched experiments are optimistic bounds: they show what a layout can do when the model is right.",
+   "technical": "The README and validation record state this explicitly. Only the mismatch and robustness experiments probe model error.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Acknowledge and then test mismatch",
+   "why": "Real data would never match the inference model exactly.",
+   "alternatives": [
+    "Generate truth with a different solver (possible through the role split; no alternative physics solver exists)"
+   ],
+   "limitations": [
+    {
+     "text": "Most reported numbers are matched-model",
+     "severity": "high",
+     "impact": "Do not quote them as performance on real data."
+    }
+   ],
+   "evidence": [
+    "ev.val.inverse",
+    "ev.readme.matched",
+    "ev.tb.not",
+    "ev.exp.backends",
+    "ev.res.inverse"
+   ],
+   "mirrors": [
+    "w.des.exp"
+   ],
+   "tags": [
+    "inverse crime",
+    "matched",
+    "optimistic",
+    "synthetic"
+   ]
+  },
+  {
+   "id": "s.val.mismatch",
+   "perspective": "science",
+   "parent": "s.validation",
+   "kind": "mechanism",
+   "title": "Mismatch and robustness experiments",
+   "role": "Truth differs from the inference model one way at a time",
+   "purpose": "v0: finer grid with smaller Δt, hidden +20% wind speed and 15° rotation, an unmodelled fourth source. Geodesign robustness adds unseen winds, omitted sources, boundary-profile changes and a 250 m refinement study with layouts and α fixed.",
+   "technical": "Findings (preliminary): an unknown wind error dominates the sensor-count effect; layouts matched-optimal at 2–3 sensors are not robust (per-case counts mixed); ranking changes are not resolved against noise (F-017, F-021). Known issues 3 and 4 limit the ranking-stability and refinement conclusions.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Reuse fixed layouts and frozen α",
+   "why": "Isolates the effect of the change.",
+   "limitations": [
+    {
+     "text": "Ranking-stability metric counts exactly-zero contrasts as kept and has no noise baseline",
+     "severity": "medium",
+     "impact": "Read it as 'rankings were never resolved'."
+    },
+    {
+     "text": "Refinement re-selection used 3 fine design cases vs 6",
+     "severity": "medium",
+     "impact": "Jaccard 0–0.2 cannot be separated from ordinary greedy instability."
+    }
+   ],
+   "evidence": [
+    "ev.exp.mismatch",
+    "ev.exp.refine",
+    "ev.cfg.mismatch",
+    "ev.val.mismatch",
+    "ev.res.mismatch",
+    "ev.gr.variant",
+    "ev.gr.ranking",
+    "ev.gr.refine",
+    "ev.gr.checksame",
+    "ev.test.grfixed",
+    "ev.p2.robust",
+    "ev.res.robust",
+    "ev.res.rankchg",
+    "ev.gd.robustdoc"
+   ],
+   "mirrors": [
+    "w.des.exp",
+    "w.des.geo",
+    "w.ver.tests"
+   ],
+   "tags": [
+    "mismatch",
+    "robustness",
+    "hidden wind",
+    "omitted source",
+    "refinement",
+    "F-017",
+    "F-021"
+   ]
+  },
+  {
+   "id": "s.val.regression",
+   "perspective": "science",
+   "parent": "s.validation",
+   "kind": "mechanism",
+   "title": "FiPy bit-identity regression gate",
+   "role": "Refactors may not change deterministic outputs",
+   "purpose": "Default workflows are captured before and after a refactor and compared file by file (volatile keys excluded). 21 files compared, 0 differ; a negative control with the upwind scheme is flagged.",
+   "technical": "scripts/capture_regression.py + scripts/compare_runs.py. Two captures of the old code also compared 21 files, 0 differ.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Bit-for-bit comparison",
+   "why": "Legacy FiPy outputs must stay bit-identical.",
+   "limitations": [
+    {
+     "text": "Reproduction on other machines or library versions was not tested",
+     "severity": "low",
+     "impact": "Bit-identity is claimed for the recorded environment."
+    }
+   ],
+   "evidence": [
+    "ev.ver.capture",
+    "ev.ver.compare",
+    "ev.si.regression",
+    "ev.res.regression",
+    "ev.p2.c1"
+   ],
+   "mirrors": [
+    "w.ver.scripts"
+   ],
+   "tags": [
+    "regression",
+    "bit-identical",
+    "21 files"
+   ]
+  },
+  {
+   "id": "s.val.exploratory",
+   "perspective": "science",
+   "parent": "s.validation",
+   "kind": "decision",
+   "title": "Decision: exploratory runs are superseded and never merged with the final chain",
+   "role": "alpha-selection → benchmark-final → mismatch-final",
+   "purpose": "The first benchmark, unregularised and mismatch runs (α=1 chosen after test results were seen; test seeds 22/5000) are kept for the record only. The final chain re-runs with α frozen on validation and fresh test seeds.",
+   "technical": "The unregularised α=0 run is a sensitivity run, not a selected α. Notebooks and smoke configs use α=1 as a demo value. Findings are superseded, not rewritten.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "chosen": "Supersede, never rewrite",
+   "why": "Earlier text calling the α=1 choice 'a priori' was wrong.",
+   "limitations": [
+    {
+     "text": "Exploratory result files remain in results/ and can be mistaken for final ones",
+     "severity": "medium",
+     "impact": "Always read the *-final directories."
+    }
+   ],
+   "evidence": [
+    "ev.val.exploratory",
+    "ev.readme.exploratory",
+    "ev.readme.order",
+    "ev.cfg.smoke",
+    "ev.agents"
+   ],
+   "mirrors": [
+    "w.cli.configs",
+    "w.out.io"
+   ],
+   "tags": [
+    "exploratory",
+    "superseded",
+    "final",
+    "sensitivity",
+    "order"
+   ]
+  },
+  {
+   "id": "s.val.chi2",
+   "perspective": "science",
+   "parent": "s.validation",
+   "kind": "mechanism",
+   "title": "Data-based model check (χ² per degree of freedom)",
+   "role": "Proposed, not implemented",
+   "purpose": "A weighted-residual χ²/dof check that could detect a wrong wind or an omitted source from the data alone. The docs name it as the best next experiment, with the test noise level fixed from the validation scale.",
+   "technical": "An attempt exists in the unshipped git stash 'G2-unshipped' (not merged, not rerun). Nothing in the package computes it today.",
+   "lifecycle": "planned",
+   "review": "docs-only",
+   "limitations": [
+    {
+     "text": "Nothing in the pipeline currently detects a wrong wind",
+     "severity": "high",
+     "impact": "Identifiability flags cannot (by construction); the largest risk to any design here is the meteorology the estimator is told."
+    }
+   ],
+   "evidence": [
+    "ev.p2.next",
+    "ev.p2.issues",
+    "ev.test.flagsrobust",
+    "ev.agents.state"
+   ],
+   "tags": [
+    "chi-square",
+    "model check",
+    "next experiment",
+    "unimplemented",
+    "stash"
+   ]
+  },
+  {
+   "id": "w.cli",
+   "perspective": "software",
+   "parent": null,
+   "kind": "module",
+   "title": "CLI and configuration",
+   "role": "python -m pravah …; JSON configs with 'extends'",
+   "purpose": "The entry point. Subcommands simulate, inverse, benchmark and geo; `benchmark` dispatches on cfg['experiment'] to every study. Configs are JSON, can extend another file, and the CLI can override truth/inference solvers.",
+   "technical": "config.py holds frozen dataclasses and loading; configs/ holds representative experiment definitions.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "inputs": [
+    "--config",
+    "--out",
+    "--solver flags"
+   ],
+   "outputs": [
+    "run directory"
+   ],
+   "evidence": [
+    "ev.cli.main",
+    "ev.cli.benchmark"
+   ],
+   "mirrors": [
+    "s.validation",
+    "s.design"
+   ],
+   "tags": [
+    "CLI",
+    "argparse",
+    "config",
+    "dispatch"
+   ]
+  },
+  {
+   "id": "w.scenario",
+   "perspective": "software",
+   "parent": null,
+   "kind": "module",
+   "title": "Scenario and data",
+   "role": "Dataclasses, sources, geography layer",
+   "purpose": "Everything that defines the problem except the amplitudes: domain, sources, wind, boundary, times, study region; plus the optional GIS layer that prepares the real Belauri data.",
+   "technical": "config.Scenario and param_table; sources.py normalisation and weights; geo/ (fetch, prepare, regionio, scenarios) with GIS libraries imported lazily.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "inputs": [
+    "config dict",
+    "data/belauri/manifest.json"
+   ],
+   "outputs": [
+    "Scenario",
+    "Region",
+    "BelauriCase"
+   ],
+   "evidence": [
+    "ev.arch.modules",
+    "ev.cfg.scenario",
+    "ev.pyproject"
+   ],
+   "mirrors": [
+    "s.transport",
+    "s.belauri"
+   ],
+   "tags": [
+    "Scenario",
+    "config",
+    "geo",
+    "sources"
+   ]
+  },
+  {
+   "id": "w.solver",
+   "perspective": "software",
+   "parent": null,
+   "kind": "module",
+   "title": "Forward solver layer",
+   "role": "forward.py: simulate and the ForwardSolver interface",
+   "purpose": "The FiPy implementation and the replaceable-solver protocol with BackendInfo and capability flags.",
+   "technical": "simulate(scenario, q, solver_options) → FieldResult; FIPY default instance; FipyForward variants; get_forward.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "inputs": [
+    "Scenario",
+    "θ",
+    "SolverOptions"
+   ],
+   "outputs": [
+    "FieldResult"
+   ],
+   "evidence": [
+    "ev.fw.docstring",
+    "ev.fw.protocol"
+   ],
+   "mirrors": [
+    "s.forward"
+   ],
+   "tags": [
+    "FiPy",
+    "forward",
+    "ForwardSolver"
+   ]
+  },
+  {
+   "id": "w.obs",
+   "perspective": "software",
+   "parent": null,
+   "kind": "module",
+   "title": "Observations",
+   "role": "observations.py: layouts, sampling, noise",
+   "purpose": "SensorLayout, ObservationSpec, interp_weights, sample and observe.",
+   "technical": "Pure NumPy/xarray; used both to generate readings and to build the linear operator rows.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.obs.doc",
+    "ev.obs.observe"
+   ],
+   "mirrors": [
+    "s.observations"
+   ],
+   "tags": [
+    "sensors",
+    "layout"
+   ]
+  },
+  {
+   "id": "w.inverse",
+   "perspective": "software",
+   "parent": null,
+   "kind": "module",
+   "title": "Inverse and attribution",
+   "role": "inverse.py and attribution.py",
+   "purpose": "Unit-response cache, bounded ridge fit, diagnostics, reconstruction; origin tags, external fractions and identifiability report.",
+   "technical": "fit_sources takes only Observations; attribution takes Responses and θ.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "inputs": [
+    "Scenario",
+    "Observations",
+    "InferenceOptions"
+   ],
+   "outputs": [
+    "FitResult",
+    "tagged fields"
+   ],
+   "evidence": [
+    "ev.inv.fit",
+    "ev.attr.contrib"
+   ],
+   "mirrors": [
+    "s.inverse",
+    "s.attribution"
+   ],
+   "tags": [
+    "inverse",
+    "attribution"
+   ]
+  },
+  {
+   "id": "w.design",
+   "perspective": "software",
+   "parent": null,
+   "kind": "module",
+   "title": "Design and experiment runners",
+   "role": "design.py, experiments.py, geodesign*.py, transboundary.py, indoor.py, belauri.py",
+   "purpose": "Layout construction and scoring, the benchmark/alpha-selection/mismatch runners, the geographic design and robustness studies, the external/local study, the indoor box and the Belauri forward runner.",
+   "technical": "Each runner writes a result directory with config, provenance and tables; runners are dispatched from the CLI.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "inputs": [
+    "config",
+    "frozen α file"
+   ],
+   "outputs": [
+    "results/<run>/"
+   ],
+   "evidence": [
+    "ev.des.header",
+    "ev.exp.bench"
+   ],
+   "mirrors": [
+    "s.design",
+    "s.belauri",
+    "s.attribution"
+   ],
+   "tags": [
+    "runners",
+    "experiments",
+    "design"
+   ]
+  },
+  {
+   "id": "w.out",
+   "perspective": "software",
+   "parent": null,
+   "kind": "module",
+   "title": "Metrics, outputs and provenance",
+   "role": "metrics.py, io.py, plotting.py",
+   "purpose": "Weighted time-integrated RMSE/MSE, run directories that refuse overwrite, JSON/CSV/NetCDF writers and a provenance record (versions, git revision, dirty-state hash).",
+   "technical": "Provenance is written by every runner; research-registry scripts live in scripts/ and are never imported by the package.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.metrics",
+    "ev.io.prov"
+   ],
+   "mirrors": [
+    "s.validation",
+    "s.design"
+   ],
+   "tags": [
+    "metrics",
+    "provenance",
+    "io"
+   ]
+  },
+  {
+   "id": "w.verify",
+   "perspective": "software",
+   "parent": null,
+   "kind": "module",
+   "title": "Tests and verification scripts",
+   "role": "tests/, scripts/",
+   "purpose": "pytest suites per module (447 tests reported in AGENTS.md; not run here), the verification study, the regression capture/compare scripts and the notebook checker.",
+   "technical": "Real-data tests skip without data/belauri/manifest.json. Notebooks 01–06 are user-owned.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.agents",
+    "ev.ver.script"
+   ],
+   "mirrors": [
+    "s.validation"
+   ],
+   "tags": [
+    "pytest",
+    "tests",
+    "scripts",
+    "notebooks"
+   ]
+  },
+  {
+   "id": "w.cli.main",
+   "perspective": "software",
+   "parent": "w.cli",
+   "kind": "component",
+   "title": "cli.py: subcommands and solver flags",
+   "role": "Entry points",
+   "purpose": "main() wires simulate / inverse / benchmark / geo; cmd_benchmark picks the study from cfg['experiment'] and passes truth/inference solvers.",
+   "technical": "_forwards resolves --solver, --truth-solver, --inference-solver (+ kwargs) through get_forward.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.cli.main",
+    "ev.cli.forwards",
+    "ev.cli.benchmark",
+    "ev.cli.sim",
+    "ev.test.siroutes"
+   ],
+   "mirrors": [
+    "s.forward.interchange"
+   ],
+   "tags": [
+    "argparse",
+    "dispatch",
+    "--solver"
+   ]
+  },
+  {
+   "id": "w.cli.config",
+   "perspective": "software",
+   "parent": "w.cli",
+   "kind": "component",
+   "title": "config.py: frozen dataclasses and loader",
+   "role": "Problem definition types",
+   "purpose": "Domain, sources (Gaussian/Raster), StudyRegion/StudyMask, WindSegment, Transport, Boundary/InflowBasis, Times, SolverOptions, Scenario.",
+   "technical": "Validation happens in constructors; load_config merges `extends` (dicts merge, lists and scalars replace).",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.cfg.dataclasses",
+    "ev.cfg.wind",
+    "ev.cfg.inflow",
+    "ev.cfg.solveropts",
+    "ev.cfg.load",
+    "ev.test.contracts",
+    "ev.test.config"
+   ],
+   "mirrors": [
+    "s.transport.met"
+   ],
+   "tags": [
+    "dataclass",
+    "SolverOptions",
+    "extends"
+   ]
+  },
+  {
+   "id": "w.cli.configs",
+   "perspective": "software",
+   "parent": "w.cli",
+   "kind": "component",
+   "title": "configs/*.json",
+   "role": "Representative experiment definitions",
+   "purpose": "reference.json (single run), alpha_selection.json → benchmark.json → mismatch.json (final chain), geodesign*.json, transboundary*.json, belauri_forward*.json, smoke variants.",
+   "technical": "Seeds, budgets, noise and the alpha_selection_file link are set here; `smoke` configs are plumbing checks only.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.cfg.reference",
+    "ev.cfg.alphasel",
+    "ev.cfg.benchmark",
+    "ev.cfg.mismatch",
+    "ev.cfg.geodesign",
+    "ev.cfg.smoke"
+   ],
+   "mirrors": [
+    "s.inverse.alpha",
+    "s.val.exploratory"
+   ],
+   "tags": [
+    "configs",
+    "seeds",
+    "smoke"
+   ]
+  },
+  {
+   "id": "w.scn.model",
+   "perspective": "software",
+   "parent": "w.scenario",
+   "kind": "component",
+   "title": "Scenario and parameter table",
+   "role": "θ layout and kinds",
+   "purpose": "Scenario.param_table() orders emission parameters then inflow parameters with units and kind; n_params follows.",
+   "technical": "The kinds drive scaling in the inverse and per-kind error reporting.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.cfg.scenario",
+    "ev.arch.param",
+    "ev.cfg.inflow",
+    "ev.test.contracts"
+   ],
+   "mirrors": [
+    "s.transport.boundary",
+    "s.transport.depth",
+    "s.transport.met",
+    "s.attr.bases"
+   ],
+   "tags": [
+    "Scenario",
+    "param_table",
+    "theta"
+   ]
+  },
+  {
+   "id": "w.scn.sources",
+   "perspective": "software",
+   "parent": "w.scenario",
+   "kind": "component",
+   "title": "sources.py",
+   "role": "Grid-normalised sources and study weights",
+   "purpose": "source_fields, emission_profile, study_weights, origin-tag consistency checks.",
+   "technical": "Raster sources use prepared weights; the local origin fraction inside the study mask is checked.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.src.fields",
+    "ev.src.weights",
+    "ev.test.srcint",
+    "ev.test.contracts"
+   ],
+   "mirrors": [
+    "s.transport.pde",
+    "s.attr.tags"
+   ],
+   "tags": [
+    "source_fields",
+    "normalisation",
+    "study weights"
+   ]
+  },
+  {
+   "id": "w.scn.geo",
+   "perspective": "software",
+   "parent": "w.scenario",
+   "kind": "component",
+   "title": "geo/ package (optional extra)",
+   "role": "Fetch, prepare, region I/O, Belauri scenarios",
+   "purpose": "fetch (bounded cached network), prepare (offline arrays, manifest, boundary verification, border classification), regionio (CRS, grids, fractions, DEM), scenarios (winds, crop, belauri_scenario, numerical_diffusion_estimate).",
+   "technical": "GIS libraries are imported lazily; core imports never need them.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.geo.prepare",
+    "ev.geo.intl",
+    "ev.geo.regionio",
+    "ev.geo.scenarios",
+    "ev.geo.wind",
+    "ev.scn.nde",
+    "ev.geo.manifest",
+    "ev.test.geo"
+   ],
+   "mirrors": [
+    "s.belauri.geo",
+    "s.transport.met",
+    "s.forward.numdiff",
+    "s.attr.terms"
+   ],
+   "tags": [
+    "geo",
+    "prepare",
+    "regionio",
+    "manifest"
+   ]
+  },
+  {
+   "id": "w.solver.fipy",
+   "perspective": "software",
+   "parent": "w.solver",
+   "kind": "component",
+   "title": "forward.simulate and _Segment",
+   "role": "FiPy assembly and time loop",
+   "purpose": "Per wind segment an equation is assembled once; each step sets the source, solves with LinearLUSolver, and accumulates the budget.",
+   "technical": "Boundary arrays a_in, a_out, s_in come from side geometry; stream-function winds give face velocities.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.fw.docstring",
+    "ev.fw.equation",
+    "ev.fw.timeloop",
+    "ev.fw.budget",
+    "ev.fw.untol",
+    "ev.test.closedmass",
+    "ev.test.windrev"
+   ],
+   "mirrors": [
+    "s.transport.pde",
+    "s.transport.boundary",
+    "s.forward.scheme",
+    "s.forward.numdiff",
+    "s.forward.budget"
+   ],
+   "tags": [
+    "simulate",
+    "_Segment",
+    "FiPy"
+   ]
+  },
+  {
+   "id": "w.solver.iface",
+   "perspective": "software",
+   "parent": "w.solver",
+   "kind": "component",
+   "title": "ForwardSolver / BackendInfo / FipyForward / get_forward",
+   "role": "Replaceable solver contract",
+   "purpose": "Protocol with `info` and capabilities; get_forward resolves specs once; check_field_result validates every result.",
+   "technical": "Backend identity is hashed into every response-cache key.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.fw.protocol",
+    "ev.fw.getforward",
+    "ev.fw.check",
+    "ev.si.doc",
+    "ev.test.siroutes",
+    "ev.test.sicaps",
+    "ev.test.sicache",
+    "ev.test.fi"
+   ],
+   "mirrors": [
+    "s.forward.interchange"
+   ],
+   "tags": [
+    "protocol",
+    "BackendInfo",
+    "capabilities"
+   ]
+  },
+  {
+   "id": "w.obs.sample",
+   "perspective": "software",
+   "parent": "w.obs",
+   "kind": "component",
+   "title": "SensorLayout, interp_weights, sample",
+   "role": "Spatial and temporal sampling",
+   "purpose": "Bilinear weights on cell centres; sample() returns readings at requested times.",
+   "technical": "Out-of-range sensors and non-monotone times are rejected.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.obs.interp",
+    "ev.test.obs"
+   ],
+   "mirrors": [
+    "s.obs.sampling"
+   ],
+   "tags": [
+    "interp_weights",
+    "sample"
+   ]
+  },
+  {
+   "id": "w.obs.noise",
+   "perspective": "software",
+   "parent": "w.obs",
+   "kind": "component",
+   "title": "ObservationSpec and observe",
+   "role": "Seeded Gaussian noise",
+   "purpose": "observe = sample + iid N(0, sd²); noise sd scalar or per sensor.",
+   "technical": "Used by cases and by the direct fit.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.obs.observe",
+    "ev.test.noise"
+   ],
+   "mirrors": [
+    "s.obs.noise"
+   ],
+   "tags": [
+    "observe",
+    "noise_std",
+    "seed"
+   ]
+  },
+  {
+   "id": "w.inv.responses",
+   "perspective": "software",
+   "parent": "w.inverse",
+   "kind": "component",
+   "title": "Responses, ResponseCache, cache_key",
+   "role": "Unit-response operator",
+   "purpose": "n_params+1 solves per scenario; operator(layout, times) returns (b, A); on-disk and in-memory caches keyed with BackendInfo.",
+   "technical": "Refuses backends that do not declare `linear`.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.inv.responses",
+    "ev.test.recover",
+    "ev.test.sicaps"
+   ],
+   "mirrors": [
+    "s.inverse.linear"
+   ],
+   "tags": [
+    "Responses",
+    "ResponseCache",
+    "cache_key"
+   ]
+  },
+  {
+   "id": "w.inv.fit",
+   "perspective": "software",
+   "parent": "w.inverse",
+   "kind": "component",
+   "title": "fit_sources, solve_linear, FitResult",
+   "role": "Bounded ridge fit and diagnostics",
+   "purpose": "Linear route (bvls) or direct least_squares; FitResult carries rank, condition, effective_rank, q_std and scales.",
+   "technical": "Heldout sensors can be excluded bitwise; mixed zero/non-zero sigma raises.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.inv.fit",
+    "ev.inv.solve",
+    "ev.inv.scale",
+    "ev.inv.diag",
+    "ev.test.tik",
+    "ev.test.rank2"
+   ],
+   "mirrors": [
+    "s.inverse.nnls",
+    "s.inverse.ident"
+   ],
+   "tags": [
+    "fit_sources",
+    "FitResult",
+    "bvls"
+   ]
+  },
+  {
+   "id": "w.inv.attr",
+   "perspective": "software",
+   "parent": "w.inverse",
+   "kind": "component",
+   "title": "attribution.py",
+   "role": "Tags, fractions, per-kind errors, identifiability report",
+   "purpose": "contributions, origin_fractions, external_fraction, component_errors, emission_error, identifiability_report.",
+   "technical": "Tags are for evaluation only; fits never see them.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.attr.contrib",
+    "ev.attr.frac",
+    "ev.attr.emerr",
+    "ev.attr.ident",
+    "ev.test.tagsum",
+    "ev.test.kinds"
+   ],
+   "mirrors": [
+    "s.attr.tags",
+    "s.inverse.ident"
+   ],
+   "tags": [
+    "contributions",
+    "external_fraction",
+    "identifiability_report"
+   ]
+  },
+  {
+   "id": "w.des.design",
+   "perspective": "software",
+   "parent": "w.design",
+   "kind": "component",
+   "title": "design.py",
+   "role": "Candidates, constraints, cases, layouts, guards",
+   "purpose": "Candidates/Constraints, DesignCase with QuadForm objectives, random/spread/greedy layouts, role guards, assert_disjoint, held-out blocks.",
+   "technical": "Greedy runs on DESIGN cases only.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.des.constraints",
+    "ev.des.layouts",
+    "ev.des.greedy",
+    "ev.des.quadform",
+    "ev.des.guard",
+    "ev.des.disjoint",
+    "ev.test.greedyexh",
+    "ev.test.roleguard"
+   ],
+   "mirrors": [
+    "s.design.candidates",
+    "s.design.methods",
+    "s.design.heldout"
+   ],
+   "tags": [
+    "DesignCase",
+    "greedy_trace",
+    "ROLES"
+   ]
+  },
+  {
+   "id": "w.des.exp",
+   "perspective": "software",
+   "parent": "w.design",
+   "kind": "component",
+   "title": "experiments.py",
+   "role": "Ensembles, alpha selection, benchmark, mismatch",
+   "purpose": "make_ensemble, check_ensembles, run_alpha_selection, run_benchmark, run_mismatch, refine_scenario, perturb_wind.",
+   "technical": "Reads the frozen alpha file and layouts of a finished benchmark.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.exp.ens",
+    "ev.exp.alpha",
+    "ev.exp.resolve",
+    "ev.exp.bench",
+    "ev.exp.mismatch",
+    "ev.exp.refine",
+    "ev.exp.backends",
+    "ev.test.alphaind",
+    "ev.test.alphafile"
+   ],
+   "mirrors": [
+    "s.inverse.alpha",
+    "s.design.gap",
+    "s.val.crime",
+    "s.val.mismatch"
+   ],
+   "tags": [
+    "run_benchmark",
+    "run_alpha_selection",
+    "run_mismatch"
+   ]
+  },
+  {
+   "id": "w.des.geo",
+   "perspective": "software",
+   "parent": "w.design",
+   "kind": "component",
+   "title": "geodesign.py and geodesign_robust.py",
+   "role": "Geographic design and robustness",
+   "purpose": "Candidate table, ensembles, alpha per noise fraction, layouts, held-out evaluation; robustness re-uses fixed layouts and α, builds mismatch truths, refinement.",
+   "technical": "check_same_study refuses a config that differs from the main run.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.gd.candfn",
+    "ev.gd.select",
+    "ev.gd.run",
+    "ev.gd.ens",
+    "ev.gr.variant",
+    "ev.gr.ranking",
+    "ev.gr.refine",
+    "ev.gr.run",
+    "ev.test.gdind",
+    "ev.test.grfixed"
+   ],
+   "mirrors": [
+    "s.design.geo",
+    "s.design.candidates",
+    "s.val.mismatch"
+   ],
+   "tags": [
+    "run_geodesign",
+    "run_geodesign_robust"
+   ]
+  },
+  {
+   "id": "w.des.tb",
+   "perspective": "software",
+   "parent": "w.design",
+   "kind": "component",
+   "title": "transboundary.py and indoor.py",
+   "role": "External/local study and the indoor box",
+   "purpose": "Named scenarios on two domains, recovery, special cases, boundary-vs-plume equivalence; separate exact indoor ODE.",
+   "technical": "check_no_double_count and seed guards.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.tb.run",
+    "ev.tb.dbl",
+    "ev.tb.equiv",
+    "ev.cfg.tb",
+    "ev.indoor",
+    "ev.test.tbnotag",
+    "ev.test.tbnoarr",
+    "ev.test.indoor",
+    "ev.res.tb"
+   ],
+   "mirrors": [
+    "s.attr.bases",
+    "s.attr.indoor",
+    "s.attr.terms"
+   ],
+   "tags": [
+    "run_transboundary",
+    "IndoorBox"
+   ]
+  },
+  {
+   "id": "w.des.bel",
+   "perspective": "software",
+   "parent": "w.design",
+   "kind": "component",
+   "title": "belauri.py",
+   "role": "Belauri forward runner",
+   "purpose": "run_belauri_forward, what_changes, plotting_only_check, outer-domain and mesh tables, figures.",
+   "technical": "Reads the prepared region via the manifest sha256.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.bel.run",
+    "ev.bel.what",
+    "ev.bel.plotonly",
+    "ev.cfg.belauri",
+    "ev.test.plotonly",
+    "ev.test.belbudget",
+    "ev.res.belauri"
+   ],
+   "mirrors": [
+    "s.belauri.synthetic",
+    "s.belauri.dem",
+    "s.belauri.forward"
+   ],
+   "tags": [
+    "run_belauri_forward",
+    "what_changes"
+   ]
+  },
+  {
+   "id": "w.out.metrics",
+   "perspective": "software",
+   "parent": "w.out",
+   "kind": "component",
+   "title": "metrics.py",
+   "role": "Weighted field error",
+   "purpose": "field_mse / field_rmse with trapezoid time weights over [t_exclude, T]; source_error; sensor_rmse.",
+   "technical": "Study-area mask weights come from the region.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.metrics",
+    "ev.spec.metric",
+    "ev.test.metrics"
+   ],
+   "mirrors": [
+    "s.design.gap"
+   ],
+   "tags": [
+    "field_rmse",
+    "weights"
+   ]
+  },
+  {
+   "id": "w.out.io",
+   "perspective": "software",
+   "parent": "w.out",
+   "kind": "component",
+   "title": "io.py",
+   "role": "Run directories and provenance",
+   "purpose": "make_run_dir refuses non-empty output unless overwritten; provenance(config, seeds, extra) records versions, git revision and dirty-state hash; NaN written as null.",
+   "technical": "Frozen results under results/ must not be overwritten.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.io.prov",
+    "ev.io.provenance",
+    "ev.exp.resolve"
+   ],
+   "mirrors": [
+    "s.val.exploratory"
+   ],
+   "tags": [
+    "provenance",
+    "make_run_dir"
+   ]
+  },
+  {
+   "id": "w.ver.tests",
+   "perspective": "software",
+   "parent": "w.verify",
+   "kind": "component",
+   "title": "tests/",
+   "role": "pytest suites",
+   "purpose": "One test module per source module plus solver routing and contracts; tests use smoke-sized fixtures.",
+   "technical": "Real-data tests skip without the manifest. Not executed by the explorer.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.test.closedmass",
+    "ev.test.effdiff",
+    "ev.test.rank",
+    "ev.test.flagsrobust",
+    "ev.test.roleguard",
+    "ev.test.grfixed"
+   ],
+   "mirrors": [
+    "s.val.verification",
+    "s.val.mismatch"
+   ],
+   "tags": [
+    "pytest",
+    "fixtures"
+   ]
+  },
+  {
+   "id": "w.ver.scripts",
+   "perspective": "software",
+   "parent": "w.verify",
+   "kind": "component",
+   "title": "scripts/",
+   "role": "Verification, regression, tables",
+   "purpose": "verification.py, capture_regression.py, compare_runs.py, verify_notebooks.py, geo_report.py and table builders.",
+   "technical": "scripts/ may use the Research Panel; the package never does.",
+   "lifecycle": "implemented",
+   "review": "verified-scan",
+   "evidence": [
+    "ev.ver.script",
+    "ev.ver.capture",
+    "ev.ver.compare",
+    "ev.res.regression",
+    "ev.res.verification"
+   ],
+   "mirrors": [
+    "s.val.verification",
+    "s.val.regression"
+   ],
+   "tags": [
+    "verification",
+    "regression",
+    "compare_runs"
+   ]
+  }
+ ],
+ "edges": [
+  {
+   "id": "se1",
+   "perspective": "science",
+   "from": "s.transport",
+   "to": "s.forward",
+   "label": "is discretised and solved by",
+   "kind": "data"
+  },
+  {
+   "id": "se2",
+   "perspective": "science",
+   "from": "s.forward",
+   "to": "s.observations",
+   "label": "provides the field that is sampled by",
+   "kind": "data"
+  },
+  {
+   "id": "se3",
+   "perspective": "science",
+   "from": "s.observations",
+   "to": "s.inverse",
+   "label": "supplies noisy readings to",
+   "kind": "data"
+  },
+  {
+   "id": "se4",
+   "perspective": "science",
+   "from": "s.forward",
+   "to": "s.inverse",
+   "label": "supplies unit responses (b, A) to",
+   "kind": "data"
+  },
+  {
+   "id": "se5",
+   "perspective": "science",
+   "from": "s.forward",
+   "to": "s.attribution",
+   "label": "unit responses give origin tags to",
+   "kind": "data"
+  },
+  {
+   "id": "se6",
+   "perspective": "science",
+   "from": "s.attribution",
+   "to": "s.inverse",
+   "label": "defines parameter kinds (µg/s vs µg/m³) for",
+   "kind": "data"
+  },
+  {
+   "id": "se7",
+   "perspective": "science",
+   "from": "s.design",
+   "to": "s.observations",
+   "label": "chooses sensor positions of",
+   "kind": "control"
+  },
+  {
+   "id": "se8",
+   "perspective": "science",
+   "from": "s.inverse",
+   "to": "s.design",
+   "label": "returns fit error that scores layouts for",
+   "kind": "feedback"
+  },
+  {
+   "id": "se9",
+   "perspective": "science",
+   "from": "s.belauri",
+   "to": "s.transport",
+   "label": "supplies real geometry and synthetic scenarios to",
+   "kind": "data"
+  },
+  {
+   "id": "se10",
+   "perspective": "science",
+   "from": "s.belauri",
+   "to": "s.design",
+   "label": "supplies candidate sites to",
+   "kind": "data"
+  },
+  {
+   "id": "se11",
+   "perspective": "science",
+   "from": "s.validation",
+   "to": "s.forward",
+   "label": "verifies numerically",
+   "kind": "evaluates"
+  },
+  {
+   "id": "se12",
+   "perspective": "science",
+   "from": "s.validation",
+   "to": "s.inverse",
+   "label": "stress-tests under mismatch",
+   "kind": "evaluates"
+  },
+  {
+   "id": "se13",
+   "perspective": "science",
+   "from": "s.validation",
+   "to": "s.design",
+   "label": "evaluates on held-out ensembles",
+   "kind": "evaluates"
+  },
+  {
+   "id": "se14",
+   "perspective": "science",
+   "from": "s.transport.met",
+   "to": "s.transport.pde",
+   "label": "prescribes wind for",
+   "kind": "data"
+  },
+  {
+   "id": "se15",
+   "perspective": "science",
+   "from": "s.transport.depth",
+   "to": "s.transport.pde",
+   "label": "fixes H, K, λ in",
+   "kind": "data"
+  },
+  {
+   "id": "se16",
+   "perspective": "science",
+   "from": "s.transport.pde",
+   "to": "s.transport.boundary",
+   "label": "is closed by",
+   "kind": "data"
+  },
+  {
+   "id": "se17",
+   "perspective": "science",
+   "from": "s.forward.scheme",
+   "to": "s.forward.numdiff",
+   "label": "introduces",
+   "kind": "data"
+  },
+  {
+   "id": "se18",
+   "perspective": "science",
+   "from": "s.forward.scheme",
+   "to": "s.forward.budget",
+   "label": "is checked by",
+   "kind": "evaluates"
+  },
+  {
+   "id": "se19",
+   "perspective": "science",
+   "from": "s.forward.interchange",
+   "to": "s.forward.scheme",
+   "label": "can replace",
+   "kind": "alternative"
+  },
+  {
+   "id": "se20",
+   "perspective": "science",
+   "from": "s.obs.sampling",
+   "to": "s.obs.noise",
+   "label": "readings are perturbed by",
+   "kind": "data"
+  },
+  {
+   "id": "se21",
+   "perspective": "science",
+   "from": "s.inverse.linear",
+   "to": "s.inverse.nnls",
+   "label": "provides (b, A) to",
+   "kind": "data"
+  },
+  {
+   "id": "se22",
+   "perspective": "science",
+   "from": "s.inverse.alpha",
+   "to": "s.inverse.nnls",
+   "label": "freezes α for",
+   "kind": "control"
+  },
+  {
+   "id": "se23",
+   "perspective": "science",
+   "from": "s.inverse.nnls",
+   "to": "s.inverse.ident",
+   "label": "yields rank and q_std for",
+   "kind": "data"
+  },
+  {
+   "id": "se24",
+   "perspective": "science",
+   "from": "s.design.candidates",
+   "to": "s.design.methods",
+   "label": "constrains",
+   "kind": "control"
+  },
+  {
+   "id": "se25",
+   "perspective": "science",
+   "from": "s.design.methods",
+   "to": "s.design.heldout",
+   "label": "layouts are scored on",
+   "kind": "evaluates"
+  },
+  {
+   "id": "se26",
+   "perspective": "science",
+   "from": "s.design.heldout",
+   "to": "s.design.methods",
+   "label": "role guards restrict",
+   "kind": "feedback"
+  },
+  {
+   "id": "se27",
+   "perspective": "science",
+   "from": "s.design.heldout",
+   "to": "s.design.gap",
+   "label": "measures",
+   "kind": "evaluates"
+  },
+  {
+   "id": "se28",
+   "perspective": "science",
+   "from": "s.design.geo",
+   "to": "s.design.methods",
+   "label": "applies",
+   "kind": "control"
+  },
+  {
+   "id": "se29",
+   "perspective": "science",
+   "from": "s.attr.terms",
+   "to": "s.attr.tags",
+   "label": "defines the vocabulary of",
+   "kind": "control"
+  },
+  {
+   "id": "se30",
+   "perspective": "science",
+   "from": "s.attr.bases",
+   "to": "s.attr.tags",
+   "label": "separate kinds feed",
+   "kind": "data"
+  },
+  {
+   "id": "se31",
+   "perspective": "science",
+   "from": "s.attr.tags",
+   "to": "s.attr.indoor",
+   "label": "outdoor field drives (one-way)",
+   "kind": "data"
+  },
+  {
+   "id": "se32",
+   "perspective": "science",
+   "from": "s.belauri.geo",
+   "to": "s.belauri.synthetic",
+   "label": "provides geometry for",
+   "kind": "data"
+  },
+  {
+   "id": "se33",
+   "perspective": "science",
+   "from": "s.belauri.synthetic",
+   "to": "s.belauri.forward",
+   "label": "defines scenarios for",
+   "kind": "data"
+  },
+  {
+   "id": "se34",
+   "perspective": "science",
+   "from": "s.belauri.geo",
+   "to": "s.belauri.dem",
+   "label": "provides plotting context to",
+   "kind": "data"
+  },
+  {
+   "id": "se35",
+   "perspective": "science",
+   "from": "s.val.verification",
+   "to": "s.val.regression",
+   "label": "baseline for",
+   "kind": "data"
+  },
+  {
+   "id": "se36",
+   "perspective": "science",
+   "from": "s.val.crime",
+   "to": "s.val.mismatch",
+   "label": "motivates",
+   "kind": "control"
+  },
+  {
+   "id": "se37",
+   "perspective": "science",
+   "from": "s.val.exploratory",
+   "to": "s.val.crime",
+   "label": "superseded by the final chain, which is",
+   "kind": "alternative"
+  },
+  {
+   "id": "se38",
+   "perspective": "science",
+   "from": "s.val.mismatch",
+   "to": "s.val.chi2",
+   "label": "motivates (proposed)",
+   "kind": "control"
+  },
+  {
+   "id": "we39",
+   "perspective": "software",
+   "from": "w.cli",
+   "to": "w.scenario",
+   "label": "loads config into",
+   "kind": "control"
+  },
+  {
+   "id": "we40",
+   "perspective": "software",
+   "from": "w.scenario",
+   "to": "w.solver",
+   "label": "defines the problem for",
+   "kind": "data"
+  },
+  {
+   "id": "we41",
+   "perspective": "software",
+   "from": "w.solver",
+   "to": "w.obs",
+   "label": "field is read by",
+   "kind": "data"
+  },
+  {
+   "id": "we42",
+   "perspective": "software",
+   "from": "w.obs",
+   "to": "w.inverse",
+   "label": "supplies readings to",
+   "kind": "data"
+  },
+  {
+   "id": "we43",
+   "perspective": "software",
+   "from": "w.solver",
+   "to": "w.inverse",
+   "label": "supplies responses to",
+   "kind": "data"
+  },
+  {
+   "id": "we44",
+   "perspective": "software",
+   "from": "w.cli",
+   "to": "w.design",
+   "label": "dispatches experiments to",
+   "kind": "control"
+  },
+  {
+   "id": "we45",
+   "perspective": "software",
+   "from": "w.design",
+   "to": "w.inverse",
+   "label": "fits layouts with",
+   "kind": "control"
+  },
+  {
+   "id": "we46",
+   "perspective": "software",
+   "from": "w.inverse",
+   "to": "w.design",
+   "label": "returns errors to",
+   "kind": "feedback"
+  },
+  {
+   "id": "we47",
+   "perspective": "software",
+   "from": "w.design",
+   "to": "w.out",
+   "label": "writes tables and provenance via",
+   "kind": "data"
+  },
+  {
+   "id": "we48",
+   "perspective": "software",
+   "from": "w.verify",
+   "to": "w.solver",
+   "label": "verifies",
+   "kind": "evaluates"
+  },
+  {
+   "id": "we49",
+   "perspective": "software",
+   "from": "w.verify",
+   "to": "w.inverse",
+   "label": "verifies",
+   "kind": "evaluates"
+  },
+  {
+   "id": "we50",
+   "perspective": "software",
+   "from": "w.cli.config",
+   "to": "w.cli.main",
+   "label": "defines inputs of",
+   "kind": "data"
+  },
+  {
+   "id": "we51",
+   "perspective": "software",
+   "from": "w.cli.configs",
+   "to": "w.cli.main",
+   "label": "are read by",
+   "kind": "data"
+  },
+  {
+   "id": "we52",
+   "perspective": "software",
+   "from": "w.scn.sources",
+   "to": "w.scn.model",
+   "label": "feeds",
+   "kind": "data"
+  },
+  {
+   "id": "we53",
+   "perspective": "software",
+   "from": "w.scn.geo",
+   "to": "w.scn.model",
+   "label": "builds scenarios for",
+   "kind": "data"
+  },
+  {
+   "id": "we54",
+   "perspective": "software",
+   "from": "w.solver.iface",
+   "to": "w.solver.fipy",
+   "label": "is implemented by",
+   "kind": "alternative"
+  },
+  {
+   "id": "we55",
+   "perspective": "software",
+   "from": "w.obs.sample",
+   "to": "w.obs.noise",
+   "label": "readings are perturbed by",
+   "kind": "data"
+  },
+  {
+   "id": "we56",
+   "perspective": "software",
+   "from": "w.inv.responses",
+   "to": "w.inv.fit",
+   "label": "provides (b, A) to",
+   "kind": "data"
+  },
+  {
+   "id": "we57",
+   "perspective": "software",
+   "from": "w.inv.fit",
+   "to": "w.inv.attr",
+   "label": "estimates are tagged by",
+   "kind": "data"
+  },
+  {
+   "id": "we58",
+   "perspective": "software",
+   "from": "w.des.exp",
+   "to": "w.des.design",
+   "label": "builds cases for",
+   "kind": "control"
+  },
+  {
+   "id": "we59",
+   "perspective": "software",
+   "from": "w.des.geo",
+   "to": "w.des.design",
+   "label": "reuses layouts and guards of",
+   "kind": "control"
+  },
+  {
+   "id": "we60",
+   "perspective": "software",
+   "from": "w.des.tb",
+   "to": "w.des.design",
+   "label": "reuses cases and guards of",
+   "kind": "control"
+  },
+  {
+   "id": "we61",
+   "perspective": "software",
+   "from": "w.des.bel",
+   "to": "w.des.geo",
+   "label": "supplies the region to",
+   "kind": "data"
+  },
+  {
+   "id": "we62",
+   "perspective": "software",
+   "from": "w.out.metrics",
+   "to": "w.out.io",
+   "label": "values written by",
+   "kind": "data"
+  },
+  {
+   "id": "we63",
+   "perspective": "software",
+   "from": "w.ver.scripts",
+   "to": "w.ver.tests",
+   "label": "complement",
+   "kind": "alternative"
+  }
+ ],
+ "evidence": [
+  {
+   "id": "ev.spec.equation",
+   "path": "docs/specification.md",
+   "kind": "docs",
+   "note": "States the governing PDE, units, and the inflow/outflow sign convention.",
+   "lines": [
+    5,
+    13
+   ]
+  },
+  {
+   "id": "ev.spec.boundaries",
+   "path": "docs/specification.md",
+   "kind": "docs",
+   "note": "Per-face open/periodic/closed boundary treatment.",
+   "lines": [
+    20,
+    22
+   ]
+  },
+  {
+   "id": "ev.spec.numdiff",
+   "path": "docs/specification.md",
+   "kind": "docs",
+   "note": "Theory K_eff/K-1 = (Pe/2)coth(Pe/2)-1 + u^2 dt/(2K) and the measured Fourier-mode table (documented measurement, K_eff about 1.6 K at the default mesh).",
+   "lines": [
+    24,
+    45
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.spec.inverse",
+   "path": "docs/specification.md",
+   "kind": "docs",
+   "note": "Inverse problem definition, prior mean zero, scaling and why alpha only matters through alpha/q_scale^2.",
+   "lines": [
+    47,
+    61
+   ]
+  },
+  {
+   "id": "ev.spec.metric",
+   "path": "docs/specification.md",
+   "kind": "docs",
+   "note": "Definition of the weighted time-integrated field MSE used as the error metric.",
+   "lines": [
+    63,
+    65
+   ]
+  },
+  {
+   "id": "ev.fw.docstring",
+   "path": "src/pravah/forward.py",
+   "kind": "code",
+   "note": "Module docstring: discretised equation form, explicit open-boundary handling, inflow-basis algebra, tangential-face tolerance.",
+   "lines": [
+    1,
+    30
+   ]
+  },
+  {
+   "id": "ev.fw.equation",
+   "path": "src/pravah/forward.py",
+   "kind": "code",
+   "note": "FiPy equation assembly: TransientTerm + (Exponential|Upwind)ConvectionTerm == DiffusionTerm - ImplicitSourceTerm + source.",
+   "lines": [
+    172,
+    199
+   ]
+  },
+  {
+   "id": "ev.fw.timeloop",
+   "path": "src/pravah/forward.py",
+   "kind": "code",
+   "note": "Backward-Euler time loop: per-step emission source s_q (profile x f_j / H), explicit boundary source, solve, budget accumulation.",
+   "lines": [
+    278,
+    304
+   ]
+  },
+  {
+   "id": "ev.fw.budget",
+   "path": "src/pravah/forward.py",
+   "kind": "code",
+   "note": "Mass-budget dataset and residual (mass_change - (emission - removal + inflow - outflow)); concentrations are never clipped.",
+   "lines": [
+    313,
+    322
+   ]
+  },
+  {
+   "id": "ev.fw.untol",
+   "path": "src/pravah/forward.py",
+   "kind": "code",
+   "note": "UN_TOL: absolute tolerance below which a face normal velocity is treated as tangential.",
+   "lines": [
+    56,
+    56
+   ]
+  },
+  {
+   "id": "ev.fw.protocol",
+   "path": "src/pravah/forward.py",
+   "kind": "code",
+   "note": "BackendInfo, ForwardSolver protocol and the FipyForward variant carrying capability flags (linear, budget, boundary_bases).",
+   "lines": [
+    339,
+    397
+   ]
+  },
+  {
+   "id": "ev.fw.getforward",
+   "path": "src/pravah/forward.py",
+   "kind": "code",
+   "note": "get_forward resolves None/'fipy'/'module:callable' factories once; check_field_result enforces the replacement-solver output contract.",
+   "lines": [
+    420,
+    449
+   ]
+  },
+  {
+   "id": "ev.fw.check",
+   "path": "src/pravah/forward.py",
+   "kind": "code",
+   "note": "check_field_result: dims, coordinates, units, finiteness and status checks applied to every solver result.",
+   "lines": [
+    452,
+    472
+   ]
+  },
+  {
+   "id": "ev.src.fields",
+   "path": "src/pravah/sources.py",
+   "kind": "code",
+   "note": "source_fields: Gaussian (or raster) shapes normalised on the grid so sum(f dA) = 1.",
+   "lines": [
+    28,
+    39
+   ]
+  },
+  {
+   "id": "ev.src.weights",
+   "path": "src/pravah/sources.py",
+   "kind": "code",
+   "note": "study_weights and origin-tag consistency check (local mass fraction inside the study mask).",
+   "lines": [
+    56,
+    88
+   ]
+  },
+  {
+   "id": "ev.test.srcint",
+   "path": "tests/test_forward.py",
+   "kind": "test",
+   "note": "Integrated emission is resolution-invariant (grid-normalised sources).",
+   "lines": [
+    36,
+    42
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.test.closedmass",
+   "path": "tests/test_forward.py",
+   "kind": "test",
+   "note": "Closed domain, source only: mass equals integrated emission.",
+   "lines": [
+    171,
+    181
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.test.openbudget",
+   "path": "tests/test_forward.py",
+   "kind": "test",
+   "note": "Open-boundary budget closes with background and initial condition.",
+   "lines": [
+    191,
+    200
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.test.steady",
+   "path": "tests/test_forward.py",
+   "kind": "test",
+   "note": "Steady open-boundary solution converges to an analytic profile.",
+   "lines": [
+    439,
+    444
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.test.spatialconv",
+   "path": "tests/test_forward.py",
+   "kind": "test",
+   "note": "Periodic Gaussian: spatial and temporal convergence tests of the discretisation.",
+   "lines": [
+    138,
+    159
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.test.effdiff",
+   "path": "tests/test_forward.py",
+   "kind": "test",
+   "note": "Measured effective diffusion (Fourier-mode projection, periodic, lambda=0) matches the K_eff theory for exponential and upwind schemes.",
+   "lines": [
+    364,
+    392
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.test.windrev",
+   "path": "tests/test_forward.py",
+   "kind": "test",
+   "note": "Wind reversal flips inflow/outflow classification and the budget.",
+   "lines": [
+    254,
+    270
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.test.belbudget",
+   "path": "tests/test_belauri.py",
+   "kind": "test",
+   "note": "Belauri scenario: budget closes, no negative concentrations; wind reversal flips inflow faces.",
+   "lines": [
+    149,
+    157
+   ],
+   "validation": "smoke"
+  },
+  {
+   "id": "ev.test.nde",
+   "path": "tests/test_belauri.py",
+   "kind": "test",
+   "note": "numerical_diffusion_estimate reproduces the documented values.",
+   "lines": [
+    138,
+    146
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.scn.nde",
+   "path": "src/pravah/geo/scenarios.py",
+   "kind": "code",
+   "note": "numerical_diffusion_estimate: excess K_eff/K-1 for wind along a grid axis; oblique wind is only a scalar-speed approximation.",
+   "lines": [
+    44,
+    53
+   ]
+  },
+  {
+   "id": "ev.verif.nd",
+   "path": "scripts/verification.py",
+   "kind": "code",
+   "note": "Fourier-mode projection study that measures K_eff excess for exponential/upwind schemes.",
+   "lines": [
+    42,
+    54
+   ]
+  },
+  {
+   "id": "ev.val.nd",
+   "path": "docs/validation.md",
+   "kind": "docs",
+   "note": "Measured numerical diffusion versus theory table (0.606 at 50 cells, dt=60 s).",
+   "lines": [
+    124,
+    134
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.bf.nd",
+   "path": "docs/belauri-forward.md",
+   "kind": "docs",
+   "note": "K_eff at the Belauri meshes (u=1.5 m/s): about 253-488 m2/s versus nominal K=100; finer meshes reduce but do not remove it.",
+   "lines": [
+    48,
+    59
+   ]
+  },
+  {
+   "id": "ev.p2.f016",
+   "path": "docs/phase2-validation.md",
+   "kind": "docs",
+   "note": "Records F-016 (forward scheme: mass-consistent, first order in time, observed spatial order ~1.4) as preliminary with no independent verdict.",
+   "lines": [
+    343,
+    347
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.p2.wrapnd",
+   "path": "docs/phase2-validation.md",
+   "kind": "docs",
+   "note": "Wrap-up: numerical diffusion dominates nominal K at the Belauri meshes (K_eff/K about 2.4-9.4 at the design mesh over the drawn winds); design conclusions are mesh-dependent.",
+   "lines": [
+    401,
+    403
+   ]
+  },
+  {
+   "id": "ev.arch.modules",
+   "path": "docs/architecture.md",
+   "kind": "docs",
+   "note": "Module table of the package and the Research Panel boundary.",
+   "lines": [
+    6,
+    34
+   ]
+  },
+  {
+   "id": "ev.arch.flow",
+   "path": "docs/architecture.md",
+   "kind": "docs",
+   "note": "Data-flow diagram: scenario -> solver -> observations -> responses -> fit -> reconstruct -> design.",
+   "lines": [
+    47,
+    67
+   ]
+  },
+  {
+   "id": "ev.arch.param",
+   "path": "docs/architecture.md",
+   "kind": "docs",
+   "note": "Parameter vector theta = emissions (ug/s) then inflow-basis amplitudes (ug/m3); kinds never compared by raw magnitude.",
+   "lines": [
+    36,
+    45
+   ]
+  },
+  {
+   "id": "ev.arch.region",
+   "path": "docs/architecture.md",
+   "kind": "docs",
+   "note": "Study polygon is a mask, not a wall; domain, outer inflow boundary and local/external/transboundary/indoor definitions.",
+   "lines": [
+    69,
+    96
+   ]
+  },
+  {
+   "id": "ev.impl.decisions",
+   "path": "docs/implementation-plan.md",
+   "kind": "docs",
+   "note": "Fixed design decisions: PDE, discrete source normalisation, FiPy discretisation with explicit boundary physics.",
+   "lines": [
+    21,
+    51
+   ]
+  },
+  {
+   "id": "ev.si.doc",
+   "path": "docs/solver-interchangeability.md",
+   "kind": "docs",
+   "note": "Roles (truth/inference), BackendInfo, capabilities, cache keys, replacement contract and limits.",
+   "lines": [
+    7,
+    94
+   ]
+  },
+  {
+   "id": "ev.si.regression",
+   "path": "docs/solver-interchangeability.md",
+   "kind": "docs",
+   "note": "Regression comparison: 21 files compared, 0 differ; negative control with upwind is flagged.",
+   "lines": [
+    96,
+    111
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.test.siroutes",
+   "path": "tests/test_solver_routing.py",
+   "kind": "test",
+   "note": "Truth and inference roles are routed separately through benchmark, alpha selection and mismatch; no implicit FiPy fallback.",
+   "lines": [
+    100,
+    126
+   ],
+   "validation": "smoke"
+  },
+  {
+   "id": "ev.test.sicaps",
+   "path": "tests/test_solver_routing.py",
+   "kind": "test",
+   "note": "Undeclared-linear or boundary-basis-less backends are refused where required.",
+   "lines": [
+    263,
+    279
+   ],
+   "validation": "smoke"
+  },
+  {
+   "id": "ev.test.sicache",
+   "path": "tests/test_solver_routing.py",
+   "kind": "test",
+   "note": "Upwind variant never shares cache entries (memory or disk) with the default.",
+   "lines": [
+    219,
+    231
+   ],
+   "validation": "smoke"
+  },
+  {
+   "id": "ev.test.fi",
+   "path": "tests/test_forward_interface.py",
+   "kind": "test",
+   "note": "A recording/marker wrapper solver chain recovers with its own responses; cache keys do not mix.",
+   "lines": [
+    72,
+    100
+   ],
+   "validation": "smoke"
+  },
+  {
+   "id": "ev.ext.surrogate",
+   "path": "docs/extending.md",
+   "kind": "docs",
+   "note": "Replacement-solver walk-through using a stand-in that replays stored unit responses; says a real surrogate must be judged against simulate first.",
+   "lines": [
+    224,
+    256
+   ]
+  },
+  {
+   "id": "ev.readme.limits",
+   "path": "README.md",
+   "kind": "docs",
+   "note": "Known limitations: numerical diffusion, first order in time, no geography/terrain in v0, no chemistry/forecasting/neural solver, uniform wind and K, fixed H.",
+   "lines": [
+    125,
+    137
+   ]
+  },
+  {
+   "id": "ev.obs.doc",
+   "path": "src/pravah/observations.py",
+   "kind": "code",
+   "note": "Module docstring: bilinear spatial interpolation on the cell-centre grid, exact for affine fields.",
+   "lines": [
+    1,
+    13
+   ]
+  },
+  {
+   "id": "ev.obs.interp",
+   "path": "src/pravah/observations.py",
+   "kind": "code",
+   "note": "interp_weights and sample: bilinear weights, out-of-range sensors rejected.",
+   "lines": [
+    90,
+    129
+   ]
+  },
+  {
+   "id": "ev.obs.observe",
+   "path": "src/pravah/observations.py",
+   "kind": "code",
+   "note": "observe: clean sample plus iid N(0, sd^2) noise from default_rng(seed); scalar or per-sensor sd.",
+   "lines": [
+    141,
+    149
+   ]
+  },
+  {
+   "id": "ev.test.obs",
+   "path": "tests/test_observations.py",
+   "kind": "test",
+   "note": "Interpolation is exact for affine fields, rejects out-of-range points; noise is reproducible with the right statistics.",
+   "lines": [
+    38,
+    91
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.test.noise",
+   "path": "tests/test_observations.py",
+   "kind": "test",
+   "note": "Noise reproducible and with the requested statistics; per-sensor and zero noise.",
+   "lines": [
+    106,
+    130
+   ]
+  },
+  {
+   "id": "ev.cfg.reference",
+   "path": "configs/reference.json",
+   "kind": "config",
+   "note": "Reference scenario, including the noise sd (0.005 ug/m3) and sensor times used by the inverse demo.",
+   "lines": [
+    1,
+    18
+   ]
+  },
+  {
+   "id": "ev.gd.noise",
+   "path": "docs/geodesign.md",
+   "kind": "docs",
+   "note": "Noise sigma = fraction x ensemble signal scale (0.05, 0.15); common random numbers across layouts; test has fresh seeds.",
+   "lines": [
+    32,
+    35
+   ]
+  },
+  {
+   "id": "ev.gd.noisefn",
+   "path": "src/pravah/geodesign.py",
+   "kind": "code",
+   "note": "noise_levels: sigma per ensemble derived from each ensemble's own signal scale.",
+   "lines": [
+    933,
+    936
+   ]
+  },
+  {
+   "id": "ev.p2.noiseleak",
+   "path": "docs/phase2-validation.md",
+   "kind": "docs",
+   "note": "Known issue 1: the test noise level was derived from the test ensemble (0.0158 vs 0.0154 design, 2.6% higher), a mild independence leak that was not fixed.",
+   "lines": [
+    408,
+    411
+   ]
+  },
+  {
+   "id": "ev.inv.responses",
+   "path": "src/pravah/inverse.py",
+   "kind": "code",
+   "note": "Responses (unit responses per parameter), cache_key and ResponseCache: n_params+1 solves, operator(layout, times) returns (b, A).",
+   "lines": [
+    69,
+    212
+   ]
+  },
+  {
+   "id": "ev.inv.solve",
+   "path": "src/pravah/inverse.py",
+   "kind": "code",
+   "note": "solve_linear: min over q>=0 of ||(b+Aq-y)/sigma||^2 + alpha||theta - prior/q_scale||^2 by bounded-variable least squares.",
+   "lines": [
+    445,
+    462
+   ]
+  },
+  {
+   "id": "ev.inv.scale",
+   "path": "src/pravah/inverse.py",
+   "kind": "code",
+   "note": "SCALE_BY_KIND (emission 1e5 ug/s, inflow 0.05 ug/m3): numerical scaling at alpha=0, prior width when alpha>0.",
+   "lines": [
+    52,
+    52
+   ]
+  },
+  {
+   "id": "ev.inv.fit",
+   "path": "src/pravah/inverse.py",
+   "kind": "code",
+   "note": "fit_sources: uses only Observations (not truth/tags); linear route via cached operator, direct route via least_squares with finite-difference Jacobian.",
+   "lines": [
+    299,
+    354
+   ]
+  },
+  {
+   "id": "ev.inv.diag",
+   "path": "src/pravah/inverse.py",
+   "kind": "code",
+   "note": "Identifiability diagnostics: singular values, rank, condition, effective_rank (whitened scaled values > 1) and linear-Gaussian q_std that ignores the q>=0 bound.",
+   "lines": [
+    239,
+    267
+   ]
+  },
+  {
+   "id": "ev.inv.post",
+   "path": "src/pravah/inverse.py",
+   "kind": "code",
+   "note": "_posterior_std: linear-Gaussian posterior std per parameter.",
+   "lines": [
+    279,
+    289
+   ]
+  },
+  {
+   "id": "ev.test.recover",
+   "path": "tests/test_inverse.py",
+   "kind": "test",
+   "note": "Noise-free recovery of amplitudes through the cached linear route and the decomposition into base + sum q_j g_j matches direct simulation.",
+   "lines": [
+    59,
+    96
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.test.rank",
+   "path": "tests/test_inverse.py",
+   "kind": "test",
+   "note": "Degenerate far-upwind and identical-source cases are flagged; effective_rank/q_std match empirical scatter in a synthetic matched model.",
+   "lines": [
+    107,
+    125
+   ],
+   "validation": "synthetic-matched"
+  },
+  {
+   "id": "ev.test.rank2",
+   "path": "tests/test_inverse.py",
+   "kind": "test",
+   "note": "effective_rank and q_std match the empirical covariance; q_std huge for an unconstrained direction.",
+   "lines": [
+    198,
+    217
+   ],
+   "validation": "synthetic-matched"
+  },
+  {
+   "id": "ev.test.tik",
+   "path": "tests/test_inverse.py",
+   "kind": "test",
+   "note": "Tikhonov shrinks toward the (zero) prior and reports it; q_ref is only numerical scaling.",
+   "lines": [
+    148,
+    162
+   ],
+   "validation": "synthetic-matched"
+  },
+  {
+   "id": "ev.val.inverse",
+   "path": "docs/validation.md",
+   "kind": "result",
+   "note": "Matched-model inverse recovery and the explicit statement that this is the inverse crime (same solver, grid, known physics).",
+   "lines": [
+    139,
+    155
+   ],
+   "validation": "synthetic-matched"
+  },
+  {
+   "id": "ev.res.inverse",
+   "path": "results/inverse-v0/inverse_metrics.json",
+   "kind": "result",
+   "note": "Recorded linear and direct inverse metrics of the frozen reference run (matched model).",
+   "validation": "synthetic-matched"
+  },
+  {
+   "id": "ev.cfg.benchmark",
+   "path": "configs/benchmark.json",
+   "kind": "config",
+   "note": "Benchmark config: alpha null with alpha_selection_file pointing at the frozen validation selection; alpha grid; noise note.",
+   "lines": [
+    1,
+    15
+   ]
+  },
+  {
+   "id": "ev.cfg.alphasel",
+   "path": "configs/alpha_selection.json",
+   "kind": "config",
+   "note": "Alpha selection on a VALIDATION ensemble (seed 44, noise seed 9000) with alpha-independent layouts (layout_seed 77).",
+   "lines": [
+    1,
+    11
+   ]
+  },
+  {
+   "id": "ev.exp.alpha",
+   "path": "src/pravah/experiments.py",
+   "kind": "code",
+   "note": "run_alpha_selection and _pick_alpha (tie goes to the smaller alpha).",
+   "lines": [
+    363,
+    454
+   ]
+  },
+  {
+   "id": "ev.exp.resolve",
+   "path": "src/pravah/experiments.py",
+   "kind": "code",
+   "note": "resolve_alpha / load_alpha_selection: benchmark reads the frozen alpha and its sha256; a conflicting explicit alpha stops the run; numeric-only alpha is labelled 'not selected: sensitivity'.",
+   "lines": [
+    220,
+    245
+   ]
+  },
+  {
+   "id": "ev.test.alphaind",
+   "path": "tests/test_experiments.py",
+   "kind": "test",
+   "note": "Alpha selection is independent of the test ensemble; benchmark reads alpha from the file; mismatch alpha disagreement raises.",
+   "lines": [
+    333,
+    346
+   ],
+   "validation": "smoke"
+  },
+  {
+   "id": "ev.test.alphafile",
+   "path": "tests/test_experiments.py",
+   "kind": "test",
+   "note": "Benchmark reads alpha from the frozen file; mismatch uses the frozen alpha; alpha=0 sensitivity runs are labelled.",
+   "lines": [
+    363,
+    411
+   ],
+   "validation": "smoke"
+  },
+  {
+   "id": "ev.val.alpha",
+   "path": "docs/validation.md",
+   "kind": "result",
+   "note": "Alpha selection: 0.1 chosen on validation scenarios; criterion flat between 0.1 (0.01431) and 1 (0.01457), so not a sharp optimum.",
+   "lines": [
+    180,
+    214
+   ],
+   "validation": "synthetic-matched"
+  },
+  {
+   "id": "ev.res.alpha",
+   "path": "results/alpha-selection/alpha_selected.json",
+   "kind": "result",
+   "note": "Frozen selection file the final benchmark reads (contains no test-ensemble quantity).",
+   "validation": "synthetic-matched"
+  },
+  {
+   "id": "ev.val.procedure",
+   "path": "docs/validation.md",
+   "kind": "docs",
+   "note": "Table of what was selected on what data (design / validation / test) in the final procedure.",
+   "lines": [
+    157,
+    178
+   ]
+  },
+  {
+   "id": "ev.p2.flags",
+   "path": "docs/phase2-validation.md",
+   "kind": "docs",
+   "note": "Known issue 2: identifiability flags are saturated in the geodesign runs (emission scale 1e5 ug/s is small next to true 0.75-2.25e6) and carry no information there.",
+   "lines": [
+    411,
+    414
+   ]
+  },
+  {
+   "id": "ev.test.flagsrobust",
+   "path": "tests/test_geodesign_robust.py",
+   "kind": "test",
+   "note": "Asserts that the flags cannot detect a wrong model (flags depend only on the sensitivity matrix and sigma).",
+   "lines": [
+    133,
+    144
+   ],
+   "validation": "mismatch"
+  },
+  {
+   "id": "ev.attr.ident",
+   "path": "src/pravah/attribution.py",
+   "kind": "code",
+   "note": "identifiability_report: summarises rank/condition/weakly-constrained flags from a FitResult.",
+   "lines": [
+    172,
+    208
+   ]
+  },
+  {
+   "id": "ev.des.header",
+   "path": "src/pravah/design.py",
+   "kind": "code",
+   "note": "Module docstring: design/test/validation roles and which functions accept which role (leakage guards).",
+   "lines": [
+    1,
+    30
+   ]
+  },
+  {
+   "id": "ev.des.roles",
+   "path": "src/pravah/design.py",
+   "kind": "code",
+   "note": "ROLES and _require_role: role guard raising on wrong-role cases.",
+   "lines": [
+    57,
+    57
+   ]
+  },
+  {
+   "id": "ev.des.guard",
+   "path": "src/pravah/design.py",
+   "kind": "code",
+   "note": "_require_role: selection accepts only design cases, evaluation only test cases.",
+   "lines": [
+    703,
+    707
+   ]
+  },
+  {
+   "id": "ev.des.disjoint",
+   "path": "src/pravah/design.py",
+   "kind": "code",
+   "note": "assert_disjoint: design/test/validation cases must not share truths or seeds.",
+   "lines": [
+    771,
+    791
+   ]
+  },
+  {
+   "id": "ev.des.constraints",
+   "path": "src/pravah/design.py",
+   "kind": "code",
+   "note": "Candidates and Constraints (min separation, per-category caps) and feasibility checks.",
+   "lines": [
+    69,
+    229
+   ]
+  },
+  {
+   "id": "ev.des.layouts",
+   "path": "src/pravah/design.py",
+   "kind": "code",
+   "note": "random_layouts and spread_layout (farthest-point) baselines.",
+   "lines": [
+    257,
+    301
+   ]
+  },
+  {
+   "id": "ev.des.greedy",
+   "path": "src/pravah/design.py",
+   "kind": "code",
+   "note": "greedy_trace / select_layout: add the site that most lowers the design objective; a single trace truncated to every budget.",
+   "lines": [
+    739,
+    768
+   ]
+  },
+  {
+   "id": "ev.des.quadform",
+   "path": "src/pravah/design.py",
+   "kind": "code",
+   "note": "QuadForm / DesignCase: cached arrays so candidate layouts are scored without new PDE solves.",
+   "lines": [
+    370,
+    449
+   ]
+  },
+  {
+   "id": "ev.des.attrscale",
+   "path": "src/pravah/design.py",
+   "kind": "code",
+   "note": "attribution_scales: scales from DESIGN cases only for the attribution objective.",
+   "lines": [
+    612,
+    628
+   ]
+  },
+  {
+   "id": "ev.des.heldout",
+   "path": "src/pravah/design.py",
+   "kind": "code",
+   "note": "heldout_blocks: spatial block hold-out of evaluation points.",
+   "lines": [
+    232,
+    257
+   ]
+  },
+  {
+   "id": "ev.test.greedyexh",
+   "path": "tests/test_design.py",
+   "kind": "test",
+   "note": "Greedy steps compared with exhaustive search on a tiny fixture.",
+   "lines": [
+    165,
+    178
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.test.roleguard",
+   "path": "tests/test_design.py",
+   "kind": "test",
+   "note": "Role guard and disjointness; layout selection is invariant to test truth.",
+   "lines": [
+    189,
+    215
+   ],
+   "validation": "smoke"
+  },
+  {
+   "id": "ev.test.gdheur",
+   "path": "tests/test_geodesign.py",
+   "kind": "test",
+   "note": "Greedy is a heuristic checked against exhaustive search; layouts are prefixes of the trace.",
+   "lines": [
+    286,
+    311
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.test.gdind",
+   "path": "tests/test_geodesign.py",
+   "kind": "test",
+   "note": "Alpha and layouts are independent of the test ensemble; role guards; inverse never receives truth tags.",
+   "lines": [
+    239,
+    283
+   ],
+   "validation": "smoke"
+  },
+  {
+   "id": "ev.val.greedy",
+   "path": "docs/validation.md",
+   "kind": "result",
+   "note": "Headline matched benchmark: greedy beats spread/random from 3 sensors; at 1-2 sensors not established; greedy design RMSE vs test RMSE (ratio 2.57 at 2 sensors); exhaustive fixture: greedy MSE 3.7x optimum.",
+   "lines": [
+    216,
+    296
+   ],
+   "validation": "synthetic-matched"
+  },
+  {
+   "id": "ev.val.ratio",
+   "path": "docs/validation.md",
+   "kind": "result",
+   "note": "Design vs held-out test ratios per method and budget (greedy 1.92/3.19/1.79/1.22/1.61).",
+   "lines": [
+    262,
+    265
+   ],
+   "validation": "synthetic-matched"
+  },
+  {
+   "id": "ev.res.bench",
+   "path": "results/benchmark-final/summary.csv",
+   "kind": "result",
+   "note": "Frozen final benchmark summary table (alpha 0.1, test seeds 33/7000).",
+   "validation": "synthetic-matched"
+  },
+  {
+   "id": "ev.cfg.bench2",
+   "path": "configs/benchmark.json",
+   "kind": "config",
+   "note": "Final benchmark config (seeds, budgets, methods).",
+   "lines": [
+    1,
+    15
+   ]
+  },
+  {
+   "id": "ev.exp.ens",
+   "path": "src/pravah/experiments.py",
+   "kind": "code",
+   "note": "make_ensemble and check_ensembles: seeded scenario draws and pairwise-disjoint design/test/validation seed ranges.",
+   "lines": [
+    84,
+    142
+   ]
+  },
+  {
+   "id": "ev.exp.bench",
+   "path": "src/pravah/experiments.py",
+   "kind": "code",
+   "note": "run_benchmark: design -> frozen alpha -> layouts -> test evaluation.",
+   "lines": [
+    563,
+    633
+   ]
+  },
+  {
+   "id": "ev.exp.mismatch",
+   "path": "src/pravah/experiments.py",
+   "kind": "code",
+   "note": "run_mismatch and _mismatch_case: one change at a time in the truth (finer grid, hidden wind error, extra source).",
+   "lines": [
+    767,
+    791
+   ]
+  },
+  {
+   "id": "ev.exp.refine",
+   "path": "src/pravah/experiments.py",
+   "kind": "code",
+   "note": "refine_scenario / perturb_wind / block_average: truth variants used by the mismatch study.",
+   "lines": [
+    143,
+    177
+   ]
+  },
+  {
+   "id": "ev.exp.backends",
+   "path": "src/pravah/experiments.py",
+   "kind": "code",
+   "note": "resolve_backends: separate truth and inference solver roles from config or arguments.",
+   "lines": [
+    202,
+    217
+   ]
+  },
+  {
+   "id": "ev.gd.setup",
+   "path": "docs/geodesign.md",
+   "kind": "docs",
+   "note": "Geodesign setup: parameters [road, builtup, external_patch, bg], ensembles with disjoint seeds, matched estimator given the declared wind.",
+   "lines": [
+    18,
+    35
+   ]
+  },
+  {
+   "id": "ev.gd.cand",
+   "path": "docs/geodesign.md",
+   "kind": "docs",
+   "note": "Candidate classes (interior, reference_domestic, reference_hypothetical) and the assumptions repeated in outputs (mapped accessibility is not permission, power, security).",
+   "lines": [
+    37,
+    49
+   ]
+  },
+  {
+   "id": "ev.gd.methods",
+   "path": "docs/geodesign.md",
+   "kind": "docs",
+   "note": "Settings (interior_only, with_reference, hypothetical) and methods (random, spread, greedy_total, greedy_attribution); greedy never called optimal.",
+   "lines": [
+    51,
+    58
+   ]
+  },
+  {
+   "id": "ev.gd.alpha",
+   "path": "docs/geodesign.md",
+   "kind": "docs",
+   "note": "Alpha chosen per noise fraction on VALIDATION, frozen before the test ensemble is built.",
+   "lines": [
+    60,
+    65
+   ]
+  },
+  {
+   "id": "ev.gd.candfn",
+   "path": "src/pravah/geodesign.py",
+   "kind": "code",
+   "note": "build_candidate_table: lattice candidates clipped to the municipality, reference sites, flags and distances.",
+   "lines": [
+    195,
+    238
+   ]
+  },
+  {
+   "id": "ev.gd.select",
+   "path": "src/pravah/geodesign.py",
+   "kind": "code",
+   "note": "select_alpha on the validation ensemble and make_layouts on design cases only.",
+   "lines": [
+    499,
+    568
+   ]
+  },
+  {
+   "id": "ev.gd.run",
+   "path": "src/pravah/geodesign.py",
+   "kind": "code",
+   "note": "run_geodesign: alpha_selected.json is written before the test ensemble exists and its sha256 recorded.",
+   "lines": [
+    939,
+    953
+   ]
+  },
+  {
+   "id": "ev.gd.ens",
+   "path": "src/pravah/geodesign.py",
+   "kind": "code",
+   "note": "check_ensembles: scenario seeds, noise-seed ranges, draws and case names pairwise disjoint.",
+   "lines": [
+    332,
+    351
+   ]
+  },
+  {
+   "id": "ev.cfg.geodesign",
+   "path": "configs/geodesign.json",
+   "kind": "config",
+   "note": "Production geodesign config (region, mesh, ensembles, noise fractions, settings, methods).",
+   "lines": [
+    1,
+    26
+   ]
+  },
+  {
+   "id": "ev.res.geodesign",
+   "path": "results/geodesign/summary.csv",
+   "kind": "result",
+   "note": "Frozen geodesign test summary (synthetic, matched model).",
+   "validation": "synthetic-matched"
+  },
+  {
+   "id": "ev.res.gdalpha",
+   "path": "results/geodesign/alpha_selected.json",
+   "kind": "result",
+   "note": "Frozen per-noise-fraction alpha selected on validation.",
+   "validation": "synthetic-matched"
+  },
+  {
+   "id": "ev.p2.c5",
+   "path": "docs/phase2-validation.md",
+   "kind": "result",
+   "note": "c5: geographic design results and what they do not claim (F-020, preliminary).",
+   "lines": [
+    146,
+    206
+   ]
+  },
+  {
+   "id": "ev.p2.robust",
+   "path": "docs/phase2-validation.md",
+   "kind": "result",
+   "note": "Robustness and refinement (F2b, F-021, preliminary): unknown wind error dominates the sensor-count effect; rankings unresolved against noise.",
+   "lines": [
+    208,
+    290
+   ]
+  },
+  {
+   "id": "ev.p2.limits",
+   "path": "docs/phase2-validation.md",
+   "kind": "docs",
+   "note": "(e) Known limitations: nothing empirical, no real emitter identified, boundary status, terrain not in dynamics, numerical diffusion, small ensembles.",
+   "lines": [
+    359,
+    378
+   ]
+  },
+  {
+   "id": "ev.p2.issues",
+   "path": "docs/phase2-validation.md",
+   "kind": "docs",
+   "note": "Eight known issues of the final review that were not fixed (noise level, saturated flags, ranking-stability metric, refinement, held-out sites, geography wording, provenance, unexecuted work in a stash).",
+   "lines": [
+    407,
+    427
+   ]
+  },
+  {
+   "id": "ev.p2.next",
+   "path": "docs/phase2-validation.md",
+   "kind": "docs",
+   "note": "Proposed (not executed) next experiment: chi-square per degree of freedom model check with test noise fixed from the validation scale.",
+   "lines": [
+    429,
+    431
+   ]
+  },
+  {
+   "id": "ev.gr.variant",
+   "path": "src/pravah/geodesign_robust.py",
+   "kind": "code",
+   "note": "variant_case builds hidden-wind, unseen-wind, omitted-source and boundary-profile truths while the estimator keeps the nominal model.",
+   "lines": [
+    240,
+    311
+   ]
+  },
+  {
+   "id": "ev.gr.ranking",
+   "path": "src/pravah/geodesign_robust.py",
+   "kind": "code",
+   "note": "Pairwise contrasts, ranking_changes and flags_vs_error tables.",
+   "lines": [
+    469,
+    508
+   ]
+  },
+  {
+   "id": "ev.gr.refine",
+   "path": "src/pravah/geodesign_robust.py",
+   "kind": "code",
+   "note": "refinement_study: 250 m re-selection compared with the 500 m layouts.",
+   "lines": [
+    595,
+    681
+   ]
+  },
+  {
+   "id": "ev.gr.run",
+   "path": "src/pravah/geodesign_robust.py",
+   "kind": "code",
+   "note": "run_geodesign_robust re-uses the fixed layouts and frozen alphas of a geodesign run.",
+   "lines": [
+    791,
+    805
+   ]
+  },
+  {
+   "id": "ev.gr.nd",
+   "path": "src/pravah/geodesign_robust.py",
+   "kind": "code",
+   "note": "diffusion_table: numerical-diffusion table for the drawn and unseen winds.",
+   "lines": [
+    521,
+    559
+   ]
+  },
+  {
+   "id": "ev.test.grfixed",
+   "path": "tests/test_geodesign_robust.py",
+   "kind": "test",
+   "note": "Layouts are reused verbatim and matched rows equal the main run; hidden-wind truth differs from the inference model.",
+   "lines": [
+    75,
+    95
+   ],
+   "validation": "smoke"
+  },
+  {
+   "id": "ev.res.robust",
+   "path": "results/geodesign-robust/summary.csv",
+   "kind": "result",
+   "note": "Frozen robustness summary per condition (synthetic).",
+   "validation": "mismatch"
+  },
+  {
+   "id": "ev.res.robustnd",
+   "path": "results/geodesign-robust/numerical_diffusion.csv",
+   "kind": "result",
+   "note": "Recorded numerical-diffusion table for the robustness winds.",
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.res.rankchg",
+   "path": "results/geodesign-robust/ranking_changes.csv",
+   "kind": "result",
+   "note": "Ranking changes between conditions (see the ranking-stability caveat in known issue 3).",
+   "validation": "mismatch"
+  },
+  {
+   "id": "ev.res.flags",
+   "path": "results/geodesign-robust/flags_vs_error.csv",
+   "kind": "result",
+   "note": "Identifiability flags versus actual error under mismatch.",
+   "validation": "mismatch"
+  },
+  {
+   "id": "ev.val.mismatch",
+   "path": "docs/validation.md",
+   "kind": "result",
+   "note": "v0 mismatch study results: finer grid, hidden wind +20%/15 degrees, extra 4th source.",
+   "lines": [
+    335,
+    425
+   ],
+   "validation": "mismatch"
+  },
+  {
+   "id": "ev.res.mismatch",
+   "path": "results/mismatch-final/summary.csv",
+   "kind": "result",
+   "note": "Frozen final mismatch summary (alpha 0.1 read from the frozen file).",
+   "validation": "mismatch"
+  },
+  {
+   "id": "ev.cfg.mismatch",
+   "path": "configs/mismatch.json",
+   "kind": "config",
+   "note": "Mismatch config reading the layouts of benchmark-final.",
+   "lines": [
+    1,
+    15
+   ]
+  },
+  {
+   "id": "ev.val.exploratory",
+   "path": "docs/validation.md",
+   "kind": "docs",
+   "note": "Exploratory runs (alpha=1 chosen after seeing test results; test seeds 22/5000) are superseded and kept only for the record.",
+   "lines": [
+    427,
+    440
+   ]
+  },
+  {
+   "id": "ev.readme.exploratory",
+   "path": "README.md",
+   "kind": "docs",
+   "note": "README: exploratory benchmark/unregularized/mismatch runs chose alpha after test results were seen; earlier 'a priori' wording was wrong; evidence is in the *-final runs.",
+   "lines": [
+    119,
+    123
+   ]
+  },
+  {
+   "id": "ev.readme.order",
+   "path": "README.md",
+   "kind": "docs",
+   "note": "Required run order: alpha-selection -> benchmark-final -> mismatch-final; benchmark_unregularized is a sensitivity run.",
+   "lines": [
+    46,
+    48
+   ]
+  },
+  {
+   "id": "ev.readme.matched",
+   "path": "README.md",
+   "kind": "docs",
+   "note": "What the experiments do and do not establish (inverse crime; small ensembles; sd is not a CI).",
+   "lines": [
+    96,
+    123
+   ]
+  },
+  {
+   "id": "ev.ver.script",
+   "path": "scripts/verification.py",
+   "kind": "code",
+   "note": "Verification study script (analytic, conservation, convergence, numerical-diffusion studies) writing results/verification.",
+   "lines": [
+    65,
+    68
+   ]
+  },
+  {
+   "id": "ev.res.verification",
+   "path": "results/verification/verification.json",
+   "kind": "result",
+   "note": "Recorded verification results.",
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.val.verif",
+   "path": "docs/validation.md",
+   "kind": "result",
+   "note": "Verification results table and tolerances asserted by the tests.",
+   "lines": [
+    75,
+    137
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.ver.capture",
+   "path": "scripts/capture_regression.py",
+   "kind": "code",
+   "note": "Runs the default workflows with fixed seeds into a comparison directory.",
+   "lines": [
+    1,
+    8
+   ]
+  },
+  {
+   "id": "ev.ver.compare",
+   "path": "scripts/compare_runs.py",
+   "kind": "code",
+   "note": "Compares two captures (excluding volatile keys).",
+   "lines": [
+    1,
+    9
+   ]
+  },
+  {
+   "id": "ev.res.regression",
+   "path": "results/solver-regression/comparison.json",
+   "kind": "result",
+   "note": "Recorded before/after comparison for the FiPy bit-identity gate.",
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.p2.c1",
+   "path": "docs/phase2-validation.md",
+   "kind": "result",
+   "note": "c1: solver regression record (EXP-008, F-009).",
+   "lines": [
+    64,
+    73
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.tb.terms",
+   "path": "docs/transboundary.md",
+   "kind": "docs",
+   "note": "Terms used literally (local, external, international transboundary, indoor).",
+   "lines": [
+    7,
+    14
+   ]
+  },
+  {
+   "id": "ev.tb.model",
+   "path": "docs/transboundary.md",
+   "kind": "docs",
+   "note": "Three regions, parameter kinds, tags by superposition, concentration-derived external fraction.",
+   "lines": [
+    16,
+    53
+   ]
+  },
+  {
+   "id": "ev.tb.not",
+   "path": "docs/transboundary.md",
+   "kind": "docs",
+   "note": "What this does NOT establish: inverse crime; no real data; whole-side boundary bases did not reproduce a localised plume in the smoke study; F_ext is for one wind history.",
+   "lines": [
+    314,
+    325
+   ]
+  },
+  {
+   "id": "ev.attr.contrib",
+   "path": "src/pravah/attribution.py",
+   "kind": "code",
+   "note": "contributions: origin tags by linear superposition; external_fraction / origin_fractions.",
+   "lines": [
+    65,
+    90
+   ]
+  },
+  {
+   "id": "ev.attr.frac",
+   "path": "src/pravah/attribution.py",
+   "kind": "code",
+   "note": "external_fraction is a concentration share (study-weighted, time-integrated), None when the total is negligible.",
+   "lines": [
+    106,
+    128
+   ]
+  },
+  {
+   "id": "ev.attr.emerr",
+   "path": "src/pravah/attribution.py",
+   "kind": "code",
+   "note": "emission_error reports errors per parameter kind, never mixing ug/s and ug/m3.",
+   "lines": [
+    152,
+    169
+   ]
+  },
+  {
+   "id": "ev.tb.dbl",
+   "path": "src/pravah/transboundary.py",
+   "kind": "code",
+   "note": "check_no_double_count: refuses a basis that stands for a region containing an explicit source.",
+   "lines": [
+    93,
+    104
+   ]
+  },
+  {
+   "id": "ev.tb.run",
+   "path": "src/pravah/transboundary.py",
+   "kind": "code",
+   "note": "run_transboundary: named scenarios, recovery, special cases, domain study, equivalence study.",
+   "lines": [
+    1100,
+    1114
+   ]
+  },
+  {
+   "id": "ev.tb.equiv",
+   "path": "src/pravah/transboundary.py",
+   "kind": "code",
+   "note": "Boundary-versus-plume equivalence study.",
+   "lines": [
+    1008,
+    1028
+   ]
+  },
+  {
+   "id": "ev.cfg.tb",
+   "path": "configs/transboundary.json",
+   "kind": "config",
+   "note": "External/local production config (domains A/B, bases, ensemble, special cases).",
+   "lines": [
+    1,
+    26
+   ]
+  },
+  {
+   "id": "ev.test.tagsum",
+   "path": "tests/test_attribution.py",
+   "kind": "test",
+   "note": "Tags sum to the total field; a local plume that leaves and re-enters stays local; external fraction analytic checks.",
+   "lines": [
+    112,
+    153
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.test.kinds",
+   "path": "tests/test_attribution.py",
+   "kind": "test",
+   "note": "Emission and inflow errors not mixed; noise-free recovery of all parameter kinds; no-arrival and collinear sources flagged.",
+   "lines": [
+    220,
+    305
+   ],
+   "validation": "synthetic-matched"
+  },
+  {
+   "id": "ev.test.tbnotag",
+   "path": "tests/test_transboundary.py",
+   "kind": "test",
+   "note": "fit_sources cannot see tags; no-double-count validator; seed guards; confounded case.",
+   "lines": [
+    117,
+    175
+   ],
+   "validation": "smoke"
+  },
+  {
+   "id": "ev.test.tbnoarr",
+   "path": "tests/test_transboundary.py",
+   "kind": "test",
+   "note": "No-arrival is verified by the model and not recovered; confounded total small, decomposition large.",
+   "lines": [
+    193,
+    246
+   ],
+   "validation": "synthetic-matched"
+  },
+  {
+   "id": "ev.res.tb",
+   "path": "results/transboundary/provenance.json",
+   "kind": "result",
+   "note": "Provenance of the external/local production run.",
+   "validation": "synthetic-matched"
+  },
+  {
+   "id": "ev.indoor",
+   "path": "src/pravah/indoor.py",
+   "kind": "code",
+   "note": "IndoorBox, exact piecewise-linear indoor_response and the paired/indoor-only ambiguity helpers.",
+   "lines": [
+    33,
+    107
+   ]
+  },
+  {
+   "id": "ev.indoor.doc",
+   "path": "docs/transboundary.md",
+   "kind": "docs",
+   "note": "Indoor box: separate one-way coupled ODE; not part of the outdoor inverse problem.",
+   "lines": [
+    136,
+    155
+   ]
+  },
+  {
+   "id": "ev.test.indoor",
+   "path": "tests/test_indoor.py",
+   "kind": "test",
+   "note": "Closed-form solutions, steady state, superposition and fit statistics for the indoor box.",
+   "lines": [
+    28,
+    134
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.nb04",
+   "path": "notebooks/04_transboundary_pollution.ipynb",
+   "kind": "notebook",
+   "note": "Notebook 04: external vs local, identifiability, indoor box (smoke-sized grids). Not opened or run by the explorer."
+  },
+  {
+   "id": "ev.geo.doc",
+   "path": "docs/geography.md",
+   "kind": "docs",
+   "note": "Real Belauri data: provenance, boundary verification, CRS, relief, border, OSM content, what is blocked/unverified.",
+   "lines": [
+    36,
+    56
+   ]
+  },
+  {
+   "id": "ev.geo.blocked",
+   "path": "docs/geography.md",
+   "kind": "docs",
+   "note": "Section 11: blocked / incomplete items that are not verified.",
+   "lines": [
+    147,
+    158
+   ]
+  },
+  {
+   "id": "ev.geo.layers",
+   "path": "docs/geography.md",
+   "kind": "docs",
+   "note": "What each geographic layer does in the simulations.",
+   "lines": [
+    132,
+    145
+   ]
+  },
+  {
+   "id": "ev.geo.prepare",
+   "path": "src/pravah/geo/prepare.py",
+   "kind": "code",
+   "note": "verify_boundary and international_border_info: boundary verification and national-border classification (ADM0 only).",
+   "lines": [
+    166,
+    251
+   ]
+  },
+  {
+   "id": "ev.geo.intl",
+   "path": "src/pravah/geo/prepare.py",
+   "kind": "code",
+   "note": "classify_point: 'international' only across a verified ADM0 boundary.",
+   "lines": [
+    142,
+    165
+   ]
+  },
+  {
+   "id": "ev.geo.regionio",
+   "path": "src/pravah/geo/regionio.py",
+   "kind": "code",
+   "note": "CRS, grids, polygon-cell area fractions, rasterisation, DEM aggregation, candidate lattice.",
+   "lines": [
+    173,
+    192
+   ]
+  },
+  {
+   "id": "ev.geo.manifest",
+   "path": "data/belauri/manifest.json",
+   "kind": "config",
+   "note": "Prepared-data manifest with sha256 hashes and licences (read-only data input).",
+   "lines": [
+    1,
+    21
+   ]
+  },
+  {
+   "id": "ev.geo.scenarios",
+   "path": "src/pravah/geo/scenarios.py",
+   "kind": "code",
+   "note": "belauri_scenario builder: raster sources, prescribed winds, crop region, study mask.",
+   "lines": [
+    199,
+    236
+   ]
+  },
+  {
+   "id": "ev.geo.wind",
+   "path": "src/pravah/geo/scenarios.py",
+   "kind": "code",
+   "note": "Prescribed synthetic winds: uniform, and a stream-function eddy demo that is not derived from the DEM.",
+   "lines": [
+    72,
+    113
+   ]
+  },
+  {
+   "id": "ev.test.geo",
+   "path": "tests/test_geo.py",
+   "kind": "test",
+   "note": "Polygon cell fractions conserve area; classify_point only across ADM0; boundary verification refuses disagreement.",
+   "lines": [
+    74,
+    84
+   ],
+   "validation": "smoke"
+  },
+  {
+   "id": "ev.test.geoverify",
+   "path": "tests/test_geo.py",
+   "kind": "test",
+   "note": "Coarse district outline rescued only by independent evidence; disagreeing relation blocks verification.",
+   "lines": [
+    518,
+    545
+   ],
+   "validation": "smoke"
+  },
+  {
+   "id": "ev.bel.plotonly",
+   "path": "src/pravah/belauri.py",
+   "kind": "code",
+   "note": "plotting_only_check: replaces DEM/hillshade/slope by constants and shows the Scenario and concentrations are unchanged.",
+   "lines": [
+    325,
+    338
+   ]
+  },
+  {
+   "id": "ev.test.plotonly",
+   "path": "tests/test_belauri.py",
+   "kind": "test",
+   "note": "Plotting-only layers do not change the Scenario.",
+   "lines": [
+    208,
+    214
+   ],
+   "validation": "smoke"
+  },
+  {
+   "id": "ev.bf.real",
+   "path": "docs/belauri-forward.md",
+   "kind": "docs",
+   "note": "Real versus synthetic table and the inputs that change numbers versus plotting-only layers.",
+   "lines": [
+    9,
+    27
+   ]
+  },
+  {
+   "id": "ev.bf.limits",
+   "path": "docs/belauri-forward.md",
+   "kind": "docs",
+   "note": "Belauri forward limitations: synthetic winds and emissions, no terrain dynamics, nominal K, numerical diffusion.",
+   "lines": [
+    69,
+    72
+   ]
+  },
+  {
+   "id": "ev.bel.run",
+   "path": "src/pravah/belauri.py",
+   "kind": "code",
+   "note": "run_belauri_forward: scenarios, outer-domain and mesh sensitivity, what_changes.",
+   "lines": [
+    658,
+    672
+   ]
+  },
+  {
+   "id": "ev.bel.what",
+   "path": "src/pravah/belauri.py",
+   "kind": "code",
+   "note": "what_changes: measures which inputs change concentrations, with an explicit plotting-only list.",
+   "lines": [
+    581,
+    640
+   ]
+  },
+  {
+   "id": "ev.cfg.belauri",
+   "path": "configs/belauri_forward.json",
+   "kind": "config",
+   "note": "Belauri forward config (mesh, physics, synthetic source amplitudes, winds, plotting_only list).",
+   "lines": [
+    1,
+    26
+   ]
+  },
+  {
+   "id": "ev.res.belauri",
+   "path": "results/belauri-forward/what_changes.json",
+   "kind": "result",
+   "note": "Recorded measurement of which inputs change concentrations.",
+   "validation": "empirical"
+  },
+  {
+   "id": "ev.res.beloutput",
+   "path": "results/belauri-forward/outer_domain.csv",
+   "kind": "result",
+   "note": "Outer-domain size sensitivity (open boundary distance matters when the wind reverses).",
+   "validation": "empirical"
+  },
+  {
+   "id": "ev.nb05",
+   "path": "notebooks/05_belauri_forward.ipynb",
+   "kind": "notebook",
+   "note": "Notebook 05: Belauri forward scenarios. Not opened or run by the explorer."
+  },
+  {
+   "id": "ev.nb06",
+   "path": "notebooks/06_belauri_sensor_design.ipynb",
+   "kind": "notebook",
+   "note": "Notebook 06: geographic sensor design. Not opened or run by the explorer."
+  },
+  {
+   "id": "ev.p2.c4",
+   "path": "docs/phase2-validation.md",
+   "kind": "result",
+   "note": "c4: Belauri forward results (F-018, preliminary): external patch reaches the municipality when wind carries it from the WSW side.",
+   "lines": [
+    112,
+    144
+   ]
+  },
+  {
+   "id": "ev.p2.c3",
+   "path": "docs/phase2-validation.md",
+   "kind": "result",
+   "note": "c3: geography verification record (the ADM2 coverage check fails at 71.7%, explained but not resolved).",
+   "lines": [
+    91,
+    110
+   ]
+  },
+  {
+   "id": "ev.res.geography",
+   "path": "results/geography/geography_report.json",
+   "kind": "result",
+   "note": "Recorded geography report (boundary verification, relief).",
+   "validation": "empirical"
+  },
+  {
+   "id": "ev.cli.main",
+   "path": "src/pravah/cli.py",
+   "kind": "code",
+   "note": "CLI entry: subcommands simulate/inverse/benchmark/geo and main().",
+   "lines": [
+    201,
+    235
+   ]
+  },
+  {
+   "id": "ev.cli.benchmark",
+   "path": "src/pravah/cli.py",
+   "kind": "code",
+   "note": "cmd_benchmark dispatches on cfg['experiment'] to alpha_selection/mismatch/benchmark/transboundary/geodesign/geodesign_robust/belauri_forward.",
+   "lines": [
+    153,
+    182
+   ]
+  },
+  {
+   "id": "ev.cli.forwards",
+   "path": "src/pravah/cli.py",
+   "kind": "code",
+   "note": "_forwards: --solver, --truth-solver, --inference-solver flags (and kwargs) resolved to ForwardSolver objects.",
+   "lines": [
+    40,
+    54
+   ]
+  },
+  {
+   "id": "ev.cli.sim",
+   "path": "src/pravah/cli.py",
+   "kind": "code",
+   "note": "cmd_simulate and cmd_inverse.",
+   "lines": [
+    77,
+    150
+   ]
+  },
+  {
+   "id": "ev.cfg.dataclasses",
+   "path": "src/pravah/config.py",
+   "kind": "code",
+   "note": "Frozen dataclasses: Domain, GaussianSource, RasterSource, StudyRegion/StudyMask, WindSegment, Transport, InflowBasis, Boundary, Times, SolverOptions, Scenario.",
+   "lines": [
+    30,
+    331
+   ]
+  },
+  {
+   "id": "ev.cfg.scenario",
+   "path": "src/pravah/config.py",
+   "kind": "code",
+   "note": "Scenario, param_table (theta order and kinds) and FieldResult.",
+   "lines": [
+    281,
+    338
+   ]
+  },
+  {
+   "id": "ev.cfg.load",
+   "path": "src/pravah/config.py",
+   "kind": "code",
+   "note": "scenario_from_dict, config 'extends' merging (dicts merge, lists and scalars replace), load_config.",
+   "lines": [
+    389,
+    421
+   ]
+  },
+  {
+   "id": "ev.cfg.solveropts",
+   "path": "src/pravah/config.py",
+   "kind": "code",
+   "note": "SolverOptions: convection scheme (exponential | upwind), solver tolerance, validated.",
+   "lines": [
+    264,
+    272
+   ]
+  },
+  {
+   "id": "ev.cfg.inflow",
+   "path": "src/pravah/config.py",
+   "kind": "code",
+   "note": "InflowBasis and Boundary (mode open/periodic/closed, background, bases).",
+   "lines": [
+    209,
+    236
+   ]
+  },
+  {
+   "id": "ev.cfg.wind",
+   "path": "src/pravah/config.py",
+   "kind": "code",
+   "note": "WindSegment (piecewise-constant uniform wind, optional stream function) and Transport (K, lambda, H).",
+   "lines": [
+    164,
+    208
+   ]
+  },
+  {
+   "id": "ev.test.config",
+   "path": "tests/test_config.py",
+   "kind": "test",
+   "note": "Config contract tests.",
+   "lines": [
+    1,
+    12
+   ]
+  },
+  {
+   "id": "ev.test.contracts",
+   "path": "tests/test_contracts.py",
+   "kind": "test",
+   "note": "Raster sources are normalised like Gaussians; study-region weights are exact overlap; origin tags must match geometry; param_table ordering.",
+   "lines": [
+    22,
+    92
+   ],
+   "validation": "smoke"
+  },
+  {
+   "id": "ev.cfg.smoke",
+   "path": "configs/smoke.json",
+   "kind": "config",
+   "note": "Coarse plumbing-check benchmark config (alpha=1 is a demo value, not the selected alpha).",
+   "lines": [
+    1,
+    16
+   ]
+  },
+  {
+   "id": "ev.cfg.windchange",
+   "path": "configs/wind_change.json",
+   "kind": "config",
+   "note": "Piecewise-constant wind example.",
+   "lines": [
+    1,
+    13
+   ]
+  },
+  {
+   "id": "ev.io.prov",
+   "path": "src/pravah/io.py",
+   "kind": "code",
+   "note": "make_run_dir refuses a non-empty output directory unless overwritten; provenance records versions, git revision and dirty-state hash.",
+   "lines": [
+    20,
+    95
+   ]
+  },
+  {
+   "id": "ev.io.provenance",
+   "path": "src/pravah/io.py",
+   "kind": "code",
+   "note": "provenance(config, seeds, extra) payload.",
+   "lines": [
+    81,
+    95
+   ]
+  },
+  {
+   "id": "ev.metrics",
+   "path": "src/pravah/metrics.py",
+   "kind": "code",
+   "note": "field_mse / field_rmse with weights, trapezoid time weights over [t_exclude, T]; source_error; sensor_rmse.",
+   "lines": [
+    17,
+    80
+   ]
+  },
+  {
+   "id": "ev.test.metrics",
+   "path": "tests/test_inverse.py",
+   "kind": "test",
+   "note": "field_mse constant-offset, weighting, trapezoid time weights, t_exclude and guards.",
+   "lines": [
+    352,
+    396
+   ],
+   "validation": "numerical-verification"
+  },
+  {
+   "id": "ev.agents",
+   "path": "AGENTS.md",
+   "kind": "docs",
+   "note": "Orientation and rules learned the hard way (terms are exact; never select a hyper-parameter with test quantities; legacy FiPy outputs bit-identical).",
+   "lines": [
+    26,
+    35
+   ]
+  },
+  {
+   "id": "ev.agents.state",
+   "path": "AGENTS.md",
+   "kind": "docs",
+   "note": "Known state: numerical diffusion dominates K, small-budget rankings unresolved at 6 test scenarios, saturated identifiability flags, test noise derived from test ensemble, no terrain-coupled flow; best next experiment.",
+   "lines": [
+    37,
+    41
+   ]
+  },
+  {
+   "id": "ev.pyproject",
+   "path": "pyproject.toml",
+   "kind": "config",
+   "note": "Package metadata and dependency groups (dev, geo extra).",
+   "lines": [
+    1,
+    21
+   ]
+  },
+  {
+   "id": "ev.p2.reqtable",
+   "path": "docs/phase2-validation.md",
+   "kind": "docs",
+   "note": "Requirement / status table for phase 2.",
+   "lines": [
+    292,
+    357
+   ]
+  },
+  {
+   "id": "ev.p2.tolerances",
+   "path": "docs/phase2-validation.md",
+   "kind": "docs",
+   "note": "Tolerances and what each test class establishes.",
+   "lines": [
+    38,
+    60
+   ]
+  },
+  {
+   "id": "ev.p2.c2",
+   "path": "docs/phase2-validation.md",
+   "kind": "result",
+   "note": "c2: external vs local study record (F-012).",
+   "lines": [
+    75,
+    89
+   ],
+   "validation": "synthetic-matched"
+  },
+  {
+   "id": "ev.gd.robustdoc",
+   "path": "docs/geodesign.md",
+   "kind": "docs",
+   "note": "Robustness, numerical refinement, exports, and F2b limitations.",
+   "lines": [
+    193,
+    264
+   ]
+  },
+  {
+   "id": "ev.gd.limits",
+   "path": "docs/geodesign.md",
+   "kind": "docs",
+   "note": "Geodesign limitations (provisional design; not field-validated).",
+   "lines": [
+    98,
+    183
+   ]
+  },
+  {
+   "id": "ev.gd.heldout",
+   "path": "docs/geodesign.md",
+   "kind": "docs",
+   "note": "Held-out design (block hold-out and random held-out points).",
+   "lines": [
+    78,
+    83
+   ]
+  },
+  {
+   "id": "ev.gr.checksame",
+   "path": "src/pravah/geodesign_robust.py",
+   "kind": "code",
+   "note": "load_fixed_design and check_same_study: refuse a config that differs from the main run.",
+   "lines": [
+    125,
+    179
+   ]
+  }
+ ]
+}

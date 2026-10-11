@@ -1,0 +1,95 @@
+[
+  {
+    "id": "idea.chi2-wind-check",
+    "title": "Can a data-based χ²/dof check detect a wrong wind?",
+    "question": "Does the weighted-residual χ² per degree of freedom rise measurably when the estimator is told the wrong wind or when a source is omitted, at the sensor budgets of interest?",
+    "related": [
+      "s.val.chi2",
+      "s.inverse.ident",
+      "s.val.mismatch"
+    ],
+    "motivation": "The identifiability flags depend only on the sensitivity matrix, so they cannot see a wrong model (known issue 2); hidden wind error is the dominant risk in the robustness runs.",
+    "method": "Add χ²/dof to geodesign_robust rows on a copy (not the frozen results); compare matched, hidden-wind, unseen-wind and omitted-source conditions with the noise sd fixed from the validation scale.",
+    "references": [],
+    "expected": "A separation between matched and mismatch conditions would justify a model-adequacy flag; no separation would mean wind error is invisible to these layouts.",
+    "status": "idea",
+    "notes": "",
+    "origin": "claude-proposal",
+    "created": "2026-10-10T20:00:00.000Z",
+    "updated": "2026-10-10T20:00:00.000Z"
+  },
+  {
+    "id": "idea.numdiff-vs-ranking",
+    "title": "How much of the ranking instability is discretisation rather than noise?",
+    "question": "If truth and inference use the same finer mesh (or the upwind scheme), do small-budget layout rankings stabilise and do selected sites change?",
+    "related": [
+      "s.forward.numdiff",
+      "s.design.methods",
+      "s.val.mismatch"
+    ],
+    "motivation": "Numerical diffusion dominates the nominal K (K_eff/K about 2.4–9.4 at the design mesh); the 250 m refinement used 3 fine design cases against 6 with no 500 m resampling baseline (known issue 4).",
+    "method": "Repeat greedy selection at 500 m over resampled design subsets to get a baseline Jaccard, then compare with 250 m selections using matched case counts.",
+    "references": [],
+    "expected": "If the 500 m resampling baseline already gives Jaccard 0–0.2, refinement instability is ordinary greedy instability.",
+    "status": "idea",
+    "notes": "",
+    "origin": "claude-proposal",
+    "created": "2026-10-10T20:00:00.000Z",
+    "updated": "2026-10-10T20:00:00.000Z"
+  },
+  {
+    "id": "idea.noise-baseline-ranking",
+    "title": "What is the noise baseline of the ranking-stability metric?",
+    "question": "With exactly-zero contrasts counted as 'kept' and no noise baseline, what fraction of rankings flips between two independent noise draws with no model change?",
+    "related": [
+      "s.val.mismatch",
+      "s.design.gap"
+    ],
+    "motivation": "Known issue 3: the metric reads as 'rankings were never resolved', not as 'wind error flips them'.",
+    "method": "Compute the same metric between two noise seeds under the matched condition and between matched and each mismatch; report zero-difference rows separately.",
+    "references": [],
+    "expected": "A matched-vs-matched baseline close to the mismatch value would confirm rankings are unresolved at 6 test scenarios.",
+    "status": "idea",
+    "notes": "",
+    "origin": "claude-proposal",
+    "created": "2026-10-10T20:00:00.000Z",
+    "updated": "2026-10-10T20:00:00.000Z"
+  },
+  {
+    "id": "idea.robust-greedy",
+    "title": "Does a wind-robust design objective change the chosen layouts?",
+    "question": "Would greedy selection over an ensemble of perturbed winds (expected or worst case) give layouts that degrade less under a hidden wind error than matched-design layouts?",
+    "related": [
+      "s.design.methods",
+      "s.val.mismatch",
+      "s.transport.met"
+    ],
+    "motivation": "Matched-design layouts are not robust at 2–3 sensors under mismatch (F-017) and unknown wind error dominates the sensor-count effect (F-021).",
+    "method": "Extend the design cases with perturbed-wind variants (perturb_wind / variant_case machinery exists), select greedily on the ensemble objective, evaluate on unseen winds with α frozen.",
+    "references": [],
+    "expected": "Layouts selected under wind uncertainty may lose less on hidden-wind tests but some matched performance; the size of the trade-off is the result.",
+    "status": "idea",
+    "notes": "",
+    "origin": "claude-proposal",
+    "created": "2026-10-10T20:00:00.000Z",
+    "updated": "2026-10-10T20:00:00.000Z"
+  },
+  {
+    "id": "idea.scale-free-flag",
+    "title": "Replace the saturated weakly_constrained flag",
+    "question": "Is there an identifiability diagnostic that varies across rows in the geodesign runs, e.g. with scales taken from a validation-ensemble prior width instead of 1e5 µg/s?",
+    "related": [
+      "s.inverse.ident",
+      "s.inverse.nnls"
+    ],
+    "motivation": "The flag fires on every geodesign row because the emission scale is small next to true emissions (known issue 2).",
+    "method": "Recompute effective_rank and posterior std with scales set from validation-ensemble spreads (never test quantities) and check whether the flag now varies with layout and budget.",
+    "references": [],
+    "expected": "A non-saturated flag that tracks actual error across layouts; if it still cannot detect model error, that supports the χ² check.",
+    "status": "idea",
+    "notes": "",
+    "origin": "claude-proposal",
+    "created": "2026-10-10T20:00:00.000Z",
+    "updated": "2026-10-10T20:00:00.000Z"
+  }
+]
