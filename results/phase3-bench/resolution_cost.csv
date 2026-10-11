@@ -1,0 +1,8 @@
+mode,resolution_m,dt_s,nx,ny,cells,steps,n_solves,solver,status,wall_s,peak_rss_gb,note
+forward,500.0,100.0,66,65,4290,288,1,"fipy LinearLUSolver(tol=1e-12), exponential convection",ok,4.84,0.172,
+forward,500.0,50.0,66,65,4290,576,1,"fipy LinearLUSolver(tol=1e-12), exponential convection",ok,8.75,0.174,
+forward,250.0,100.0,132,130,17160,288,1,"fipy LinearLUSolver(tol=1e-12), exponential convection",ok,15.1,0.214,
+forward,125.0,100.0,264,260,68640,288,1,"fipy LinearLUSolver(tol=1e-12), exponential convection",ok,71.08,0.382,
+basis,500.0,100.0,66,65,4290,288,5,"fipy LinearLUSolver(tol=1e-12), exponential convection",ok,22.32,0.171,
+basis,250.0,100.0,132,130,17160,288,5,"fipy LinearLUSolver(tol=1e-12), exponential convection",ok,76.09,0.212,
+basis,125.0,100.0,264,260,68640,288,5,"fipy LinearLUSolver(tol=1e-12), exponential convection",ok,344.02,0.432,
