@@ -138,3 +138,22 @@ Scenarios: `steady`, `reversal` (u -> -u at t_r), `channel_step`, `channel_bump`
 (no local solve; the quantity is external exposure of the study box). Outputs in `results/phase3-winds-converged[-smoke|-pilot]/`: `cases_raw.csv`, `timeseries_raw.csv`, `numerical_check_raw.csv`
 (raw), `convergence.csv`, `vs_reference.csv`, `checks.json`, `provenance.json`, `summary.md`, three figures stamped `EXP-021 prescribed wind, not terrain-derived`.
 Stop rule: closure > 1e-8 or negativity > 1e-9 exits non-zero after writing the files.
+
+## 6. ERA5 ingestion (fetched 2026-10-11) and descriptive summary
+
+`data/era5/belauri_era5_10m_wind.nc` (706,777 bytes, sha256 `8cea3d65...aab28`, full value and request in `belauri_era5_10m_wind.json`; downloaded 2026-10-11, DOI 10.24381/cds.adbb2d47):
+ERA5 hourly 10 m `u10`, `v10` (m/s, UTC), Jan and Jul 2023, 9 x 9 points at 0.25 deg (27.75-29.75 N, 79.25-81.25 E), 1488 steps, `expver` = 0001 throughout.
+Code: `src/pravah/era5.py` (`load_era5_wind` validates dims, units, finite values and ordering and flips latitude to ascending; `sample_at` bilinear to a point;
+`box_mean` plain mean of grid points in a box; `from_deg`; `to_segments`). Tests: `tests/test_era5.py` (synthetic NetCDF, plus one real-file test that skips if the file is missing).
+
+* **Resolution limit.** 0.25 deg is ~28 km; Belauri's study area is ~123 km2. ERA5 cannot resolve the valley, slope or channelled flow there. Use it as a large-scale time series at a point or box.
+* **Convention.** `u10`/`v10` are the flow TOWARD east/north, the same as `WindSegment.u/v` (toward +x/+y); no sign change. The meteorological FROM bearing is `era5.from_deg`
+  (u > 0, v = 0 gives 270 deg); `geo.scenarios.toward_vector` is the inverse. Tested: an eastward wind carries a plume east.
+* **Grid convergence.** UTM 44N central meridian 81 E; at the Belauri centroid (80.354 E, 28.700 N) the angle is (lon - 81) sin(lat) = -0.31 deg (pyproj agrees). IGNORED: ~160 m over 30 km, far below ERA5 direction error.
+* **Time.** `to_segments` treats a series as spatially uniform with hold-last semantics (sample k holds from t_k to t_k+1, as `segments_from_series`); an ERA5 value is an instantaneous hourly analysis, not an hourly mean, so holding it forward is an assumption.
+* **Summary** `python scripts/era5_summary.py` -> `results/phase3-era5/` (`wind_rose_tables.csv`, `diurnal_speed.csv`, `persistence.json`, `summary.json`, `era5_summary.png`), sampled bilinearly at the manifest study centroid, stamped
+  "ERA5 2023, 0.25 deg, descriptive only". Directions are FROM bearings in 16 sectors. The WSW sector is the 22.5 deg bin centred on 247.5 deg (`configs/belauri_forward.json`, wind.reference); a looser 225-270 deg share is also given.
+  Two months of one year are not a climatology; nothing here is causal.
+* **Demo (plumbing check, not a result).** First 24 h of each month, hourly-uniform wind from the centroid series, 30 km box, 1 km cells, dt 300 s (K = 100 m^2/s, lam = 1/6 h, H = 500 m, open boundaries; output every 3600 s),
+  one pulse source (30 min) at the centre. It shows only that the segments build and run, closure is ~1e-15 (limit 1e-8), and that the plume centroid at 1 h and 2 h moves along the wind-integral direction (angle <= 1.4 deg) with length 0.73-0.87 of the
+  wind integral (expected: the pulse is released over 30 min, so the mean transport time is shorter than the elapsed time, plus numerical diffusion). It does NOT show that ERA5 is a good wind for Belauri, nor anything about local flow or transport over longer times (the plume leaves the 30 km box within hours).

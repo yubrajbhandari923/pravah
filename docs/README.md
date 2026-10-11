@@ -9,6 +9,7 @@ Panel (`.research/bin/research current`), not here.
 | What are the equations, units, boundary treatment, discretisation? | `specification.md` |
 | How is the code organised (modules, data flow, parameter vector)? | `architecture.md` |
 | How do I change a source / add a term / swap a solver / add an objective? | `extending.md` |
+| What winds does the model accept, and what is the ERA5 ingestion? | `winds.md` |
 | How do I route a different forward solver through everything? | `solver-interchangeability.md` |
 | What did v0 verify and measure (tolerances, benchmarks, mismatch)? | `validation.md` |
 | External vs local pollution, tags, bases, indoor box | `transboundary.md` |
