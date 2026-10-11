@@ -268,11 +268,12 @@ def report(cfg: dict[str, Any], out: Path, work: Path) -> None:
 
     def panels(x: str, metrics: list[str], rows: Any, xlabel: str, ylabel: str, name: str, strategies: str = "ABC", hline: float | None = None,
                ylim: tuple[float, float] | None = None) -> None:
+        ln = "-" if x != "vec_err" else ""  # direction and speed rows share x on a vector-error axis: markers only
         bud = sorted(rows.budget.unique())
         f, axs = plt.subplots(1, len(bud), figsize=(4.2 * len(bud), 3.6), sharey=True, squeeze=False)
         for ax, b in zip(axs[0], bud):
             for s in strategies:
-                for m, ls in zip(metrics, ("-", "--")):
+                for m, ls in zip(metrics, (ln, "--" if ln else "")):
                     d = rows[(rows.strategy == s) & (rows.budget == b) & (rows.metric == m)].sort_values(x)
                     if d.empty:
                         continue
@@ -306,9 +307,9 @@ def report(cfg: dict[str, Any], out: Path, work: Path) -> None:
     f, axs = plt.subplots(1, 2, figsize=(9, 3.8))
     for s in "ABC":
         d = cc[cc.strategy == s].sort_values("vec_err")
-        axs[0].plot(d.vec_err, d.chi2_per_dof, "o-", color=COLORS[s], label=NAMES[s], ms=3)
-        axs[1].plot(d.vec_err, d.frac_chi2_rejects, "o-", color=COLORS[s], ms=3, label=f"{NAMES[s]}: chi2 rejects (p<0.05)")
-        axs[1].plot(d.vec_err, d.frac_flagged, "x--", color=COLORS[s], ms=4, label=f"{NAMES[s]}: identifiability flag")
+        axs[0].plot(d.vec_err, d.chi2_per_dof, "o", color=COLORS[s], label=NAMES[s], ms=3)
+        axs[1].plot(d.vec_err, d.frac_chi2_rejects, "o", color=COLORS[s], ms=3, label=f"{NAMES[s]}: chi2 rejects (p<0.05)")
+        axs[1].plot(d.vec_err, d.frac_flagged, "x", color=COLORS[s], ms=4, label=f"{NAMES[s]}: identifiability flag")
     axs[0].axhline(1, color="k", lw=0.7, ls=":")
     axs[0].set_yscale("log")
     axs[0].set_xlabel("vector error |du|/|u|")
@@ -325,9 +326,9 @@ def report(cfg: dict[str, Any], out: Path, work: Path) -> None:
     f, ax = plt.subplots(figsize=(5.5, 3.8))
     for s in "ABC":
         d = cc[cc.strategy == s].sort_values("vec_err")
-        ax.plot(d.vec_err, d.cov90, "o-", color=COLORS[s], label=NAMES[s] + (" (naive covariance)" if s != "C" else " (spread + posterior)"), ms=3)
+        ax.plot(d.vec_err, d.cov90, "o", color=COLORS[s], label=NAMES[s] + (" (naive covariance)" if s != "C" else " (spread + posterior)"), ms=3)
     d = cc[cc.strategy == "C"].sort_values("vec_err")
-    ax.plot(d.vec_err, d.cov90_spread_only, "s:", color=COLORS["C"], label="C spread only", ms=3)
+    ax.plot(d.vec_err, d.cov90_spread_only, "s", color=COLORS["C"], label="C spread only", ms=3)
     ax.axhline(0.9, color="k", lw=0.7, ls=":")
     ax.axvline(W.vector_error(20.0), color="grey", lw=0.7, ls="--")
     ax.text(W.vector_error(20.0), 0.02, " edge of declared direction prior (20 deg)", fontsize=6, color="grey")
@@ -346,7 +347,7 @@ def report(cfg: dict[str, Any], out: Path, work: Path) -> None:
     f, ax = plt.subplots(figsize=(5.5, 3.8))
     for b, col in zip(sorted(pdiff.budget.unique()), ("#4c78a8", "#f58518", "#54a24b")):
         d = pdiff[pdiff.budget == b].sort_values("vec_err")
-        ax.errorbar(d.vec_err, d.diff_mean, yerr=[d.diff_mean - d.ci_lo, d.ci_hi - d.diff_mean], color=col, marker="o", ms=3, capsize=2, label=f"budget {b}")
+        ax.errorbar(d.vec_err, d.diff_mean, yerr=[d.diff_mean - d.ci_lo, d.ci_hi - d.diff_mean], color=col, ls="", marker="o", ms=3, capsize=2, label=f"budget {b}")
     ax.axhline(0, color="k", lw=0.7)
     ax.set_xlabel("vector error |du|/|u|")
     ax.set_ylabel("paired RMSE difference C - B (ug/m^3); < 0 means C better")
@@ -395,7 +396,8 @@ wind. chi2/dof with known sigma can, once the part of the signal change that amp
 Numerical demonstration (noise-free, from the cached response bases, base amplitudes, frozen layouts). For each layout and rotation: the signal change
 (A(phi) - A(0)) theta in units of sigma, the part absorbed by refitting amplitudes on the nominal operator, the leftover (its square is the chi2
 excess a noiseless fit would show; the expected noise chi2 is about dof), and the amplitude shift that does the absorbing (relative; emission 1..3,
-then inflow).
+then inflow). The refit is unconstrained least squares: the q >= 0 bound is NOT applied, so huge negative shifts (spread layouts leave one
+direction, essentially source S3, almost unobserved: smallest singular value ~0.01) overstate what a bounded fit can absorb.
 
 | layout | rotation (deg) | signal change (sigma) | absorbed (sigma) | leftover (sigma) | chi2 excess / dof | relative amplitude shift |
 |---|---|---|---|---|---|---|

@@ -17,7 +17,7 @@
     "prior": {"direction_deg": [-20, -10, 0, 10, 20], "speed_factor": [0.8, 1.0, 1.2]},
     "alpha": null, "alpha_grid": [0.0, 0.01, 0.1, 1.0, 10.0, 100.0],
     "population": {"fixture": "mixed_rural_urban", "total": 100000, "seed": 0, "epsg": 32645},
-    "n_design": 6, "n_validation": 6, "n_test": 16, "design_noise_reps": 2,
+    "n_design": 6, "n_validation": 6, "n_test": 32, "design_noise_reps": 2,
     "seeds": {"design": 5101, "design_noise": 51000, "validation": 5202, "validation_noise": 52000,
               "test": 5303, "test_noise": 53000},
     "validation": {"winds": [[-15, -10], [-5, 10], [5, -10], [15, 10], [-10, 0], [10, 0]], "budget": 5, "n_random": 3,
