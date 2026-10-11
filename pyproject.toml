@@ -7,7 +7,18 @@ name = "pravah"
 version = "0.1.0"
 description = "Regional air-quality simulation, synthetic inverse problems and sensor-placement experiments"
 requires-python = ">=3.11"
-dependencies = ["fipy", "numpy", "scipy", "xarray", "netcdf4", "pandas", "matplotlib", "jupyter", "ipykernel"]
+dependencies = [
+    "fipy",
+    "numpy",
+    "scipy",
+    "xarray",
+    "netcdf4",
+    "pandas",
+    "matplotlib",
+    "jupyter",
+    "ipykernel",
+    "cdsapi>=0.7.7",
+]
 
 [project.optional-dependencies]
 widgets = ["ipywidgets"]
