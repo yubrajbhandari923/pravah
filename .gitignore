@@ -16,3 +16,7 @@ results/phase3-convergence/stage2_work/
 results/phase3-*/work/
 results/phase3-*-smoke/
 results/phase3-*-pilot/
+results/phase3-wind-error-toy-controls/*/raw/
+results/phase3-wind-error-toy-controls/smoke/
+results/phase3-wind-error-toy/smoke/
+results/phase3-wind-error-toy/work_smoke/

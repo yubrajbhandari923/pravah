@@ -1,0 +1,15 @@
+{
+ "setup_validation_design_s": 13.327345917001367,
+ "gram_s": 0.5216810419224203,
+ "rows_s": 625.8520467479248,
+ "n_case_layout_evals": 51840,
+ "n_winds_total": 25,
+ "basis_s": 0.0,
+ "bases_computed": 0,
+ "bases_hit": 108,
+ "n_conditions": 9,
+ "n_test": 32,
+ "n_layouts": 36,
+ "profile": "production",
+ "total_wall_s": 639.8616766668856
+}

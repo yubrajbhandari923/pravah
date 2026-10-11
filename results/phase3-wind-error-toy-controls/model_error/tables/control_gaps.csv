@@ -1,0 +1,11 @@
+variant,cond,n_cases,diff_mean,ci_lo,ci_hi,excludes_0,contrast,metric,interval,blocks,deg,speed_pct,vec_err
+all,d+000.0_s+000.0,32,0.0,0.0,0.0,False,A-B,rmse_total,percentile bootstrap 95% over cases (n_boot=2000),direction,0.0,0.0,0.0
+all,d+010.0_s+000.0,32,-0.007633346379293015,-0.008476621541091123,-0.006823908168881556,True,A-B,rmse_total,percentile bootstrap 95% over cases (n_boot=2000),direction,10.0,0.0,0.1743114854953165
+all,d+030.0_s+000.0,32,-0.02588391720897059,-0.02805398532420873,-0.023883398362548082,True,A-B,rmse_total,percentile bootstrap 95% over cases (n_boot=2000),direction,30.0,0.0,0.5176380902050414
+all,d-010.0_s+000.0,32,-0.011484528197112124,-0.01259631552419366,-0.010353763036101797,True,A-B,rmse_total,percentile bootstrap 95% over cases (n_boot=2000),direction,-10.0,0.0,0.1743114854953165
+all,d-030.0_s+000.0,32,-0.02801545067033739,-0.03024863210048139,-0.025617722894394086,True,A-B,rmse_total,percentile bootstrap 95% over cases (n_boot=2000),direction,-30.0,0.0,0.5176380902050414
+all,d+000.0_s+000.0,32,0.0015044412025126887,0.0011779339411586058,0.0018595301435781423,True,C-B,rmse_total,percentile bootstrap 95% over cases (n_boot=2000),direction,0.0,0.0,0.0
+all,d+010.0_s+000.0,32,-0.0077072074509036085,-0.00852971627567878,-0.0069171081257813315,True,C-B,rmse_total,percentile bootstrap 95% over cases (n_boot=2000),direction,10.0,0.0,0.1743114854953165
+all,d+030.0_s+000.0,32,-0.01766788267245261,-0.01964680167019924,-0.015789627262936923,True,C-B,rmse_total,percentile bootstrap 95% over cases (n_boot=2000),direction,30.0,0.0,0.5176380902050414
+all,d-010.0_s+000.0,32,-0.009940350602054438,-0.011102022335406244,-0.008801928279066992,True,C-B,rmse_total,percentile bootstrap 95% over cases (n_boot=2000),direction,-10.0,0.0,0.1743114854953165
+all,d-030.0_s+000.0,32,-0.012901256990752768,-0.014063499572009619,-0.011685675234049347,True,C-B,rmse_total,percentile bootstrap 95% over cases (n_boot=2000),direction,-30.0,0.0,0.5176380902050414
