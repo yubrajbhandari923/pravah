@@ -1,0 +1,267 @@
+{
+ "experiment": "EXP-019",
+ "profile": "production",
+ "label": "production",
+ "cfg_hash": "d41f9702a5ec3cd9",
+ "config": {
+  "name": "wind_error",
+  "scenario": {
+   "domain": {
+    "lx": 10000.0,
+    "ly": 10000.0,
+    "nx": 50,
+    "ny": 50
+   },
+   "sources": [
+    {
+     "name": "S1",
+     "x": 2500.0,
+     "y": 2500.0,
+     "sigma": 500.0
+    },
+    {
+     "name": "S2",
+     "x": 4000.0,
+     "y": 6000.0,
+     "sigma": 500.0
+    },
+    {
+     "name": "S3",
+     "x": 6500.0,
+     "y": 3500.0,
+     "sigma": 500.0
+    }
+   ],
+   "transport": {
+    "wind": [
+     {
+      "t_start": 0.0,
+      "u": 1.0,
+      "v": 0.3
+     }
+    ],
+    "K": 100.0,
+    "lam": 4.6296296296296294e-05,
+    "H": 500.0
+   },
+   "boundary": {
+    "mode": "open",
+    "background": 0.0,
+    "bases": [
+     {
+      "name": "inflow"
+     }
+    ]
+   },
+   "initial": {
+    "kind": "zero"
+   },
+   "times": {
+    "duration": 14400.0,
+    "dt": 60.0,
+    "output_interval": 300.0
+   }
+  },
+  "q": [
+   100000.0,
+   150000.0,
+   80000.0
+  ],
+  "solver": {
+   "convection": "exponential",
+   "tolerance": 1e-12
+  },
+  "inverse": {
+   "sensor_interval": 600.0,
+   "noise_std": 0.005,
+   "seed": 1,
+   "heldout_ids": [
+    "S5"
+   ],
+   "sensors": [
+    [
+     2500,
+     4500
+    ],
+    [
+     5000,
+     5000
+    ],
+    [
+     7500,
+     4500
+    ],
+    [
+     4000,
+     7500
+    ],
+    [
+     6000,
+     2000
+    ]
+   ]
+  },
+  "experiment": "EXP-019",
+  "profile": "production",
+  "notes": "EXP-019 production (pre-registered). Synthetic Phase-1 Domain with 3 local sources plus one external (inflow) basis; truth wind perturbed, inference sees the nominal wind (B), the truth wind (A, oracle) or a declared-prior wind ensemble (C). Grid, prior and alpha are frozen (freeze.json) before the test cases are drawn. Seeds are disjoint from the pilot and smoke configs.",
+  "out": "results/phase3-wind-error-toy/production",
+  "work": "results/phase3-wind-error-toy/work",
+  "wind_error": {
+   "inflow_base": 0.02,
+   "amp_range": [
+    0.5,
+    1.5
+   ],
+   "candidates_n": 10,
+   "heldout_n": 16,
+   "heldout_seed": 3,
+   "budgets": [
+    3,
+    5,
+    8
+   ],
+   "n_random": 20,
+   "layout_seed": 7,
+   "grid": {
+    "direction_deg": [
+     -30,
+     -15,
+     -10,
+     -5,
+     0,
+     5,
+     10,
+     15,
+     30
+    ],
+    "speed_pct": [
+     -30,
+     -15,
+     0,
+     15,
+     30
+    ],
+    "joint_direction_deg": [
+     -15,
+     0,
+     15
+    ],
+    "joint_speed_pct": [
+     -15,
+     0,
+     15
+    ]
+   },
+   "prior": {
+    "direction_deg": [
+     -20,
+     -10,
+     0,
+     10,
+     20
+    ],
+    "speed_factor": [
+     0.8,
+     1.0,
+     1.2
+    ]
+   },
+   "alpha": null,
+   "alpha_grid": [
+    0.0,
+    0.01,
+    0.1,
+    1.0,
+    10.0,
+    100.0
+   ],
+   "population": {
+    "fixture": "mixed_rural_urban",
+    "total": 100000,
+    "seed": 0,
+    "epsg": 32645
+   },
+   "n_design": 6,
+   "n_validation": 6,
+   "n_test": 32,
+   "design_noise_reps": 2,
+   "seeds": {
+    "design": 5101,
+    "design_noise": 51000,
+    "validation": 5202,
+    "validation_noise": 52000,
+    "test": 5303,
+    "test_noise": 53000
+   },
+   "validation": {
+    "winds": [
+     [
+      -15,
+      -10
+     ],
+     [
+      -5,
+      10
+     ],
+     [
+      5,
+      -10
+     ],
+     [
+      15,
+      10
+     ],
+     [
+      -10,
+      0
+     ],
+     [
+      10,
+      0
+     ]
+    ],
+    "budget": 5,
+    "n_random": 3,
+    "alt_priors": {
+     "narrow_direction_only": {
+      "direction_deg": [
+       -10,
+       0,
+       10
+      ],
+      "speed_factor": [
+       1.0
+      ]
+     },
+     "direction_only": {
+      "direction_deg": [
+       -20,
+       -10,
+       0,
+       10,
+       20
+      ],
+      "speed_factor": [
+       1.0
+      ]
+     },
+     "speed_only": {
+      "direction_deg": [
+       0
+      ],
+      "speed_factor": [
+       0.8,
+       1.0,
+       1.2
+      ]
+     }
+    }
+   },
+   "bootstrap": {
+    "n": 2000,
+    "seed": 1,
+    "level": 0.95
+   }
+  }
+ }
+}
