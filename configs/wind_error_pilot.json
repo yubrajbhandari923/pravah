@@ -1,0 +1,14 @@
+{
+  "extends": "wind_error.json",
+  "name": "wind_error_pilot",
+  "profile": "pilot",
+  "notes": "EXPLORATORY pilot: few cases and random layouts, same wind-error grid as production (the grid is fixed from this pilot and then frozen). Its own seeds, disjoint from production. Not evidence.",
+  "out": "results/phase3-wind-error-toy/pilot",
+  "wind_error": {
+    "n_random": 4, "n_design": 4, "n_validation": 4, "n_test": 6,
+    "seeds": {"design": 6101, "design_noise": 61000, "validation": 6202, "validation_noise": 62000,
+              "test": 6303, "test_noise": 63000},
+    "validation": {"winds": [[-15, -10], [5, 10], [10, 0], [-5, -10]], "n_random": 2},
+    "bootstrap": {"n": 500}
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "extends": "wind_error.json",
+  "name": "wind_error_smoke",
+  "profile": "smoke",
+  "notes": "Plumbing check only (EXPLORATORY, no conclusions): coarse time step, tiny grid of wind errors, 2 cases. Own seeds.",
+  "out": "results/phase3-wind-error-toy/smoke",
+  "work": "results/phase3-wind-error-toy/work_smoke",
+  "scenario": {"domain": {"nx": 25, "ny": 25}, "times": {"duration": 7200.0, "dt": 120.0, "output_interval": 600.0}},
+  "wind_error": {
+    "candidates_n": 8, "heldout_n": 8, "budgets": [3, 5], "n_random": 2, "n_design": 2, "n_validation": 2, "n_test": 3,
+    "design_noise_reps": 1,
+    "grid": {"direction_deg": [-30, 0, 10], "speed_pct": [-30, 0, 15], "joint_direction_deg": [-15, 15], "joint_speed_pct": [-15, 15]},
+    "alpha_grid": [0.0, 1.0, 10.0],
+    "seeds": {"design": 7101, "design_noise": 71000, "validation": 7202, "validation_noise": 72000,
+              "test": 7303, "test_noise": 73000},
+    "validation": {"winds": [[-15, -10], [5, 10]], "n_random": 1},
+    "bootstrap": {"n": 200}
+  }
+}
