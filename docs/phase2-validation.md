@@ -54,7 +54,7 @@ not that a physical result is right.
 | `tests/test_belauri.py` | Tag sum equals a direct combined solve on the Belauri grid; budget residual; mask and crop consistency; numerical-diffusion estimate reproduces the documented 0.606 / 0.361 excess; plotting-only layers change nothing | 1e-10 (fields), 1e-9 (budget), 3 % (diffusion estimate) |
 | `tests/test_design_objectives.py`, `tests/test_design.py` | Component objectives as exact quadratic forms; role guards; constraints and categories; greedy first pick equals the exhaustive argmin; attribution greedy against exhaustive search on a tiny fixture (the gap is printed, not asserted small) | see files |
 | `tests/test_geodesign.py` | Ensembles pairwise disjoint (`check_ensembles`); declared draw distributions; candidate IDs stable, hypothetical sites excluded by default; constraints respected in every layout; alpha and layouts independent of the test ensemble; the inverse never receives truth tags; greedy layouts are prefixes of one trace; deterministic reruns | see file |
-| `tests/test_geodesign_robust.py` | Layouts and alphas re-used verbatim (selection functions patched to raise); matched rows equal the main run's rows; each condition changes one thing; flags equal their matched partners under mismatch (flags cannot detect a wrong model); a config that differs from the main run is refused | see file |
+| `tests/test_geodesign_robust.py` | Layouts and alphas re-used verbatim (selection functions patched to raise); matched rows equal the main run's rows; each condition changes one thing; flags equal their matched partners under mismatch BY CONSTRUCTION (flags depend only on the operator and sigma, and are saturated, see F2b); `chi2_per_dof` is data-based and rises under a wrong model; sigma identical in all ensembles and conditions; a config that differs from the main run is refused | see file |
 
 What the tests do **not** establish: agreement with any real data; correctness of any alternative to FiPy (none exists); that the
 Belauri polygon is an official boundary.
@@ -201,11 +201,43 @@ interior-only spread at budgets 3 and 5 (0.0083 vs 0.0058 and 0.0070 vs 0.0051).
 * **Reference sites are not a clear win at equal budget.**
 * The model is **numerically diffusive**: at the design mesh K_eff / K is about 2.4 at 0.8 m/s and about 9.4 at 2.5 m/s
   (`docs/geodesign.md`), and the Courant number reaches 0.49 at the highest design wind (above the 0.3 guideline of the forward
-  study). These matched experiments share that diffusion between truth and inference, so they are optimistic.
+  study). These matched experiments share that diffusion between truth and inference, so they are optimistic, and the specific
+  selected sites and the "within noise beyond 5 sensors" reading depend on the mesh.
 * Matched, known-wind, 6 + 6 + 6 scenarios, 3 noise draws: descriptive only. Mapped accessibility is not permission, power,
   security or connectivity.
 
 ### Robustness and refinement (F2b)
+
+**Reading the tables (corrected statements).**
+
+* *Identifiability flags.* The flags depend only on the sensitivity matrix and sigma, never on the data. "Flags equal matched" in the
+  robustness tables is therefore true by construction for every condition that keeps the inference model, and it is not evidence
+  that the flags are robust. The flags are also saturated: `weakly_constrained` fires on every selected-alpha row (16,560 of 16,560
+  rows of the previous production run) because the prior scale q_scale = 1e5 ug/s is small relative to the true emissions
+  (0.75-2.25e6 ug/s), so a flagged fraction of 1.0 carries no information. The data-based model check is `chi2_per_dof` = weighted
+  residual^2 / (n_obs - n_params) (per row; medians by condition and method in `chi2_by_condition.csv`): it responds to model error and
+  is about 1 when model and sigma are right. **Smoke-size result only (cropped 2 km domain, T = 7200 s, 2 test cases x 2 reps, budget 3 = 12 readings, 8 degrees of
+  freedom; selected alpha; median over noise fractions and methods of the per-method median `chi2_per_dof`; not a production
+  number, the production distribution is to be read from the new `chi2_by_condition.csv`):** matched 1.34 (per-method medians
+  0.83-1.68); `unseen_wind` 2.81 (up to 5.8 x the matched median of the same method); `hidden_wind_error` 1.87;
+  `omitted_external` 1.47; `refined_truth` 1.44; `omitted_facility` 1.38; `boundary_time_profile` 1.35; `unseen_wind_declared`
+  1.33 (correctly declared wind: no shift). So under a correct model it sits near 1 and it rises for the wrong-wind conditions,
+  which the flags (identical by construction) cannot show; with 4 smoke cases the other conditions are within the spread.
+* *Do method rankings survive the condition?* The earlier headline fractions (0.72-0.97 in the generated table) pooled every
+  setting, noise level and budget, and counted contrasts whose matched difference is exactly zero (identical layouts) as keeping
+  their sign. `scripts/ranking_stability.py` recomputes the statement on an explicit subset (interior-only, standard regime, 5 %
+  noise, selected alpha; 4 method pairs x 2 metrics x budgets 1-8), excludes contrasts whose matched difference is exactly zero, and
+  adds a noise baseline: the share of matched contrasts whose sign agrees between two disjoint halves of the noise repetitions. A
+  condition's fraction should be read against that baseline, not against 100 % (the contrasts are averages over 6 cases and the
+  signs of small contrasts are noise). RANKING_STABILITY_RESULTS: <to be filled by coordinator>
+* *Selection stability.* The 250 m re-selection (3 fine design cases) changed the greedy sites a lot (Jaccard 0-0.2). Greedy
+  selection also moves when only the design cases are resampled at the SAME 500 m mesh; `scripts/selection_stability.py` measures
+  that baseline (full 6 design cases against random 3-case subsets, budgets 3 and 5, Jaccard and mean nearest-site distance) so the
+  250 m comparison can be read against it. SELECTION_STABILITY_RESULTS: <to be filled by coordinator>
+* *Numerical diffusion* limits all of this: K_eff/K 2.4-9.4 over the design winds (up to 14-15 for the unseen winds), Courant number up
+  to 0.49 (design) and 0.68 (unseen winds); the selected sites and the "within noise beyond 5 sensors" statement depend on the mesh
+  (`docs/geodesign.md`). Measured cost: 11.8 min for the main run, 44.8 min of compute for the robustness run including the 250 m
+  re-selection.
 
 <!-- ROBUST_BEGIN -->
 Run `geodesign-robust` (fixed design-stage layouts re-evaluated, never reselected); interior-only, 5% noise, selected alpha, mean total RMSE (ug/m3) of `greedy_total`.
@@ -362,12 +394,16 @@ output-free in the working tree because they were executed and saved from the VS
   optimistic bounds; only the wind-mismatch, omitted-source and (in robustness) perturbed-truth cases probe model error.
 * **No identification of any real emitter.** The external patch and external source are synthetic spatial priors on real geometry. The
   patch is not asserted to be on the Indian side (`external_outside_home`); no statement about any real border emitter is made.
-* **Boundary status.** The polygon is verified against one independent open source (OSM relation) and a name / area / bbox check;
-  it is not an official survey product, and the ADM2 coverage check fails (71.7 %), explained but not resolved.
+* **Boundary status.** The polygon (geoBoundaries / Open Data Nepal, government-derived 2019) agrees with the OpenStreetMap
+  administrative relation (a different source; IoU 0.94) and passes a name / area / bbox check; it is not an official survey
+  product, the Nepal border line is not independently verified (same lineage as the polygon), and the ADM2 coverage check fails
+  (71.7 %; 28 % of the polygon lies outside every ADM2 polygon), explained but not resolved. Candidate sites carry
+  `inside_coarse_ind_outline` / `near_border_km` flags (38 of 142 candidates lie inside the coarse Indian outline).
 * **Terrain is not in the dynamics.** DEM, hillshade and slope are context only (proved to change no number). No terrain-resolved wind
   or mixing depth; the DEM is a surface model.
 * **Numerical diffusion.** The first-order scheme's effective diffusivity is 2.5-4.9 x K at the Belauri meshes and about 2.4-9.4 x K at
-  the design mesh for the drawn winds; K is a nominal input and the physical K is not tuned.
+  the design mesh for the drawn winds (up to 14-15 x K for the unseen winds of the robustness study; Courant number up to 0.49 and
+  0.68); K is a nominal input and the physical K is not tuned. Specific selected sites depend on the mesh.
 * **Prescribed uniform winds** (and one synthetic stream-function demo); K, lambda, H nominal; one emission set per study.
 * **Small ensembles.** 4 + 6 cases (external / local), 6 + 6 + 6 (design); sd is a standard deviation, never a confidence interval;
   win counts are descriptive; no significance tests.

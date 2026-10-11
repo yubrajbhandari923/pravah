@@ -14,8 +14,9 @@ Pipeline (``run_geodesign``), in this order (the order is a guarantee, see tests
 Test seeds never influence steps 1-4 (``design_stage`` returns before the test ensemble exists).
 
 Parameters theta = [road (local, ug/s), builtup (local, ug/s), external_patch (external, ug/s), bg (inflow, ug/m^3)];
-emission and inflow errors are never mixed.  Noise sigma = fraction x signal scale (per-ensemble median over cases of the
-peak noiseless reading at the candidate sites).  Greedy layouts are heuristics, never called optimal.
+emission and inflow errors are never mixed.  Noise sigma = fraction x signal scale, where the scale is the median over the
+VALIDATION cases of the peak noiseless reading at the candidate sites, for ALL ensembles: the measurement-noise level the
+estimator is told is fixed and independent of the test truths (each ensemble's own scale is only recorded).  Greedy layouts are heuristics, never called optimal.
 """
 from __future__ import annotations
 
@@ -46,7 +47,7 @@ from .geo.prepare import Region, load_region
 from .geo.scenarios import LABEL as REGION_LABEL
 from .geo.scenarios import BelauriCase, belauri_scenario, crop_region, study_weights_of, toward_vector
 from .inverse import FitResult, ResponseCache, run_forward
-from .io import make_run_dir, provenance, write_csv, write_json
+from .io import archive_git_state, make_run_dir, provenance, write_csv, write_json
 
 Progress = Callable[[str], None] | None
 
@@ -96,6 +97,7 @@ class Geography:
     roads: Any  # array of shapely line parts, UTM metres
     facilities: np.ndarray  # (n, 2) UTM metres
     raw_sha256: dict[str, str]
+    ind: Any = None  # coarse geoBoundaries IND ADM0 outline (clipped near the study), UTM metres; for the candidate flags only
 
 
 _RAW_CACHE: dict[str, dict[str, Any]] = {}
@@ -150,6 +152,9 @@ def _load_raw(manifest_path: Path, cfg: dict[str, Any]) -> dict[str, Any]:
     cen = poly_ll.centroid
     clip = shapely.box(cen.x - 3, cen.y - 3, cen.x + 3, cen.y + 3)  # +-3 deg, as in geo.prepare
     nepal = shapely.make_valid(_to_utm(shapely.intersection(shapely.union_all(parts), clip), epsg))
+    p, sha["adm0_IND"] = _raw_file(man, base, "adm0_IND")
+    iparts = [shapely.make_valid(shapely.geometry.shape(f["geometry"])) for f in json.loads(p.read_text())["features"]]
+    ind = shapely.make_valid(_to_utm(shapely.intersection(shapely.union_all(iparts), clip), epsg))
     p, sha["osm_roads"] = _raw_file(man, base, "osm_roads")
     g = np.array([shapely.geometry.shape(f["geometry"]) for f in json.loads(p.read_text())["features"] if f.get("geometry")]
                  + [None], dtype=object)[:-1]
@@ -163,7 +168,7 @@ def _load_raw(manifest_path: Path, cfg: dict[str, Any]) -> dict[str, Any]:
     if keep:
         ag = _to_utm(np.array([shapely.geometry.shape(f["geometry"]) for f in keep], dtype=object), epsg)
         fac = shapely.get_coordinates(shapely.point_on_surface(shapely.make_valid(rio.as_geom_array(ag))))
-    out = {"study": study, "nepal": nepal, "roads": roads, "facilities": fac, "sha": sha}
+    out = {"study": study, "nepal": nepal, "ind": ind, "roads": roads, "facilities": fac, "sha": sha}
     _RAW_CACHE[key] = out
     return out
 
@@ -175,7 +180,7 @@ def load_geography(cfg: dict[str, Any]) -> Geography:
     region = full if buf is None else crop_region(full, float(buf))
     raw = _load_raw(mp, cfg)
     return Geography(mp, file_sha256(mp), json.loads(mp.read_text()), full, region, full.georef.epsg, raw["study"],
-                     raw["nepal"], raw["roads"], raw["facilities"], raw["sha"])
+                     raw["nepal"], raw["roads"], raw["facilities"], raw["sha"], raw["ind"])
 
 
 # ---------------------------------------------------------------------------------------------- candidates
@@ -197,7 +202,9 @@ def build_candidate_table(geo: Geography, cfg: dict[str, Any]) -> pd.DataFrame:
     the prepared grid's south-west corner) inside the municipality polygon.  'reference_domestic': lattice
     (candidates.reference_spacing_m) outside the polygon, inside the simulation domain (inset candidates.reference_inset_m
     from the sensor hull) and inside Nepal ADM0.  'reference_hypothetical': the same lattice inside the domain but OUTSIDE
-    Nepal ADM0 (across the national border): hypothetical, not available by default."""
+    Nepal ADM0 (across the national border): hypothetical, not available by default.  Every site also carries
+    ``inside_coarse_ind_outline`` (inside the coarse geoBoundaries IND ADM0 outline) and ``near_border_km`` (distance to
+    the Nepal ADM0 boundary line): flags for a reader, nothing is excluded by them."""
     import shapely
     from pyproj import Transformer
     cc = cfg["candidates"]
@@ -229,10 +236,15 @@ def build_candidate_table(geo: Geography, cfg: dict[str, Any]) -> pd.DataFrame:
     lx, ly = geo.region.georef.utm_to_local(x, y)
     near = float(cc["road_near_m"])
     cat = [c for _, c in sites]
+    # flags against the two outlines (the border is NOT independently verified, docs/geography.md): inside the coarse
+    # geoBoundaries IND ADM0 outline, and the distance to the Nepal ADM0 boundary line
+    in_ind = shapely.contains(geo.ind, pts) if geo.ind is not None else np.zeros(len(x), dtype=bool)
+    near_border = shapely.distance(shapely.boundary(geo.nepal), pts) / 1000.0
     return pd.DataFrame({
         "id": [s.id for s, _ in sites], "category": cat, "lon": np.asarray(lon), "lat": np.asarray(lat),
         "utm_x": x, "utm_y": y, "local_x": np.asarray(lx), "local_y": np.asarray(ly),
         "in_polygon": shapely.contains(geo.study, pts), "in_nepal_adm0": shapely.contains(geo.nepal, pts),
+        "inside_coarse_ind_outline": in_ind, "near_border_km": near_border,
         "dist_road_m": d_road, "dist_facility_m": d_fac, "on_or_near_road": d_road <= near,
         "hypothetical": [c == REF_HYPOTHETICAL for c in cat], "available_default": [c != REF_HYPOTHETICAL for c in cat],
         "assumption_flags": "; ".join(ASSUMPTIONS)})
@@ -258,17 +270,22 @@ def candidates_geojson(table: pd.DataFrame, meta: dict[str, Any]) -> dict[str, A
 
 
 def heldout_points(geo: Geography, cfg: dict[str, Any], table: pd.DataFrame) -> dict[str, Candidates]:
-    """Held-out evaluation groups (local metres): 'random' = n deterministic random points inside the polygon (not
-    candidates); 'block' = a fixed lattice inside the polygon, restricted to the chosen spatial block (heldout_blocks)."""
+    """Held-out evaluation groups (local metres): 'random' = n deterministic random points inside the polygon, each at
+    least heldout.min_distance_m (default 500 m) from EVERY candidate site (all categories), so they are genuinely
+    held out (ValueError if no such point can be found); 'block' = a fixed lattice inside the polygon, restricted to the chosen spatial block (heldout_blocks)."""
     import shapely
     hc = cfg["heldout"]
     rng = np.random.default_rng(int(hc["random_seed"]))
     minx, miny, maxx, maxy = geo.study.bounds
     n, pts = int(hc["n_random_points"]), []
     cx, cy = table["utm_x"].to_numpy(float), table["utm_y"].to_numpy(float)
+    dmin, tries = float(hc.get("min_distance_m", 500.0)), 0
     while len(pts) < n:
+        tries += 1
+        if tries > 200000:
+            raise ValueError(f"cannot place {n} random held-out points >= {dmin:g} m from every candidate site inside the polygon")
         p = (float(rng.uniform(minx, maxx)), float(rng.uniform(miny, maxy)))
-        if shapely.contains_xy(geo.study, *p) and np.hypot(cx - p[0], cy - p[1]).min() > 1.0:
+        if shapely.contains_xy(geo.study, *p) and np.hypot(cx - p[0], cy - p[1]).min() >= dmin:
             pts.append(p)
     ux, uy = np.array([p[0] for p in pts]), np.array([p[1] for p in pts])
     lx, ly = geo.region.georef.utm_to_local(ux, uy)
@@ -352,8 +369,8 @@ class Ensemble:
     role: str
     cases: list[DesignCase]
     info: list[dict[str, Any]]  # per-case record (truth amplitudes, wind, checks): evaluation/reporting only
-    scale: float  # median over cases of the peak noiseless reading at the candidates [ug/m^3]
-    sigma: dict[float, float]  # noise fraction -> sigma [ug/m^3]
+    scale: float  # this ensemble's OWN median over cases of the peak noiseless reading at the candidates [ug/m^3] (recorded only)
+    sigma: dict[float, float]  # noise fraction -> sigma [ug/m^3] = fraction x the VALIDATION scale (same for all ensembles)
 
 
 class Setup:
@@ -422,7 +439,11 @@ class Setup:
                 "new_response_sets": self.cache.misses - miss}
         return case, info
 
-    def ensemble(self, role: str, progress: Progress = None) -> Ensemble:
+    def ensemble(self, role: str, progress: Progress = None, noise_scale: float | None = None) -> Ensemble:
+        """Build the ensemble of ``role``.  sigma = fraction x ``noise_scale``, the signal scale of the VALIDATION
+        ensemble: a fixed, test-independent measurement-noise level (the estimator is told sigma, so it must not be
+        derived from the test truths; noise realisations stay fresh per ensemble).  For role 'validation' ``noise_scale``
+        defaults to its own scale; for the others it is required."""
         e = self.cfg["ensembles"][role]
         prefix = role[0]
         draws = draw_cases(self.cfg, int(e["n_cases"]), int(e["seed"]), prefix)
@@ -435,7 +456,11 @@ class Setup:
             infos.append(info)
             _say(progress, f"{role} case {d.name} built in {info['build_s']:.1f} s")
         scale = float(np.median([c.truth_readings.max() for c in cases]))
-        return Ensemble(role, cases, infos, scale, {f: f * scale for f in self.fractions})
+        if noise_scale is None:
+            if role != "validation":
+                raise ValueError(f"ensemble {role!r}: pass noise_scale (the VALIDATION ensemble's signal scale)")
+            noise_scale = scale
+        return Ensemble(role, cases, infos, scale, {f: f * float(noise_scale) for f in self.fractions})
 
     def category_mask(self, cats: tuple[str, ...]) -> np.ndarray:
         return np.isin(np.asarray(self.cands.categories), cats)
@@ -539,7 +564,7 @@ def select_alpha(st: Setup, validation: Ensemble) -> dict[str, Any]:
 
 
 def make_layouts(st: Setup, design: Ensemble, alphas: dict[float, float]) -> tuple[list[LayoutRec], dict[str, dict[int, str]]]:
-    """All layouts.  Greedy layouts are selected on DESIGN cases only, per noise fraction (sigma = fraction x the design
+    """All layouts.  Greedy layouts are selected on DESIGN cases only, per noise fraction (sigma = fraction x the validation
     ensemble's scale, alpha = the frozen validation choice); one greedy trace to the largest feasible budget is truncated
     to every budget (a greedy layout is the prefix of the trace).  Returns (layouts, infeasible budgets per
     '<setting>|<regime>')."""
@@ -586,10 +611,10 @@ def design_stage(cfg: dict[str, Any], cache: ResponseCache | None = None, progre
     st = setup or Setup(cfg, cache)
     tim["geography_s"] = time.perf_counter() - t0
     t0 = time.perf_counter()
-    _say(progress, "building design ensemble")
-    design = st.ensemble("design", progress)
-    _say(progress, "building validation ensemble")
+    _say(progress, "building validation ensemble")  # first: its signal scale defines sigma for every ensemble
     validation = st.ensemble("validation", progress)
+    _say(progress, "building design ensemble")
+    design = st.ensemble("design", progress, validation.scale)
     tim["design_validation_cases_s"] = time.perf_counter() - t0
     t0 = time.perf_counter()
     payload = select_alpha(st, validation)
@@ -617,7 +642,13 @@ def _fit_result(sol: Any, names: tuple[str, ...], kinds: tuple[str, ...], units:
 def fit_row(case: DesignCase, rec: LayoutRec, rep: int, opts: DesignOptions, cats: tuple[str, ...], flags: bool,
             units: tuple[str, ...]) -> dict[str, Any]:
     """One evaluation row for (layout, case, rep): metrics from ``design.fit_layout`` (the fit sees only the noisy readings
-    at the layout) plus identifiability flags (``attribution.identifiability_report``, only when ``flags``)."""
+    at the layout), ``chi2_per_dof`` (below) and identifiability flags (``attribution.identifiability_report``, only
+    when ``flags``).
+
+    chi2_per_dof = ||(b + A theta_hat - y) / sigma||^2 / (n_obs - n_params): the weighted data residual of the fitted
+    estimate (``solve_linear``'s data rows only; the ridge prior rows are not counted) over the fitted sensors x times
+    minus the parameters.  Unlike the flags it depends on the DATA, so it responds to model error; it is about 1 when the
+    model and sigma are right (up to the ridge/bound effects on the degrees of freedom).  NaN when n_obs <= n_params."""
     f = D.fit_layout(case, rec.layout, rep, opts)
     nan = float("nan")
     err = f["q_hat"] - case.q_true[case.truth_index]
@@ -635,10 +666,13 @@ def fit_row(case: DesignCase, rec: LayoutRec, rep: int, opts: DesignOptions, cat
         "rank": f["rank"], "effective_rank": f["effective_rank"], "cond_number": f["condition"], "success": f["success"],
         "n_reference_sites": sum(v for c, v in cnt.items() if c != INTERIOR),
         "category_counts": ";".join(f"{c}={cnt[c]}" for c in sorted(cnt)), "id_flags": None}
+    sol = D._solve(case, rec.layout, rep, opts)  # same solve as fit_layout's: gives the weighted residual
+    n_obs = len(rec.layout) * len(case.obs_times)
+    dof = n_obs - case.n_params
+    row["chi2_per_dof"] = float(sol.weighted_residual ** 2 / dof) if dof > 0 else nan
     if flags:
-        sol = D._solve(case, rec.layout, rep, opts)
         names, kinds = case.param_names, case.param_kinds
-        fit = _fit_result(sol, names, kinds, units, len(rec.layout) * len(case.obs_times), opts.alpha)
+        fit = _fit_result(sol, names, kinds, units, n_obs, opts.alpha)
         row["id_flags"] = ";".join(identifiability_report(fit)["flags"])
     return row
 
@@ -650,7 +684,7 @@ def _nn(v: float | None) -> float:
 def evaluate_test(st: Setup, layouts: list[LayoutRec], test: Ensemble, alphas: dict[float, float],
                   scales: tuple[float, float], progress: Progress = None) -> pd.DataFrame:
     """Rows (layout x test case x rep) per noise fraction and alpha label ('selected', 'alpha_zero', 'strong_prior').
-    Test cases bring fresh noise; sigma = fraction x the TEST ensemble's signal scale.  Identifiability flags are computed
+    Test cases bring fresh noise; sigma = fraction x the VALIDATION signal scale (test.sigma).  Identifiability flags are computed
     for the selected-alpha rows only (rank / effective rank / condition are in every row)."""
     D._require_role(test.cases, "test", "evaluate_test")
     units = tuple(p.units for p in st.scenario(draw_cases(st.cfg, 1, 0, "u")[0]).scenario.param_table())
@@ -675,7 +709,7 @@ def evaluate_test(st: Setup, layouts: list[LayoutRec], test: Ensemble, alphas: d
 
 
 METRICS = ("rmse", "rmse_local", "rmse_external", "attr_err", "ext_frac_abs_err", "source_rel_err", "inflow_abs_err_bg_abs",
-           "heldout_random_rmse", "heldout_block_rmse", "effective_rank", "n_reference_sites")
+           "heldout_random_rmse", "heldout_block_rmse", "effective_rank", "n_reference_sites", "chi2_per_dof")
 GROUP = ["setting", "regime", "noise_fraction", "alpha_label", "method", "budget"]
 
 
@@ -696,6 +730,7 @@ def summarise(raw: pd.DataFrame) -> pd.DataFrame:
     for m in METRICS:
         out[f"mean_{m}"], out[f"sd_{m}"] = g[m].mean(), g[m].std(ddof=1)
     out["mean_ext_frac_bias"] = g["external_fraction_error"].mean()
+    out["median_chi2_per_dof"] = g["chi2_per_dof"].median()
     out["frac_rows_id_flagged"] = g["id_flags"].apply(lambda s: float(np.mean([bool(v) for v in s if isinstance(v, str)]))
                                                          if s.map(lambda v: isinstance(v, str)).any() else float("nan"))
     out["sd_note"] = SD_NOTE
@@ -708,18 +743,36 @@ def _layout_mean(d: Any, metrics: list[str]) -> Any:
     return d[d["alpha_label"] == SELECTED].groupby(keys)[metrics].mean().reset_index()
 
 
+def _nested(raw: pd.DataFrame) -> dict[tuple[Any, ...], bool]:
+    """(setting, regime, noise_fraction, method, previous budget, budget) -> True when every layout of the previous budget
+    is contained in some layout of the larger budget (read from the 'sensors' column) and the method is not 'random'.
+    Random layouts are independent draws per budget, so their budget-to-budget difference compares non-nested layouts."""
+    sets: dict[tuple[Any, ...], set[frozenset[str]]] = {}
+    cols = ["setting", "regime", "noise_fraction", "method", "budget", "sensors"]
+    for st_, rg, f, m, b, sens in raw[cols].drop_duplicates().itertuples(index=False):
+        sets.setdefault((st_, rg, f, m, b), set()).add(frozenset(str(sens).split(",")))
+    out: dict[tuple[Any, ...], bool] = {}
+    for (s_, r_, f_, m_, b1), big in sets.items():
+        for (s0, r0, f0, m0, b0), small in sets.items():
+            if (s0, r0, f0, m0) == (s_, r_, f_, m_) and b0 < b1:
+                out[(s_, r_, f_, m_, b0, b1)] = m_ != "random" and all(any(a <= b for b in big) for a in small)
+    return out
+
+
 def paired_tables(raw: pd.DataFrame) -> pd.DataFrame:
     """Paired differences (a - b, negative = a better) per (case, rep), after averaging over layouts of a method:
     greedy_total vs spread and vs random (mean); greedy_attribution vs greedy_total and vs spread, on total RMSE and on the
     attribution error; with_reference vs interior_only at equal budget for every method; consecutive-budget improvement
-    (b - previous budget, 'per_added_sensor' = mean difference / added sensors).  Rows give mean, sd (labelled sd, not a CI),
+    (b - previous budget, 'per_added_sensor' = mean difference / added sensors; column ``nested`` is False when the two budgets'
+    layouts are not nested, as for 'random', whose per-added-sensor value then compares different layouts, not added sensors).  Rows give mean, sd (labelled sd, not a CI),
     n_pairs, how many of the cases a wins (case means over reps) and the fraction of pairs a wins."""
     d = _prep(raw)
     mets = ["rmse", "attr_err"]
     lm = _layout_mean(d, mets)
     rows: list[dict[str, Any]] = []
+    nest = _nested(raw)
 
-    def add(comp: str, a: Any, b: Any, keys: list[str], meta: dict[str, Any], metric: str, per: float = 1.0) -> None:
+    def add(comp: str, a: Any, b: Any, keys: list[str], meta: dict[str, Any], metric: str, per: float = 1.0, nested: bool | None = None) -> None:
         m = a.merge(b, on=keys, suffixes=("_a", "_b"))
         if m.empty:
             return
@@ -728,7 +781,8 @@ def paired_tables(raw: pd.DataFrame) -> pd.DataFrame:
         rows.append({"comparison": comp, **meta, "metric": metric, "n_pairs": int(len(m)), "mean_diff": float(diff.mean()),
                      "sd_diff": float(diff.std(ddof=1)) if len(m) > 1 else float("nan"),
                      "per_added_sensor": float(diff.mean() / per), "a_wins_cases": int((case_diff < 0).sum()),
-                     "n_cases": int(len(case_diff)), "frac_pairs_a_better": float((diff < 0).mean()), "sd_note": SD_NOTE})
+                     "n_cases": int(len(case_diff)), "frac_pairs_a_better": float((diff < 0).mean()), "sd_note": SD_NOTE,
+                     "nested": nested})
 
     base = ["setting", "regime", "noise_fraction", "budget", "case", "rep"]
     for a_m, b_m in (("greedy_total", "spread"), ("greedy_total", "random"), ("greedy_attribution", "greedy_total"),
@@ -758,7 +812,7 @@ def paired_tables(raw: pd.DataFrame) -> pd.DataFrame:
             for b0, b1 in zip(buds, buds[1:]):
                 add("consecutive_budgets", grp[grp["budget"] == b1], grp[grp["budget"] == b0], ["case", "rep"],
                     {"setting": s, "regime": rg, "noise_fraction": f, "budget": int(b1), "method_a": m_, "method_b": m_,
-                     "budget_previous": int(b0)}, metric, float(b1 - b0))
+                     "budget_previous": int(b0)}, metric, float(b1 - b0), nest.get((s, rg, f, m_, b0, b1), False))
     return pd.DataFrame(rows)
 
 
@@ -978,7 +1032,7 @@ def run_geodesign(cfg: dict[str, Any], out_dir: Path | str, overwrite: bool = Fa
 
     _say(progress, "alpha and layouts frozen; building the independent TEST ensemble")
     t0 = time.perf_counter()
-    test = st.ensemble("test", progress)
+    test = st.ensemble("test", progress, stage.validation.scale)
     D.assert_disjoint(stage.design.cases, test.cases, stage.validation.cases)
     tim["test_cases_s"] = time.perf_counter() - t0
     scales = D.attribution_scales(stage.design.cases)
@@ -1012,12 +1066,14 @@ def run_geodesign(cfg: dict[str, Any], out_dir: Path | str, overwrite: bool = Fa
                                       "n_response_sets": st.cache.misses, "n_cases": {r: len(e.cases) for r, e in ens.items()}})
     seeds = {r: {"scenario_seed": e["seed"], "first_noise_seed": e["noise_seed"], "n_cases": e["n_cases"]} for r, e in ens_cfg.items()}
     seeds.update(layout_seed=cfg["methods"]["layout_seed"], heldout_random_seed=cfg["heldout"]["random_seed"])
+    git_archive = archive_git_state(out)  # dirty tree: git_diff.patch + git_status.txt (sha256 below)
     write_json(out / "provenance.json", provenance(cfg, seeds, {
         "experiment": "geodesign", "label": LABEL, "status": PROVISIONAL, "manifest": str(st.geo.manifest_path),
         "manifest_sha256": st.geo.manifest_sha256, "raw_sha256": st.geo.raw_sha256, "alpha_selected_sha256": alpha_sha,
         "config_hash": chash, "alpha_by_noise_fraction": stage.alpha["alpha_by_noise_fraction"],
         "noise_sigma_ug_m3": {r: {f"{f:g}": e.sigma[f] for f in st.fractions} for r, e in ens.items()},
         "infeasible_budgets": {k: sorted(v) for k, v in stage.infeasible.items()},
+        "git_archive": git_archive,
         "note": "emissions, inflow, winds and noise are SYNTHETIC; layouts are greedy heuristics, never called optimal"}))
-    files += ["timings.json", "provenance.json"]
+    files += ["timings.json", "provenance.json"] + (["git_diff.patch", "git_status.txt"] if git_archive.get("dirty") else [])
     return GeodesignResult(out, stage.alpha, files, tim, figs)

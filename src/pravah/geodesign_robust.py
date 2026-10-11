@@ -2,7 +2,7 @@
 
 The layouts of a ``geodesign`` run (layouts.csv, alpha_selected.json) were selected on DESIGN scenarios only.  Here they are
 re-used VERBATIM (nothing is re-selected, no alpha is re-chosen) and evaluated on the deterministically regenerated TEST
-ensemble (same seeds, same noise arrays, same sigma) under separate conditions, one at a time:
+ensemble (same seeds, same noise arrays, same sigma = fraction x the main run's VALIDATION signal scale) under separate conditions, one at a time:
 
   matched               the baseline (rows identical to the main run's selected-alpha test rows: the pairing key)
   unseen_wind           truth wind outside the design/validation draw (faster, direction offset from the sector centres);
@@ -21,7 +21,8 @@ the baseline scheme is reported separately; the physical K is not tuned.
 
 Mismatch rows need not worsen in every draw: the outputs are raw rows, paired mismatch-minus-matched differences, per-case win
 counts and the method contrasts under each condition.  Identifiability flags depend on the operator and sigma only, never on
-the data, so they cannot detect a wrong model (``flags_vs_error.csv`` shows the numbers).  Everything is a provisional
+the data, so they cannot detect a wrong model (``flags_vs_error.csv`` shows the numbers); ``chi2_per_dof`` (rows, summary,
+``chi2_by_condition.csv``) is the data-based check.  Everything is a provisional
 simulation design, not field-validated.
 """
 from __future__ import annotations
@@ -54,14 +55,14 @@ from .geodesign import (ALPHA_ZERO, INTERIOR, LABEL, PROVISIONAL, SD_NOTE, SELEC
 from .geodesign import paired_tables as method_contrasts
 from .geo.scenarios import numerical_diffusion_estimate, toward_vector
 from .inverse import ResponseCache, run_forward
-from .io import make_run_dir, provenance, write_csv, write_json
+from .io import archive_git_state, make_run_dir, provenance, write_csv, write_json
 from .sources import check_origin_tags
 
 CONDITIONS = ("matched", "unseen_wind", "unseen_wind_declared", "hidden_wind_error", "boundary_time_profile",
               "omitted_facility", "omitted_external", "refined_truth")
 KEYS = ["setting", "regime", "noise_fraction", "alpha_label", "method", "layout_id", "budget", "case", "rep"]
 PAIR_METRICS = ("rmse", "rmse_local", "rmse_external", "attr_err", "ext_frac_abs_err", "source_rel_err",
-                "inflow_abs_err_bg_abs")
+                "inflow_abs_err_bg_abs", "chi2_per_dof")
 NUMDIFF_NOTE = ("The physical K is not tuned.  The baseline scheme (exponential convection + backward Euler) adds numerical "
                 "spreading estimated by geo.scenarios.numerical_diffusion_estimate (K_eff/K = 1 + excess, wind along a grid "
                 "axis, a scalar-speed approximation for oblique winds); it is reported separately from K and is part of "
@@ -109,6 +110,7 @@ class FixedDesign:
     design_sigma: dict[float, float]  # noise fraction -> sigma used for the greedy selection (ug/m^3)
     files_sha256: dict[str, str]
     config: dict[str, Any]
+    validation_scale: float = float("nan")  # VALIDATION signal scale of the main run: sigma = fraction x this, for every ensemble
 
 
 def _sha(p: Path) -> str:
@@ -173,7 +175,8 @@ def load_fixed_design(run_dir: Path | str, st: Setup, regimes: list[str] | None 
     if not recs:
         raise ValueError("no layouts after filtering")
     files = {n: _sha(rd / n) for n in ("layouts.csv", "alpha_selected.json", "config.json")}
-    return FixedDesign(rd, recs, alphas, sigma, files, json.loads((rd / "config.json").read_text()))
+    vscale = float(alpha_payload["validation"]["signal_scale_ug_m3"])
+    return FixedDesign(rd, recs, alphas, sigma, files, json.loads((rd / "config.json").read_text()), vscale)
 
 
 # ---------------------------------------------------------------------------------------------- truth variants
@@ -323,8 +326,8 @@ def _with_extra_source(inf: Scenario, theta: np.ndarray, extra: GaussianSource |
 def build_condition(st: Setup, kind: str, draws: list[CaseDraw], first_noise_seed: int, rc: dict[str, Any],
                     matched: Ensemble, unseen: list[tuple[tuple[float, float, float], ...]], progress: Progress = None
                     ) -> Ensemble:
-    """The test ensemble under ``kind`` (same sigma as the matched ensemble: the noise level is defined by the MATCHED
-    signal scale so that rows are paired).  'matched' returns the given ensemble."""
+    """The test ensemble under ``kind`` (same sigma as the matched ensemble, i.e. fraction x the VALIDATION signal scale
+    of the main run, so that rows are paired and the noise level does not depend on the condition).  'matched' returns the given ensemble."""
     if kind == "matched":
         return matched
     cases, infos = [], []
@@ -491,7 +494,7 @@ def ranking_changes(contrasts: pd.DataFrame) -> pd.DataFrame:
 
 def flags_vs_error(raw: Any) -> pd.DataFrame:
     """Per (condition, method, budget) for selected-alpha rows: the fraction of rows with any identifiability flag, the
-    fraction whose flags equal the matched row's, the mean RMSE, and the matched mean RMSE.  Flags are a function of the
+    fraction whose flags equal the matched row's (true BY CONSTRUCTION: flags depend on the operator and sigma only; a saturated flag carries no information), the mean RMSE, and the matched mean RMSE.  Flags are a function of the
     operator and sigma only; they cannot see a wrong model, so the flagged fraction does not move when the RMSE does."""
     d = _prep(raw[raw["alpha_label"] == SELECTED])
     d["flagged"] = d["id_flags"].fillna("").astype(str).str.len() > 0
@@ -506,6 +509,23 @@ def flags_vs_error(raw: Any) -> pd.DataFrame:
                      "mean_rmse": float(g["rmse"].mean()), "mean_rmse_matched": float(bm["rmse"].mean()),
                      "rmse_ratio_to_matched": float(g["rmse"].mean() / bm["rmse"].mean())})
     return pd.DataFrame(rows)
+
+
+def chi2_by_condition(raw: Any) -> pd.DataFrame:
+    """Data-based model check: per (condition, noise fraction, method, budget) over selected-alpha rows the median, quartiles
+    and mean of ``chi2_per_dof`` (weighted residual^2 / (n_obs - n_params); about 1 when model and sigma are right), the
+    matched median and the ratio condition / matched.  Unlike the identifiability flags it depends on the data."""
+    d: Any = raw[raw["alpha_label"] == SELECTED]
+    g = d.groupby(["condition", "noise_fraction", "method", "budget"], sort=False)["chi2_per_dof"]
+    t = g.agg(n_rows="size", n_defined="count", median="median", q25=lambda v: v.quantile(0.25),
+              q75=lambda v: v.quantile(0.75), mean="mean").reset_index()
+    t = t.rename(columns={"median": "median_chi2_per_dof", "q25": "q25_chi2_per_dof", "q75": "q75_chi2_per_dof",
+                          "mean": "mean_chi2_per_dof"})
+    base = t[t["condition"] == "matched"][["noise_fraction", "method", "budget", "median_chi2_per_dof"]]
+    t = t.merge(base.rename(columns={"median_chi2_per_dof": "median_chi2_per_dof_matched"}),
+                on=["noise_fraction", "method", "budget"], how="left")
+    t["median_ratio_to_matched"] = t["median_chi2_per_dof"] / t["median_chi2_per_dof_matched"]
+    return t
 
 
 def per_condition_summary(raw: Any) -> pd.DataFrame:
@@ -793,7 +813,7 @@ def run_geodesign_robust(cfg: dict[str, Any], out_dir: Path | str, overwrite: bo
     """Evaluate the fixed layouts of a geodesign run under the robustness conditions (module docstring).  ``layouts_from``
     defaults to cfg['robust']['layouts_from'].  Writes config.json, provenance.json, timings.json, test_raw.csv (all
     conditions, long form), summary.csv, paired_rows.csv, paired_mismatch.csv, contrasts.csv, ranking_changes.csv,
-    flags_vs_error.csv, cases.csv, numerical_diffusion.{csv,json}, optionally refinement_*.csv, and figures/.
+    flags_vs_error.csv, chi2_by_condition.csv, cases.csv, numerical_diffusion.{csv,json}, optionally refinement_*.csv, and figures/.
     Nothing is selected or tuned: the layouts and alphas are read from ``layouts_from`` and checked."""
     t_all = time.perf_counter()
     rc = robust_settings(cfg)
@@ -809,7 +829,7 @@ def run_geodesign_robust(cfg: dict[str, Any], out_dir: Path | str, overwrite: bo
     ens_cfg = cfg["ensembles"]
     # the DESIGN ensemble is regenerated only for the attribution scales (and checked against design_scores.csv)
     t0 = time.perf_counter()
-    design = st.ensemble("design", progress)
+    design = st.ensemble("design", progress, fixed.validation_scale)
     scales = D.attribution_scales(design.cases)
     design_check = check_design_scores(st, design, fixed, fixed.alphas, scales)
     tim["design_regeneration_s"] = time.perf_counter() - t0
@@ -818,7 +838,7 @@ def run_geodesign_robust(cfg: dict[str, Any], out_dir: Path | str, overwrite: bo
     et = ens_cfg["test"]
     draws = draw_cases(cfg, int(et["n_cases"]), int(et["seed"]), "t")
     seed0 = int(et["noise_seed"])
-    matched = st.ensemble("test", progress)
+    matched = st.ensemble("test", progress, fixed.validation_scale)
     D.assert_disjoint(design.cases, matched.cases)
     tim["matched_cases_s"] = time.perf_counter() - t0
     unseen = unseen_winds(cfg, rc, draws)
@@ -851,11 +871,13 @@ def run_geodesign_robust(cfg: dict[str, Any], out_dir: Path | str, overwrite: bo
     con = contrasts_by_condition(raw[raw["alpha_label"] == SELECTED])
     rk = ranking_changes(con) if len(con) else pd.DataFrame()
     fl = flags_vs_error(raw)
+    chi = chi2_by_condition(raw)
     for name, tab in (("summary.csv", summ), ("paired_rows.csv", pr), ("paired_mismatch.csv", ps), ("contrasts.csv", con),
-                      ("ranking_changes.csv", rk), ("flags_vs_error.csv", fl)):
+                      ("ranking_changes.csv", rk), ("flags_vs_error.csv", fl),
+                      ("chi2_by_condition.csv", chi)):
         write_csv(out / name, tab)
     files = ["config.json", "test_raw.csv", "cases.csv", "summary.csv", "paired_rows.csv", "paired_mismatch.csv", "contrasts.csv",
-             "ranking_changes.csv", "flags_vs_error.csv"]
+             "ranking_changes.csv", "flags_vs_error.csv", "chi2_by_condition.csv"]
     # numerical diffusion (separately from the physical K)
     rf = rc["refinement"]
     rt = rc["refined_truth"]
@@ -892,15 +914,20 @@ def run_geodesign_robust(cfg: dict[str, Any], out_dir: Path | str, overwrite: bo
                                       "n_response_sets": st.cache.misses})
     seeds = {r: {"scenario_seed": e["seed"], "first_noise_seed": e["noise_seed"], "n_cases": e["n_cases"]} for r, e in ens_cfg.items()}
     seeds["unseen_wind"] = rc["unseen_wind"]["seed"]
+    git_archive = archive_git_state(out)  # dirty tree: git_diff.patch + git_status.txt (sha256 below)
     write_json(out / "provenance.json", provenance(cfg, seeds, {
         "experiment": "geodesign_robust", "label": LABEL, "status": PROVISIONAL, "layouts_from": str(src),
         "layouts_from_sha256": fixed.files_sha256, "config_hash": config_hash(cfg), "robust_settings": rc,
         "alpha_by_noise_fraction": {f"{f:g}": a for f, a in fixed.alphas.items()}, "n_fixed_layouts": len(fixed.layouts),
         "layouts_reused_verbatim": True, "matched_vs_main_test_raw": main_check, "design_regeneration_check": design_check,
         "noise_sigma_ug_m3": {f"{f:g}": matched.sigma[f] for f in st.fractions},
+        "noise_scale_source": "sigma = fraction x the VALIDATION signal scale of the main run (alpha_selected.json), "
+                              f"{fixed.validation_scale:.6g} ug/m3; the test ensemble's own scale is {matched.scale:.6g}",
         "max_courant_by_condition": {c: float(max(i["max_courant_truth"] for i in e.info)) for c, e in cond_ens.items() if c != "matched"},
         "max_courant_matched": float(max(i["max_courant"] for i in matched.info)),
-        "identifiability_note": "flags are a function of the operator and sigma only; they cannot detect a wrong model",
+        "git_archive": git_archive,
+        "identifiability_note": "flags are a function of the operator and sigma only; they cannot detect a wrong model "
+                                "(chi2_per_dof in test_raw.csv / chi2_by_condition.csv is the data-based check)",
         "note": "emissions, inflow, winds and noise are SYNTHETIC; mismatch differences are descriptive and need not worsen every draw"}))
-    files += ["timings.json", "provenance.json"]
+    files += ["timings.json", "provenance.json"] + (["git_diff.patch", "git_status.txt"] if git_archive.get("dirty") else [])
     return RobustResult(out, files, tim, raw, ps, figs)

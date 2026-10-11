@@ -103,7 +103,7 @@ def test_conditions_produce_rows_and_valid_json(robust_run: R.RobustResult) -> N
     for n in ("config.json", "provenance.json", "timings.json", "numerical_diffusion.json"):
         strict_json(out / n)
     for n in ("test_raw.csv", "summary.csv", "paired_rows.csv", "paired_mismatch.csv", "contrasts.csv", "ranking_changes.csv",
-              "flags_vs_error.csv", "cases.csv", "numerical_diffusion.csv"):
+              "flags_vs_error.csv", "chi2_by_condition.csv", "cases.csv", "numerical_diffusion.csv"):
         assert len(pd.read_csv(out / n)) > 0, n
     for n in ("rmse_by_condition_interior_only.png", "paired_difference.png"):
         assert (out / "figures" / n).stat().st_size > 5000, n
@@ -128,6 +128,31 @@ def test_paired_tables_are_paired_and_descriptive(robust_run: R.RobustResult) ->
     assert {"greedy_total vs spread", "greedy_attribution vs greedy_total", "with_reference vs interior_only"} <= set(con["comparison"])
     rk = pd.read_csv(robust_run.out_dir / "ranking_changes.csv")
     assert "same_sign_as_matched" in rk and "matched" not in set(rk["condition"])
+
+
+def test_sigma_is_the_validation_scale_in_every_condition(main_run: Path, robust_run: R.RobustResult) -> None:
+    vs = strict_json(main_run / "alpha_selected.json")["validation"]["signal_scale_ug_m3"]
+    raw = robust_run.raw
+    assert np.allclose(raw["sigma_ug_m3"], raw["noise_fraction"] * vs, rtol=1e-12)
+    prov = strict_json(robust_run.out_dir / "provenance.json")["extra"]
+    assert "VALIDATION" in prov["noise_scale_source"]
+    nl = pd.read_csv(main_run / "noise_levels.csv")
+    assert np.allclose(sorted(raw["sigma_ug_m3"].unique()), sorted(nl["sigma_ug_m3"].unique()))
+
+
+def test_chi2_by_condition_table(robust_run: R.RobustResult) -> None:
+    t = pd.read_csv(robust_run.out_dir / "chi2_by_condition.csv")
+    assert set(t["condition"]) == set(R.CONDITIONS) and {"median_chi2_per_dof", "median_ratio_to_matched"} <= set(t)
+    m = t[t["condition"] == "matched"]
+    assert np.allclose(m["median_ratio_to_matched"].dropna(), 1.0)
+    d = t[t["budget"] == 3]
+    assert d["median_chi2_per_dof"].notna().all() and (t[t["budget"] == 1]["n_defined"] == 0).all()
+    assert "median_chi2_per_dof" in pd.read_csv(robust_run.out_dir / "summary.csv")
+    pr = pd.read_csv(robust_run.out_dir / "paired_rows.csv")
+    assert "diff_chi2_per_dof" in pr
+    # a wrong model shifts the data-based check upwards for at least one condition (descriptive, 2 smoke cases)
+    print(d.groupby("condition")["median_ratio_to_matched"].median())
+    assert (d[d["condition"] != "matched"]["median_ratio_to_matched"] > 1.0).any()
 
 
 def test_flags_cannot_detect_a_wrong_model(robust_run: R.RobustResult) -> None:
@@ -323,6 +348,9 @@ def test_cli_end_to_end(main_run: Path, tmp_path: Path) -> None:
     prov = strict_json(out / "provenance.json")
     assert prov["extra"]["experiment"] == "geodesign_robust" and prov["extra"]["layouts_from"] == str(main_run)
     assert set(pd.read_csv(out / "test_raw.csv")["condition"]) == set(R.CONDITIONS)
+    assert prov["extra"]["git_archive"]["dirty"] == prov["git_dirty"]
+    if prov["git_dirty"]:
+        assert (out / "git_diff.patch").is_file() and (out / "git_status.txt").is_file()
     assert prov["config"]["experiment"] == "geodesign_robust" and not (out / "refinement_gap.csv").exists()
     with pytest.raises(FileExistsError):
         main(["benchmark", "--config", str(p), "--out", str(out)])

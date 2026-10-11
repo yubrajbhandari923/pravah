@@ -24,7 +24,7 @@ Outputs of the report: `fig1_domain_map.png` (UTM km map, lon/lat on the top/rig
 | geoBoundaries gbOpen NPL ADM2 (parent-district check only) | build 2023-12-12 (data year 2006) | 2026-10-10 15:40 | public domain | 83e197db0b72 |
 | geoBoundaries gbOpen NPL ADM0 (national border) | build 2023-12-12 (data year 2019) | 2026-10-10 15:40 | CC BY 4.0 | fc0f32802e64 |
 | geoBoundaries gbOpen IND ADM0 (neighbour outline) | build 2023-12-12 (data year 2014) | 2026-10-10 15:40 | CC0 | 77fb5cb03be9 |
-| Nominatim search (independent locator; geometry unused) | live query | 2026-10-10 15:40 | ODbL 1.0 | 20a138daed34 |
+| Nominatim search (locator; same OpenStreetMap source as the OSM relation, not independent of it; geometry unused) | live query | 2026-10-10 15:40 | ODbL 1.0 | 20a138daed34 |
 | OSM roads / buildings / landuse / amenity via Overpass | live query (mirror, see 5) | 2026-10-10 16:56 | ODbL 1.0 | 43ead5e2e2b5 / dd07bb0ab2d1 / c2785f9ed89b / 896a4a9eba49 |
 | Copernicus GLO-30 DSM tile N28_E080 (windowed read) | tile `Copernicus_DSM_COG_10_N28_00_E080_00_DEM` | 2026-10-10 17:07 | Copernicus licence (free, attribution) | 35e3176e19b0 |
 
@@ -51,8 +51,18 @@ all required checks pass:
 
 The ADM2 failure is shown, not hidden. Likely cause (inference from the release years, not verified): the ADM2 layer is the 2006 vintage, the ADM3 layer the 2019 one; they were drawn
 against different base data, so a municipality on the border cannot be 100 % covered by the district polygon. It is therefore
-marked informational. The parent-district requirement is instead satisfied by independent evidence: the OSM relation agrees
-(IoU 0.9384), the hierarchy names Kanchanpur, and the largest overlap with any other district is 0.00 % (must be <= 1 %).
+marked informational. The parent-district requirement is instead supported by two weaker kinds of evidence, both to be read
+with care:
+
+* The OSM administrative relation agrees with the polygon (IoU 0.9384) and the Nominatim hierarchy names Kanchanpur. The OSM
+  relation and the Nominatim hierarchy are the **same source** (OpenStreetMap), so they count as ONE piece of evidence, not two.
+  The independence that matters is between geoBoundaries (government-derived: Open Data Nepal / MoFAGA, data year 2019) and
+  OpenStreetMap (volunteer-mapped).
+* The largest overlap with any district other than Kanchanpur is 0.00 % (must be <= 1 %). This test is **weak**: 28.3 % of the
+  polygon lies outside every ADM2 polygon (computed from the ADM2 file: 71.66 % inside Kanchanpur, 0 % in any other district,
+  28.34 % in none), so "no other district overlaps" is also true for a polygon that belongs to no listed district. It cannot
+  distinguish "in Kanchanpur" from "in none of them" for that 28 %.
+
 Remaining difference between the two polygons (IoU 0.94, Hausdorff 238 m) is boundary-drawing detail.
 
 ## 4. CRS, axes, grids
@@ -114,6 +124,17 @@ terrain). At 500 m cells:
   coarse Indian outline does not contain it either. `prepare` therefore labels it `external_outside_home` (outside the
   home country, near the shared border, containment in a neighbour not asserted). This is deliberately not a claim that any emitter is Indian.
 
+### Candidate-site flags for the border
+
+Because the two geoBoundaries outlines (Nepal ADM0, 2019, and the coarse Indian ADM0, 2014) are inconsistent near the border, the
+sensor-design candidate table (`candidates.csv`, `candidates.geojson`) carries two flags per candidate: `inside_coarse_ind_outline`
+(the site lies inside the coarse Indian outline, read from the sha256-verified raw file named in the manifest) and `near_border_km`
+(distance to the Nepal ADM0 boundary line). Nothing is excluded by them. In the production candidate table, computed by
+`tests/test_geodesign.py::test_production_candidate_flag_counts`, 38 of 142 candidates are flagged `inside_coarse_ind_outline`:
+8 of 54 interior sites, 6 of 47 reference_domestic sites and 24 of 41 reference_hypothetical sites (so 17 sites outside Nepal ADM0 are
+not inside the Indian outline either: the outlines overlap and leave gaps). The largest `near_border_km` is 17.3 km. A flagged interior
+or domestic site has an uncertain country at this data quality.
+
 ## 8. OSM content
 
 Study area (manifest counts): roads 1,025 km inside the polygon (2,207 km in the domain, 8,206 segments); 50,510 buildings
@@ -124,7 +145,9 @@ visibly sparser OSM roads in parts of the northern municipality.
 ## 9. Synthetic source hypotheses
 
 Road length, built-up area, facility count (all clipped to the polygon, group `local`) and a Gaussian external patch
-(centre 4 km beyond the municipality edge toward the border, sigma 1 km, group `external`) are normalised shapes f with
+(centre placed 4 km beyond the point where the bearing ray from the polygon CENTROID toward the nearest border point leaves the
+polygon; the 4 km are measured along the ray from the last boundary crossing, not perpendicular to the boundary, so the nearest
+distance from the centre to the polygon is 2.92 km, not 4 km; sigma 1 km, group `external`) are normalised shapes f with
 sum f*A = 1 at both resolutions. They are **synthetic spatial priors on real geometry**: the geometry is real, the emission
 pattern is assumed. They are not an emissions inventory and carry no emission rates. At 500 m the share of source mass
 inside the polygon is road 0.949, built-up 0.977, facility 0.968 (boundary cells count by area fraction) and external patch 0.0017.
@@ -152,6 +175,7 @@ conservation law (depth-integrated form with h(x, y, t)), not just a new input a
   the boundary is verified by agreement between geoBoundaries (government-derived) and OpenStreetMap (one independent source; the OSM relation and the Nominatim hierarchy are both OpenStreetMap), not against an official survey product.
 * The ADM2 geometric coverage check fails (71.7 %); explained in 3, not resolved.
 * Indian boundary geometry is coarse (see 7); the external patch cannot be classified as inside India.
+* The "no other district overlaps" check is weak (28 % of the polygon lies outside every ADM2 polygon, see 3).
 * OSM completeness is unknown (8); the OSM layers come from an Overpass mirror (5).
 * The DEM is a surface model with 30 m pixels averaged to 500/250 m; no vertical-accuracy validation against ground points was done.
 * The Nepal ADM0 border position itself was not verified independently of the same data lineage.

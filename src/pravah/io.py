@@ -78,6 +78,36 @@ def _dirty_info(rev: str | None) -> dict[str, Any]:
     return {"git_diff_hash": h, "git_dirty_files": files[:200], "git_dirty_n_files": len(files)}
 
 
+GIT_PATCH_CAP = 5 * 1024 * 1024
+
+
+def archive_git_state(out_dir: str | Path, cap: int = GIT_PATCH_CAP, cwd: str | Path | None = None) -> dict[str, Any]:
+    """Additive.  When the git tree is dirty, write ``git_diff.patch`` (``git diff HEAD``, capped at ``cap`` bytes; cut and
+    flagged if longer) and ``git_status.txt`` (``git status --porcelain``, which also lists untracked files that the patch
+    does not contain) into ``out_dir`` and return their sha256 and sizes for provenance.json.  Clean tree: {"dirty": False};
+    no git / no repository: {"dirty": None}.  ``cwd`` (default: this package) selects the repository."""
+    def run(*args: str) -> bytes | None:
+        try:
+            r = subprocess.run(["git", *args], capture_output=True, timeout=60, cwd=cwd or Path(__file__).resolve().parent)
+        except (OSError, subprocess.SubprocessError):
+            return None
+        return r.stdout if r.returncode == 0 else None
+    status = run("status", "--porcelain")
+    if status is None:
+        return {"dirty": None}
+    if not status.strip():
+        return {"dirty": False}
+    diff = run("diff", "HEAD") or b""
+    cut = diff[:cap]
+    out = Path(out_dir)
+    (out / "git_diff.patch").write_bytes(cut)
+    (out / "git_status.txt").write_bytes(status)
+    return {"dirty": True, "git_diff_patch_sha256": hashlib.sha256(cut).hexdigest(), "git_diff_patch_bytes": len(cut),
+            "git_diff_patch_full_bytes": len(diff), "git_diff_patch_truncated": len(diff) > cap,
+            "git_status_sha256": hashlib.sha256(status).hexdigest(),
+            "note": "git_diff.patch is `git diff HEAD` (tracked files only; untracked files are listed in git_status.txt)"}
+
+
 def provenance(config: dict[str, Any], seeds: dict[str, Any], extra: dict[str, Any] | None = None) -> dict[str, Any]:
     rev = _git("rev-parse", "HEAD")
     status = _git("status", "--porcelain") if rev else None

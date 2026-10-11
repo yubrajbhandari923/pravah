@@ -29,9 +29,12 @@ Ensembles (config `ensembles`): design (scenario seed 101, noise seeds 1000+), v
 (some cases nearly local-only, some external-dominated), bg U(0, 0.05) ug/m3, wind direction = one of 8 compass sectors
 +-15 deg, speed U(0.8, 2.5) m/s; every third case (index % 3 == 1) has a second wind segment (independent draw) at a random
 multiple of 3600 s in [T/3, 2T/3].  The speed range gives u dt/dx up to 0.5, above the 0.3 guideline of the forward study
-(`max_courant` is recorded per case in `cases.csv`).  Noise sigma = fraction x signal scale (per ensemble, the median over
-cases of the peak noiseless reading at the candidate sites), fractions 0.05 and 0.15; `noise_levels.csv` lists sigma in
-ug/m3 and as percent of the scale.  Noise draws are common random numbers across noise fractions and layouts; the test
+(`max_courant` is recorded per case in `cases.csv`).  Noise sigma = fraction x signal scale, fractions 0.05 and 0.15, where the scale is the median over the
+**validation** cases of the peak noiseless reading at the candidate sites, used for **all three ensembles**.  Why: the estimator is told
+sigma, so sigma must be a fixed measurement-noise level that does not depend on the truths of the test ensemble (an earlier
+version scaled the test sigma with the test ensemble's own signal and so leaked a test-truth property into the estimator).
+Noise realisations still differ per ensemble (own seeds).  `noise_levels.csv` records each ensemble's own signal scale (for
+transparency), the common sigma in ug/m3 and sigma as percent of that ensemble's own scale.  Noise draws are common random numbers across noise fractions and layouts; the test
 ensemble has its own seeds (fresh noise).  The inverse sees only noisy readings, the declared model inputs and the options.
 
 ## Candidates and assumptions
@@ -42,8 +45,16 @@ ensemble has its own seeds (fresh noise).  The inverse sees only noisy readings,
   Nepal ADM0 (across the national border): flagged `hypothetical`, **excluded by default** (`available_default` false) and
   usable only in the labelled `hypothetical_sensitivity` setting (`settings.hypothetical: true`).
 - Polygons come from the raw geoBoundaries files named in `data/belauri/manifest.json`; every raw file is sha256-verified
-  against the manifest (no network).  Columns: lon/lat, local x/y, UTM x/y, `in_polygon`, `in_nepal_adm0`, distance to the
-  nearest mapped road and facility (m), `on_or_near_road` (<= 100 m), `assumption_flags`.  Outputs `candidates.csv` and
+  against the manifest (no network).  Columns: lon/lat, local x/y, UTM x/y, `in_polygon`, `in_nepal_adm0`,
+  `inside_coarse_ind_outline` (inside the coarse geoBoundaries IND ADM0 outline, 2014 data, read from the sha256-verified raw
+  file named in the manifest), `near_border_km` (distance to the Nepal ADM0 boundary line), distance to the
+  nearest mapped road and facility (m), `on_or_near_road` (<= 100 m), `assumption_flags`.  The two border flags only inform a
+  reader, nothing is excluded by them.  The two geoBoundaries outlines are not consistent with each other (coarse Indian outline,
+  Nepal line of a different lineage, see `docs/geography.md`): in the production candidate table 38 of 142 candidates are
+  flagged `inside_coarse_ind_outline` (interior 8 of 54, reference_domestic 6 of 47, reference_hypothetical 24 of 41; the
+  last number shows that the hypothetical sites outside Nepal ADM0 are not all inside the Indian outline either); counts are
+  computed by `tests/test_geodesign.py::test_production_candidate_flag_counts`.  A flagged interior or domestic site is
+  therefore one whose country is uncertain at this data quality, and the largest `near_border_km` is 17.3 km.  Outputs `candidates.csv` and
   `candidates.geojson` (WGS84) carry the manifest sha256 and the config hash.
 - Assumptions, repeated in the outputs: **mapped accessibility is not permission, power, security or connectivity**; **OSM gaps
   are not absence of feasible sites** (OSM completeness is unknown); international access is hypothetical.
@@ -68,15 +79,28 @@ strong prior (alpha = 1000) (`alpha_label`).
 Per (layout, case, noise rep) row in `test_raw.csv`: total, local and external RMSE; attribution error; external-fraction error
 (blank where the true or estimated fraction is undefined, i.e. total ~ 0); emission relative L2 error (`source_rel_err`)
 and bg absolute error (`inflow_abs_err_bg`, ug/m3) separately (plus signed per-parameter errors); rank, effective rank,
-condition and identifiability flags (`attribution.identifiability_report`, selected-alpha rows only); held-out RMSE.
+condition and identifiability flags (`attribution.identifiability_report`, selected-alpha rows only); held-out RMSE; and
+`chi2_per_dof` = weighted data residual squared, ||(b + A theta_hat - y) / sigma||^2, over (fitted sensors x times - number of
+parameters) (NaN when there are no degrees of freedom, e.g. one sensor with 16 readings has 12; the ridge prior rows are not
+counted).  **Flags depend only on the sensitivity matrix and sigma**; they never see the data, so they are saturated here
+(`weakly_constrained` fires on every row (16,560 of 16,560 selected-alpha rows of the previous production run) because the prior scale q_scale = 1e5 ug/s is small next to the true emissions of
+0.75-2.25e6 ug/s) and "flags equal matched" in the robustness tables is true by construction.  `chi2_per_dof` is the data-based
+check: it responds to model error and is expected to be about 1 when the model and sigma are right (it is a diagnostic of the
+fit, not of the layout; for a regularised or bound-constrained fit the effective degrees of freedom are smaller, so values
+slightly above 1 are normal).  `summary.csv` has its mean and median.
 `summary.csv` has means and sds (sd labelled as sd, never a CI; cases and reps are not independent).  `paired.csv`: paired
-(case, rep) differences a - b (negative = a better; layouts of a method averaged first) for greedy_total vs spread and vs
+(case, rep) differences a - b (negative = a better; layouts of a method averaged first; a column `nested` is filled for
+the consecutive-budget rows: False when the layouts of the two budgets are not nested, which is always the case for `random`,
+whose layouts are independent draws per budget, so its `per_added_sensor` compares different layouts, not an added sensor; for
+spread and greedy it is True) for greedy_total vs spread and vs
 the random mean, greedy_attribution vs greedy_total (and vs spread) on BOTH total RMSE and attribution error,
 with_reference vs interior_only at equal budget, and consecutive-budget improvement (`per_added_sensor`); every row has the
 number of cases won (`a_wins_cases` of `n_cases`).
 
 ## Held-out design
-(i) 20 deterministic random points inside the polygon (not candidates); (ii) a spatial block: a fixed 1000 m lattice inside the
+(i) 20 deterministic random points inside the polygon, each at least `heldout.min_distance_m` (default 500 m) from EVERY candidate
+site of every category, so they are genuinely held out (the earlier rule only required more than 1 m; the nearest was 220 m;
+`ValueError` if the points cannot be placed); (ii) a spatial block: a fixed 1000 m lattice inside the
 polygon cut into thirds by `design.heldout_blocks`, the east third being held out.  In the `block_holdout` regime every
 layout respects `Constraints.exclusion_radius_m` (2000 m) around the block points.  Budgets that become impossible are not
 silently dropped: `infeasible_budgets.json` lists them with reasons (also in provenance).  `heldout_block_rmse` is a
@@ -89,7 +113,9 @@ true hold-out only in the `block_holdout` regime.
 # production (measured 11.8 min on the laptop: 18 cases x ~8 solves of ~4-5 s, then fits)
 .venv/bin/python -m pravah benchmark --config configs/geodesign.json --out results/geodesign
 ```
-Outputs: `config.json`, `provenance.json` (manifest sha256, seeds, alpha_selected sha256, git dirty hash), `timings.json` (stage
+Outputs: `config.json`, `provenance.json` (manifest sha256, seeds, alpha_selected sha256, git dirty hash; when the git tree is dirty also `git_diff.patch`
+(`git diff HEAD`, capped at 5 MB, `git_diff_patch_truncated` says if it was cut) and `git_status.txt` (which lists untracked files the
+patch does not contain), with their sha256 in `extra.git_archive`), `timings.json` (stage
 times, peak memory), `candidates.{csv,geojson}`, `noise_levels.csv`, `cases.csv`, `alpha_selected.json`, `validation_raw.csv`,
 `layouts.{csv,geojson}` (objective, alpha, seeds, config hash and the provisional label per layout), `design_scores.csv`,
 `infeasible_budgets.json`, `test_raw.csv`, `summary.csv`, `paired.csv`, and `figures/` (selected sites over the hillshade,
@@ -101,6 +127,16 @@ profile, omitted sources and refined-grid truth is F2b.  Only 6 + 6 + 6 cases an
 are descriptive.  Uniform winds only; the DEM and hillshade are plotting context.  alpha is chosen with random and spread
 layouts, so it is not tuned to the greedy layouts.  Greedy sites depend on the design cases drawn; layouts are heuristics.
 Distances to roads and facilities use OSM, which is incomplete.  Reference sites are only as realistic as the ADM0 outline.
+
+**Numerical diffusion.**  The scheme (exponential convection + backward Euler) at the 500 m / 100 s design mesh adds numerical
+spreading: K_eff/K is 2.4 at 0.8 m/s and 9.4 at 2.5 m/s over the drawn design speeds (2.4-9.4), and up to 14.3-14.9 at the unseen-wind
+speeds (3.4-3.5 m/s) (`numerical_diffusion.csv` of the robustness run; along-axis estimate, a scalar-speed approximation for
+oblique winds; the physical K = 100 m2/s is not tuned).  The Courant number u dt/dx reaches 0.49 for the design winds and 0.68 for
+the unseen winds, above the 0.3 guideline of the forward study.  Consequence: **the specific selected sites, and the result that
+methods are within noise beyond about 5 sensors, depend on this mesh**; truth and inference share the numerics in the matched
+experiments, so matched errors are optimistic, and the 250 m re-selection comparison shows the selected sites move when the mesh
+changes (the resampling baseline in `docs/phase2-validation.md` says how much they move anyway when only the design cases are
+resampled).
 
 <!-- GEODESIGN_BEGIN -->
 Run `geodesign`; alpha selected on validation cases only: {'0.05': 0.01, '0.15': 0.01} (frozen before the test ensemble); interior-only setting, standard regime, selected alpha; means over 6 test scenarios x 3 noise draws; budgets in sensors.
@@ -194,7 +230,7 @@ Real geography; synthetic emissions and meteorology.  Provisional simulation des
 The layouts and frozen alphas of a finished `geodesign` run (`layouts.csv`, `alpha_selected.json`, the candidate IDs; they were
 selected on DESIGN scenarios only) are **re-used verbatim**: nothing is re-selected, no alpha is re-chosen (a test patches every
 selection function to raise).  The TEST ensemble is regenerated deterministically (same scenario seeds, noise seeds and sigma =
-fraction x the MATCHED signal scale), so the matched rows are the main run's selected-alpha rows (checked against the main
+fraction x the main run's VALIDATION signal scale, read from `alpha_selected.json`), so the matched rows are the main run's selected-alpha rows (checked against the main
 `test_raw.csv` to round-off and recorded in `provenance.json`; the run is refused otherwise).  The robustness config must describe
 the same study as the run's `config.json` (everything except name / notes / experiment / robust is compared).  The DESIGN ensemble
 is regenerated only for the attribution scales and is checked against `design_scores.csv`.  Each condition changes one thing, with
@@ -227,14 +263,21 @@ emission in ug/s and inflow in ug/m3 never mixed), `paired_mismatch.csv` (layout
 `n_cases_worse` of `n_cases`, fraction of pairs worse; worsening in every draw is NOT required), `contrasts.csv` (the method
 contrasts of `paired.csv`: greedy_total vs spread / random mean, greedy_attribution vs greedy_total, with_reference vs
 interior_only, consecutive budgets, recomputed under each condition) and `ranking_changes.csv` (does the sign agree with matched?),
-`flags_vs_error.csv`, `cases.csv` (truth and nominal wind, Courant number of the truth, unmodelled emission share), `timings.json`,
+`flags_vs_error.csv`, `chi2_by_condition.csv` (median, quartiles and mean of `chi2_per_dof` per condition, noise fraction, method and
+budget, the matched median and the ratio), `cases.csv` (truth and nominal wind, Courant number of the truth, unmodelled emission share), `timings.json`,
 `provenance.json`, `figures/`.
 
-**Identifiability flags cannot detect a wrong model.**  `attribution.identifiability_report` is a function of the sensor
-operator and sigma only; it never sees the data.  So for every mismatch condition that keeps the inference model (all but
-`unseen_wind_declared`) the flags of a row equal those of its matched partner (`flags_same`, `frac_flags_equal_matched` = 1) while the
-error changes (`flags_vs_error.csv` lists the flagged fraction next to `rmse_ratio_to_matched`).  A clean flag set therefore says the
-data would have constrained the MODEL's parameters, not that the model is right.
+**Identifiability flags cannot detect a wrong model, and here they are saturated.**  `attribution.identifiability_report` is a
+function of the sensor operator and sigma only; it never sees the data.  So for every mismatch condition that keeps the inference
+model (all but `unseen_wind_declared`) the flags of a row equal those of its matched partner (`flags_same`,
+`frac_flags_equal_matched` = 1) **by construction**, not as a finding, while the error changes (`flags_vs_error.csv` lists the flagged
+fraction next to `rmse_ratio_to_matched`).  The flags are also saturated: `weakly_constrained` fires on every row, because the
+prior scale q_scale = 1e5 ug/s is small relative to the true emissions (0.75-2.25e6 ug/s), so a flagged fraction of 1 carries no
+information.  A clean flag set would say the data would have constrained the MODEL's parameters, not that the model is right.
+The data-based check is `chi2_per_dof` (per row in `test_raw.csv`, `paired_rows.csv` as condition minus matched, medians in
+`chi2_by_condition.csv` and `summary.csv`): about 1 when model and sigma are right, larger when the data disagree with the
+model.  A smoke-size illustration of the matched distribution (about 1) and its shift under the wind conditions is in `docs/phase2-validation.md`
+(F2b, "Reading the tables"); the production distribution is read from `chi2_by_condition.csv` after the rerun.
 
 Methods compared in every table: random (mean over its layouts), spread, greedy_total, greedy_attribution, and with_reference
 vs interior_only at the same budget.  Only the standard regime and the selected-alpha rows are evaluated by default
@@ -274,11 +317,21 @@ direct truth and base parts, takes about 4 min; the smoke profile uses the cropp
 .venv/bin/python -m pravah benchmark --config configs/geodesign.json --out results/geodesign
 .venv/bin/python -m pravah benchmark --config configs/geodesign_robust.json --out results/geodesign-robust   # robust.layouts_from = "results/geodesign"
 ```
-Cost (measured at production size on a loaded laptop core; the production `geodesign` run took 12 min): the robustness study without
-the 250 m re-selection takes about 22 min (design regeneration 3.7 min, matched test cases free after that, `unseen_wind_declared`
+Offline analyses of the saved results (no solver; they write only their own new files):
+```
+.venv/bin/python scripts/ranking_stability.py       # results/geodesign-robust/test_raw.csv -> ranking_stability.{csv,md}
+.venv/bin/python scripts/selection_stability.py     # builds the 6 design cases once (~3.5 min) -> selection_stability.{csv,md}, selection_stability_layouts.csv
+```
+`ranking_stability.py` restates "do method rankings survive the condition?" on an explicit subset (interior-only, 5 % noise, standard
+regime, selected alpha), excludes contrasts whose matched difference is exactly zero and adds a noise baseline (sign agreement of the
+matched contrast between disjoint halves of the noise repetitions).  `selection_stability.py` is the resampling baseline for greedy
+site selection (full 6 design cases against random 3-case subsets, budgets 3 and 5) against which the 250 m re-selection comparison is read.
+
+Cost (measured at production size on a loaded laptop core; the production `geodesign` run took 11.8 min and the full robustness run, with
+the 250 m re-selection, 44.8 min of compute; the study without the re-selection takes about 21 min (design regeneration 3.7 min, matched test cases free after that, `unseen_wind_declared`
 3.6 min = 6 cases x 8 solves, `refined_truth` 6 min = 6 cases x 2 solves of ~30 s, each of the other four mismatch conditions 1 min,
 evaluation of all rows about 4 s per condition); the 250 m re-selection adds about 4 min per fine design case and 4 min per fine
-test case (3 + 3 cases: about 25 min).  Non-empty output directories are refused.  Set `robust.refinement.enabled` to `false` to skip the expensive 250 m part,
+test case (3 + 3 cases: measured 23.5 min).  Non-empty output directories are refused.  Set `robust.refinement.enabled` to `false` to skip the expensive 250 m part,
 `robust.conditions` to run a subset (`matched` is always kept: it is the pairing baseline).  Every directory carries
 `config.json`, `provenance.json` (config hash, seeds, sha256 of the layouts / alpha files used, the check against the main run)
 and `timings.json`.  The notebook `notebooks/06_belauri_sensor_design.ipynb` runs both smoke profiles in about 2.5 minutes and, if
@@ -288,6 +341,9 @@ present, shows the saved production tables and figures.
 - Each condition is a single, hand-set perturbation (one wind error, one profile, one facility cluster, one extra Gaussian,
   one refinement factor); other sizes, shapes or locations may behave differently.  Amplitudes of the omitted sources are
   chosen, not measured.
+- Numerical diffusion is large at the design mesh (K_eff/K 2.4-9.4 over the design winds, up to 14-15 for the unseen winds) and the
+  Courant number reaches 0.49 (design) and 0.68 (unseen winds); see the limitations of F2a.  Selected sites and the "within noise
+  beyond 5 sensors" result depend on the mesh.
 - The unseen winds reach u dt/dx = 0.7 at 3.5 m/s (the design winds: up to 0.5; forward-study guideline 0.3); `cases.csv` has the
   Courant number of every truth.  Those truths carry more numerical spreading than the nominal ones.
 - `refined_truth` replicates the 500 m raster weights onto the fine cells: it isolates the numerics, not finer geography.

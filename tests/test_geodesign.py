@@ -130,9 +130,62 @@ def test_candidate_table_geometry_and_flags(setup: G.Setup) -> None:
     assert (t["on_or_near_road"] == (t["dist_road_m"] <= 100.0)).all()
     assert np.isfinite(t["dist_road_m"]).all() and np.isfinite(t["dist_facility_m"]).all()
     assert t["assumption_flags"].str.contains("not permission/power/security/connectivity").all()
+    # flags against the coarse Indian outline and the Nepal border line (nothing is excluded by them)
+    assert t["inside_coarse_ind_outline"].dtype == bool and (t["near_border_km"] >= 0).all() and t["near_border_km"].max() < 100.0
+    border = shapely.boundary(geo.nepal)
+    assert np.allclose(t["near_border_km"] * 1000.0, shapely.distance(border, shapely.points(t["utm_x"], t["utm_y"])))
+    assert (t["inside_coarse_ind_outline"] == shapely.contains(geo.ind, shapely.points(t["utm_x"], t["utm_y"]))).all()
     # local coordinates are UTM minus the cropped region's south-west corner
     gx, gy = geo.region.georef.x0, geo.region.georef.y0
     assert np.allclose(t["local_x"], t["utm_x"] - gx) and np.allclose(t["local_y"], t["utm_y"] - gy)
+
+
+def test_production_candidate_flag_counts() -> None:
+    """Geometry only (no solves): the counts quoted in docs/geography.md and docs/geodesign.md, computed by this code."""
+    cfg = load_config(ROOT / "configs" / "geodesign.json")
+    cfg["region"]["manifest"] = str(MANIFEST)
+    t = G.build_candidate_table(G.load_geography(cfg), cfg)
+    c = t.groupby("category")["inside_coarse_ind_outline"].agg(["sum", "count"])
+    got = {k: (int(r["sum"]), int(r["count"])) for k, r in c.iterrows()}
+    print("candidates inside the coarse IND outline (flagged / total):", got, "near_border_km max", t["near_border_km"].max())
+    assert got == {"interior": (8, 54), "reference_domestic": (6, 47), "reference_hypothetical": (24, 41)}
+    assert int(t["inside_coarse_ind_outline"].sum()) == 38 and len(t) == 142
+    # the two coarse outlines overlap and leave a gap: hypothetical sites outside Nepal are not all inside the IND outline
+    assert got["reference_hypothetical"][0] < got["reference_hypothetical"][1]
+
+
+def test_heldout_points_raise_when_no_point_is_far_enough(setup: G.Setup) -> None:
+    c2 = copy.deepcopy(setup.cfg)
+    c2["heldout"]["min_distance_m"] = 1e6  # no point of the polygon is 1000 km from every candidate
+    with pytest.raises(ValueError, match="cannot place"):
+        G.heldout_points(setup.geo, c2, setup.table)
+
+
+def test_git_archive_of_a_dirty_tree(tmp_path: Path) -> None:
+    import hashlib
+    import subprocess
+    from pravah.io import archive_git_state
+    repo, out = tmp_path / "repo", tmp_path / "out"
+    repo.mkdir()
+    out.mkdir()
+    git = lambda *a: subprocess.run(["git", *a], cwd=repo, check=True, capture_output=True)  # noqa: E731
+    git("init", "-q")
+    git("config", "user.email", "t@example.org")
+    git("config", "user.name", "t")
+    (repo / "a.txt").write_text("one\n")
+    git("add", "a.txt")
+    git("commit", "-qm", "c")
+    assert archive_git_state(out, cwd=repo) == {"dirty": False} and not (out / "git_diff.patch").exists()
+    (repo / "a.txt").write_text("one\ntwo\n" * 50)
+    (repo / "new.txt").write_text("untracked\n")
+    info = archive_git_state(out, cap=100, cwd=repo)
+    patch = (out / "git_diff.patch").read_bytes()
+    assert info["dirty"] and info["git_diff_patch_truncated"] and len(patch) == 100 < info["git_diff_patch_full_bytes"]
+    assert info["git_diff_patch_sha256"] == hashlib.sha256(patch).hexdigest()
+    status = (out / "git_status.txt").read_bytes()
+    assert b"new.txt" in status and info["git_status_sha256"] == hashlib.sha256(status).hexdigest()
+    assert not archive_git_state(out, cap=10**6, cwd=repo)["git_diff_patch_truncated"]
+    assert archive_git_state(out, cwd=tmp_path / "out") == {"dirty": None}  # not a repository
 
 
 def test_hypothetical_excluded_by_default_and_ids_stable(cfg: dict[str, Any], setup: G.Setup) -> None:
@@ -166,7 +219,8 @@ def test_candidates_geojson_and_manifest_sha(setup: G.Setup) -> None:
     json.dumps(gj, allow_nan=False)
     import hashlib
     assert setup.geo.manifest_sha256 == hashlib.sha256(setup.geo.manifest_path.read_bytes()).hexdigest()
-    assert set(setup.geo.raw_sha256) == {"study", "adm0_NPL", "osm_roads", "osm_amenity"}
+    assert set(setup.geo.raw_sha256) == {"study", "adm0_NPL", "adm0_IND", "osm_roads", "osm_amenity"}
+    assert {"inside_coarse_ind_outline", "near_border_km"} <= set(gj["features"][0]["properties"])
 
 
 def test_heldout_points(setup: G.Setup) -> None:
@@ -176,7 +230,10 @@ def test_heldout_points(setup: G.Setup) -> None:
     gx, gy = setup.geo.region.georef.x0, setup.geo.region.georef.y0
     assert shapely.contains_xy(setup.geo.study, h["random"].x + gx, h["random"].y + gy).all()
     d = np.hypot(h["random"].x[:, None] - setup.cands.x[None, :], h["random"].y[:, None] - setup.cands.y[None, :])
-    assert d.min() > 1.0  # held-out points are not candidates
+    assert d.min() >= 500.0  # genuinely held out: >= heldout.min_distance_m (default 500 m) from EVERY candidate (all categories)
+    allc = np.hypot((h["random"].x + gx)[:, None] - setup.table["utm_x"].to_numpy()[None, :],
+                    (h["random"].y + gy)[:, None] - setup.table["utm_y"].to_numpy()[None, :])
+    assert allc.min() >= 500.0
     b = h["block"]
     assert shapely.contains_xy(setup.geo.study, b.x + gx, b.y + gy).all() and len(b) > 5
     x0, _, x1, _ = setup.geo.study.bounds
@@ -260,6 +317,25 @@ def test_alpha_and_layouts_independent_of_test_ensemble(cfg: dict[str, Any], cac
         assert stage.alpha["alpha_by_noise_fraction"][f] == best["alpha"] and best["alpha"] in cfg["alpha"]["grid"]
 
 
+def test_sigma_is_fixed_and_independent_of_the_test_ensemble(cfg: dict[str, Any], cache: ResponseCache, stage: G.DesignStage,
+                                                              setup: G.Setup) -> None:
+    """The estimator is told sigma = fraction x the VALIDATION scale for all ensembles: changing the test seeds /
+    amplitudes changes the test truth (and its own scale) but not sigma."""
+    v = stage.validation.scale
+    assert stage.design.sigma == {f: f * v for f in setup.fractions}
+    a = setup.ensemble("test", noise_scale=v)
+    c2 = copy.deepcopy(cfg)
+    c2["ensembles"]["test"] = {"n_cases": 2, "seed": 4242, "noise_seed": 7777}
+    c2["model"]["base_amplitudes_ug_s"] = {k: 3.0 * x for k, x in cfg["model"]["base_amplitudes_ug_s"].items()}
+    b = G.Setup(c2, cache).ensemble("test", noise_scale=v)
+    assert a.scale != b.scale  # the test truths differ (3x emissions) ...
+    assert a.sigma == b.sigma == {f: f * v for f in setup.fractions}  # ... sigma does not
+    with pytest.raises(ValueError, match="noise_scale"):
+        setup.ensemble("test")
+    with pytest.raises(ValueError, match="noise_scale"):
+        setup.ensemble("design")
+
+
 def test_role_guards(stage: G.DesignStage, setup: G.Setup) -> None:
     assert {c.role for c in stage.design.cases} == {"design"} and {c.role for c in stage.validation.cases} == {"validation"}
     with pytest.raises(ValueError, match="leakage guard"):
@@ -338,6 +414,13 @@ def test_smoke_cli_outputs_valid(cli_run: Path, cfg: dict[str, Any]) -> None:
         strict_json(cli_run / n)
     prov = strict_json(cli_run / "provenance.json")
     ex = prov["extra"]
+    ga = ex["git_archive"]  # dirty tree -> the patch and status are archived in the run directory and hashed in provenance
+    assert ga["dirty"] == prov["git_dirty"]
+    if ga["dirty"]:
+        import hashlib as _h
+        assert ga["git_diff_patch_sha256"] == _h.sha256((cli_run / "git_diff.patch").read_bytes()).hexdigest()
+        assert ga["git_status_sha256"] == _h.sha256((cli_run / "git_status.txt").read_bytes()).hexdigest()
+        assert (cli_run / "git_diff.patch").stat().st_size <= 5 * 1024 * 1024
     import hashlib
     assert ex["alpha_selected_sha256"] == hashlib.sha256((cli_run / "alpha_selected.json").read_bytes()).hexdigest()
     assert ex["manifest_sha256"] == hashlib.sha256(MANIFEST.read_bytes()).hexdigest() and ex["status"] == G.PROVISIONAL
@@ -362,9 +445,14 @@ def test_smoke_tables_content(cli_run: Path, cfg: dict[str, Any]) -> None:
     raw = pd.read_csv(cli_run / "test_raw.csv")
     nl = pd.read_csv(cli_run / "noise_levels.csv")
     cases = pd.read_csv(cli_run / "cases.csv")
-    # noise: sigma = fraction x signal scale per ensemble; seeds are disjoint across ensembles
-    assert np.allclose(nl["sigma_ug_m3"], nl["noise_fraction"] * nl["signal_scale_ug_m3"])
-    assert np.allclose(nl["sigma_pct_of_signal_scale"], 100.0 * nl["noise_fraction"])
+    # noise: sigma = fraction x the VALIDATION signal scale for every ensemble (each ensemble's own scale is only recorded);
+    # seeds are disjoint across ensembles
+    vscale = nl[nl["ensemble"] == "validation"]["signal_scale_ug_m3"].iloc[0]
+    assert np.allclose(nl["sigma_ug_m3"], nl["noise_fraction"] * vscale)
+    assert np.allclose(nl["sigma_pct_of_signal_scale"], 100.0 * nl["noise_fraction"] * vscale / nl["signal_scale_ug_m3"])
+    assert nl.groupby("noise_fraction")["sigma_ug_m3"].nunique().eq(1).all()
+    assert np.allclose(raw["sigma_ug_m3"], raw["noise_fraction"] * vscale, rtol=1e-12)
+    assert nl["signal_scale_ug_m3"].nunique() > 1  # own scales differ and are recorded
     assert cases["noise_seed"].is_unique and set(cases["role"]) == {"design", "validation", "test"}
     assert set(raw["case"]) == set(cases[cases["role"] == "test"]["case"])
     assert set(raw["alpha_label"]) == {G.SELECTED, G.ALPHA_ZERO, G.STRONG}
@@ -391,6 +479,45 @@ def test_smoke_tables_content(cli_run: Path, cfg: dict[str, Any]) -> None:
     assert set(val["case"]).isdisjoint(set(raw["case"])) and set(val["alpha"]) == set(cfg["alpha"]["grid"])
 
 
+def test_chi2_per_dof_is_a_data_based_check(cli_run: Path, stage: G.DesignStage, setup: G.Setup) -> None:
+    raw = pd.read_csv(cli_run / "test_raw.csv")
+    s = pd.read_csv(cli_run / "summary.csv")
+    assert "chi2_per_dof" in raw and "mean_chi2_per_dof" in s and "median_chi2_per_dof" in s
+    # budget 1 x 4 times = 4 observations = 4 parameters: no degrees of freedom -> NaN; budget 3 -> 12 - 4 = 8
+    assert raw.loc[raw["budget"] == 1, "chi2_per_dof"].isna().all() and np.isfinite(raw.loc[raw["budget"] == 3, "chi2_per_dof"]).all()
+    assert (raw["chi2_per_dof"].dropna() >= 0).all()
+    # recompute one row from the case arrays: r = (b + A theta_hat - y) / sigma over the fitted rows
+    c = stage.design.cases[0]
+    lay = (0, 1, 2)
+    sigma = 0.3
+    opts = setup.opts(sigma, 0.0)
+    rec = G.LayoutRec("interior_only", "standard", "spread", 3, 0, lay)
+    row = G.fit_row(c, rec, 0, opts, c.category, False, ("ug/s",) * 3 + ("ug/m3",))
+    q = D.fit_layout(c, lay, 0, opts)["q_hat"]
+    idx = list(lay)
+    y = (c.truth_readings[idx] + sigma * c.noise[0, idx])
+    pred = c.b_site[idx] + c.A_site[idx] @ q
+    chi2 = float(np.sum(((pred - y) / sigma) ** 2) / (len(idx) * len(c.obs_times) - c.n_params))
+    assert row["chi2_per_dof"] == pytest.approx(chi2, rel=1e-6)
+
+
+def test_chi2_responds_to_model_error_but_flags_do_not(stage: G.DesignStage, setup: G.Setup) -> None:
+    """Same operator, same sigma, same layout: wrong DATA (readings off by +-20 sigma in an alternating pattern the 4-parameter
+    model cannot absorb) move chi2 up by a large factor, while the identifiability flags stay identical."""
+    c = stage.design.cases[0]
+    lay = (0, 1, 2)
+    sigma = 0.02 * float(c.truth_readings.max())
+    opts = setup.opts(sigma, 0.0)
+    rec = G.LayoutRec("interior_only", "standard", "spread", 3, 0, lay)
+    units = ("ug/s",) * 3 + ("ug/m3",)
+    good = G.fit_row(c, rec, 0, opts, c.category, True, units)
+    sign = (-1.0) ** (np.add.outer(np.arange(c.truth_readings.shape[0]), np.arange(c.truth_readings.shape[1])))
+    bad_case = dataclasses.replace(c, truth_readings=c.truth_readings + 20.0 * sigma * sign)
+    bad = G.fit_row(bad_case, rec, 0, opts, c.category, True, units)
+    assert bad["id_flags"] == good["id_flags"]
+    assert good["chi2_per_dof"] < 6.0 and bad["chi2_per_dof"] > 10 * good["chi2_per_dof"]
+
+
 def test_paired_and_summary_tables(cli_run: Path) -> None:
     p = pd.read_csv(cli_run / "paired.csv")
     s = pd.read_csv(cli_run / "summary.csv")
@@ -401,6 +528,9 @@ def test_paired_and_summary_tables(cli_run: Path) -> None:
     assert (p["a_wins_cases"] <= p["n_cases"]).all() and (p["n_cases"] == 2).all() and p["sd_note"].str.contains("never a confidence").all()
     cb = p[p["comparison"] == "consecutive_budgets"]
     assert np.allclose(cb["per_added_sensor"], cb["mean_diff"] / (cb["budget"] - cb["budget_previous"]))
+    # random layouts are independent draws per budget: their per-added-sensor value compares NON-nested layouts
+    assert cb["nested"].notna().all() and not cb[cb["method_a"] == "random"]["nested"].any()
+    assert cb[cb["method_a"].isin(["spread", "greedy_total", "greedy_attribution"])]["nested"].all()
     assert s["sd_note"].str.contains("descriptive").all()
     ref = s[(s["method"] == "greedy_total") & (s["setting"] == "interior_only") & (s["regime"] == "standard") &
             (s["alpha_label"] == "selected") & (s["noise_fraction"] == 0.05)]
