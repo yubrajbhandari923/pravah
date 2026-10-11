@@ -40,7 +40,8 @@ Scientific runs go through `.research/bin/research run exec EXP-… -- <cmd>` (r
 ### Known state and open items (see docs/phase2-validation.md "Wrap-up log" for detail)
 Done and reviewed: solver interface, external/local study, verified Belauri geography, Belauri forward runs, geographic design + robustness. Known limits: numerical diffusion
 dominates the nominal K (K_eff/K ≈ 2.4–9.4); small-budget sensor rankings are unresolved at 6 test scenarios; identifiability flags are saturated in the geodesign runs; test noise level
-was derived from the test ensemble (2.6% off the design value); no terrain-coupled flow. Unshipped fixes for these are in `git stash list` entry **G2-unshipped**.
+was derived from the test ensemble (2.6% off the design value); no terrain-coupled flow. The G2 fixes (validation-scale test noise, chi2/dof, candidate flags) were applied in commit 0370f3e, but the geodesign results and their doc numbers have NOT been rerun with them.
+Phase 3 state and what to run on HPC: `docs/hpc-runbook.md`; also `docs/transfer.md`, `docs/numerical-methodology.md`, `docs/winds.md`, `docs/population-data.md`.
 Best next experiment: add a chi-square-per-dof model check to the robustness study and rerun it with the noise level fixed from the validation scale.
 
 <!-- research:begin — managed by `research init`; edit outside these markers freely -->

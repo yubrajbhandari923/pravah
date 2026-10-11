@@ -474,7 +474,7 @@ def main() -> None:
     out = ROOT / a.out
     work = Path(a.work) if a.work else out / "stage2_work"
     work.mkdir(parents=True, exist_ok=True)
-    stamp, h = work / "config_hash.txt", G.config_hash(cfg)
+    stamp, h = work / "config_hash.txt", G.config_hash(cfg, ("region.manifest",))
     if stamp.exists() and stamp.read_text().strip() != h:
         raise SystemExit(f"{work} was made with a different config (hash {stamp.read_text().strip()} != {h}); use a new --work/--out or delete it")
     stamp.write_text(h + "\n")
