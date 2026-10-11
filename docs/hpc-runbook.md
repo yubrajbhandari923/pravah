@@ -220,9 +220,16 @@ README as artifacts (section 9). The pre-registered artifact names `stage1_field
 **Decision hand-off.** After the run, write the verdict as a finding and a synthesis (section 9). EXP-016 (b) uses 500 m/dt 100 if decisions are stable relative
 to resampling, else the finer mesh named in the verdict.
 
-## 6. (b) EXP-016: Belauri-scale population-aware design — NOT IMPLEMENTED
+## 6. (b) EXP-016: Belauri-scale population-aware design — IMPLEMENTED (code ready, production not run)
 
-**Status.** Pre-registered, `proposed`, 0 runs. The toy version EXP-017 is finished (F-023, preliminary: benefit only at 3 sensors on one concentrated town, about 3x area
+**Update (2026-10-11).** The driver now exists: `scripts/population_belauri.py` (commit 61f8ae4), `configs/population_belauri.json` (+ `_smoke`), `tests/test_population_belauri.py`.
+It is already phase `population_belauri` of `configs/hpc_phase3.json`, so the one-job run (top of this file) executes it. It uses exact enumeration at budgets 2-4, swap search at 5 and 8,
+scores greedy layouts on test, includes the uniform fixture and a sixth real fixture (WorldPop, `data/population/`), a two-way cluster bootstrap and a design-split control. Pilot estimate:
+about 1.2 h on 1 worker, about 9 min on 64 (the floor is three sequential case rounds). Mesh 500 m / dt 100 is a config default until EXP-015 stage 2 gives its verdict. The paragraphs below are the original
+specification and gap analysis, kept for context where they do not contradict this update (the run command is
+`.research/bin/research run exec EXP-016 -- .venv/bin/python scripts/population_belauri.py --profile production`, and the 'build it' text no longer applies).
+
+**Original status.** Pre-registered, `proposed`, 0 runs. The toy version EXP-017 is finished (F-023, preliminary: benefit only at 3 sensors on one concentrated town, about 3x area
 error, vanishes by 5 sensors; layouts matter more than objectives). Library support exists: `src/pravah/population.py` (fixtures, `mixed_weight`, `pop_weighted_rmse`,
 regridding), `design.DesignOptions.weight`, and the toy driver `scripts/population_design.py` (objective weights, low-population mask, per-cell error forms
 `CellForm`, freeze guard, resumable unit files, bootstrap, uniform==area sanity). What is missing is a Belauri driver. Build `scripts/population_design_belauri.py`
@@ -337,12 +344,13 @@ Commit ids are the last commits touching each item (`git log -1 -- <path>`), mas
 | Population layer (counts, conservative regrid, fixtures, weights, metrics) | `src/pravah/population.py` (fe9e1da) | `tests/test_population.py` | n/a | no real raster used yet |
 | Resolution benchmark (T-025) | `scripts/bench_resolution.py` (96cb93f) | smoke only | yes, `results/phase3-bench/resolution_cost.csv` | 125 m level is throw-away `geo125/` |
 | vanleer convection (T-026) | `forward.py` (706d1d2) | `tests/test_scheme_vanleer.py` | `results/phase3-scheme/` (42ee6ab) | nonlinear, not usable with cached responses |
-| EXP-015 stage 1 | `scripts/convergence_stage1.py` (fd6c19a) | `tests/test_convergence_stage1.py` | yes RUN-0028 (228163e), F-022 preliminary | needs `geo125/` to rerun |
+| EXP-015 stage 1 | `scripts/convergence_stage1.py` (fd6c19a) | `tests/test_convergence_stage1.py` | yes RUN-0028 (228163e), F-022 superseded by F-025 | needs `geo125/` to rerun |
 | EXP-015 stage 2 | `scripts/convergence_stage2.py` (2eb96e2), config | `tests/test_convergence_stage2.py` (38872b0) | **no** | section 5; about 2 h |
-| EXP-017 toy population design | `scripts/population_design.py` (b6d93b5) | `tests/test_population_design.py` | yes RUN-0030 (3f8c8b2), F-023 preliminary | alpha 0.1, 16 test cases |
-| EXP-018 prescribed winds | `src/pravah/winds.py` (887abbd), `scripts/prescribed_winds.py` (c000620), `docs/winds.md` (5644935) | `tests/test_winds.py` | yes RUN-0029 (3f8c8b2), F-024 preliminary | ridge amplitude too weak; finer grid is an HPC follow-up |
+| EXP-017 toy population design | `scripts/population_design.py` (b6d93b5) | `tests/test_population_design.py` | yes RUN-0030 (3f8c8b2), F-023 superseded by F-026 | alpha 0.1, 16 test cases |
+| EXP-018 prescribed winds | `src/pravah/winds.py` (887abbd), `scripts/prescribed_winds.py` (c000620), `docs/winds.md` (5644935) | `tests/test_winds.py` | yes RUN-0029 (3f8c8b2), F-024 superseded by F-027, F-031 | ridge amplitude too weak; finer grid is an HPC follow-up |
 | EXP-019 toy wind error | `src/pravah/windunc.py` (edc2cb9), `scripts/wind_error.py` (885d88b) | `tests/test_windunc.py` | pilot committed (d26be8b); production RUN-0031 uncommitted when written | verify before relying |
-| EXP-016 Belauri population design | not written | none | no | section 6 |
+| EXP-016 Belauri population design | `scripts/population_belauri.py` (61f8ae4) | `tests/test_population_belauri.py` | **no** (smoke + pilot only) | section 6; in the one-job config |
+| EXP-020, EXP-021, EXP-022, EXP-023 toys | `scripts/population_design_exact.py`, `prescribed_winds_converged.py`, `population_design_greedy_test.py`, `wind_error.py` controls | yes | yes (RUN-0033/0034/0035/0036-0047) | findings F-030, F-031, F-032, F-034 (F-022/23/24/28/33 are superseded) |
 | Belauri wind-error port, S5a | not written | none | no | sections 7-8 |
 | Reference-mesh replicate baseline, 125 m design stage | not written | none | no | section 5 extensions |
 
