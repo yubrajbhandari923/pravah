@@ -1,0 +1,33 @@
+{
+  "extends": "reference.json",
+  "name": "population_toy_exact",
+  "notes": "EXP-020 follow-up to EXP-017: exact (budgets <= exact_max_budget) or greedy+swap+restarts (larger budgets) minimisation of each weighted design objective; 4 source placements x 6 fixture draws per fixture type. Seeds 44xx / 44xxxx are fresh (not Phase 1/2/EXP-017/018/019). alpha selected once per placement on VALIDATION (area objective, alpha-independent layouts) and frozen. 'run' and 'pilot' select what a profile executes and are not part of the frozen hash. Exact enumeration needs alpha > 0 (unique bounded fit), so the grid excludes 0.",
+  "inverse": {"sensor_interval": 600.0, "noise_std": 0.005},
+  "design": {
+    "candidates_n": 10, "budgets": [2, 3, 4, 5, 8], "n_design": 8, "n_validation": 8, "n_test": 16, "noise_reps": 3,
+    "n_random": 20, "heldout_n": 7, "t_exclude": 0.0, "layout_seed": 7,
+    "design_seed": 4401, "validation_seed": 4402, "test_seed": 4403,
+    "design_noise_seed": 441000, "validation_noise_seed": 442000, "test_noise_seed": 443000,
+    "alpha_grid": [1e-4, 1e-3, 1e-2, 1e-1, 1.0, 10.0, 100.0, 1000.0]
+  },
+  "population": {
+    "total": 250000, "epsg": 32645, "fixture_seeds": {"uniform": 0},
+    "betas": [0.0, 0.5, 1.0], "cap_c": 3.0, "lowpop_quantile": 0.25, "support_min": 1.0
+  },
+  "replicates": {
+    "types": ["one_town", "separated_settlements", "dense_core_sparse_surround", "mixed_rural_urban"],
+    "n_placements": 4, "placement_seed": 4400, "margin": 0.15, "min_sep": 2000.0,
+    "fixture_draw_seeds": [4411, 4412, 4413, 4414, 4415, 4416], "seed_stride": 10, "noise_stride": 100
+  },
+  "search": {"exact_max_budget": 4, "n_restarts": 20, "restart_seed": 4450, "near_tie_frac": 0.01, "keep": 2000,
+             "chunk": 40000, "search_check_draws": 1, "verify_layouts": 3},
+  "stats": {"n_boot": 10000, "boot_seed": 0, "level": 0.95},
+  "figures": {"layout_budget": 5},
+  "run": {"types": null, "placements": null, "draws": null, "workers": 6},
+  "pilot": {
+    "design": {"design_seed": 4801, "validation_seed": 4802, "test_seed": 4803,
+               "design_noise_seed": 481000, "validation_noise_seed": 482000, "test_noise_seed": 483000},
+    "replicates": {"placement_seed": 4800, "fixture_draw_seeds": [4811, 4812, 4813, 4814, 4815, 4816]},
+    "run": {"placements": [0], "draws": [0, 1]}
+  }
+}

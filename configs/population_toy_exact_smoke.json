@@ -1,0 +1,16 @@
+{
+  "extends": "population_toy_exact.json",
+  "name": "population_toy_exact_smoke",
+  "notes": "Plumbing check only (coarse 25x25 grid, dt 120 s, 7200 s, tiny ensembles, seeds 49xx / 49xxxx distinct from production and pilot); not for scientific conclusions.",
+  "scenario": {"domain": {"nx": 25, "ny": 25}, "times": {"duration": 7200.0, "dt": 120.0, "output_interval": 300.0}},
+  "design": {"candidates_n": 5, "budgets": [2, 3, 5], "n_design": 2, "n_validation": 2, "n_test": 3, "noise_reps": 2,
+             "n_random": 3, "heldout_n": 4, "alpha_grid": [1e-2, 1.0, 100.0],
+             "design_seed": 4901, "validation_seed": 4902, "test_seed": 4903,
+             "design_noise_seed": 491000, "validation_noise_seed": 492000, "test_noise_seed": 493000},
+  "population": {"total": 62500},
+  "replicates": {"n_placements": 2, "placement_seed": 4900, "fixture_draw_seeds": [4911, 4912], "min_sep": 1500.0},
+  "search": {"exact_max_budget": 3, "n_restarts": 3, "keep": 50, "chunk": 500, "verify_layouts": 3},
+  "stats": {"n_boot": 500},
+  "figures": {"layout_budget": 3},
+  "run": {"types": ["one_town", "separated_settlements"], "workers": 1}
+}
