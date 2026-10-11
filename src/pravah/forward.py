@@ -53,6 +53,7 @@ from .sources import cell_centres, emission_profile, piecewise_value, source_fie
 fp: Any = _fipy  # FiPy is untyped; use it through Any
 
 _TOL = 1e-9  # s; times closer than this are the same breakpoint
+VANLEER_MAX_COURANT = 0.5  # vanleer sub-steps so that sum_axes |u| dt/dx <= this (explicit TVD convection)
 UN_TOL = 1e-12  # m/s, ABSOLUTE; |wind component| or |u.n| below this is treated as exactly 0 (see module docstring)
 _FIPY_VERSION = str(getattr(_fipy, "__version__", "unknown"))
 
@@ -196,7 +197,8 @@ class _Segment:
             face_u = face_u * ~grid.exteriorFaces  # zero on exterior faces
         self.source = source
         coef = fp.CellVariable(mesh=grid, value=scenario.transport.lam + (self.a_out + self.a_in).reshape(-1))
-        conv_cls = fp.ExponentialConvectionTerm if solver.convection == "exponential" else fp.UpwindConvectionTerm
+        conv_cls = {"exponential": fp.ExponentialConvectionTerm, "upwind": fp.UpwindConvectionTerm,
+                    "vanleer": fp.VanLeerConvectionTerm}[solver.convection]
         self.eq = (fp.TransientTerm() + conv_cls(coeff=face_u)
                    == fp.DiffusionTerm(coeff=K) - fp.ImplicitSourceTerm(coeff=coef) + source)
 
@@ -272,6 +274,7 @@ def simulate(scenario: Scenario, q: Sequence[float] | np.ndarray,
     out_times = np.array(scenario.output_times)
     frames = [var.value.reshape(shape).copy()]
     n_out = len(out_times) - 1
+    n_sub = 1  # largest number of sub-steps per step (vanleer only)
     keys = ("emission", "removal", "inflow", "outflow", "mass_change")
     acc = {k: np.zeros(n_out) for k in keys}
     i_out = 0
@@ -290,16 +293,21 @@ def simulate(scenario: Scenario, q: Sequence[float] | np.ndarray,
                                 for k, b in enumerate(bases))
         source.setValue((s_q + s_bnd).reshape(-1))
         c_old = var.value.reshape(shape).copy()
-        var.updateOld()
-        seg.eq.solve(var=var, dt=h, solver=lu)
-        c = var.value.reshape(shape)
         while i_out < n_out and tm > out_times[i_out + 1]:
             i_out += 1
-        # budget terms from the same implicit (n+1) boundary coefficients used in the equation
-        acc["emission"][i_out] += h * float(np.dot(qa[:n_src], s_vec))
-        acc["removal"][i_out] += h * tr.H * tr.lam * float(c.sum()) * dA
-        acc["inflow"][i_out] += h * tr.H * dA * float((s_bnd - seg.a_in * c).sum())
-        acc["outflow"][i_out] += h * tr.H * dA * float((seg.a_out * c).sum())
+        m = math.ceil(max_speed * h / VANLEER_MAX_COURANT) if solver.convection == "vanleer" else 1
+        n_sub = max(n_sub, m)
+        hs = h / m
+        c = c_old  # (m >= 1 so the loop below rebinds it)
+        for _ in range(m):  # vanleer is explicit in the convection: sub-step the whole equation to keep it stable
+            var.updateOld()
+            seg.eq.solve(var=var, dt=hs, solver=lu)
+            c = var.value.reshape(shape)
+            # budget terms from the same implicit (n+1) boundary coefficients used in the equation
+            acc["emission"][i_out] += hs * float(np.dot(qa[:n_src], s_vec))
+            acc["removal"][i_out] += hs * tr.H * tr.lam * float(c.sum()) * dA
+            acc["inflow"][i_out] += hs * tr.H * dA * float((s_bnd - seg.a_in * c).sum())
+            acc["outflow"][i_out] += hs * tr.H * dA * float((seg.a_out * c).sum())
         acc["mass_change"][i_out] += tr.H * dA * float((c - c_old).sum())
         if t1 >= out_times[i_out + 1] - _TOL and i_out < n_out:
             frames.append(c.copy())
@@ -328,6 +336,8 @@ def simulate(scenario: Scenario, q: Sequence[float] | np.ndarray,
         "max_rel_budget_residual": float((resid / scale).max()),
         "backend": FIPY.info.to_dict(),  # provenance only; FipyForward overwrites it with its own settings
     }
+    if solver.convection == "vanleer":  # extra keys only for the new scheme: legacy diagnostics stay byte-identical
+        diagnostics.update({"convection": "vanleer", "max_substeps": n_sub})
     if bases or has_psi:  # extra keys only for the new physics: legacy diagnostics (and metrics.json) stay byte-identical
         diagnostics.update({"n_basis": len(bases), "wind_field": has_psi,
                             "max_courant": float(max_speed * scenario.times.dt)})
@@ -379,8 +389,8 @@ class FipyForward:
     def info(self) -> BackendInfo:
         return BackendInfo("fipy", f"fipy {_FIPY_VERSION}; pravah {__version__}",
                            {"convection": self.convection, "tolerance": self.tolerance},
-                           {"linear": True, "budget": True, "boundary_bases": True,
-                            "wind_field": True})
+                           {"linear": self.convection != "vanleer", "budget": True,
+                            "boundary_bases": True, "wind_field": True})
 
     @property
     def forward_id(self) -> str:

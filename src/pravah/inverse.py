@@ -135,8 +135,11 @@ def _refs(scenario: Scenario, q_ref: float, inflow_ref: float) -> list[float]:
     return [by_kind[p.kind] for p in scenario.param_table()]
 
 
-def _require_linear_backend(forward: ForwardSolver) -> None:
+def _require_linear_backend(forward: ForwardSolver, solver: SolverOptions) -> None:
     info = forward_info(forward)
+    if (info.settings.get("convection") or solver.convection) == "vanleer":
+        raise ValueError("convection='vanleer' is a nonlinear (flux-limited) scheme: superposition of responses is "
+                         "invalid, use method='direct'")
     if info.capabilities.get("linear") is not True:
         raise ValueError(f"forward solver {info.name!r} does not declare capabilities['linear'] = True: the "
                          "cached-response (superposition) route needs an explicit linearity opt-in; use "
@@ -157,7 +160,7 @@ class ResponseCache:
     def get(self, scenario: Scenario, solver: SolverOptions = SolverOptions(), q_ref: float = Q_REF_DEFAULT,
             forward: ForwardSolver = FIPY, inflow_ref: float = REF_BY_KIND["inflow"]) -> Responses:
         _check_linear(scenario)
-        _require_linear_backend(forward)
+        _require_linear_backend(forward, solver)
         if not (q_ref > 0 and inflow_ref > 0):
             raise ValueError("q_ref and inflow_ref must be positive")
         key = cache_key(scenario, solver, q_ref, forward, inflow_ref)
@@ -191,7 +194,7 @@ def compute_responses(scenario: Scenario, solver: SolverOptions = SolverOptions(
     and inflow_ref for inflow bases (ug/m^3).  The refs are numerical scaling only.
     ``forward`` must declare capabilities['linear'] (ValueError otherwise)."""
     _check_linear(scenario)
-    _require_linear_backend(forward)
+    _require_linear_backend(forward, solver)
     tab = scenario.param_table()
     n = len(tab)
     refs = _refs(scenario, q_ref, inflow_ref)

@@ -262,11 +262,12 @@ class Times:
 
 @dataclass(frozen=True)
 class SolverOptions:
-    convection: str = "exponential"  # exponential | upwind
+    convection: str = "exponential"  # exponential | upwind | vanleer
     tolerance: float = 1e-12  # relative residual tolerance of the linear solve
 
     def __post_init__(self) -> None:
-        _need(self.convection in ("exponential", "upwind"), "convection must be 'exponential' or 'upwind'")
+        _need(self.convection in ("exponential", "upwind", "vanleer"),
+              "convection must be 'exponential', 'upwind' or 'vanleer'")
 
 
 def _default_sources() -> tuple[Source, ...]:
