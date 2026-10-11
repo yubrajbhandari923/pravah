@@ -1,0 +1,15 @@
+{
+  "name": "hpc_phase3_smoke",
+  "notes": "Minutes-long plumbing check of the orchestrator with the smoke configs; writes under results/phase3-hpc-smoke (git-ignored). No 125 m requirement.",
+  "results_root": "results/phase3-hpc-smoke",
+  "phases": [
+    {"name": "preflight", "command": ["{python}", "scripts/hpc_run.py", "--preflight"], "requires": [],
+     "done_marker": "{out}/hpc_logs/preflight.done", "est_minutes": 1},
+    {"name": "stage2_estimate", "command": ["{python}", "scripts/convergence_stage2.py", "--config", "configs/convergence_stage2_smoke.json", "--out", "{out}/convergence", "--estimate"],
+     "requires": [], "done_marker": "{out}/hpc_logs/stage2_estimate.done", "est_minutes": 1},
+    {"name": "stage2", "command": ["{python}", "scripts/convergence_stage2.py", "--config", "configs/convergence_stage2_smoke.json", "--out", "{out}/convergence", "--workers", "{workers}"],
+     "requires": [], "done_marker": "{out}/convergence/README_stage2.md", "est_minutes": 3},
+    {"name": "population_belauri", "command": ["{python}", "scripts/population_belauri.py", "--profile", "smoke", "--out", "{out}/population"],
+     "requires": [], "done_marker": "{out}/population/provenance.json", "est_minutes": 5}
+  ]
+}

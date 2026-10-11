@@ -6,6 +6,36 @@ winds and noise; the population fixtures are synthetic). Nothing here is empiric
 first; this document does not repeat them. Numbers below come from the files named next to them; "derived" means arithmetic on a measured number, not a
 measurement. Commands were checked against `--help` or the argparse code; none was executed for this document.
 
+## How to run on the cluster (one job)
+
+The code is CPU-only (FiPy/NumPy); GPUs are not used, do not request them. The whole heavy Phase 3 set runs as ONE Slurm job (`squeue` shows one
+job): `scripts/hpc_run.py` runs the phases of `configs/hpc_phase3.json` strictly in sequence (preflight, stage-2 `--estimate`, stage-2 production,
+Belauri population design if `scripts/population_belauri.py` exists, else that phase is skipped with a message); the parallelism is a Python process pool
+inside each phase (BLAS threads = 1). Nothing here was run under Slurm; the Python side was tested locally (`tests/test_hpc_run.py`, smoke config).
+```
+# once: copy the repo (git clone or rsync) + data/belauri/raw (section 1.3), then
+bash slurm/setup_env.sh                      # venv, locked deps, 125 m level (safe to repeat; never overwrites data/belauri/manifest.json)
+edit slurm/phase3.sbatch                     # job name, partition, account, mem, module line; --time 24:00:00; --cpus-per-task 64..128
+sbatch slurm/phase3.sbatch                   # CPUS up to 128 on one node: sbatch --cpus-per-task=128 slurm/phase3.sbatch
+python scripts/hpc_run.py --config configs/hpc_phase3.json --dry-run     # prints the plan, runs nothing
+```
+Resume after a time limit or failure: resubmit the same job; a finished phase (done marker present and phase-config hash unchanged) is skipped, and stage 2
+resumes from `results/phase3-convergence/stage2_work`. `--only NAME` runs one phase; `--max-workers N` caps the pool. Logs: `results/hpc_logs/<phase>.log`.
+Stage 2 option `stage2.replicates_on_reference: true` (default false; pre-register it as an EXP-015 variant first, section 5) also selects the replicate layouts on
+the reference mesh and writes `replicate_baseline_refmesh.csv`; it is not set in `configs/convergence_stage2.json` (it would change the config hash).
+
+## How results come back
+
+No Research OS runs on the cluster. At the end the job writes `results/hpc_manifest.json` (per phase: argv, start/end, wall seconds, exit code, host, Slurm job id,
+CPU count, package versions, git commit + dirty flag + `git diff` sha256, config hashes, every output file with sha256 and size, work-dir sizes, peak child RSS)
+and `results/phase3-hpc-bundle.tar.gz` (+ `.sha256`; outputs and logs, without caches and `.npz` over 50 MB). Copy both to the laptop repo:
+```
+scp CLUSTER:<repo>/results/phase3-hpc-bundle.tar.gz CLUSTER:<repo>/results/hpc_manifest.json results/
+sha256sum -c results/phase3-hpc-bundle.tar.gz.sha256   # after copying the .sha256 too;  tar -xzf results/phase3-hpc-bundle.tar.gz
+```
+The laptop agent then registers the runs from the manifest with `research run attach EXP-015 ...` (one per phase; use the manifest's argv, times, exit code, commit
+and file hashes as the provenance). The manifest, not the cluster, is the record: the commit may be dirty on the cluster (check `git.dirty`/`diff_sha256`).
+
 ## 0. Rules that must not be broken
 
 * **Freeze before test.** Hyperparameters (alpha, budgets, layouts, tolerances tau, beta, c, prior ranges, reference mesh) are fixed from design or
@@ -109,9 +139,8 @@ schema version, package version, `q_ref` and the forward backend info. Consequen
 
 * **Keys never collide across mesh, dt, wind or source set**, so processes working on DIFFERENT configs/cases write different files. This is the safe
   case: one process per config, each with its own `--work`/`--out`, or sharing a directory only when their keys differ.
-* **Concurrent writers of the SAME key are unsafe.** `ResponseCache.get` checks `path.exists()` then calls `np.savez(path, ...)` directly (no temp file +
-  rename), so a second process can read a half-written file (`np.load` error) or both can write. Never let two processes share a work directory when they
-  may need the same case. A crashed writer can leave a truncated `.npz`: if a resume fails with a zip/EOF error, delete that one file (its name is the key
+* **Concurrent writers of the SAME key are now safe**: `ResponseCache.get` writes a temp file in the same directory and `os.replace`s it (keys unchanged), so a
+  reader never sees a half-written `.npz`. (Older caches written before this change may still hold a truncated file from a crashed run.) A crashed writer can leave a truncated `.npz`: if a resume fails with a zip/EOF error, delete that one file (its name is the key
   in the traceback) and rerun.
 * `population_design.py` writes unit results through `.tmp` + `replace` (safe); `convergence_stage2.py` writes `layouts_*.json` and `rep*.json` with plain
   `write_text` (an interrupted write leaves a corrupt JSON that the resume then trusts: if json decoding fails, delete that file).
@@ -163,13 +192,13 @@ tables, figures, `README_stage2.md`. Meshes: (500,100), (500,50), (250,100), (25
 about 14 + 8 + 4 + 2 min (250/50, 250/100, 500/50, 500/100), replicates 8 x 6 x 22 s about 18 min, test about 14 min, plus greedy/evaluation overhead.
 The script asserts peak RSS < 2 GB (`RSS_LIMIT_GB`); measured per-basis RSS is 0.2 GB. Request 4 GB and a 6 h limit; the cluster core may be faster.
 
-**Resume / checkpoints.** Re-running the same command skips existing `layouts_*.json`, `rep*.json` and cached bases. **The script does not hash the config:**
+**Resume / checkpoints.** Re-running the same command skips existing `layouts_*.json`, `rep*.json` and cached bases. **The script hashes the config (`config_hash.txt` in the work dir) and refuses a changed config; note it does not hash the code:**
 if you change the config (or the code) after a work dir exists, delete `stage2_work` or use a new `--work`, otherwise stale layouts are silently reused.
 A killed run during the test ensemble loses nothing but time (bases are cached).
 
-**Parallelism.** Not safe to start several copies against one `--work` (race on layout JSONs and cache files of the reference design). With the current code
-every non-reference mesh also builds the reference design cases (`self.scale(self.ref_design()[0])` evaluates `ref_design()`), so a per-mesh split saves little.
-A real speed-up needs a code change (for example `--only-mesh`, or taking the frozen scale without building cases); not done, not needed for a 2 h job.
+**Parallelism.** `--workers N` (default 1 = sequential, identical outputs) runs the 4 mesh layout sets (reference submitted first, alongside the others: no
+other mesh needs the reference design cases) and then the 8 replicate ensembles (they score the reference layout, so they start when it exists) in a spawn
+process pool; the test ensemble and tables stay in the main process afterwards. Critical path = reference design set, then the test ensemble.
 
 **Outputs** (in `--out`, default `results/phase3-convergence/`, committed unless large): `stability.csv`, `replicate_baseline.csv`, `layouts.csv`,
 `layouts.geojson`, `test_scores.csv`, `epsilon_swaps.csv`, `candidate_mapping.csv`, `README_stage2.md` (numbers only), `figures/layout_maps.png`,
@@ -177,7 +206,7 @@ A real speed-up needs a code change (for example `--only-mesh`, or taking the fr
 README as artifacts (section 9). The pre-registered artifact names `stage1_fields.csv` were renamed in stage 1 (`stage1_summary.csv`); `stability.csv` and
 `replicate_baseline.csv` keep their names.
 
-**Optional HPC extensions (not implemented).**
+**Optional HPC extensions (1 implemented as `stage2.replicates_on_reference`, files `refrep<r>.json`; 2 not implemented).**
 1. *Reference-mesh replicate baseline* (about 3.5 h on the laptop, planning estimate; derived check: 8 replicates x 6 cases x 140 s = 1.9 h at 250 m/dt 50). The
    current baseline resamples design scenarios at 500 m only, so it answers "is 500 m movement larger than resampling at 500 m", not "at the reference
    mesh". Implementation: a second replicate loop with `candidate_mesh` = the reference mesh and a separate `rep250_<r>.json` family; compare mesh-induced

@@ -1,0 +1,15 @@
+{
+  "name": "hpc_phase3",
+  "notes": "One Slurm job, phases in sequence; parallelism inside each phase. CPU-only code (no GPU). {out} = results_root.",
+  "results_root": "results",
+  "phases": [
+    {"name": "preflight", "command": ["{python}", "scripts/hpc_run.py", "--preflight", "--need-125"], "requires": [],
+     "done_marker": "{out}/hpc_logs/preflight.done", "est_minutes": 1},
+    {"name": "stage2_estimate", "command": ["{python}", "scripts/convergence_stage2.py", "--config", "configs/convergence_stage2.json", "--out", "{out}/phase3-convergence", "--estimate"],
+     "requires": ["configs/convergence_stage2.json"], "done_marker": "{out}/hpc_logs/stage2_estimate.done", "est_minutes": 5},
+    {"name": "stage2", "command": ["{python}", "scripts/convergence_stage2.py", "--config", "configs/convergence_stage2.json", "--out", "{out}/phase3-convergence", "--workers", "{workers}"],
+     "requires": ["configs/convergence_stage2.json"], "done_marker": "{out}/phase3-convergence/README_stage2.md", "est_minutes": 120},
+    {"name": "population_belauri", "command": ["{python}", "scripts/population_belauri.py", "--profile", "production", "--out", "{out}/phase3-population-belauri"],
+     "requires": ["configs/population_belauri.json"], "done_marker": "{out}/phase3-population-belauri/provenance.json", "est_minutes": 240}
+  ]
+}
