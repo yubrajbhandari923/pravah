@@ -1,20 +1,20 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2858 tokens.
-> Generated 2026-10-11T14:52:06-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2725 tokens.
+> Generated 2026-10-11T15:36:41-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `17b963bd88` (uncommitted changes)
+Git: `master` @ `8eafe92ef1` (uncommitted changes)
 
 ## Latest checkpoint
 
-**CP-005** Phase 3 toy-scale wrap-up (reviewed; HPC deferrals) (2026-10-11)
-- **Understanding:** Transfer: pipeline runs on an unlike synthetic region (only the raw loader needed role names). Numerics: 500 m field error ~5-6% vs 125 m (order ~1.0-1.2), external plume worst resolved; vanleer is less diffusive but nonlinear (F-025). Wind: direction error dominates sensor count for >=10 deg, chi2/dof detects it, flags cannot, ensemble helps only near its prior (F-029). Population: no effect with greedy; with exact selection a benefit only at 2 sensors on concentrated populations at 6-35x area cost, overfits at 8 sensors; greedy is far from optimal at 2-4 sensors (F-026, F-030). Prescribed winds: outer domain ~UT/2 needed, channel/vortex effects placement-dependent (F-031). All synthetic; no empirical validation.
-- **Current problem:** EXP-015 stage 2 (decision stability) and Belauri-scale EXP-016 are not run, so all Belauri site conclusions remain conditional; review-requested controls outstanding
-- **Next step:** On HPC: EXP-015 stage 2 per docs/hpc-runbook.md, then greedy-vs-exact on test and Belauri-scale EXP-016
+**CP-006** Laptop side closed; waiting on HPC job (2026-10-11)
+- **Understanding:** Unchanged from CP-005 (toy-scale Phase 3, all synthetic). Since then: EXP-022 (F-032) and EXP-023 (F-034) synthesized; real inputs recorded (WorldPop CC BY with sha256; ERA5 2023 10 m wind with DOI, sha256, licence). Gate: 581 tests pass, pyright 0 errors, FiPy regression 21 files / 0 differ.
+- **Current problem:** EXP-015 stage 2 and Belauri-scale EXP-016 not run (need the PI's Slurm job); F-031/F-032/F-034 await non-author review
+- **Next step:** PI runs slurm/phase3.sbatch per docs/hpc-runbook.md; then T-034..T-036, T-038
 
 ## Current baseline
 
@@ -53,7 +53,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Current experiments
 
-- EXP-023 [needs_review] EXP toy wind-error controls from F-029 review (alpha, offset prior grid, model error, base wind) (pre-registered) — runs 12, ⚠ 4 unsynthesized
+- EXP-023 [needs_review] EXP toy wind-error controls from F-029 review (alpha, offset prior grid, model error, base wind) (pre-registered) — runs 12
 - EXP-021 [needs_review] EXP toy prescribed winds, converged reference domain and deflecting channel (pre-registered) — runs 1
 - EXP-020 [needs_review] EXP toy population design with exact selection and replicated settings (pre-registered) — runs 1
 - EXP-015 [needs_review] EXP convergence of sensor-design decisions with mesh, time step and scheme (pre-registered) — runs 1
@@ -61,10 +61,11 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Active plans
 
-- PLAN-004 PRAVAH phase 3 HPC execution, interpretation and synthesis — 0/6 tasks done · objective: Run the deferred heavy Phase 3 experiments as one Slurm job, import results, interpret with independent review, finish synthesis
+- PLAN-004 PRAVAH phase 3 HPC execution, interpretation and synthesis — 1/6 tasks done · objective: Run the deferred heavy Phase 3 experiments as one Slurm job, import results, interpret with independent review, finish synthesis
   - next ready: T-033 H1 PI: set up repo on cluster (slurm/setup_env.sh), copy data/belauri/raw, submit slurm/phase3.sbatch, download results bundle (`research task context T-033`)
 - PLAN-003 PRAVAH phase 3: portability, population-aware design, numerical convergence of decisions, wind uncertainty — 6/10 tasks done · objective: Transferable framework whose sensor decisions are robust to discretisation and wind uncertainty, with population-aware design; testbed only, no empirical validation
-  - next ready: T-027 S2b EXP convergence of decisions: space, time, joint, scheme; physical-coordinate candidates; displacement, regret, ties vs resampling baseline (`research task context T-027`)
+  - next ready: T-028 S3 EXP population-aware design: area vs pop vs mixed beta vs capped on 5 fixtures; Pareto; held-out (`research task context T-028`)
+  - BLOCKED: T-027 S2b EXP convergence of decisions: space, time, joint, scheme; physical-coordinate candidates; displacement, regret, ties vs resampling baseline — Runs as PLAN-004 H1-H3 (EXP-015 stage 2) on HPC
   - BLOCKED: T-031 S5a Conditional: wind-robust and population-robust placement — Removed from scope for now: conditional on a Belauri-scale wind effect; revisit after PLAN-004 H3/H4 (toy shows wind error dominates sensor count for >=10 deg, F-029)
 - PLAN-002 PRAVAH phase 2: solver interchange, external/local, Belauri geography, geographic design — 11/11 tasks done · objective: Solver interchangeability; synthetic external vs local identifiability + indoor box; real Belauri geography and forward sims; geographic sensor design
 
@@ -79,8 +80,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - EXP-015 EXP convergence of sensor-design decisions with mesh, time step and scheme (pre-registered) (0 unsynthesized runs)
 - EXP-020 EXP toy population design with exact selection and replicated settings (pre-registered) (0 unsynthesized runs)
 - EXP-021 EXP toy prescribed winds, converged reference domain and deflecting channel (pre-registered) (0 unsynthesized runs)
-- EXP-022 EXP toy greedy vs exact layouts scored on test, uniform stop check (pre-registered) (1 unsynthesized runs)
-- EXP-023 EXP toy wind-error controls from F-029 review (alpha, offset prior grid, model error, base wind) (pre-registered) (4 unsynthesized runs)
+- EXP-023 EXP toy wind-error controls from F-029 review (alpha, offset prior grid, model error, base wind) (pre-registered) (0 unsynthesized runs)
 
 ## Active decisions
 
@@ -90,7 +90,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Blockers
 
-- [checkpoint] CP-005: EXP-015 stage 2 (decision stability) and Belauri-scale EXP-016 are not run, so all Belauri site conclusions remain conditional; review-requested controls outstanding
+- [checkpoint] CP-006: EXP-015 stage 2 and Belauri-scale EXP-016 not run (need the PI's Slurm job); F-031/F-032/F-034 await non-author review
 
 ## Project skills
 

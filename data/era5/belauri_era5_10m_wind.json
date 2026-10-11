@@ -88,5 +88,6 @@
   "sha256": "8cea3d652f300b0567382dc98b1a873b06af4e38dbfcd7670681172abbcaab28",
   "bytes": 706777,
   "download_date": "2026-10-11",
-  "notes": "ERA5 0.25 deg hourly; 10 m wind components in m/s; time in UTC; cannot resolve local mountain-induced flow"
+  "notes": "ERA5 0.25 deg hourly; 10 m wind components in m/s; time in UTC; cannot resolve local mountain-induced flow",
+  "license": "CC BY 4.0 per the CDS dataset page (see docs/winds.md section 4; acceptance of the licence in the CDS download form was not verified)"
 }
