@@ -26,6 +26,9 @@ Scientific runs go through `.research/bin/research run exec EXP-… -- <cmd>` (r
 ### Rules learned the hard way
 * **Do not touch the user's notebook kernels or notebook files**: the six notebooks in the working tree contain outputs the user saved from VS Code; do not clear,
   commit or revert them without asking (commit with `git add -A -- . ':!notebooks'`). Idle `ipykernel` processes whose parent is VS Code are the user's.
+* **Commit early and often.** After every finished task, passing test run, or completed experiment stage, commit with a descriptive message (what changed and why, not "wip"),
+  in logical commits, before starting the next piece. Run the relevant tests first. Stage explicit paths; notebooks go in their own commit and only when the user asks;
+  never commit `data/*/raw`, `.venv` or `node_modules`.
 * Never select a hyperparameter (alpha, layouts, noise level) using test-ensemble quantities; design / validation / test seeds and noise ranges are disjoint and guarded.
 * Never loosen a check or tolerance to make something pass; supersede findings (`research finding supersede`), never rewrite history. Report numbers from files, not memory;
   an earlier error (a layout-coordinate bug in the boundary-basis study) was only caught by independent review.
