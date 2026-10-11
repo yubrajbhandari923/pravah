@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2175 tokens.
-> Generated 2026-10-11T00:16:21-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2224 tokens.
+> Generated 2026-10-11T01:06:33-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `42ee6ab649`
+Git: `master` @ `fd6c19a196`
 
 ## Latest checkpoint
 
@@ -53,8 +53,8 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Current experiments
 
+- EXP-015 [needs_review] EXP convergence of sensor-design decisions with mesh, time step and scheme (pre-registered) — runs 1, ⚠ 1 unsynthesized
 - EXP-016 [proposed] EXP population-aware sensor placement: area vs population vs mixed vs capped objectives (pre-registered) — runs 0
-- EXP-015 [proposed] EXP convergence of sensor-design decisions with mesh, time step and scheme (pre-registered) — runs 0
 
 ## Active plans
 
@@ -70,6 +70,10 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - [awaiting review] F-021 Geographic design robustness: an unknown wind error dominates the sensor-count effect; the identifiability flags cannot show it (saturated by construction); ranking changes are not resolved against noise (synthetic): Agent finding awaiting an independent review
 - [awaiting review] F-020 Geographic sensor design on Belauri: small-budget rankings depend on the noise level and on the design noise used for selection; reference-site use depends on it too (synthetic, matched): Agent finding awaiting an independent review
 - [awaiting review] F-019 Boundary-condition input (whole-side bases) removes part of the error from an omitted localised external plume (synthetic; corrected values): Agent finding awaiting an independent review
+
+## ⚠ Needs synthesis before new experiments
+
+- EXP-015 EXP convergence of sensor-design decisions with mesh, time step and scheme (pre-registered) (1 unsynthesized runs)
 
 ## Active decisions
 
