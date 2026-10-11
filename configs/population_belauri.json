@@ -1,0 +1,42 @@
+{
+  "extends": "geodesign.json",
+  "name": "population_belauri",
+  "notes": "EXP-016 Belauri-scale population-aware sensor design (real geography; synthetic emissions, meteorology and population fixtures). Interior candidate table only (54 sites at 1500 m): EXACT enumeration of every weighted design objective at budgets <= search.exact_max_budget, swap search + random restarts (best found, not provably optimal) above; greedy layouts are recorded and ALSO evaluated on test. Design ensemble seed 101 / validation 202 are the Phase 2 ensembles (declared reuse, so the area greedy layout can be regression-checked against results/geodesign/layouts.csv); test seed 305 / noise 3500 and the fixture draw seeds are fresh. alpha and the noise scale are frozen from the Phase 2 files and cross-checked on the validation ensemble. 'run' and 'pilot' select what a profile executes and are not part of the frozen hash.",
+  "mesh": {"resolution_m": 500.0, "dt_s": 100.0, "note": "500 m / dt 100 is the EXP-016 default; EXP-015 stage 2 decides whether decisions are stable at this mesh. If it names a finer one, change these two keys (and nothing else) BEFORE any run and record it in the decision/finding."},
+  "ensembles": {
+    "design": {"n_cases": 6, "seed": 101, "noise_seed": 1000},
+    "validation": {"n_cases": 6, "seed": 202, "noise_seed": 2000},
+    "test": {"n_cases": 12, "seed": 305, "noise_seed": 3500}
+  },
+  "seeds": {"allowed_reuse": [101, 202]},
+  "noise": {"fractions": [0.05, 0.15], "reps": 3, "obs_interval_s": 1800.0},
+  "methods": {"budgets": [2, 3, 4, 5, 8], "n_random": 20, "layout_seed": 7},
+  "frozen": {
+    "alpha_file": "results/geodesign/alpha_selected.json",
+    "noise_scale_file": "results/geodesign/noise_levels.csv",
+    "regression_layouts_file": "results/geodesign/layouts.csv"
+  },
+  "population": {
+    "types": ["uniform", "one_town", "separated_settlements", "dense_core_sparse_surround", "mixed_rural_urban", "worldpop_real"],
+    "real": {"worldpop_real": "data/population/belauri_worldpop_2025_CN_{res}m.npy"},
+    "n_draws": 6, "fixture_draw_seeds": [6501, 6502, 6503, 6504, 6505, 6506],
+    "study_total": 25000, "grid_people_per_cell": 20,
+    "betas": [0.0, 0.5, 1.0], "cap_c": 3.0, "lowpop_quantile": 0.25, "support_min": 1.0
+  },
+  "search": {"exact_max_budget": 4, "exact_max_combinations": 5000000, "n_restarts": 20, "restart_seed": 6550,
+             "near_tie_frac": 0.01, "keep": 2000, "chunk": 20000, "enum_ranges": 64, "min_range": 20000,
+             "search_check_draws": 1, "verify_layouts": 3, "eval_chunk": 8},
+  "design_split": {"budgets": [5, 8], "draws": [0]},
+  "stats": {"n_boot": 10000, "boot_seed": 0, "level": 0.95, "agree_frac": 0.75},
+  "figures": {"layout_budget": 3, "layout_draw": 0, "cross_objective": "population"},
+  "run": {"workers": null, "workers_cap": 128, "rss_limit_gb": 2.0, "types": null, "draws": null, "skip_validation": false},
+  "pilot": {
+    "ensembles": {
+      "design": {"n_cases": 6, "seed": 6601, "noise_seed": 66000},
+      "validation": {"n_cases": 6, "seed": 6602, "noise_seed": 66100},
+      "test": {"n_cases": 12, "seed": 6603, "noise_seed": 66200}
+    },
+    "population": {"fixture_draw_seeds": [6511, 6512, 6513, 6514, 6515, 6516]},
+    "run": {"skip_validation": true}
+  }
+}

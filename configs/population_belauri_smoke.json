@@ -1,0 +1,27 @@
+{
+  "extends": "population_belauri.json",
+  "name": "population_belauri_smoke",
+  "notes": "Plumbing check only, not for scientific conclusions (cropped domain like configs/geodesign_smoke.json, T = 7200 s, 2 + 2 + 3 cases, coarse 3 km lattice, 2 fixture types x 2 draws, budgets 2-3 exact and 4 by swap search). Fresh smoke seeds 67xx. No Phase 2 files are frozen or compared here.",
+  "region": {"crop_buffer_m": 2000.0},
+  "physics": {"T": 7200.0, "t_exclude": 1800.0},
+  "model": {"external_profile": [[0.0, 0.0], [1800.0, 1.0]], "bg": {"profile": [[0.0, 0.0], [1800.0, 1.0]]}},
+  "ensemble": {"switch_step_s": 1800.0},
+  "ensembles": {
+    "design": {"n_cases": 2, "seed": 6701, "noise_seed": 67000},
+    "validation": {"n_cases": 2, "seed": 6702, "noise_seed": 67100},
+    "test": {"n_cases": 3, "seed": 6703, "noise_seed": 67200}
+  },
+  "seeds": {"allowed_reuse": []},
+  "noise": {"fractions": [0.05, 0.15], "reps": 2},
+  "candidates": {"interior_spacing_m": 3000.0, "reference_spacing_m": 3000.0},
+  "methods": {"budgets": [2, 3, 4], "n_random": 3},
+  "alpha": {"grid": [0.01, 1.0, 100.0]},
+  "heldout": {"n_random_points": 20},
+  "frozen": {"alpha_file": null, "noise_scale_file": null, "regression_layouts_file": null},
+  "population": {"types": ["uniform", "one_town"], "n_draws": 2, "fixture_draw_seeds": [6721, 6722], "study_total": 25000},
+  "search": {"exact_max_budget": 3, "n_restarts": 3, "keep": 50, "chunk": 200, "enum_ranges": 4, "min_range": 10, "eval_chunk": 4},
+  "design_split": {"budgets": [4], "draws": [0]},
+  "stats": {"n_boot": 500},
+  "figures": {"layout_budget": 3},
+  "run": {"workers": 2}
+}
