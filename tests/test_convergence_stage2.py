@@ -71,3 +71,25 @@ class TestWithGeography:
         key = {mesh: cache_key(cs.make_setup(cfg, *mesh, table, cache).scenario(d).scenario, SolverOptions(), 1e6)
                for mesh in ((500.0, 100.0), (500.0, 50.0), (250.0, 100.0))}
         assert len(set(key.values())) == 3
+
+
+@pytest.mark.skipif(not MANIFEST.exists(), reason="data/belauri/manifest.json is missing")
+def test_workers_identical_to_sequential(tmp_path):
+    """Tiny config (cheap meshes, 1 case per ensemble, 2 replicates, replicates also on the reference mesh): --workers 3 gives the
+    same CSVs as --workers 1, and the extra refmesh baseline exists."""
+    import json
+    import subprocess
+    import sys
+    cfg = {"extends": str(ROOT / "configs/convergence_stage2_smoke.json"), "name": "s2_tiny",
+           "ensembles": {k: {"n_cases": 1} for k in ("design", "validation", "test")},
+           "stage2": {"meshes": [[500, 100], [500, 50]], "reference": [500, 50], "budgets": [1, 2], "map_budget": 2,
+                      "replicates": {"n": 2, "n_cases": 1}, "replicates_on_reference": True}}
+    (tmp_path / "c.json").write_text(json.dumps(cfg))
+    for w in (1, 3):
+        r = subprocess.run([sys.executable, str(ROOT / "scripts/convergence_stage2.py"), "--config", str(tmp_path / "c.json"),
+                            "--out", str(tmp_path / f"w{w}"), "--workers", str(w)], cwd=ROOT, capture_output=True, text=True)
+        assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-2000:]
+    names = ["stability.csv", "layouts.csv", "replicate_baseline.csv", "replicate_baseline_refmesh.csv", "test_scores.csv"]
+    for n in names:
+        assert (tmp_path / "w1" / n).read_bytes() == (tmp_path / "w3" / n).read_bytes(), n
+    assert not list((tmp_path / "w3").rglob(".*.tmp"))

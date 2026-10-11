@@ -1,7 +1,7 @@
 """EXP-015 stage 2: stability of greedy_total sensor-design decisions across mesh and dt (real geography; synthetic emissions
 and meteorology).
 
-    python scripts/convergence_stage2.py --config configs/convergence_stage2.json [--out DIR] [--work DIR] [--estimate]
+    python scripts/convergence_stage2.py --config configs/convergence_stage2.json [--out DIR] [--work DIR] [--estimate] [--workers N]
 
 Order (each step resumes from files in --work; one mesh config at a time, response bases cached on disk by ResponseCache key =
 hash of grid, dt, scheme, wind, physics, sources):
@@ -9,7 +9,15 @@ hash of grid, dt, scheme, wind, physics, sources):
   2. greedy_total layouts per mesh config (design seed 101), reference config first;
   3. R replicate design ensembles on the candidate mesh (resampling baseline), layouts + their objective for the reference layout;
   4. only now (layouts frozen) the TEST ensemble on the reference mesh is built; metrics, tables, figures.
-alpha and the noise scale are frozen inputs (alpha_selected.json / noise_levels.csv); nothing is selected here."""
+alpha and the noise scale are frozen inputs (alpha_selected.json / noise_levels.csv); nothing is selected here.
+
+--workers N (default 1 = the sequential path above, same files): N > 1 runs the independent units in a process pool (spawned, BLAS
+threads = 1): first the mesh-config layout sets (the reference one is submitted first and runs ALONGSIDE the others: no other mesh
+needs the reference design cases, only the frozen noise scale, computed once up front), then, as soon as the reference layouts
+exist, the replicate ensembles (they score the reference layout). Every unit writes its JSON and every cache file atomically, so
+a unit of one key written twice is harmless; the evaluation (test ensemble, tables, figures) stays in the main process after all
+layouts exist. Results are identical to workers=1. Config flag stage2.replicates_on_reference (default false) additionally selects
+the replicate layouts on the REFERENCE mesh -> replicate_baseline_refmesh.csv."""
 from __future__ import annotations
 
 import argparse
@@ -17,9 +25,12 @@ import copy
 import gc
 import itertools
 import json
+import multiprocessing as mp
+import os
 import resource
 import sys
 import time
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from typing import Any
 
@@ -47,6 +58,13 @@ def say(msg: str) -> None:
     rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1e9 if sys.platform == "darwin" else 1e6)
     print(f"[{time.perf_counter() - T0:7.0f}s rss {rss:.2f}GB] {msg}", flush=True)
     assert rss < RSS_LIMIT_GB, f"peak RSS {rss:.2f} GB exceeds {RSS_LIMIT_GB} GB"
+
+
+def atomic_write(path: Path, text: str) -> None:
+    """Temp file in the same directory + os.replace: a reader sees the old or the new file, never half of one."""
+    tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    tmp.write_text(text)
+    os.replace(tmp, path)
 
 
 def mname(res: float, dt: float) -> str:
@@ -189,15 +207,22 @@ class Run:
         self.table: Any = G.build_candidate_table(geo, c0)
         self.xy = {i: (x, y) for i, x, y in zip(self.table['id'], self.table['utm_x'], self.table['utm_y'])}
         self.mapping = mapping_table(geo, self.table, sorted({m[0] for m in self.meshes}))
-        self.mapping.to_csv(out / "candidate_mapping.csv", index=False)
+        atomic_write(out / "candidate_mapping.csv", self.mapping.to_csv(index=False))
         say(f"{len(self.table)} sites mapped on meshes {sorted({m[0] for m in self.meshes})}; "
             f"{int(self.mapping['category_changed_vs_coarsest'].sum())} change study category vs the coarsest mesh")
         self.cand_mesh = (cm[0], cm[1])
         self._scale = frozen_noise_scale(cfg)
         self._ref: tuple[G.Setup, list[D.DesignCase], dict[float, float]] | None = None
+        self._setups: dict[tuple[float, ...], G.Setup] = {}
 
     def setup(self, mesh: tuple[float, ...]) -> G.Setup:
-        return make_setup(self.cfg, mesh[0], mesh[1], self.table, self.cache)
+        if mesh not in self._setups:
+            self._setups[mesh] = make_setup(self.cfg, mesh[0], mesh[1], self.table, self.cache)
+        return self._setups[mesh]
+
+    def frozen_sigma(self) -> dict[float, float]:
+        """Noise sigma per fraction; building the reference setup is only needed when the scale is not frozen in a file (smoke)."""
+        return self.sigma(self._scale if self._scale is not None else self.scale(self.setup(self.ref)))
 
     def scale(self, st: G.Setup) -> float:
         if self._scale is None:  # smoke: validation ensemble on the reference mesh defines the scale
@@ -220,49 +245,46 @@ class Run:
             self._ref = (st, cases, sg)
         return self._ref
 
-    def config_layouts(self) -> dict[Any, Any]:
-        out = {}
-        for mesh in [self.ref] + [m for m in self.meshes if m != self.ref]:  # reference first
-            f = self.work / f"layouts_{mname(*mesh)}.json"
-            if f.exists():
-                say(f"{mname(*mesh)}: layouts found, skipped")
+    def layouts_for(self, mesh: tuple[float, ...]) -> dict[str, dict[str, list[str]]]:
+        f = self.work / f"layouts_{mname(*mesh)}.json"
+        if f.exists():
+            say(f"{mname(*mesh)}: layouts found, skipped")
+        else:
+            if mesh == self.ref:
+                st, cases, sg = self.ref_design()
             else:
-                if mesh == self.ref:
-                    st, cases, sg = self.ref_design()
-                else:
-                    st = self.setup(mesh)
-                    sg = self.sigma(self.scale(self.ref_design()[0]))
-                    e = self.cfg["ensembles"]["design"]
-                    cases = build_cases(st, self.draws["design"][0], int(e["noise_seed"]), "design", f"{mname(*mesh)} design")
-                lay = greedy_layouts(st, cases, sg, self.alpha, self.budgets)
-                f.write_text(json.dumps(lay))
-                say(f"{mname(*mesh)}: layouts selected {lay}")
-                del cases
-                gc.collect()
-            out[mesh] = json.loads(f.read_text())
-        return out
+                st, sg = self.setup(mesh), self.frozen_sigma()
+                e = self.cfg["ensembles"]["design"]
+                cases = build_cases(st, self.draws["design"][0], int(e["noise_seed"]), "design", f"{mname(*mesh)} design")
+            lay = greedy_layouts(st, cases, sg, self.alpha, self.budgets)
+            atomic_write(f, json.dumps(lay))
+            say(f"{mname(*mesh)}: layouts selected {lay}")
+            del cases
+            gc.collect()
+        return json.loads(f.read_text())
 
-    def replicates(self, ref_lay: dict[str, dict[str, list[str]]]) -> list[dict[str, Any]]:
-        """Per replicate on the candidate mesh: greedy layouts and the objective of the REFERENCE layout on that replicate."""
-        rp = self.s2["replicates"]
-        st = None
-        out = []
-        for r in range(1, int(rp["n"]) + 1):
-            f = self.work / f"rep{r}.json"
-            if not f.exists():
-                st = st or self.setup(self.cand_mesh)
-                sg = self.sigma(self.scale(self.ref_design()[0]))
-                draws, _, ns = self.draws[f"rep{r}"]
-                cases = build_cases(st, draws, ns, "design", f"replicate {r}")
-                lay = greedy_layouts(st, cases, sg, self.alpha, self.budgets)
-                j_ref = {fk: {bk: objective(st, cases, ids, sg[float(fk)], self.alpha) for bk, ids in v.items()}
-                         for fk, v in ref_lay.items()}
-                f.write_text(json.dumps({"layouts": lay, "j_ref_layout": j_ref}))
-                say(f"replicate {r}/{rp['n']} done")
-            out.append(json.loads(f.read_text()))
-        return out
+    def config_layouts(self) -> dict[Any, Any]:
+        return {mesh: self.layouts_for(mesh) for mesh in [self.ref] + [m for m in self.meshes if m != self.ref]}  # reference first
 
-    def evaluate(self, lays: dict[Any, Any], reps: list[dict[str, Any]]) -> None:
+    def replicate(self, r: int, ref_lay: dict[str, dict[str, list[str]]], mesh: tuple[float, ...], tag: str) -> dict[str, Any]:
+        """Replicate r on `mesh`: greedy layouts and the objective of the REFERENCE layout on that replicate."""
+        f = self.work / f"{tag}{r}.json"
+        if not f.exists():
+            st, sg = self.setup(mesh), self.frozen_sigma()
+            draws, _, ns = self.draws[f"rep{r}"]
+            cases = build_cases(st, draws, ns, "design", f"{tag} {r}")
+            lay = greedy_layouts(st, cases, sg, self.alpha, self.budgets)
+            j_ref = {fk: {bk: objective(st, cases, ids, sg[float(fk)], self.alpha) for bk, ids in v.items()}
+                     for fk, v in ref_lay.items()}
+            atomic_write(f, json.dumps({"layouts": lay, "j_ref_layout": j_ref}))
+            say(f"{tag} {r}/{self.s2['replicates']['n']} done")
+        return json.loads(f.read_text())
+
+    def replicates(self, ref_lay: dict[str, dict[str, list[str]]], mesh: tuple[float, ...] | None = None,
+                   tag: str = "rep") -> list[dict[str, Any]]:
+        return [self.replicate(r, ref_lay, mesh or self.cand_mesh, tag) for r in range(1, int(self.s2["replicates"]["n"]) + 1)]
+
+    def evaluate(self, lays: dict[Any, Any], reps: list[dict[str, Any]], reps_ref: list[dict[str, Any]] | None = None) -> None:
         """Layouts are frozen: build the TEST ensemble on the reference mesh, then metrics, tables, figures."""
         assert all((self.work / f"layouts_{mname(*m)}.json").exists() for m in self.meshes)
         st, dcases, sg = self.ref_design()
@@ -310,31 +332,37 @@ class Run:
                                  "test_rmse_delta": float(np.mean(rt) - np.mean(rt_ref)), "eps_sd": sd, "eps_set_size": eps,
                                  "n_swaps": len(delta), "tie_fraction": eps / len(delta) if eps >= 0 else float("nan"),
                                  "sites": ",".join(lay)})
-        base = []
-        main = lays[self.cand_mesh]
-        for f in self.fractions:
-            fk = f"{f:g}"
-            for b in self.budgets:
-                bk = str(b)
-                rl = [r["layouts"][fk][bk] for r in reps]
-                for (i, a), (j, c) in itertools.combinations(enumerate(rl, 1), 2):
-                    base.append({"kind": "pair", "a": f"rep{i}", "b": f"rep{j}", "budget": b, "noise_fraction": f,
-                                 **compare_layouts(a, c, self.xy, self.taus), "regret": J(f, a) - J(f, c)})
-                for i, a in enumerate(rl, 1):
-                    base.append({"kind": "vs_main", "a": f"rep{i}", "b": mname(*self.cand_mesh), "budget": b, "noise_fraction": f,
-                                 **compare_layouts(a, main[fk][bk], self.xy, self.taus), "regret": J(f, a) - J(f, main[fk][bk])})
+        def baseline(rs: list[dict[str, Any]], main_mesh: tuple[float, ...]) -> list[dict[str, Any]]:
+            base, main = [], lays[main_mesh]
+            for f in self.fractions:
+                fk = f"{f:g}"
+                for b in self.budgets:
+                    bk = str(b)
+                    rl = [r["layouts"][fk][bk] for r in rs]
+                    for (i, a), (j, c) in itertools.combinations(enumerate(rl, 1), 2):
+                        base.append({"kind": "pair", "a": f"rep{i}", "b": f"rep{j}", "budget": b, "noise_fraction": f,
+                                     **compare_layouts(a, c, self.xy, self.taus), "regret": J(f, a) - J(f, c)})
+                    for i, a in enumerate(rl, 1):
+                        base.append({"kind": "vs_main", "a": f"rep{i}", "b": mname(*main_mesh), "budget": b, "noise_fraction": f,
+                                     **compare_layouts(a, main[fk][bk], self.xy, self.taus), "regret": J(f, a) - J(f, main[fk][bk])})
+            return base
+
+        base = baseline(reps, self.cand_mesh)
         o = self.out
         pd.DataFrame(stab).to_csv(o / "stability.csv", index=False)
         pd.DataFrame(base).to_csv(o / "replicate_baseline.csv", index=False)
+        if reps_ref:  # same replicate ensembles, layouts selected on the reference mesh (vs_main = the reference layout)
+            pd.DataFrame(baseline(reps_ref, self.ref)).to_csv(o / "replicate_baseline_refmesh.csv", index=False)
         pd.DataFrame(tests).to_csv(o / "test_scores.csv", index=False)
         pd.DataFrame(eps_rows).to_csv(o / "epsilon_swaps.csv", index=False)
-        self.write_layouts(lays, reps)
+        self.write_layouts(lays, reps, reps_ref)
         self.figures(st, pd.DataFrame(stab), pd.DataFrame(base), pd.DataFrame(eps_rows), lays)
         self.readme(pd.DataFrame(stab), pd.DataFrame(base), scale)
 
-    def write_layouts(self, lays: dict[Any, Any], reps: list[dict[str, Any]]) -> None:
+    def write_layouts(self, lays: dict[Any, Any], reps: list[dict[str, Any]], reps_ref: list[dict[str, Any]] | None = None) -> None:
         t = self.table.set_index("id")
         named = {mname(*m): v for m, v in lays.items()} | {f"rep{i}": r["layouts"] for i, r in enumerate(reps, 1)}
+        named |= {f"refrep{i}": r["layouts"] for i, r in enumerate(reps_ref or [], 1)}
         rows, feats = [], []
         for name, lay in named.items():
             for fk, per_b in lay.items():
@@ -462,12 +490,64 @@ def estimate(run: Run) -> None:
     say(f"one {mname(*run.ref)} design case: {one:.0f} s; design set of {n_design}: ~{one * n_design / 60:.0f} min")
 
 
+_RUN: Run | None = None
+THREAD_VARS = ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS", "VECLIB_MAXIMUM_THREADS")
+
+
+def _init_worker(cfg: dict[str, Any], out: Path, work: Path, scale: float | None) -> None:
+    global _RUN
+    _RUN = Run(cfg, out, work)
+    _RUN._scale = scale
+
+
+def _unit(kind: str, arg: Any, ref_lay: Any = None) -> Any:
+    """One independent unit in a worker; results go to files in work/. A reference-mesh design set is returned so the main
+    process does not rebuild it (None when the layouts file already existed)."""
+    run = _RUN
+    assert run is not None
+    if kind == "layout":
+        run.layouts_for(arg)
+        return run._ref[1] if run._ref is not None and arg == run.ref else None
+    r, mesh, tag = arg
+    run.replicate(r, ref_lay, mesh, tag)
+    return None
+
+
+def run_parallel(run: Run, workers: int, ref_on_ref: bool) -> None:
+    """Layout sets (reference first) in parallel, then the replicate ensembles once the reference layouts exist."""
+    if run._scale is None:
+        run.scale(run.setup(run.ref))  # smoke only: one validation ensemble, then shared with every worker
+    saved = {k: os.environ.get(k) for k in THREAD_VARS}
+    os.environ.update({k: "1" for k in THREAD_VARS})  # inherited by the spawned workers before they import numpy
+    try:
+        with ProcessPoolExecutor(workers, mp_context=mp.get_context("spawn"), initializer=_init_worker,
+                                 initargs=(run.cfg, run.out, run.work, run._scale)) as ex:
+            try:
+                order = [run.ref] + [m for m in run.meshes if m != run.ref]
+                lf = {m: ex.submit(_unit, "layout", m) for m in order}
+                cases = lf[run.ref].result()
+                ref_lay = json.loads((run.work / f"layouts_{mname(*run.ref)}.json").read_text())
+                if cases is not None:
+                    run._ref = (run.setup(run.ref), cases, run.frozen_sigma())
+                n = int(run.s2["replicates"]["n"])
+                units = [(r, run.ref, "refrep") for r in range(1, n + 1) if ref_on_ref] + [(r, run.cand_mesh, "rep") for r in range(1, n + 1)]
+                for f in [ex.submit(_unit, "rep", u, ref_lay) for u in units] + list(lf.values()):
+                    f.result()
+            except BaseException:
+                ex.shutdown(wait=False, cancel_futures=True)
+                raise
+    finally:
+        for k, v in saved.items():
+            os.environ.pop(k, None) if v is None else os.environ.__setitem__(k, v)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--config", default="configs/convergence_stage2.json")
     ap.add_argument("--out", default="results/phase3-convergence")
     ap.add_argument("--work", default=None, help="resumable work dir (default OUT/stage2_work)")
     ap.add_argument("--estimate", action="store_true", help="time one reference-mesh design case and exit")
+    ap.add_argument("--workers", type=int, default=1, help="process-pool size for the independent units (1 = sequential, as before)")
     a = ap.parse_args()
     cfg = load_config(ROOT / a.config)
     cfg["region"]["manifest"] = str(ROOT / cfg["region"]["manifest"])
@@ -477,14 +557,18 @@ def main() -> None:
     stamp, h = work / "config_hash.txt", G.config_hash(cfg, ("region.manifest",))
     if stamp.exists() and stamp.read_text().strip() != h:
         raise SystemExit(f"{work} was made with a different config (hash {stamp.read_text().strip()} != {h}); use a new --work/--out or delete it")
-    stamp.write_text(h + "\n")
+    atomic_write(stamp, h + "\n")
     run = Run(cfg, out, work)
     if a.estimate:
         estimate(run)
         return
+    ref_on_ref = bool(run.s2.get("replicates_on_reference", False))
+    if a.workers > 1:
+        run_parallel(run, a.workers, ref_on_ref)  # fills work/; the calls below then only read it
     lays = run.config_layouts()
     reps = run.replicates(lays[run.ref])
-    run.evaluate(lays, reps)
+    reps_ref = run.replicates(lays[run.ref], run.ref, "refrep") if ref_on_ref else None
+    run.evaluate(lays, reps, reps_ref)
     say("done")
 
 
