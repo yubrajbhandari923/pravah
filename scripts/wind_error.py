@@ -44,6 +44,10 @@ def say(msg: str) -> None:
     print(f"[{time.perf_counter() - T0:7.0f}s rss {rss:.2f}GB] {msg}", flush=True)
 
 
+def setting_name(a: Any) -> str:
+    return a if isinstance(a, str) else f"alpha{a:g}"
+
+
 def paths(cfg: dict[str, Any], out: str | None) -> tuple[Path, Path]:
     o = Path(out) if out else ROOT / cfg["out"]
     return o, ROOT / cfg["work"]
@@ -96,6 +100,7 @@ def do_validation(st: W.Study, chash: str, out: Path) -> dict[str, Any]:
         table.append({"alpha": a, "rmse_B": score("B"), "rmse_C": score("C"), "rmse_A": score("A")})
         say(f"validation alpha={a}: {table[-1]}")
     best = min(table, key=lambda r: r["rmse_B"])
+    own = {s: float(min(table, key=lambda r: r[f"rmse_{s}"])["alpha"]) for s in W.STRATEGIES}  # control (a) only
     st.alpha = float(best["alpha"])
     alt = {}
     full = st.ens_prior
@@ -112,6 +117,8 @@ def do_validation(st: W.Study, chash: str, out: Path) -> dict[str, Any]:
     res = {"alpha": best["alpha"], "criterion": "min validation RMSE of strategy B", "table": table,
            "prior_sensitivity_rmse_C_info_only": alt, "validation_winds": [list(k) for k in vk],
            "label": "validation scenarios (own seeds), not test"}
+    if we.get("control", {}).get("alpha_settings"):
+        res["alpha_own"] = own
     save_json(out / "validation.json", res, chash)
     return res
 
@@ -144,13 +151,19 @@ def run(cfg: dict[str, Any], out: Path, work: Path, overwrite: bool) -> None:
     timing: dict[str, Any] = {}
     t = time.perf_counter()
     st = W.Study(cfg, work)
-    we = st.we
+    we, ctl = st.we, st.control
     conds = W.conditions(we["grid"])
     tkeys = list(conds)
+    if ctl:
+        say(f"control {ctl.get('name')}: truth winds that are prior members: {st.assert_off_prior(tkeys)}; validation: "
+            f"{st.assert_off_prior([W.key(d, 1 + p / 100) for d, p in we['validation']['winds']])}")
     say(f"profile {cfg['profile']}: {len(tkeys)} truth wind conditions, prior members {len(st.prior)}")
     val = do_validation(st, chash, out)
     st.alpha = float(val["alpha"])
     say(f"alpha frozen from validation: {st.alpha}")
+    # control (a): alpha settings per strategy; "frozen_B" = the EXP-019 choice, "own" = each strategy's own validation optimum
+    st.alpha_settings = {setting_name(a): ({} if a == "frozen_B" else dict(val["alpha_own"]) if a == "own" else {s: float(a) for s in W.STRATEGIES})
+                         for a in ctl.get("alpha_settings", [])}
     des = do_design(st, chash, out)
     lays = {int(b): {"greedy": tuple(d["greedy"]), "spread": tuple(d["spread"]), "random": [tuple(x) for x in d["random"]]}
             for b, d in des["layouts"].items()}
@@ -177,8 +190,10 @@ def run(cfg: dict[str, Any], out: Path, work: Path, overwrite: bool) -> None:
     timing["gram_s"] = time.perf_counter() - t
     fcache: dict[Any, Any] = {}
     n_eval, t_rows = 0, 0.0
-    for k in tkeys:
-        f = out / "raw" / f"{W.cond_id(k)}.csv"
+    variants: list[str | None] = list(st.alpha_settings) or [None]
+    for k, v in ((k, v) for k in tkeys for v in variants):
+        f = out / "raw" / f"{W.cond_id(k)}{'' if v is None else '__' + v}.csv"
+        st.alpha_by = {} if v is None else st.alpha_settings[v]
         if f.exists() and not overwrite:
             if pd.read_csv(f, nrows=1)["cfg_hash"][0] != chash:
                 raise SystemExit(f"{f} was written by a different config; use --overwrite")
@@ -192,7 +207,7 @@ def run(cfg: dict[str, Any], out: Path, work: Path, overwrite: bool) -> None:
                 for r in st.evaluate(c, k, idx, gram, W.STRATEGIES, fcache):
                     rows.append({"cond": W.cond_id(k), "blocks": ",".join(conds[k]), "deg": k[0], "speed_pct": round((k[1] - 1) * 100, 6),
                                  "vec_err": W.vector_error(*k), "case": c.name, "budget": b, "layout_type": lt, "layout_id": lid,
-                                 **r, "cfg_hash": chash})
+                                 **r, "cfg_hash": chash, **({} if v is None else {"variant": v})})
                 n_eval += 1
         pd.DataFrame(rows).to_csv(f, index=False)
         t_rows += time.perf_counter() - t
@@ -224,14 +239,50 @@ EXTRA = ["bias_rel_mean", "chi2_per_dof", "chi2_reject", "cov90", "cov90_spread_
 
 
 def report(cfg: dict[str, Any], out: Path, work: Path) -> None:
-    we = cfg["wind_error"]
     raw: Any = pd.concat([pd.read_csv(f) for f in sorted((out / "raw").glob("*.csv"))], ignore_index=True)
+    ctl = cfg["wind_error"].get("control")
+    if not ctl:
+        wt = report_tables(cfg, raw, out / "tables", out / "figures")
+        ident(cfg, out, work, wt, label(cfg))
+    else:  # EXP-023 controls: standard tables/figures (one subfolder per alpha setting) plus cross-setting summaries; no identifiability demo
+        parts = {v: sub.copy() for v, sub in raw.groupby("variant")} if "variant" in raw else {None: raw}
+        for v, sub in parts.items():
+            report_tables(cfg, sub.reset_index(drop=True), out / "tables" / (v or ""), out / "figures" / (v or ""))
+        control_summary(cfg, raw, out)
+    say(f"report written to {out}")
+
+
+def control_summary(cfg: dict[str, Any], raw: Any, out: Path) -> None:
+    """Gaps A-B and C-B in total field RMSE (paired bootstrap over cases) and calibration, per setting and condition."""
+    bs = cfg["wind_error"]["bootstrap"]
+    raw = raw.assign(chi2_reject=(raw["chi2_p"] < 0.05).astype(float), variant=raw["variant"] if "variant" in raw else "all")
+    by = ["variant", "cond", "strategy", "budget", "layout_type", "case"]
+    pc: Any = raw.groupby(by, as_index=False)[["rmse_total", "cov90", "chi2_per_dof", "chi2_reject"]].mean()
+    pc = pc.groupby(["variant", "cond", "strategy", "case"], as_index=False).mean(numeric_only=True)
+    gaps = pd.concat([W.paired_bootstrap(pc, a, "B", "rmse_total", ["variant", "cond"], int(bs["n"]), int(bs["seed"]), float(bs.get("level", 0.95)))
+                      for a in ("A", "C")])
+    meta: Any = raw.groupby("cond")[["blocks", "deg", "speed_pct", "vec_err"]].first().reset_index()
+    gaps.merge(meta, on="cond").to_csv(out / "tables" / "control_gaps.csv", index=False)
+    cal: Any = pc.groupby(["variant", "cond", "strategy"], as_index=False).agg(rmse_total=("rmse_total", "mean"), cov90=("cov90", "mean"),
+                                                                             chi2_per_dof=("chi2_per_dof", "mean"), frac_chi2_rejects=("chi2_reject", "mean"))
+    cal.merge(meta, on="cond").to_csv(out / "tables" / "control_calibration.csv", index=False)
+    (out / "README.md").write_text(f"""# {STAMP} control: {cfg['wind_error']['control'].get('name')} ({label(cfg)})
+
+{cfg['notes']}
+
+Declared control (frozen in `freeze.json` before the test): `{json.dumps(cfg['wind_error']['control'])}`.
+Raw rows `raw/`; standard tables/figures per setting in `tables/<setting>/`, `figures/<setting>/` (flat when there is one setting);
+`tables/control_gaps.csv` (A-B, C-B paired RMSE gaps), `tables/control_calibration.csv` (cov90, chi2/dof, chi2 reject rate).
+""")
+
+
+def report_tables(cfg: dict[str, Any], raw: Any, tab: Path, fig: Path) -> Any:
+    we = cfg["wind_error"]
     raw["ext_frac_abs"] = raw["ext_frac_err"].abs()
     raw["inflow_abs_abs"] = raw["inflow_abs_err"].abs()
     raw["chi2_reject"] = (raw["chi2_p"] < 0.05).astype(float)
-    tab, fig = out / "tables", out / "figures"
-    tab.mkdir(exist_ok=True)
-    fig.mkdir(exist_ok=True)
+    tab.mkdir(parents=True, exist_ok=True)
+    fig.mkdir(parents=True, exist_ok=True)
     lab = label(cfg)
     bs = we["bootstrap"]
     nb, seed, level = int(bs["n"]), int(bs["seed"]), float(bs.get("level", 0.95))
@@ -268,6 +319,8 @@ def report(cfg: dict[str, Any], out: Path, work: Path) -> None:
 
     def panels(x: str, metrics: list[str], rows: Any, xlabel: str, ylabel: str, name: str, strategies: str = "ABC", hline: float | None = None,
                ylim: tuple[float, float] | None = None) -> None:
+        if rows.empty:  # e.g. a control without a speed block
+            return
         ln = "-" if x != "vec_err" else ""  # direction and speed rows share x on a vector-error axis: markers only
         bud = sorted(rows.budget.unique())
         f, axs = plt.subplots(1, len(bud), figsize=(4.2 * len(bud), 3.6), sharey=True, squeeze=False)
@@ -356,8 +409,7 @@ def report(cfg: dict[str, Any], out: Path, work: Path) -> None:
     f.tight_layout()
     f.savefig(fig / "C_minus_B_by_budget.png", dpi=130)
     plt.close(f)
-    ident(cfg, out, work, wt, lab)
-    say(f"report written to {out}")
+    return wt
 
 
 def ident(cfg: dict[str, Any], out: Path, work: Path, wt: Any, lab: str) -> None:
@@ -426,7 +478,7 @@ def estimate(cfg: dict[str, Any], frm: Path) -> None:
     we = cfg["wind_error"]
     nc = len(W.conditions(we["grid"]))
     nl = len(we["budgets"]) * (2 + we["n_random"])
-    evals = nc * we["n_test"] * nl
+    evals = nc * we["n_test"] * nl * max(len(we.get("control", {}).get("alpha_settings", [])), 1)
     per_eval = tm["rows_s"] / max(tm["n_case_layout_evals"], 1)
     prior = len(W.prior_keys(we["prior"]["direction_deg"], we["prior"]["speed_factor"]))
     winds = nc + len(we["validation"]["winds"]) + prior  # upper bound: upper limit of distinct new winds (overlaps are cached)
@@ -446,6 +498,8 @@ def main() -> None:
     ap.add_argument("--overwrite", action="store_true")
     a = ap.parse_args()
     cfg = load_config(ROOT / a.config if not Path(a.config).is_absolute() else a.config)
+    global STAMP
+    STAMP = cfg.get("experiment", STAMP)
     out, work = paths(cfg, a.out)
     if a.cmd == "run":
         run(cfg, out, work, a.overwrite)

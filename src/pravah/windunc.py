@@ -258,7 +258,8 @@ class Gram:
     is a quadratic form (see module docstring).  Weights: 'unif' (area), 'pop' (synthetic population counts); both with
     the trapezoid time weights of ``metrics.quadrature_weights`` (so the form equals ``metrics.field_mse``)."""
 
-    def __init__(self, bank: Bank, keys: Sequence[Key], weight_maps: dict[str, np.ndarray | None], t_exclude: float = 0.0):
+    def __init__(self, bank: Bank, keys: Sequence[Key], weight_maps: dict[str, np.ndarray | None], t_exclude: float = 0.0,
+                 truth_bank: Bank | None = None, truth_keys: Sequence[Key] = ()):
         self.n = bank.n
         self.index = {k: i for i, k in enumerate(dict.fromkeys(keys))}
         r0 = bank.resp(keys[0])
@@ -268,11 +269,19 @@ class Gram:
             sel, dt, w, den = quadrature_weights(r0.times, ny, nx, wm, t_exclude)
             ws[name] = (dt[:, None, None] * w[None] / den).reshape(-1)
         Z = np.concatenate([bank.resp(k).g[:, sel].reshape(self.n, -1) for k in self.index])
+        self.tindex = self.index  # truth fields live in the same bank unless a model-error control gives the truth its own
+        if truth_bank is not None:
+            tk = list(dict.fromkeys(truth_keys))
+            self.tindex = {k: len(self.index) + i for i, k in enumerate(tk)}
+            Z = np.concatenate([Z, *[truth_bank.resp(k).g[:, sel].reshape(self.n, -1) for k in tk]])
         self.G = {name: (Z * w) @ Z.T for name, w in ws.items()}
         self.I = Z @ ws["unif"]  # time-area integral of each response: linear functional for the external fraction
 
     def ix(self, keys: Sequence[Key]) -> np.ndarray:
         return np.concatenate([np.arange(self.index[k] * self.n, (self.index[k] + 1) * self.n) for k in keys])
+
+    def ixt(self, keys: Sequence[Key]) -> np.ndarray:
+        return np.concatenate([np.arange(self.tindex[k] * self.n, (self.tindex[k] + 1) * self.n) for k in keys])
 
 
 class Forms:
@@ -280,7 +289,7 @@ class Forms:
 
     def __init__(self, gram: Gram, est_keys: Sequence[Key], truth_key: Key, kinds: Sequence[str], groups: Sequence[str]):
         n = gram.n
-        ie, it = gram.ix(est_keys), gram.ix([truth_key])
+        ie, it = gram.ix(est_keys), gram.ixt([truth_key])
         local = np.array([g == "local" for g in groups])
         self.comp = {"total": np.ones(n, bool), "local": local, "external": ~local}
         self.n, self.M = n, len(est_keys)
@@ -311,6 +320,9 @@ class Forms:
 # ------------------------------------------------------------------------------------------------ study setup
 def build_scenario(cfg: dict[str, Any]) -> Scenario:
     sc = scenario_from_dict(cfg["scenario"])
+    rot = cfg["wind_error"].get("control", {}).get("base_rotation_deg")
+    if rot:  # EXP-023 control (d): every wind key is then relative to the rotated base wind
+        sc = wind_scenario(sc, key(rot))
     if not sc.boundary.bases:
         raise ValueError("EXP-019 needs one inflow (external) basis: set scenario.boundary.bases")
     if sc.initial.kind != "zero" or sc.boundary.background != 0.0:
@@ -348,6 +360,12 @@ class Study:
         self.scn = build_scenario(cfg)
         self.tab = self.scn.param_table()
         self.bank = Bank(self.scn, work)
+        self.control: dict[str, Any] = we.get("control", {})  # EXP-023 opt-in controls; empty = EXP-019 behaviour
+        kf = self.control.get("truth_K_factor")
+        # model-error control (c): the truth is generated with K x kf while every estimator keeps the nominal K
+        self.truth_bank = self.bank if not kf or kf == 1.0 else Bank(dataclasses.replace(
+            self.scn, transport=dataclasses.replace(self.scn.transport, K=self.scn.transport.K * kf)), work)
+        self.alpha_by: dict[str, float] = {}  # per-strategy alpha override (control (a)); empty = one alpha
         T = self.scn.times.duration
         step = float(cfg["inverse"]["sensor_interval"])
         self.times = tuple(float(t) for t in np.arange(step, T + 1e-9, step))
@@ -375,14 +393,31 @@ class Study:
         self.groups = [p.group for p in self.tab]
         self.kinds = [p.kind for p in self.tab]
         self.alpha = float(we["alpha"]) if we.get("alpha") is not None else math.nan
+        self.alpha_settings: dict[str, dict[str, float]] = {}
         self._truth_ops: dict[Key, tuple[np.ndarray, np.ndarray]] = {}
         self._ens_truth: dict[Key, Ensemble] = {}
+        self._ens_known: dict[Key, Ensemble] = {}
 
     # --- truth side (never passed to strategy_c)
     def truth_ens(self, k: Key) -> Ensemble:
         if k not in self._ens_truth:
-            self._ens_truth[k] = make_ensemble(self.bank, [k], self.sites, self.times)
+            self._ens_truth[k] = make_ensemble(self.truth_bank, [k], self.sites, self.times)
         return self._ens_truth[k]
+
+    def known_ens(self, k: Key) -> Ensemble:
+        """Strategy A's model: the true wind in the ESTIMATOR's model (= ``truth_ens`` unless the truth has model error)."""
+        if self.truth_bank is self.bank:
+            return self.truth_ens(k)
+        if k not in self._ens_known:
+            self._ens_known[k] = make_ensemble(self.bank, [k], self.sites, self.times)
+        return self._ens_known[k]
+
+    def assert_off_prior(self, truth_keys: Sequence[Key]) -> list[Key]:
+        """Control (b): no truth wind may be a prior member.  Returns the offending keys (raises when the control requires none)."""
+        bad = [k for k in truth_keys if k in set(self.prior)]
+        if bad and self.control.get("off_prior"):
+            raise ValueError(f"truth winds that are prior members: {bad}")
+        return bad
 
     def readings(self, case: Case, k: Key) -> np.ndarray:
         e = self.truth_ens(k)
@@ -394,25 +429,30 @@ class Study:
         return (self.readings(case, k)[ix] + self.sigma * case.noise[ix]).T.reshape(-1)
 
     def gram(self, truth_keys: Sequence[Key]) -> Gram:
-        return Gram(self.bank, list(dict.fromkeys([self.nominal, *self.prior, *truth_keys])), self.weight_maps)
+        return Gram(self.bank, list(dict.fromkeys([self.nominal, *self.prior, *truth_keys])), self.weight_maps,
+                    truth_bank=None if self.truth_bank is self.bank else self.truth_bank, truth_keys=truth_keys)
 
     def frozen(self, truth_keys: Sequence[Key], layouts: dict[str, Any], seeds: dict[str, Any]) -> dict[str, Any]:
-        return {"truth_wind_keys": [list(k) for k in truth_keys], "prior_keys": [list(k) for k in self.prior],
-                "alpha": self.alpha, "sigma": self.sigma, "layouts": layouts, "seeds": seeds,
-                "heldout": [int(i) for i in self.held]}
+        fz = {"truth_wind_keys": [list(k) for k in truth_keys], "prior_keys": [list(k) for k in self.prior],
+              "alpha": self.alpha, "sigma": self.sigma, "layouts": layouts, "seeds": seeds,
+              "heldout": [int(i) for i in self.held]}
+        if self.control:  # only controls extend the frozen record: the EXP-019 hash is unchanged
+            fz["control"] = self.control
+            fz["alpha_by_setting"] = self.alpha_settings
+        return fz
 
     # --- evaluation
     def evaluate(self, case: Case, k: Key, idx: Sequence[int], gram: Gram, strategies: Sequence[str] = STRATEGIES,
                  forms_cache: dict[tuple[str, Key], Forms] | None = None) -> list[dict[str, Any]]:
         """Fit the layout ``idx`` under each strategy; one metrics row per strategy."""
         y = self.observe(case, k, idx)
-        opts = FitOptions(self.sigma, self.alpha)
         fc = forms_cache if forms_cache is not None else {}
         rows = []
         truth_read = self.readings(case, k)
-        ens_by = {"A": self.truth_ens(k), "B": self.ens_nominal, "C": self.ens_prior}
+        ens_by = {"A": self.known_ens(k), "B": self.ens_nominal, "C": self.ens_prior}
         for s in strategies:
             ens = ens_by[s]
+            opts = FitOptions(self.sigma, self.alpha_by.get(s, self.alpha))
             fit = strategy_c(y, idx, ens, opts) if s == "C" else fit_ensemble(y, idx, ens, opts)
             if (s, k) not in fc:
                 fc[(s, k)] = Forms(gram, ens.keys, k, self.kinds, self.groups)

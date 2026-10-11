@@ -204,9 +204,13 @@ def test_disjoint_seeds() -> None:
         W.assert_disjoint_cases(d, mk("test", 1, 300))
 
 
+CTRL = ("alpha_sensitivity", "offset_prior", "model_error", "base_wind_45", "base_wind_90")  # model_error_baseline shares seeds on purpose
+
+
 def test_profile_configs_use_disjoint_seed_ranges() -> None:
     seen: list[tuple[str, set[int]]] = []
-    for name in ("wind_error", "wind_error_pilot", "wind_error_smoke"):
+    names = ("wind_error", "wind_error_pilot", "wind_error_smoke", *(f"wind_error_ctrl_{c}{x}" for c in CTRL for x in ("", "_smoke")))
+    for name in names:
         we = load_config(CONFIGS / f"{name}.json")["wind_error"]
         n = {"design": we["n_design"], "validation": we["n_validation"], "test": we["n_test"]}
         s = we["seeds"]
@@ -214,9 +218,12 @@ def test_profile_configs_use_disjoint_seed_ranges() -> None:
         for other, o in seen:
             assert not ids & o, f"{name} shares seeds with {other}"
         seen.append((name, ids))
-    for name in ("wind_error", "wind_error_pilot", "wind_error_smoke"):
+    for name in names:
         s = load_config(CONFIGS / f"{name}.json")["wind_error"]["seeds"]
         assert len(set(s.values())) == len(s)
+    base = "wind_error_ctrl_model_error"
+    for sfx in ("", "_smoke"):
+        assert load_config(CONFIGS / f"{base}_baseline{sfx}.json")["wind_error"]["seeds"] == load_config(CONFIGS / f"{base}{sfx}.json")["wind_error"]["seeds"]
 
 
 def test_prior_declared_and_truth_extremes_outside() -> None:
@@ -238,3 +245,95 @@ def test_paired_bootstrap() -> None:
 def test_confounding_demo_zero_rotation_is_null(st: W.Study) -> None:
     out = W.wind_amplitude_confounding(st, (3, 10, 20, 40), st.base_theta, [0.0])
     assert out["rotations"][0]["signal_change_sigma"] == pytest.approx(0.0, abs=1e-9)
+
+
+# ---------------------------------------------------------------- EXP-023 controls (opt-in; default unchanged)
+def ctl_study(tmp: Path, **control: Any) -> W.Study:
+    cfg = tiny_cfg()
+    cfg["wind_error"]["control"] = {"name": "t", **control}
+    return W.Study(cfg, tmp)
+
+
+def test_default_run_unchanged(tmp_path: Path) -> None:
+    """The default smoke config still writes the freeze hash and the rows recorded before the controls existed."""
+    import importlib.util
+
+    root = Path(__file__).resolve().parents[1]
+    spec = importlib.util.spec_from_file_location("wind_error_script", root / "scripts" / "wind_error.py")
+    assert spec and spec.loader
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    cfg = load_config(CONFIGS / "wind_error_smoke.json")
+    assert "control" not in cfg["wind_error"] and cfg["experiment"] == "EXP-019"
+    mod.run(cfg, tmp_path / "out", tmp_path / "work", False)
+    assert json.loads((tmp_path / "out" / "freeze.json").read_text())["hash"] == "0a38565582788d62"  # hash of the pre-controls smoke run
+    ref = root / "results" / "phase3-wind-error-toy" / "smoke" / "raw"
+    if ref.exists():  # untracked local artefact: compare every column except wall-clock when present
+        for f in sorted(ref.glob("*.csv")):
+            a, b = pd.read_csv(f).drop(columns="runtime_s"), pd.read_csv(tmp_path / "out" / "raw" / f.name).drop(columns="runtime_s")
+            pd.testing.assert_frame_equal(a, b, check_exact=True)
+
+
+def test_offset_prior_has_no_truth_member() -> None:
+    cfg = load_config(CONFIGS / "wind_error_ctrl_offset_prior.json")
+    we = cfg["wind_error"]
+    prior = set(W.prior_keys(we["prior"]["direction_deg"], we["prior"]["speed_factor"]))
+    truths = set(W.conditions(we["grid"])) | {W.key(d, 1 + p / 100) for d, p in we["validation"]["winds"]}
+    assert truths and not truths & prior
+    assert min(abs(t[0] - m[0]) for t in truths for m in prior) == 2.5
+    assert we["control"]["off_prior"]
+
+
+def test_assert_off_prior_raises(tmp_path: Path) -> None:
+    st = ctl_study(tmp_path, off_prior=True)  # tiny prior {-10, 0, 10} x {1.0}
+    assert st.assert_off_prior([W.key(5.0)]) == []
+    with pytest.raises(ValueError, match="prior members"):
+        st.assert_off_prior([W.key(10.0)])
+    assert ctl_study(tmp_path).assert_off_prior([W.key(10.0)]) == [W.key(10.0)]  # reported, not fatal, without the flag
+
+
+def test_k_mismatch_truth_path(tmp_path: Path, st: W.Study, case: W.Case) -> None:
+    m = ctl_study(tmp_path, truth_K_factor=1.2)
+    k = W.key(10.0)
+    assert m.truth_bank is not m.bank and m.bank.nominal.transport.K == m.truth_bank.nominal.transport.K / 1.2
+    assert st.truth_bank is st.bank and st.known_ens(k) is st.truth_ens(k)  # default: A's model is the truth operator
+    assert np.array_equal(m.known_ens(k).A, st.truth_ens(k).A)  # estimators keep the nominal K
+    assert not np.allclose(m.truth_ens(k).A, st.truth_ens(k).A, rtol=1e-3)  # truth readings come from K x 1.2
+    assert not np.allclose(m.readings(case, k), st.readings(case, k), rtol=1e-3)
+    # Gram: truth fields come from the truth bank
+    gram = m.gram([k])
+    f = W.Forms(gram, m.ens_nominal.keys, k, m.kinds, m.groups)
+    est = m.bank.resp(m.nominal).field(case.theta)
+    truth = m.truth_bank.resp(k).field(case.theta)
+    assert f.mse("unif", "total", case.theta, case.theta) == pytest.approx(field_mse(est, truth), rel=1e-8)
+    # a model error makes the zero-wind-error fit inconsistent with the data: chi2/dof rises
+    idx = (3, 10, 20, 40)
+    k0 = W.key(0.0)
+    r0 = st.evaluate(case, k0, idx, st.gram([k0]), ("B",))[0]
+    r1 = m.evaluate(case, k0, idx, m.gram([k0]), ("B",))[0]
+    assert r1["chi2_per_dof"] > r0["chi2_per_dof"]
+
+
+def test_base_wind_rotation(tmp_path: Path, st: W.Study) -> None:
+    r = ctl_study(tmp_path, base_rotation_deg=90.0)
+    w0, w1 = st.scn.transport.wind[0], r.scn.transport.wind[0]
+    assert (w1.u, w1.v) == pytest.approx(W.rotate_wind(w0.u, w0.v, 90.0))
+    # wind keys are relative to the rotated base: key (10 deg) = 100 deg from the original wind
+    wk = W.wind_scenario(r.scn, W.key(10.0)).transport.wind[0]
+    assert (wk.u, wk.v) == pytest.approx(W.rotate_wind(w0.u, w0.v, 100.0))
+    assert r.nominal == W.key(0.0) and (st.scn.transport.wind == W.build_scenario(tiny_cfg()).transport.wind)
+
+
+def test_alpha_override_per_strategy(st: W.Study, case: W.Case) -> None:
+    k, idx = W.key(10.0), (3, 10, 20, 40)
+    gram = st.gram([k])
+    base = st.evaluate(case, k, idx, gram)
+    try:
+        st.alpha_by = {"A": st.alpha, "B": st.alpha, "C": st.alpha}
+        same = st.evaluate(case, k, idx, gram)
+        st.alpha_by = {"B": 100.0}
+        diff = st.evaluate(case, k, idx, gram)
+    finally:
+        st.alpha_by = {}
+    assert [r["rmse_total"] for r in same] == [r["rmse_total"] for r in base]
+    assert diff[1]["rmse_total"] != base[1]["rmse_total"] and diff[0]["rmse_total"] == base[0]["rmse_total"]
