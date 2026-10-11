@@ -472,7 +472,13 @@ def main() -> None:
     cfg = load_config(ROOT / a.config)
     cfg["region"]["manifest"] = str(ROOT / cfg["region"]["manifest"])
     out = ROOT / a.out
-    run = Run(cfg, out, Path(a.work) if a.work else out / "stage2_work")
+    work = Path(a.work) if a.work else out / "stage2_work"
+    work.mkdir(parents=True, exist_ok=True)
+    stamp, h = work / "config_hash.txt", G.config_hash(cfg)
+    if stamp.exists() and stamp.read_text().strip() != h:
+        raise SystemExit(f"{work} was made with a different config (hash {stamp.read_text().strip()} != {h}); use a new --work/--out or delete it")
+    stamp.write_text(h + "\n")
+    run = Run(cfg, out, work)
     if a.estimate:
         estimate(run)
         return
