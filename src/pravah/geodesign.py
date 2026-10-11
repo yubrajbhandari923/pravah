@@ -127,8 +127,17 @@ def _to_utm(geom: Any, epsg: int) -> Any:
 
 
 def _load_raw(manifest_path: Path, cfg: dict[str, Any]) -> dict[str, Any]:
-    """Study polygon, Nepal ADM0, roads and facilities (UTM) from the sha256-verified raw files; cached per process."""
-    key = f"{manifest_path.resolve()}|{json.dumps(cfg['region'].get('study', {}), sort_keys=True)}"
+    """Study polygon, home-country ADM0, roads and facilities (UTM) from the sha256-verified raw files; cached per process.
+
+    Manifest roles come from optional ``cfg["region"]["roles"]`` (defaults = Belauri): ``home_adm0`` "adm0_NPL",
+    ``neighbour_adm0`` "adm0_IND" (null, or a role absent from the manifest, means no neighbour: ``ind`` is None), ``roads``
+    "osm_roads", ``amenity`` "osm_amenity".  The ``sha`` keys are the resolved role names.  Output names keep their Belauri
+    spelling: ``nepal`` / ``in_nepal_adm0`` mean "home-country ADM0", ``inside_coarse_ind_outline`` means "inside the
+    neighbour outline" (always False without one), and ``near_border_km`` is the distance to the HOME ADM0 boundary line
+    whether or not a neighbour exists (for a region without a neighbour it is the distance to that outline, not to a border)."""
+    roles = {"home_adm0": "adm0_NPL", "neighbour_adm0": "adm0_IND", "roads": "osm_roads", "amenity": "osm_amenity",
+             **cfg["region"].get("roles", {})}
+    key = f"{manifest_path.resolve()}|{json.dumps(cfg['region'].get('study', {}), sort_keys=True)}|{json.dumps(roles, sort_keys=True)}"
     if key in _RAW_CACHE:
         return _RAW_CACHE[key]
     import shapely
@@ -147,20 +156,23 @@ def _load_raw(manifest_path: Path, cfg: dict[str, Any]) -> dict[str, Any]:
     area_km2 = study.area / 1e6
     if abs(area_km2 - man["study"]["area_km2"]) > 1e-6 * man["study"]["area_km2"]:
         raise ValueError(f"study polygon area {area_km2:.4f} km2 differs from the manifest {man['study']['area_km2']:.4f}")
-    p, sha["adm0_NPL"] = _raw_file(man, base, "adm0_NPL")
+    p, sha[roles["home_adm0"]] = _raw_file(man, base, roles["home_adm0"])
     parts = [shapely.make_valid(shapely.geometry.shape(f["geometry"])) for f in json.loads(p.read_text())["features"]]
     cen = poly_ll.centroid
     clip = shapely.box(cen.x - 3, cen.y - 3, cen.x + 3, cen.y + 3)  # +-3 deg, as in geo.prepare
     nepal = shapely.make_valid(_to_utm(shapely.intersection(shapely.union_all(parts), clip), epsg))
-    p, sha["adm0_IND"] = _raw_file(man, base, "adm0_IND")
-    iparts = [shapely.make_valid(shapely.geometry.shape(f["geometry"])) for f in json.loads(p.read_text())["features"]]
-    ind = shapely.make_valid(_to_utm(shapely.intersection(shapely.union_all(iparts), clip), epsg))
-    p, sha["osm_roads"] = _raw_file(man, base, "osm_roads")
+    ind = None
+    nb = roles["neighbour_adm0"]
+    if nb is not None and any(d["role"] == nb and d["kind"] == "raw" for d in man["datasets"]):
+        p, sha[nb] = _raw_file(man, base, nb)
+        iparts = [shapely.make_valid(shapely.geometry.shape(f["geometry"])) for f in json.loads(p.read_text())["features"]]
+        ind = shapely.make_valid(_to_utm(shapely.intersection(shapely.union_all(iparts), clip), epsg))
+    p, sha[roles["roads"]] = _raw_file(man, base, roles["roads"])
     g = np.array([shapely.geometry.shape(f["geometry"]) for f in json.loads(p.read_text())["features"] if f.get("geometry")]
                  + [None], dtype=object)[:-1]
     roads = rio.explode_parts(_to_utm(g, epsg))
     roads = roads[shapely.get_type_id(roads) == 1]
-    p, sha["osm_amenity"] = _raw_file(man, base, "osm_amenity")
+    p, sha[roles["amenity"]] = _raw_file(man, base, roles["amenity"])
     fc = json.loads(p.read_text())["features"]
     types = tuple(cfg["candidates"].get("facility_amenities", DEFAULT_FACILITIES))
     keep = [f for f in fc if f.get("geometry") and (f.get("properties") or {}).get("amenity") in types]
