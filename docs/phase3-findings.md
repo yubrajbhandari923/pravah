@@ -36,6 +36,14 @@ Kind of claim, per the Phase 3 brief: **mathematical verification** (M), **numer
   (WSW bin 12.9% of hours, 26.5% of hours from 225-270 deg, constant-sector runs up to 19 h) and July winds from E/ENE/ESE (WSW 0.9%). Two months of one year: not a climatology; ERA5 cannot resolve local flow.
   F-018 found that the external patch reaches the municipality when the wind carries it from the WSW side, so the WSW share is the quantity to carry into any wind-uncertainty study on real winds.
 
+## Added after the first synthesis
+
+* **F-032 (EXP-022).** Greedy layouts cost real test error at 2-4 sensors: area RMSE 3.3x / 6.8x / 2.5x the best-found layout at 2 / 3 / 4 sensors (about 1.1x at 5-8); a design-objective gap above 1 gives a median +190% test gap; the
+  uniform stop check passed. Four independent source placements; Belauri-scale size unmeasured (EXP-016 scores greedy on test).
+* **F-034 (EXP-023, reviewed).** The wind-error penalty and the ensemble's gain survive alpha changes and an off-member prior grid; the gain shrinks with distance to the nearest member; chi2 detection power is unchanged under a
+  K x1.2 model error (specificity and coverage degrade); base-wind rotation controls are confounded (alpha 100 chosen), rerun needed.
+* **EXP-016 code, the one-job HPC package and notebooks 07-10** are built and tested locally (nothing ran on Slurm).
+
 ## Not done (needs HPC or a decision)
 
 * EXP-015 stage 2: do sensor-design decisions (displacement, regret) converge with mesh/dt relative to a resampling baseline? Code built, ~2 h on the laptop. **All
@@ -50,7 +58,7 @@ Kind of claim, per the Phase 3 brief: **mathematical verification** (M), **numer
 
 F-022 -> F-025 (order 1.4-1.7 -> 1.0-1.2; stated errors are lower bounds). F-023 -> F-026 (greedy suboptimality confounded the objective effect; "dense core
 worse" was a 1.3% near-tie). F-024 -> F-027 -> F-031 (unconverged reference, boundary artefact, vortex "ridge"; then a converged re-run; U/lambda explanation
-refuted by a control). F-028 -> F-029 (sign mixing, prior is 15 members not a 3x3 grid, coverage wording). F-030 was written after review. A claim without
+refuted by a control). F-028 -> F-029 (sign mixing, prior is 15 members not a 3x3 grid, coverage wording). F-033 -> F-034 (a control-vs-baseline weighting mismatch had produced a false loss of chi2 power). F-030 was written after review. A claim without
 an independent review should be treated as a draft.
 
 ## Decisions and rationale
