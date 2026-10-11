@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2224 tokens.
-> Generated 2026-10-11T01:06:33-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2289 tokens.
+> Generated 2026-10-11T01:16:29-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `fd6c19a196`
+Git: `master` @ `f414a44173`
 
 ## Latest checkpoint
 
@@ -40,6 +40,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - F-007 [supported, medium] FINAL: hidden wind error and unmodelled source dominate discretisation mismatch; poor layout unidentifiable — evidence: EXP-007, RUN-0011
 - F-006 [supported, medium] FINAL: greedy layouts beat spread/random on fresh test scenarios with alpha frozen on validation (matched, synthetic) — evidence: EXP-005, EXP-006, RUN-0008, RUN-0009
 - F-002 [supported, high] Matched synthetic recovery of three amplitudes works; cached and direct routes agree — evidence: EXP-002, RUN-0003
+- F-022 [preliminary, medium] Belauri field-level convergence: 500 m exponential has 5.0% space-time L2 error vs 125 m, mesh error dominates time-step error, external-patch fingerprint least resolved — evidence: EXP-015, RUN-0028
 - F-021 [preliminary, medium] Geographic design robustness: an unknown wind error dominates the sensor-count effect; the identifiability flags cannot show it (saturated by construction); ranking changes are not resolved against noise (synthetic) — evidence: EXP-014, RUN-0027
 - F-020 [preliminary, medium] Geographic sensor design on Belauri: small-budget rankings depend on the noise level and on the design noise used for selection; reference-site use depends on it too (synthetic, matched) — evidence: EXP-013, RUN-0026
 - F-016 [preliminary, high] Forward scheme: mass-consistent, first order in time, observed spatial order ~1.4 in the periodic test (~2.2-2.7 in the steady strip), large numerical diffusion — evidence: EXP-001, RUN-0001
@@ -67,9 +68,9 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Needs attention (verification)
 
+- [awaiting review] F-022 Belauri field-level convergence: 500 m exponential has 5.0% space-time L2 error vs 125 m, mesh error dominates time-step error, external-patch fingerprint least resolved: Agent finding awaiting an independent review
 - [awaiting review] F-021 Geographic design robustness: an unknown wind error dominates the sensor-count effect; the identifiability flags cannot show it (saturated by construction); ranking changes are not resolved against noise (synthetic): Agent finding awaiting an independent review
 - [awaiting review] F-020 Geographic sensor design on Belauri: small-budget rankings depend on the noise level and on the design noise used for selection; reference-site use depends on it too (synthetic, matched): Agent finding awaiting an independent review
-- [awaiting review] F-019 Boundary-condition input (whole-side bases) removes part of the error from an omitted localised external plume (synthetic; corrected values): Agent finding awaiting an independent review
 
 ## ⚠ Needs synthesis before new experiments
 

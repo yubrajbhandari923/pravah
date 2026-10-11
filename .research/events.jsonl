@@ -496,3 +496,4 @@
 {"action": "registered", "author_name": "claude-code", "author_type": "agent", "entity_id": "A-0097", "entity_type": "artifact", "summary": "A-0097 stage1_orders.csv (table)", "ts": "2026-10-11T01:15:37-04:00"}
 {"action": "registered", "author_name": "claude-code", "author_type": "agent", "entity_id": "A-0098", "entity_type": "artifact", "summary": "A-0098 figures (directory)", "ts": "2026-10-11T01:15:37-04:00"}
 {"action": "registered", "author_name": "claude-code", "author_type": "agent", "entity_id": "A-0099", "entity_type": "artifact", "summary": "A-0099 README.md (markdown)", "ts": "2026-10-11T01:15:37-04:00"}
+{"action": "created", "author_name": "claude-code", "author_type": "agent", "entity_id": "F-022", "entity_type": "finding", "summary": "F-022 Belauri field-level convergence: 500 m exponential has 5.0% space-time L2 error vs 125 m, mesh error dominates time-step error, external-patch fingerprint least resolved", "ts": "2026-10-11T01:16:29-04:00"}
