@@ -1,0 +1,26 @@
+{
+  "extends": "reference.json",
+  "name": "population_toy",
+  "notes": "EXP-017 toy population-aware design on the Phase-1 synthetic domain (50x50, 10 km, 4 h). Matched truth/inference wind per case; noise_std 0.005 ug/m^3 and 3 noise reps as in the Phase-1 benchmark. Seeds are fresh (not Phase 1/2: 11/22/33/44/101/202/305). alpha is selected on the VALIDATION ensemble with the area objective only (alpha-independent random+spread layouts, as Phase 1) and frozen for all objectives. 'run' and 'pilot' select what a profile executes and are not part of the frozen hash.",
+  "inverse": {"sensor_interval": 600.0, "noise_std": 0.005},
+  "design": {
+    "candidates_n": 10, "budgets": [2, 3, 5, 8], "n_design": 8, "n_validation": 8, "n_test": 16, "noise_reps": 3,
+    "n_random": 20, "heldout_n": 7, "t_exclude": 0.0, "layout_seed": 7,
+    "design_seed": 4101, "validation_seed": 4202, "test_seed": 4305,
+    "design_noise_seed": 41000, "validation_noise_seed": 42000, "test_noise_seed": 43000,
+    "alpha_grid": [0.0, 1e-4, 1e-3, 1e-2, 1e-1, 1.0, 10.0, 100.0, 1000.0]
+  },
+  "population": {
+    "total": 250000, "epsg": 32645,
+    "fixture_seeds": {"uniform": 0, "one_town": 1, "separated_settlements": 2, "dense_core_sparse_surround": 3, "mixed_rural_urban": 4},
+    "betas": [0.0, 0.25, 0.5, 0.75, 1.0], "cap_c": 3.0, "lowpop_quantile": 0.25, "support_min": 1.0
+  },
+  "stats": {"n_boot": 10000, "boot_seed": 0, "level": 0.95, "resolved_frac": 0.75},
+  "figures": {"layout_fixtures": ["one_town", "separated_settlements"], "layout_budget": 5, "matrix_objective": "population"},
+  "run": {"fixtures": null, "objectives": null, "verify_prefix": false},
+  "pilot": {
+    "design": {"design_seed": 5101, "validation_seed": 5202, "test_seed": 5305, "design_noise_seed": 51000,
+               "validation_noise_seed": 52000, "test_noise_seed": 53000},
+    "run": {"fixtures": ["one_town"], "objectives": ["area", "population"]}
+  }
+}
