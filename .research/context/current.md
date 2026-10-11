@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2765 tokens.
-> Generated 2026-10-11T11:58:49-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2794 tokens.
+> Generated 2026-10-11T11:58:54-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `4acbf3e51c` (uncommitted changes)
+Git: `master` @ `64666dad1e` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -79,6 +79,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - EXP-015 EXP convergence of sensor-design decisions with mesh, time step and scheme (pre-registered) (0 unsynthesized runs)
 - EXP-020 EXP toy population design with exact selection and replicated settings (pre-registered) (0 unsynthesized runs)
 - EXP-021 EXP toy prescribed winds, converged reference domain and deflecting channel (pre-registered) (0 unsynthesized runs)
+- EXP-022 EXP toy greedy vs exact layouts scored on test, uniform stop check (pre-registered) (1 unsynthesized runs)
 
 ## Active decisions
 
