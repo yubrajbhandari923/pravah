@@ -21,7 +21,7 @@
     "real": {"worldpop_real": "data/population/belauri_worldpop_2025_CN_{res}m.npy"},
     "n_draws": 6, "fixture_draw_seeds": [6501, 6502, 6503, 6504, 6505, 6506],
     "study_total": 25000, "grid_people_per_cell": 20,
-    "betas": [0.0, 0.5, 1.0], "cap_c": 3.0, "lowpop_quantile": 0.25, "support_min": 1.0
+    "betas": [0.0, 0.25, 0.5, 0.75, 1.0], "cap_c": 3.0, "lowpop_quantile": 0.25, "support_min": 1.0
   },
   "search": {"exact_max_budget": 4, "exact_max_combinations": 5000000, "n_restarts": 20, "restart_seed": 6550,
              "near_tie_frac": 0.01, "keep": 2000, "chunk": 20000, "enum_ranges": 64, "min_range": 20000,
