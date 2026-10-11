@@ -20,6 +20,7 @@ Panel (`.research/bin/research current`), not here.
 | Move the repo to an HPC cluster and run the heavy Phase 3 experiments (set-up, order, EXP-015 stage 2, EXP-016 spec, registration, known gaps) | `hpc-runbook.md` |
 | Population data sources (WorldPop, GHS-POP): units, CRS, licences, regrid caveats, how to plug a raster in | `population-data.md` |
 | Numerical verification and uncertainty methodology: definitions, scheme and convergence results, decision-stability metrics, interval wording | `numerical-methodology.md` |
+| Phase 3 findings, limitations, what is still open, Phase 4 recommendations | `phase3-findings.md` |
 | Why was it planned this way (design decisions, task map) | `implementation-plan.md`, `phase2-plan.md` |
 
 Reading order for a new agent: `../AGENTS.md` -> `research current` -> this index -> one area doc -> `phase2-validation.md` "Wrap-up log" if you will change results.

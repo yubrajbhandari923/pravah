@@ -1,26 +1,20 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2670 tokens.
-> Generated 2026-10-11T10:36:52-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2576 tokens.
+> Generated 2026-10-11T10:37:45-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `22cbbc13c5` (uncommitted changes)
+Git: `master` @ `451c0cb3ce` (uncommitted changes)
 
 ## Latest checkpoint
 
-**CP-004** Phase 2 wrap-up (reviewed) (2026-10-10)
-- **Understanding:** - Solver routing refactor preserves every deterministic FiPy output bit-for-bit (F-009, supported)
-  - FINAL: hidden wind error and unmodelled source dominate discretisation mismatch; poor layout unidentifiable (F-007, supported)
-  - FINAL: greedy layouts beat spread/random on fresh test scenarios with alpha frozen on validation (matched, synthetic) (F-006, supported)
-  - Matched synthetic recovery of three amplitudes works; cached and direct routes agree (F-002, supported)
-  - Geographic design robustness: an unknown wind error dominates the sensor-count effect; the identifiability flags cannot show it (saturated by construction); ranking changes are not resolved against noise (synthetic) (F-021, preliminary)
-  - Geographic sensor design on Belauri: small-budget rankings depend on the noise level and on the design noise used for selection; reference-site use depends on it too (synthetic, matched) (F-020, preliminary)
-  - Forward scheme: mass-consistent, first order in time, observed spatial order ~1.4 in the periodic test (~2.2-2.7 in the steady strip), large numerical diffusion (F-016, preliminary)
-  - Matched-design layouts are not robust at 2-3 sensors under model mismatch, but per-case counts are mixed (v0 mismatch, synthetic) (F-017, preliminary)
-- **Next step:** Optional, only if the sensor-design conclusions matter: add a chi-square-per-dof model check to geodesign_robust and rerun geodesign + geodesign_robust with the test noise level fixed from the validation scale (about 1 h compute). Otherwise: decide whether to commit or clear the executed notebook outputs in the working tree (user-owned); apply or drop git stash G2-unshipped.
+**CP-005** Phase 3 toy-scale wrap-up (reviewed; HPC deferrals) (2026-10-11)
+- **Understanding:** Transfer: pipeline runs on an unlike synthetic region (only the raw loader needed role names). Numerics: 500 m field error ~5-6% vs 125 m (order ~1.0-1.2), external plume worst resolved; vanleer is less diffusive but nonlinear (F-025). Wind: direction error dominates sensor count for >=10 deg, chi2/dof detects it, flags cannot, ensemble helps only near its prior (F-029). Population: no effect with greedy; with exact selection a benefit only at 2 sensors on concentrated populations at 6-35x area cost, overfits at 8 sensors; greedy is far from optimal at 2-4 sensors (F-026, F-030). Prescribed winds: outer domain ~UT/2 needed, channel/vortex effects placement-dependent (F-031). All synthetic; no empirical validation.
+- **Current problem:** EXP-015 stage 2 (decision stability) and Belauri-scale EXP-016 are not run, so all Belauri site conclusions remain conditional; review-requested controls outstanding
+- **Next step:** On HPC: EXP-015 stage 2 per docs/hpc-runbook.md, then greedy-vs-exact on test and Belauri-scale EXP-016
 
 ## Current baseline
 
@@ -84,12 +78,13 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Active decisions
 
+- D-004 (2026-10-11) Phase 3 baseline and deferrals
 - D-003 (2026-10-10) Phase 2 baseline: solver interface (results/solver-regression), external/local study (results/transboundary-rerun), verified Belauri geography (data/belauri/manifest.json, results/geography), Belauri forward (results/belauri-forward), geographic design and robustness (results/geodesign, results/geodesign-robust) — all synthetic emissions/meteorology; v0 baseline D-002 stands
 - D-002 (2026-10-10) Baseline v0: results/reference-v0 + results/inverse-v0 (configs/reference.json); comparison evidence is results/alpha-selection, results/benchmark-final, results/mismatch-final (alpha=0.1 frozen on validation, fresh test seeds 33/7000). results/benchmark, benchmark-unregularized, mismatch are exploratory and superseded.
 
 ## Blockers
 
-_none_
+- [checkpoint] CP-005: EXP-015 stage 2 (decision stability) and Belauri-scale EXP-016 are not run, so all Belauri site conclusions remain conditional; review-requested controls outstanding
 
 ## Project skills
 
