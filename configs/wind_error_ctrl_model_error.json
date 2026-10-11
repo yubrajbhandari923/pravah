@@ -1,0 +1,35 @@
+{
+ "extends": "wind_error.json",
+ "name": "wind_error_ctrl_model_error",
+ "experiment": "EXP-023",
+ "notes": "Control (c): truth (validation and test) generated with K x 1.2 (declared one-parameter model error) while every estimator uses the nominal K; layouts are designed under the nominal model. Directions {-30,-10,0,10,30}; 10 random layouts. Baseline with the same seeds and no model error: model_error_baseline. EXP-023 control of F-029 requested by the independent review; synthetic; inverse crime except where the control breaks it. New seeds disjoint from the production, pilot, smoke and all other control configs.",
+ "out": "results/phase3-wind-error-toy-controls/model_error",
+ "work": "results/phase3-wind-error-toy-controls/work/prod",
+ "wind_error": {
+  "seeds": {
+   "design": 11101,
+   "design_noise": 111000,
+   "validation": 11202,
+   "validation_noise": 112000,
+   "test": 11303,
+   "test_noise": 113000
+  },
+  "grid": {
+   "direction_deg": [
+    -30,
+    -10,
+    0,
+    10,
+    30
+   ],
+   "speed_pct": [],
+   "joint_direction_deg": [],
+   "joint_speed_pct": []
+  },
+  "n_random": 10,
+  "control": {
+   "name": "model_error_K1.2",
+   "truth_K_factor": 1.2
+  }
+ }
+}

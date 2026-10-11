@@ -1,0 +1,71 @@
+{
+ "extends": "wind_error_ctrl_alpha_sensitivity.json",
+ "name": "wind_error_ctrl_alpha_sensitivity_smoke",
+ "profile": "smoke",
+ "notes": "Plumbing check only (EXPLORATORY, no conclusions): coarse smoke scenario, 3 truth directions, 3 cases. Own seeds. Control (a): strategies A, B, C each at alpha frozen on B's validation (EXP-019 rule), alpha chosen on each strategy's OWN validation RMSE, and alpha in {0.1, 1, 10}. Layouts (designed under B's alpha) and the prior are those of EXP-019; direction block only; 10 random layouts per budget instead of 20 (declared runtime reduction).",
+ "out": "results/phase3-wind-error-toy-controls/smoke/alpha_sensitivity",
+ "work": "results/phase3-wind-error-toy-controls/work/smoke",
+ "scenario": {
+  "domain": {
+   "nx": 25,
+   "ny": 25
+  },
+  "times": {
+   "duration": 7200.0,
+   "dt": 120.0,
+   "output_interval": 600.0
+  }
+ },
+ "wind_error": {
+  "candidates_n": 8,
+  "heldout_n": 8,
+  "budgets": [
+   3,
+   5
+  ],
+  "n_random": 2,
+  "n_design": 2,
+  "n_validation": 2,
+  "n_test": 3,
+  "design_noise_reps": 1,
+  "grid": {
+   "direction_deg": [
+    -30,
+    0,
+    10
+   ],
+   "speed_pct": [],
+   "joint_direction_deg": [],
+   "joint_speed_pct": []
+  },
+  "alpha_grid": [
+   0.0,
+   1.0,
+   10.0
+  ],
+  "seeds": {
+   "design": 8401,
+   "design_noise": 84000,
+   "validation": 8502,
+   "validation_noise": 85000,
+   "test": 8603,
+   "test_noise": 86000
+  },
+  "validation": {
+   "winds": [
+    [
+     -15,
+     -10
+    ],
+    [
+     5,
+     10
+    ]
+   ],
+   "n_random": 1
+  },
+  "bootstrap": {
+   "n": 200
+  }
+ }
+}

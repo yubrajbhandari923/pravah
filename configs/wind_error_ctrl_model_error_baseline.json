@@ -1,0 +1,31 @@
+{
+ "extends": "wind_error.json",
+ "name": "wind_error_ctrl_model_error_baseline",
+ "experiment": "EXP-023",
+ "notes": "Baseline for control (c): same seeds, grid and layouts as model_error, truth K = nominal (inverse crime). Plain EXP-019 code path. EXP-023 control of F-029 requested by the independent review; synthetic; inverse crime except where the control breaks it. New seeds disjoint from the production, pilot, smoke and all other control configs.",
+ "out": "results/phase3-wind-error-toy-controls/model_error_baseline",
+ "work": "results/phase3-wind-error-toy-controls/work/prod",
+ "wind_error": {
+  "seeds": {
+   "design": 11101,
+   "design_noise": 111000,
+   "validation": 11202,
+   "validation_noise": 112000,
+   "test": 11303,
+   "test_noise": 113000
+  },
+  "grid": {
+   "direction_deg": [
+    -30,
+    -10,
+    0,
+    10,
+    30
+   ],
+   "speed_pct": [],
+   "joint_direction_deg": [],
+   "joint_speed_pct": []
+  },
+  "n_random": 10
+ }
+}

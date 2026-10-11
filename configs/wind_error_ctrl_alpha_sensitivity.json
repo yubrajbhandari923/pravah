@@ -1,0 +1,45 @@
+{
+ "extends": "wind_error.json",
+ "name": "wind_error_ctrl_alpha_sensitivity",
+ "experiment": "EXP-023",
+ "notes": "Control (a): strategies A, B, C each at alpha frozen on B's validation (EXP-019 rule), alpha chosen on each strategy's OWN validation RMSE, and alpha in {0.1, 1, 10}. Layouts (designed under B's alpha) and the prior are those of EXP-019; direction block only; 10 random layouts per budget instead of 20 (declared runtime reduction). EXP-023 control of F-029 requested by the independent review; synthetic; inverse crime except where the control breaks it. New seeds disjoint from the production, pilot, smoke and all other control configs.",
+ "out": "results/phase3-wind-error-toy-controls/alpha_sensitivity",
+ "work": "results/phase3-wind-error-toy-controls/work/prod",
+ "wind_error": {
+  "seeds": {
+   "design": 8101,
+   "design_noise": 81000,
+   "validation": 8202,
+   "validation_noise": 82000,
+   "test": 8303,
+   "test_noise": 83000
+  },
+  "grid": {
+   "direction_deg": [
+    -30,
+    -15,
+    -10,
+    -5,
+    0,
+    5,
+    10,
+    15,
+    30
+   ],
+   "speed_pct": [],
+   "joint_direction_deg": [],
+   "joint_speed_pct": []
+  },
+  "n_random": 10,
+  "control": {
+   "name": "alpha_sensitivity",
+   "alpha_settings": [
+    "frozen_B",
+    "own",
+    0.1,
+    1.0,
+    10.0
+   ]
+  }
+ }
+}

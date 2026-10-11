@@ -1,0 +1,71 @@
+{
+ "extends": "wind_error_ctrl_base_wind_45.json",
+ "name": "wind_error_ctrl_base_wind_45_smoke",
+ "profile": "smoke",
+ "notes": "Plumbing check only (EXPLORATORY, no conclusions): coarse smoke scenario, 3 truth directions, 3 cases. Own seeds. Control (d): base (nominal) wind rotated by 45 deg counter-clockwise; wind-error keys are relative to it. Directions {-30,-10,0,10,30}; 10 random layouts.",
+ "out": "results/phase3-wind-error-toy-controls/smoke/base_wind_45",
+ "work": "results/phase3-wind-error-toy-controls/work/smoke",
+ "scenario": {
+  "domain": {
+   "nx": 25,
+   "ny": 25
+  },
+  "times": {
+   "duration": 7200.0,
+   "dt": 120.0,
+   "output_interval": 600.0
+  }
+ },
+ "wind_error": {
+  "candidates_n": 8,
+  "heldout_n": 8,
+  "budgets": [
+   3,
+   5
+  ],
+  "n_random": 2,
+  "n_design": 2,
+  "n_validation": 2,
+  "n_test": 3,
+  "design_noise_reps": 1,
+  "grid": {
+   "direction_deg": [
+    -30,
+    0,
+    10
+   ],
+   "speed_pct": [],
+   "joint_direction_deg": [],
+   "joint_speed_pct": []
+  },
+  "alpha_grid": [
+   0.0,
+   1.0,
+   10.0
+  ],
+  "seeds": {
+   "design": 12401,
+   "design_noise": 124000,
+   "validation": 12502,
+   "validation_noise": 125000,
+   "test": 12603,
+   "test_noise": 126000
+  },
+  "validation": {
+   "winds": [
+    [
+     -15,
+     -10
+    ],
+    [
+     5,
+     10
+    ]
+   ],
+   "n_random": 1
+  },
+  "bootstrap": {
+   "n": 200
+  }
+ }
+}

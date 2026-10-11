@@ -1,0 +1,35 @@
+{
+ "extends": "wind_error.json",
+ "name": "wind_error_ctrl_base_wind_90",
+ "experiment": "EXP-023",
+ "notes": "Control (d): base (nominal) wind rotated by 90 deg counter-clockwise; wind-error keys are relative to it. Directions {-30,-10,0,10,30}; 10 random layouts. EXP-023 control of F-029 requested by the independent review; synthetic; inverse crime except where the control breaks it. New seeds disjoint from the production, pilot, smoke and all other control configs.",
+ "out": "results/phase3-wind-error-toy-controls/base_wind_90",
+ "work": "results/phase3-wind-error-toy-controls/work/prod",
+ "wind_error": {
+  "seeds": {
+   "design": 13101,
+   "design_noise": 131000,
+   "validation": 13202,
+   "validation_noise": 132000,
+   "test": 13303,
+   "test_noise": 133000
+  },
+  "grid": {
+   "direction_deg": [
+    -30,
+    -10,
+    0,
+    10,
+    30
+   ],
+   "speed_pct": [],
+   "joint_direction_deg": [],
+   "joint_speed_pct": []
+  },
+  "n_random": 10,
+  "control": {
+   "name": "base_wind_90",
+   "base_rotation_deg": 90
+  }
+ }
+}

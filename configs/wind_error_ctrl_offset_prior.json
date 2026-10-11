@@ -1,0 +1,72 @@
+{
+ "extends": "wind_error.json",
+ "name": "wind_error_ctrl_offset_prior",
+ "experiment": "EXP-023",
+ "notes": "Control (b): prior members at -17.5,-7.5,2.5,12.5,22.5 deg x speed {0.8,1,1.2}. Rule (declared before test, no test quantity used): shift the EXP-019 grid by a quarter of its 10 deg spacing (2.5 deg) and keep the speed factors; all truth directions of the grid and of the validation winds are multiples of 5 deg and all members are 2.5 mod 5, so no truth or validation wind is a member (asserted at run time; min distance 2.5 deg). The prior is asymmetric about 0 and the nominal wind (0) is not a member. Full EXP-019 grid. EXP-023 control of F-029 requested by the independent review; synthetic; inverse crime except where the control breaks it. New seeds disjoint from the production, pilot, smoke and all other control configs.",
+ "out": "results/phase3-wind-error-toy-controls/offset_prior",
+ "work": "results/phase3-wind-error-toy-controls/work/prod",
+ "wind_error": {
+  "seeds": {
+   "design": 9101,
+   "design_noise": 91000,
+   "validation": 9202,
+   "validation_noise": 92000,
+   "test": 9303,
+   "test_noise": 93000
+  },
+  "control": {
+   "name": "offset_prior",
+   "off_prior": true
+  },
+  "prior": {
+   "direction_deg": [
+    -17.5,
+    -7.5,
+    2.5,
+    12.5,
+    22.5
+   ],
+   "speed_factor": [
+    0.8,
+    1.0,
+    1.2
+   ]
+  },
+  "validation": {
+   "alt_priors": {
+    "narrow_direction_only": {
+     "direction_deg": [
+      -7.5,
+      2.5,
+      12.5
+     ],
+     "speed_factor": [
+      1.0
+     ]
+    },
+    "direction_only": {
+     "direction_deg": [
+      -17.5,
+      -7.5,
+      2.5,
+      12.5,
+      22.5
+     ],
+     "speed_factor": [
+      1.0
+     ]
+    },
+    "speed_only": {
+     "direction_deg": [
+      2.5
+     ],
+     "speed_factor": [
+      0.8,
+      1.0,
+      1.2
+     ]
+    }
+   }
+  }
+ }
+}
