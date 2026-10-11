@@ -1,4 +1,4 @@
-# Winds: interface audit, prescribed toy winds (EXP-018), ERA5 feasibility
+# Winds: interface audit, prescribed toy winds (EXP-018, EXP-021), ERA5 feasibility and ingestion
 
 Scope: what wind forcing the forward model accepts, the prescribed winds built in `src/pravah/winds.py`, the definitions used by
 `scripts/prescribed_winds.py`, and a written (not executed) ERA5 feasibility note.
@@ -75,7 +75,7 @@ Run: `python scripts/prescribed_winds.py --config configs/prescribed_winds.json 
 `results/phase3-winds-toy[-smoke|-pilot]/`: `cases_raw.csv`, `timeseries_raw.csv`, `boundary_flux_raw.csv` (raw, one row per case / time / side),
 `sensitivity_outer_domain.csv`, `checks.json`, `provenance.json`, `summary.md`, three figures.
 
-## 4. ERA5 feasibility note (written only; nothing downloaded)
+## 4. ERA5 feasibility note (written before the download; the data is now fetched and ingested, see section 6)
 
 Verified on the Copernicus pages on 2026-10-11 (URLs below):
 * Dataset "ERA5 hourly data on single levels from 1940 to present" (`reanalysis-era5-single-levels`) and "... on pressure levels" (`reanalysis-era5-pressure-levels`):

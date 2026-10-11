@@ -29,6 +29,13 @@ Kind of claim, per the Phase 3 brief: **mathematical verification** (M), **numer
 * **Prescribed-wind scenarios (F-031).** Channel offset (-43% exposure) is a placement effect; the vortex is -10%; reversals raise exposure +8% to +42%.
   Returned mass is good to ~10% (mesh dependence).
 
+## Real inputs now in the repo (descriptive only, not yet used in an experiment)
+
+* `data/population/`: WorldPop R2025A 100 m counts onto the 500/250 m Belauri grids (184,030 people in the domain, about 54,400 in the study polygon; modelled estimate, nodata -99999 declared, CC-BY-4.0 tag).
+* `data/era5/`: ERA5 hourly 10 m wind, Jan and Jul 2023, 9 x 9 cells at 0.25 deg (`src/pravah/era5.py`, `scripts/era5_summary.py`, `results/phase3-era5/`). At the Belauri centroid January winds come mostly from W/WSW/WNW
+  (WSW bin 12.9% of hours, 26.5% of hours from 225-270 deg, constant-sector runs up to 19 h) and July winds from E/ENE/ESE (WSW 0.9%). Two months of one year: not a climatology; ERA5 cannot resolve local flow.
+  F-018 found that the external patch reaches the municipality when the wind carries it from the WSW side, so the WSW share is the quantity to carry into any wind-uncertainty study on real winds.
+
 ## Not done (needs HPC or a decision)
 
 * EXP-015 stage 2: do sensor-design decisions (displacement, regret) converge with mesh/dt relative to a resampling baseline? Code built, ~2 h on the laptop. **All
