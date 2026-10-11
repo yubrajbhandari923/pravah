@@ -1,0 +1,40 @@
+[
+ {
+  "month": "Jan",
+  "hours": 744,
+  "wsw_sector": "WSW",
+  "wsw_share_pct": 12.903225806451612,
+  "wide_225_270_share_pct": 26.478494623655912,
+  "sector_runs": {
+   "n": 339,
+   "mean": 2.1946902654867255,
+   "median": 1.0,
+   "max": 19
+  },
+  "wsw_runs": {
+   "n": 36,
+   "mean": 2.6666666666666665,
+   "median": 2.0,
+   "max": 10
+  }
+ },
+ {
+  "month": "Jul",
+  "hours": 744,
+  "wsw_sector": "WSW",
+  "wsw_share_pct": 0.9408602150537635,
+  "wide_225_270_share_pct": 2.0161290322580645,
+  "sector_runs": {
+   "n": 362,
+   "mean": 2.0552486187845305,
+   "median": 1.0,
+   "max": 16
+  },
+  "wsw_runs": {
+   "n": 5,
+   "mean": 1.4,
+   "median": 1.0,
+   "max": 2
+  }
+ }
+]

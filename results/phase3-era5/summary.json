@@ -1,0 +1,122 @@
+{
+ "stamp": "ERA5 2023, 0.25 deg, descriptive only",
+ "point_lonlat": [
+  80.35420589620165,
+  28.700259181804167
+ ],
+ "wsw_definition": "16-sector bin centred on 247.5 deg (configs/belauri_forward.json)",
+ "headline": {
+  "Jan": {
+   "dominant_sectors": [
+    [
+     "W",
+     16.9
+    ],
+    [
+     "WSW",
+     12.9
+    ],
+    [
+     "WNW",
+     12.4
+    ]
+   ],
+   "wsw_share_pct": 12.9,
+   "mean_speed": 1.37,
+   "calm_lt_0.5_hours": 64
+  },
+  "Jul": {
+   "dominant_sectors": [
+    [
+     "E",
+     25.0
+    ],
+    [
+     "ENE",
+     18.7
+    ],
+    [
+     "ESE",
+     17.3
+    ]
+   ],
+   "wsw_share_pct": 0.9,
+   "mean_speed": 1.59,
+   "calm_lt_0.5_hours": 39
+  }
+ },
+ "demo_plumbing_check": {
+  "Jan": {
+   "closure_rel": 3.431140006190011e-15,
+   "step_residual_rel": 1.0395009817659971e-14,
+   "min_conc": 0.0,
+   "checks": [
+    {
+     "t_h": 1,
+     "centroid_shift_m": [
+      548.5965889838462,
+      -1643.3568264455025
+     ],
+     "wind_integral_m": [
+      705.5767958429172,
+      -2113.6122518559278
+     ],
+     "angle_between_deg": -8.946154023721957e-05,
+     "length_ratio": 0.7775114293448798
+    },
+    {
+     "t_h": 2,
+     "centroid_shift_m": [
+      424.65857465301633,
+      -3482.523230008652
+     ],
+     "wind_integral_m": [
+      579.9426739098215,
+      -3979.5294515903793
+     ],
+     "angle_between_deg": 1.339110980920151,
+     "length_ratio": 0.8723764924635301
+    }
+   ]
+  },
+  "Jul": {
+   "closure_rel": 7.9472859700520835e-16,
+   "step_residual_rel": 3.179397556607426e-15,
+   "min_conc": 0.0,
+   "checks": [
+    {
+     "t_h": 1,
+     "centroid_shift_m": [
+      -5471.767596284046,
+      -672.9460040133908
+     ],
+     "wind_integral_m": [
+      -7196.112717746859,
+      -872.744746511336
+     ],
+     "angle_between_deg": -0.09625886404169952,
+     "length_ratio": 0.7605342857438889
+    },
+    {
+     "t_h": 2,
+     "centroid_shift_m": [
+      -9810.650864424157,
+      -1076.7572540005167
+     ],
+     "wind_integral_m": [
+      -13374.786987947613,
+      -1345.4680594613183
+     ],
+     "angle_between_deg": -0.5188889429388984,
+     "length_ratio": 0.7342172912165872
+    }
+   ]
+  }
+ },
+ "provenance": {
+  "file": "belauri_era5_10m_wind.nc",
+  "sha256": "8cea3d652f300b0567382dc98b1a873b06af4e38dbfcd7670681172abbcaab28",
+  "download_date": "2026-10-11",
+  "doi": "10.24381/cds.adbb2d47"
+ }
+}
