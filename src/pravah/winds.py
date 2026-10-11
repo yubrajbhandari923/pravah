@@ -102,3 +102,22 @@ def face_divergence(domain: Domain, psi: np.ndarray) -> np.ndarray:
     uf = (psi[1:, :] - psi[:-1, :]) / domain.dy
     vf = -(psi[:, 1:] - psi[:, :-1]) / domain.dx
     return (uf[:, 1:] - uf[:, :-1]) / domain.dx + (vf[1:, :] - vf[:-1, :]) / domain.dy
+
+
+# ---------------------------------------------------------------------------------------------- EXP-021 channel
+def deflected_channel(domain: Domain, u: float, x0: float, width: float, offset: float,
+                      kind: str = "step") -> tuple[WindSegment, ...]:
+    """psi = u*(y - h(x)): streamlines are y = const + h(x), so the flow is turned around an obstacle-like feature.
+    u_wind = dpsi/dy = u and v_wind = -dpsi/dx = u*h'(x) (divergence free).  PRESCRIBED, not terrain physics: nothing is
+    computed from a DEM and there is no pressure or blocking dynamics.  h(x) is a smooth step ("step": h = offset*(1+tanh((x-x0)/width))/2,
+    net downstream displacement ``offset``, peak turning angle atan(offset/(2 width))) or a Gaussian bump ("bump": h = offset*exp(-(x-x0)^2/2 width^2),
+    zero net displacement, peak angle atan(offset/(width sqrt(e)))).  Far upstream and downstream the wind is the uniform (u, 0)."""
+    x = (np.arange(domain.nx + 1) * domain.dx)[None, :]
+    y = (np.arange(domain.ny + 1) * domain.dy)[:, None]
+    if kind == "step":
+        h = 0.5 * offset * (1.0 + np.tanh((x - x0) / width))
+    elif kind == "bump":
+        h = offset * np.exp(-((x - x0) ** 2) / (2.0 * width**2))
+    else:
+        raise ValueError("kind must be 'step' or 'bump'")
+    return (WindSegment.from_streamfunction(0.0, u * (y - h), u, 0.0),)
