@@ -1,0 +1,34 @@
+{
+  "source": "WorldPop Global 2 (R2025A), Nepal, 2025, constrained, 100 m",
+  "url": "https://data.worldpop.org/GIS/Population/Global_2015_2030/R2025A/2025/NPL/v1/100m/constrained/npl_pop_2025_CN_100m_R2025A_v1.tif",
+  "version": "R2025A v1 (file dated 2025-08-04)",
+  "license": "CC BY 4.0 (WorldPop; verify on the dataset page before redistribution)",
+  "attribution": "WorldPop, University of Southampton (www.worldpop.org); cite the R2025A release",
+  "original_resolution": "3 arc-seconds (~100 m)",
+  "crs": "EPSG:4326",
+  "units": "people/cell",
+  "download_date": "2026-10-11",
+  "sha256": "b7b581e181df5e2f84b2e20d3455429393829395619a9600e45c6907674a0639",
+  "resampling": "allocation by source-cell centre onto the simulation cells (counts conserved inside the grid)",
+  "limitations": "Modelled estimate (top-down disaggregation of census-based totals), not census ground truth; constrained to building footprints; residential location only (no movement, indoor or time-activity exposure); sum over the study polygon uses the cell area fraction",
+  "totals_by_level": {
+    "250": {
+      "total_in": 29628159.021271184,
+      "total_out": 184029.5719529275,
+      "lost_outside": 29444129.449318256,
+      "nodata_cells": 42386859.0,
+      "grid_total": 184029.5719529275,
+      "study_polygon_total": 54562.52432108742,
+      "cells": 17160
+    },
+    "500": {
+      "total_in": 29628159.021271184,
+      "total_out": 184029.5719529275,
+      "lost_outside": 29444129.449318256,
+      "nodata_cells": 42386859.0,
+      "grid_total": 184029.5719529275,
+      "study_polygon_total": 54370.045139187234,
+      "cells": 4290
+    }
+  }
+}

@@ -109,7 +109,10 @@ rec = dataset_record(
 * The GHSL (GHS-POP) licence text. The product page I read gives the citation and the data description but not the licence; I believe reuse is covered by the European Commission reuse policy
   (Commission Decision 2011/833/EU, usually described as CC BY 4.0), but that is not confirmed from the GHSL page: read the licence on the download page or in the GHSL Data Package 2023 report
   (https://human-settlement.emergency.copernicus.eu/documents/GHSL_Data_Package_2023.pdf) before redistributing.
-* The nodata value used inside WorldPop GeoTIFFs (commonly -99999 in the older series; not stated on the pages I read) and whether the files declare it. Check `rasterio.open(path).nodata` yourself.
+* ~~The nodata value used inside WorldPop GeoTIFFs~~ **Checked on the real file (2026-10-11):** `npl_pop_2025_CN_100m_R2025A_v1.tif` (WorldPop Global 2 R2025A v1, 32 MB, file dated 2025-08-04) is float32,
+  EPSG:4326, 0.00083333 deg (~100 m) cells, shape 4921 x 9773, declares `nodata = -99999.0`, and its TIFF header carries `Copyright: CC-BY-4.0`. Other WorldPop series and the GHS-POP files were NOT checked.
+  The Belauri extract (people per simulation cell, 500 m and 250 m; `data/population/`, script `scripts/prepare_population_extract.py`, provenance JSON next to the arrays) gives
+  184,030 people in the whole simulation domain and 54,370 (500 m) / 54,563 (250 m) inside the study polygon (cell-area-fraction weighted; the two meshes differ by 0.4% because of the polygon rasterisation). These are modelled estimates, not census counts; I did not compare them with a census figure.
 * Whether the GHS-POP 3 arc-second files declare nodata -200 in the GeoTIFF header (the page states -200 as the legend value).
 * The exact definition of "Global 2" beyond the hub pages (I used the "Global Demographic Data" 2015-2030 series, release statement title `Global2_Release_Statement_R2025A_v1.pdf`; I did not read the PDF).
 * That the Nepal 100 m file for the year you need exists in the same release (the Nepal R2025A page lists an estimate for 2021; the year you want may be a separate file).
