@@ -1,0 +1,15 @@
+study,scheme,ref,levels,method,p,status
+A_space,exponential,R_exp,500->250 m,L2 error ratio,1.7384031972209555,ok
+A_space,exponential,R_vl,500->250 m,L2 error ratio,1.3753717731877482,ok
+A_space,exponential,R_vl,250->125 m,L2 error ratio,1.3723054964485901,ok
+A_space,exponential,none,500/250/125 m,Richardson on time-mean study-mean,1.01751928067978,ok
+A_space,vanleer,R_exp,500->250 m,L2 error ratio,0.771933989539745,ok
+A_space,vanleer,R_exp,250->125 m,L2 error ratio,0.050136095918547716,ok
+A_space,vanleer,R_vl,500->250 m,L2 error ratio,1.495980770608265,ok
+A_space,vanleer,none,500/250/125 m,Richardson on time-mean study-mean,-1.533971720524377,not converging (successive change grows)
+B_time,exponential,self dt=12.5,200->100 s,L2 error ratio,0.8251533240841001,ok
+B_time,exponential,self dt=12.5,100->50 s,L2 error ratio,1.1415856527508565,ok
+B_time,exponential,self dt=12.5,50->25 s,L2 error ratio,1.5404475940979625,ok
+B_time,exponential,none,200/100/50 s,Richardson on time-mean study-mean,0.6941071302483538,ok
+B_time,exponential,none,100/50/25 s,Richardson on time-mean study-mean,1.0089217601916491,ok
+B_time,exponential,none,50/25/12.5 s,Richardson on time-mean study-mean,1.0042491929488349,ok
