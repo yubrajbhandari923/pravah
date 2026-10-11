@@ -15,6 +15,7 @@ Panel (`.research/bin/research current`), not here.
 | Real Belauri data: sources, CRS, boundary verification, relief, border | `geography.md` |
 | Belauri forward scenarios and mesh / outer-domain sensitivity | `belauri-forward.md` |
 | Geographic sensor design, robustness, exports | `geodesign.md` |
+| Run the geodesign pipeline on another municipality (what to supply, what is still Belauri-specific) | `transfer.md` |
 | What phase 2 established, what did not, known issues, requirement table | `phase2-validation.md` |
 | Why was it planned this way (design decisions, task map) | `implementation-plan.md`, `phase2-plan.md` |
 
