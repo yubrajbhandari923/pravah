@@ -52,8 +52,10 @@ hpc:
 # artifacts:
 #   hash_max_bytes: 67108864
 # hpc:
-#   default_cluster: null
+#   default_cluster: duke   # ← set for every project in your machine config
 # orchestration:
 #   enabled: false
 # Everything else keeps its default. `research config show --effective` prints every
 # value in force, including the agent profiles and orchestration tiers not shown here.
+# Values marked ← come from /Users/yubraj/.config/research-os/config.yaml
+# Uncommenting one here overrides it for this project only.
