@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2908 tokens.
-> Generated 2026-10-12T18:02:39-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2920 tokens.
+> Generated 2026-10-12T18:15:53-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `ebc0e1963c` (uncommitted changes)
+Git: `master` @ `fa2a3af5f2` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -53,11 +53,12 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Current experiments
 
-- EXP-025 [needs_review] INFRA cluster environment build and production preflight (not a scientific experiment) — runs 3, ⚠ 3 unsynthesized
+- EXP-025 [running] INFRA cluster environment build and production preflight (not a scientific experiment) — runs 7, ⚠ 3 unsynthesized
 - EXP-023 [needs_review] EXP toy wind-error controls from F-029 review (alpha, offset prior grid, model error, base wind) (pre-registered) — runs 12
 - EXP-021 [needs_review] EXP toy prescribed winds, converged reference domain and deflecting channel (pre-registered) — runs 1
 - EXP-020 [needs_review] EXP toy population design with exact selection and replicated settings (pre-registered) — runs 1
 - EXP-015 [needs_review] EXP convergence of sensor-design decisions with mesh, time step and scheme (pre-registered) — runs 1
+- EXP-026 [proposed] EXP-016v population-aware sensor placement at Belauri scale, with the WorldPop fixture and replicated fixture draws (pre-registered variant) — runs 0
 - EXP-016 [proposed] EXP population-aware sensor placement: area vs population vs mixed vs capped objectives (pre-registered) — runs 0
 
 ## Active plans
@@ -82,7 +83,6 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - EXP-020 EXP toy population design with exact selection and replicated settings (pre-registered) (0 unsynthesized runs)
 - EXP-021 EXP toy prescribed winds, converged reference domain and deflecting channel (pre-registered) (0 unsynthesized runs)
 - EXP-023 EXP toy wind-error controls from F-029 review (alpha, offset prior grid, model error, base wind) (pre-registered) (0 unsynthesized runs)
-- EXP-025 INFRA cluster environment build and production preflight (not a scientific experiment) (3 unsynthesized runs)
 
 ## Active decisions
 

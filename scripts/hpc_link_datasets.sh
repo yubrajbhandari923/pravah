@@ -7,10 +7,26 @@
 # deliberately excluded from the bundle (datasets belong in the cluster's shared data directory, not
 # in a code snapshot). This symlinks the staged dataset into place inside the run's own source tree.
 # Read-only use: the link points at shared data that this script never writes to.
+#
+# It also puts the persistent cluster venv first on PATH, so a command written as `python ...` gets the
+# venv interpreter rather than the system python3 (which has none of the dependencies).
 set -euo pipefail
 SRC="$(cd "$(dirname "$0")/.." && pwd)"
 SHARED="${RESEARCH_SHARED_DATA:-/scratch/railabs/yb107/research-os/shared-data}"
 GEO="$SHARED/belauri-geography/files"
+VENV="${PRAVAH_ENV_ROOT:-$HOME/research-os/projects/pravah/env}/venv"
+
+if [ -x "$VENV/bin/python" ]; then
+  export PATH="$VENV/bin:$PATH"
+  export VIRTUAL_ENV="$VENV"
+  echo "using venv $VENV ($("$VENV/bin/python" -V 2>&1))"
+else
+  echo "no venv at $VENV — run scripts/hpc_preflight_env.sh first" >&2
+  exit 1
+fi
+
+# One process per independent unit; BLAS must not also thread or the pool oversubscribes the node.
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1
 
 if [ -d "$GEO" ]; then
   mkdir -p "$SRC/data"
