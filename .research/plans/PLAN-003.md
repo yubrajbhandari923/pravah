@@ -29,8 +29,19 @@ Directive in session 2026-10-10; opens from CP-004; reuses solver interface (F-0
 
 <!-- research:generated — everything below is regenerated; edits here are ignored -->
 
-## Tasks (0/0 done)
+## Tasks (6/10 done)
 
-_(no tasks yet)_
+- ✓ **T-023** S1a Transfer audit + second synthetic region fixture and transfer test — done
+- ✓ **T-024** S1b Population layer: grid-aligned loader, conservative regrid, 5 synthetic fixtures, area/population metrics, source registry — done
+- ✓ **T-025** S1c Experiment contracts: ensembles/seeds/freeze rules, cheap preflight, cache-key audit, benchmark of one Belauri solve at 500/250/125 m — done
+- ✓ **T-026** S2a Less-diffusive convection scheme (flux-limited) with verification: MMS/periodic, conservation, positivity, order — done
+- ⛔ **T-027** S2b EXP convergence of decisions: space, time, joint, scheme; physical-coordinate candidates; displacement, regret, ties vs resampling baseline — blocked
+- ○ **T-028** S3 EXP population-aware design: area vs pop vs mixed beta vs capped on 5 fixtures; Pareto; held-out — todo
+- ✓ **T-029** S4a Wind interface audit; time/space-varying and raster wind input; idealised ridge-reversal toy; arrival/flux diagnostics; ERA5 feasibility note — done
+- ✓ **T-030** S4b EXP wind-error response: direction/speed grid; strategies A known, B fixed-wrong, C ensemble-marginalised; chi2/dof; coverage — done
+- ⛔ **T-031** S5a Conditional: wind-robust and population-robust placement — blocked
+- ○ **T-032** S5b Independent scientific review of all findings, Phase 3 synthesis, docs, notebooks, checkpoint — todo
+
+⚠ 2 task(s) blocked
 
 _Author: agent (claude-code)_

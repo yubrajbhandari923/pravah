@@ -28,8 +28,13 @@ No Research OS or agent on the cluster. PI copies repo, runs ONE sbatch job (slu
 
 <!-- research:generated — everything below is regenerated; edits here are ignored -->
 
-## Tasks (0/0 done)
+## Tasks (1/6 done)
 
-_(no tasks yet)_
+- ○ **T-033** H1 PI: set up repo on cluster (slurm/setup_env.sh), copy data/belauri/raw, submit slurm/phase3.sbatch, download results bundle — todo
+- ○ **T-034** H2 Register the cluster runs: research run attach per phase from hpc_manifest.json (command, times, exit code, git commit, hashes), artifacts, no rewriting of history — todo
+- ○ **T-035** H3 Interpret EXP-015 stage 2 (displacement/regret vs replicate baseline, monotone in refinement, tolerance fractions) and decide the design mesh — todo
+- ○ **T-036** H4 Interpret Belauri-scale EXP-016 (exact vs greedy on test, population/mixed/capped, cluster bootstrap, design-split optimism) — todo
+- ✓ **T-037** H5 Real inputs: WorldPop Belauri extract in data/population (done on laptop) into an EXP-016 variant; ERA5 extract (PI fetches with scripts/fetch_era5.py) through winds.segments_from_series — done
+- ○ **T-038** H6 Phase 3 synthesis update, revised Phase 4 list, final checkpoint — todo
 
 _Author: agent (claude-code)_

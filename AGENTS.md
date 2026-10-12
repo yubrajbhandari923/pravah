@@ -18,7 +18,7 @@ Do not read everything; do not re-derive what a finding or doc already states. F
 
 ### Commands
 Env: `uv venv --python 3.12 .venv && uv pip install -e ".[dev,geo]" -c requirements-lock-geo.txt`. Tests `.venv/bin/pytest -q` (447 tests, ~13 min; geo/real-data
-tests skip without `data/belauri/manifest.json`). Types `.venv/bin/pyright` (0 errors expected). Notebooks `.venv/bin/python scripts/verify_notebooks.py`.
+tests skip without `data/belauri/manifest.json`). Types `.venv/bin/pyright` (0 errors expected). Notebooks `.venv/bin/python scripts/verify_notebooks.py`.ob
 FiPy regression gate: `scripts/capture_regression.py` + `scripts/compare_runs.py results/solver-regression/before <new>` must print `21 files compared, 0 differ`.
 Geography: `python -m pravah geo fetch --config configs/belauri_geo.json` (network; Overpass main endpoint is flaky, a mirror fallback is built in) then `geo prepare` (offline).
 Scientific runs go through `.research/bin/research run exec EXP-… -- <cmd>` (register the experiment first; synthesise before the 5-run budget).
@@ -72,6 +72,42 @@ the human to open the project in VS Code with the Research Panel extension, or t
 - Never rewrite history; supersede findings/decisions instead
 - Large outputs stay where produced; just register paths
 - Exit code 3 means a policy blocked you: read the hint, don't work around it
+
+### Scientific practice
+- Read context in layers (`research current` → `task context` → `show <ID>`) and stop when you have enough. Search prior
+  findings and docs before repeating work.
+- Keep intent, implementation, observation, interpretation and supported conclusions distinct. Label findings
+  preliminary, supported, contradicted or superseded.
+- Approved experiment specs and evaluation criteria are binding. Never tune on held-out test results; never loosen a
+  check or tolerance just to pass. Quote numbers from run/metric records, not memory.
+- Bind every number in a finding to its record (`research evidence bind F-… --run RUN-… --metric NAME`, then `research evidence verify F-…`).
+  A mismatch blocks `supported`; correct it by superseding the binding, never by explanation. Verified numbers are not a reviewed interpretation.
+- Preserve the user's files, data, notebooks and unsaved work. Project-specific numerical/scientific rules belong in the
+  user-authored part of this file, outside the markers.
+- Unfamiliar with the science? Read `docs/SCIENTIST_GUIDE.md` (`research skill show scientist-guide`). After synthesizing
+  an experiment, refresh it or leave it marked pending: `research guide status`. Hand-offs: `research skill show scientific-handoff`.
+
+### Remote execution (optional; only when `hpc.clusters` is configured)
+- `research hpc doctor` first: it says whether SSH/Slurm works and which modes are usable. Never `ssh` by hand —
+  the `research hpc` commands enforce the approved paths, resource limits and provenance.
+- `research hpc submit EXP-001 --cluster NAME --dry-run`, then `--yes`. Submission is expensive: never submit twice.
+- If a submission is reported uncertain, run `research hpc sync` — it adopts a job that is already queued. Do not resubmit.
+- No direct execution available, or a human will run it? `research hpc bundle EXP-001` → they run it → `research hpc import <archive>`.
+- `research hpc sync` before proposing more runs: it reconciles finished jobs, imports results and lists what now
+  needs interpretation. Register the complete outcome (metrics, artifacts, failures) before drawing conclusions.
+- Datasets live on the cluster; the filesystem is the source of truth (`research hpc datasets list|check`). Never
+  re-download something that verifies, and never assume an undescribed directory is valid.
+- Slurm keeps running while the laptop is off; agents do not. Nothing is interpreted until someone runs sync.
+
+### Context hand-off and upgrades
+- A complete hand-off (new session, another model, a human): `research report --full --check`. It is a deterministic
+  dump of the records — **not** a synthesis. It interprets nothing; don't quote it as if it concluded something.
+- Before migrating a project: `research upgrade --dry-run`, and `research agents-md --diff` to review the managed
+  block. Everything outside the two marker comments below is the project's — never rewrite it.
+
+### Tiered agents (optional)
+If `orchestration.enabled`: Opus = science/synthesis/guide, Sonnet = contracts + tests + review, Haiku = frozen-test
+implementation. `research orchestrate route T-001`; protocol: `research skill show engineering-loop`. Never edit frozen tests.
 
 ### Recording work
 ```bash
