@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2725 tokens.
-> Generated 2026-10-12T11:19:56-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2720 tokens.
+> Generated 2026-10-12T15:17:38-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `0e2df45ba5` (uncommitted changes)
+Git: `master` @ `3eadfabbd6`
 
 ## Latest checkpoint
 
@@ -94,7 +94,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Project skills
 
-- 8 more skills: `research skills list`, load one with `research skill show NAME`
+- 9 more skills: `research skills list`, load one with `research skill show NAME`
 
 ## Agent policy
 

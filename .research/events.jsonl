@@ -627,3 +627,7 @@
 {"action": "created", "author_name": "claude-code", "author_type": "agent", "entity_id": "CP-006", "entity_type": "checkpoint", "summary": "Checkpoint Laptop side closed; waiting on HPC job", "ts": "2026-10-11T15:36:41-04:00"}
 {"action": "upgraded", "author_name": "claude-code", "author_type": "agent", "entity_id": null, "entity_type": "project", "summary": "Upgraded to research 0.4.0; 8 step(s) applied", "ts": "2026-10-12T11:19:11-04:00"}
 {"action": "upgraded", "author_name": "claude-code", "author_type": "agent", "entity_id": null, "entity_type": "project", "summary": "Upgraded to research 0.5.0; 2 step(s) applied", "ts": "2026-10-12T15:15:22-04:00"}
+{"action": "hpc_init", "author_name": null, "author_type": "human", "entity_id": null, "entity_type": "project", "summary": "remote workspace ready on duke: /home/yb107/research-os/projects/pravah", "ts": "2026-10-12T15:19:03-04:00"}
+{"action": "hpc_init", "author_name": "claude-code", "author_type": "agent", "entity_id": null, "entity_type": "project", "summary": "remote workspace ready on duke: /home/yb107/research-os/projects/pravah", "ts": "2026-10-12T15:28:59-04:00"}
+{"action": "upgraded", "author_name": "claude-code", "author_type": "agent", "entity_id": null, "entity_type": "project", "summary": "Upgraded to research 0.5.0; 1 step(s) applied", "ts": "2026-10-12T15:34:40-04:00"}
+{"action": "upgraded", "author_name": "claude-code", "author_type": "agent", "entity_id": null, "entity_type": "project", "summary": "Upgraded to research 0.5.0; 2 step(s) applied", "ts": "2026-10-12T15:36:25-04:00"}
