@@ -62,10 +62,30 @@ ssh plp-drcc-login2 'bash -lc "sacct -j <JOBID> --format=JobID,State,ExitCode,El
 .research/bin/research hpc cancel RUN-0055         # safe cancel through Research OS
 ```
 
-Checkpoints/resume: stage 2 resumes from `results/phase3-convergence/stage2_work`; a finished phase of
-`hpc_run.py` is skipped when its done-marker exists and its phase-config hash is unchanged. **That hash
-covers configuration but not code**, so never reuse a checkpoint across a code revision without
-checking it yourself.
+#### Checkpoints and resume — read before reusing any work directory
+
+Stage 2 resumes from `results/phase3-convergence/stage2_work`; a finished phase of `hpc_run.py` is
+skipped when its done-marker exists and its phase-config hash is unchanged.
+
+**Both guards hash configuration but not code.** Verified in the source: `hpc_run.phase_hash` hashes
+the phase dict plus any `*.json` named in argv, and `convergence_stage2.py` compares
+`work/config_hash.txt` against `config_hash(cfg)`. `git_info()` is *recorded* in the manifest but is
+not part of either key. So changing the solver, the objective or the metric code and resubmitting will
+**silently reuse stale checkpoints and cached response bases**, producing a mixture of two code
+revisions in one result with nothing in the output to show it.
+
+Rules for a resume:
+
+1. Only resume into a work directory produced by the **same commit**. Check it:
+   `research run show <RUN>` prints the commit each run used.
+2. If the commit differs in anything that touches the forward solve, the inverse, the objective or the
+   metrics, use a **new** `--out`/`--work` (or delete the old one) — do not resume.
+3. A resubmission through `research hpc submit` creates a fresh run directory, so it starts clean by
+   construction. Resume only happens when you deliberately point at an existing `--work`.
+4. `ResponseCache` keys hash the scenario, solver options, schema and package version, so bases do not
+   collide across mesh/dt/wind/sources. They do **not** hash your code either: the same rule applies.
+5. A crashed writer can leave a truncated `.npz`. If a resume fails with a zip/EOF error, delete that
+   one file (its key is in the traceback) and rerun.
 
 ### After it completes
 
