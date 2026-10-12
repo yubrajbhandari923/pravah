@@ -6,35 +6,128 @@ winds and noise; the population fixtures are synthetic). Nothing here is empiric
 first; this document does not repeat them. Numbers below come from the files named next to them; "derived" means arithmetic on a measured number, not a
 measurement. Commands were checked against `--help` or the argparse code; none was executed for this document.
 
-## How to run on the cluster (one job)
+## How to run on the cluster — use Research OS (verified 2026-10-12)
 
-The code is CPU-only (FiPy/NumPy); GPUs are not used, do not request them. The whole heavy Phase 3 set runs as ONE Slurm job (`squeue` shows one
-job): `scripts/hpc_run.py` runs the phases of `configs/hpc_phase3.json` strictly in sequence (preflight, stage-2 `--estimate`, stage-2 production,
-Belauri population design if `scripts/population_belauri.py` exists, else that phase is skipped with a message); the parallelism is a Python process pool
-inside each phase (BLAS threads = 1). Nothing here was run under Slurm; the Python side was tested locally (`tests/test_hpc_run.py`, smoke config).
+**This is the authoritative path. The hand-rolled `sbatch slurm/phase3.sbatch` route described in
+earlier versions of this section is superseded** — it is kept only as a fallback for a cluster with no
+SSH access. Research OS owns SSH, bundling, submission, provenance and retrieval; `scripts/hpc_run.py`
+remains the *inner* phase orchestrator and composes as the submitted command. Do not build a second
+orchestration system, and never `ssh` to the cluster to do research work by hand.
+
+The code is **CPU-only** (FiPy/NumPy). Do not request GPUs: there is no GPU code path, and adding one
+would be a solver rewrite that breaks the regression gate (see D-005) and confounds EXP-015.
+
+### Before submitting
+
+```bash
+.research/bin/research hpc doctor                 # ssh, slurm, python, paths; every failure prints its fix
+.research/bin/research current                    # Research OS state: findings, blockers, what needs synthesis
+.research/bin/research hpc clusters               # configured destinations
+.research/bin/research hpc inspect                # what is actually on the cluster (code, runs, datasets)
+.research/bin/research hpc datasets list          # the filesystem is the source of truth; no registry
+.research/bin/research hpc datasets check belauri-geography --deep   # verify checksums before trusting it
+.research/bin/research hpc submit EXP-015 --dry-run -- <cmd>         # prints the reservation, sends nothing
 ```
-# once: copy the repo (git clone or rsync) + data/belauri/raw (section 1.3), then
-bash slurm/setup_env.sh                      # venv, locked deps, 125 m level (safe to repeat; never overwrites data/belauri/manifest.json)
-edit slurm/phase3.sbatch                     # job name, partition, account, mem, module line; --time 24:00:00; --cpus-per-task 64..128
-sbatch slurm/phase3.sbatch                   # CPUS up to 128 on one node: sbatch --cpus-per-task=128 slurm/phase3.sbatch
-python scripts/hpc_run.py --config configs/hpc_phase3.json --dry-run     # prints the plan, runs nothing
+
+**The reservation needs the user's explicit approval every time.** Slurm bills what a job *reserves*,
+not what it uses. Show them the CPUs / GPUs / memory / wall-time block from `--dry-run` and wait for a
+clear yes before re-running with `--yes`. Never raise cpus/mem/time on your own initiative.
+
+### Submitting
+
+Datasets live in the cluster's shared data directory, not in the bundle, so wrap the command to link
+them into the paths the frozen configs expect:
+
+```bash
+.research/bin/research hpc submit EXP-015 --cluster duke --yes \
+    --cpus 12 --mem 48G --time 08:00:00 \
+    -- bash scripts/hpc_link_datasets.sh \
+       python scripts/convergence_stage2.py --config configs/convergence_stage2.json \
+              --out results/phase3-convergence --workers 12
 ```
-Resume after a time limit or failure: resubmit the same job; a finished phase (done marker present and phase-config hash unchanged) is skipped, and stage 2
-resumes from `results/phase3-convergence/stage2_work`. `--only NAME` runs one phase; `--max-workers N` caps the pool. Logs: `results/hpc_logs/<phase>.log`.
-Stage 2 option `stage2.replicates_on_reference: true` (default false; pre-register it as an EXP-015 variant first, section 5) also selects the replicate layouts on
-the reference mesh and writes `replicate_baseline_refmesh.csv`; it is not set in `configs/convergence_stage2.json` (it would change the config hash).
+
+**Useful parallelism is bounded by independent units, not by cores.** Stage 2 has 12
+(4 mesh configs + 8 replicates; the cluster reports `total_independent_units`), so workers beyond ~12
+sit idle. EXP-016 has 36 (6 fixtures x 6 draws, ~2 GB RSS each) and does profit from 36+. This site
+also rounds requests up (1 CPU requested -> 2 allocated).
+
+### While it runs
+
+```bash
+.research/bin/research hpc status RUN-0055         # slurm state, exit code, remote dirs
+.research/bin/research run list | head             # all runs, newest first
+ssh plp-drcc-login2 'bash -lc "squeue -u $USER"'   # note: bash -lc, or slurm is not on PATH
+ssh plp-drcc-login2 'bash -lc "tail -40 /home/yb107/research-os/projects/pravah/runs/RUN-0055/stdout.log"'
+ssh plp-drcc-login2 'bash -lc "sacct -j <JOBID> --format=JobID,State,ExitCode,Elapsed,AllocCPUS,ReqMem,MaxRSS,NodeList"'
+.research/bin/research hpc cancel RUN-0055         # safe cancel through Research OS
+```
+
+Checkpoints/resume: stage 2 resumes from `results/phase3-convergence/stage2_work`; a finished phase of
+`hpc_run.py` is skipped when its done-marker exists and its phase-config hash is unchanged. **That hash
+covers configuration but not code**, so never reuse a checkpoint across a code revision without
+checking it yourself.
+
+### After it completes
+
+```bash
+.research/bin/research hpc sync                    # reconcile, import results, list what needs interpretation
+.research/bin/research run show RUN-0055           # provenance: job id, commit, artifacts, upload_verified
+ls .research/runs/RUN-0055/collected/              # retrieved outputs and logs
+```
+
+Large artifacts stay on the cluster by design: `hpc.collect.max_artifact_bytes` is 256 MB, and anything
+larger is recorded by remote path, size and sha256 instead of being downloaded. Raise it only after
+asking the user.
+
+### Recovering from failure
+
+Failures are recorded on the run (`research hpc status`, `research run show`) and in the cluster's
+`runs/<RUN>/stdout.log` / `stderr.log`. To tell infrastructure from model failure: an infrastructure
+failure usually fails before the science starts (missing dataset, import error, no venv) and leaves
+`PREFLIGHT_*` or a traceback in the first lines; a model failure runs and then produces wrong or
+non-converged numbers. A submission reported uncertain is **not** proof it failed — run
+`research hpc sync`, which adopts a job already queued from the remote receipt. Do not resubmit.
+Resubmitting creates a *new* run record and never overwrites registered evidence.
+
+### Environment on the cluster (one-off, idempotent)
+
+The venv lives at `<project>/env/venv`, deliberately **outside** the per-run bundle: each submit
+uploads a fresh immutable `source/` tree, so a venv inside one would be discarded.
+
+```bash
+.research/bin/research hpc submit EXP-025 --cluster duke --yes --cpus 4 --mem 8G --time 01:00:00 \
+    -- bash scripts/hpc_preflight_env.sh          # builds or reuses it, prints versions
+```
+
+Verified on 2026-10-12: Python 3.12.12, numpy 2.5.3, scipy 1.18.1, FiPy 4.0.3, full geo stack,
+`pravah` imports, `ForwardSolver` available. There is **no python module** on this cluster
+(`module avail` has none); `uv` at `~/.local/bin/uv` is the supported route.
+
+### Regression gate on the cluster
+
+The gate is **architecture-scoped** (decision D-005). On x86_64 compare against
+`results/solver-regression-x86_64/before`; the arm64 baseline in `results/solver-regression/before` is
+for laptop work and differs here by floating-point reassociation only (largest difference in a physical
+quantity 5.0e-08 relative). Both must still print `21 files compared, 0 differ` against the baseline
+*for their own architecture*. Never loosen a tolerance to make this pass.
+
+```bash
+.research/bin/research hpc submit EXP-025 --cluster duke --yes --cpus 4 --mem 16G --time 02:00:00 \
+    -- bash scripts/hpc_link_datasets.sh bash scripts/hpc_preflight_prod.sh
+```
 
 ## How results come back
 
-No Research OS runs on the cluster. At the end the job writes `results/hpc_manifest.json` (per phase: argv, start/end, wall seconds, exit code, host, Slurm job id,
-CPU count, package versions, git commit + dirty flag + `git diff` sha256, config hashes, every output file with sha256 and size, work-dir sizes, peak child RSS)
-and `results/phase3-hpc-bundle.tar.gz` (+ `.sha256`; outputs and logs, without caches and `.npz` over 50 MB). Copy both to the laptop repo:
-```
-scp CLUSTER:<repo>/results/phase3-hpc-bundle.tar.gz CLUSTER:<repo>/results/hpc_manifest.json results/
-sha256sum -c results/phase3-hpc-bundle.tar.gz.sha256   # after copying the .sha256 too;  tar -xzf results/phase3-hpc-bundle.tar.gz
-```
-The laptop agent then registers the runs from the manifest with `research run attach EXP-015 ...` (one per phase; use the manifest's argv, times, exit code, commit
-and file hashes as the provenance). The manifest, not the cluster, is the record: the commit may be dirty on the cluster (check `git.dirty`/`diff_sha256`).
+Research OS brings them back: `research hpc sync` reads the remote receipt and `sacct`, imports status,
+metrics and artifacts, and records provenance on the run (job id, node, commit, bundle sha256,
+`upload_verified`). A job writes its artifacts under `$RESEARCH_RUN_DIR` (and lists them in that
+directory's `artifacts.jsonl`) — **output written anywhere else is invisible to collect**.
+
+For a cluster with no SSH access, the bundle fallback still applies:
+`research hpc bundle EXP-015 -- <cmd>` -> a human runs it -> `research hpc import <archive>`.
+`scripts/hpc_run.py` additionally writes `results/hpc_manifest.json` (per phase: argv, times, exit
+code, host, Slurm job id, package versions, git commit + dirty flag, output sha256s) which
+`research run attach` can consume. The manifest, not the cluster, is the record.
 
 ## 0. Rules that must not be broken
 
@@ -62,7 +155,7 @@ uv venv --python 3.12 .venv
 uv pip install -e ".[dev,geo]" -c requirements-lock-geo.txt
 # equivalent without uv:  python3.12 -m venv .venv && .venv/bin/pip install -e ".[dev,geo]" -c requirements-lock-geo.txt
 .venv/bin/pyright          # 0 errors expected
-.venv/bin/pytest -q        # 447 tests, about 13 min on the laptop; geo/real-data tests skip without data/belauri/manifest.json
+.venv/bin/pytest -q        # 585 tests, about 21 min on the laptop; geo/real-data tests skip without data/belauri/manifest.json
 ```
 The lock file `requirements-lock-geo.txt` pins the versions the results were produced with; do not upgrade. The laptop used 8 GB RAM. FiPy uses its default
 (SciPy) LU solver (`SolverOptions`, tolerance 1e-12); there is no MPI or PETSc path, so each solve is single-core. Set `OMP_NUM_THREADS=1`
@@ -75,9 +168,27 @@ the laptop checkout will both allocate the next number. Work on a branch, hand t
 `research sync` (and `research rebuild` if the database looks stale). I could not verify how Research OS resolves duplicate ids; avoid the situation.
 
 ### 1.3 Data to copy
+
+**Under the Research OS path the bundle excludes `data/`** (datasets belong in the cluster's shared
+data directory, not in a code snapshot), so the tracked geography does *not* travel with the job even
+though it is in git. It is staged once as a cluster dataset and linked in per run:
+
+```bash
+.research/bin/research hpc datasets list                              # check before staging anything
+.research/bin/research hpc datasets check belauri-geography --deep    # verify checksums
+# already staged (2026-10-12) at $SHARED/belauri-geography/files: manifest.json + processed/ (2.1 MB,
+# 500 m and 250 m levels), all 29 files sha256-verified against the laptop copy. Re-stage only if the
+# geography changes:
+.research/bin/research hpc datasets fetch belauri-geography --from-local <dir> --yes
+```
+
+`scripts/hpc_link_datasets.sh` symlinks it to `data/belauri` inside the run's source tree, so the
+frozen configs need no change. Prefix every production command with it. The 96 MB `data/belauri/raw`
+cache is deliberately **not** staged (scratch is 99% full) and is only needed to re-prepare a level.
+
 | Item | Tracked in git? | Needed for | Action |
 |---|---|---|---|
-| `data/belauri/manifest.json`, `data/belauri/processed/*.npy` (500 m and 250 m levels, 2.0 MB) | **yes** (comes with the clone) | everything Belauri | nothing |
+| `data/belauri/manifest.json`, `data/belauri/processed/*.npy` (500 m and 250 m levels, 2.0 MB) | **yes** (comes with the clone) | everything Belauri | staged as the `belauri-geography` cluster dataset; excluded from bundles |
 | `data/belauri/raw/` (96 MB: boundaries, OSM extracts, DEM window, fetch records, osmnx cache) | **no** (git-ignored) | only to re-prepare a geography level (125 m) | `rsync -a laptop:.../data/belauri/raw/ data/belauri/raw/`; do not re-fetch (Overpass is flaky and the OSM state would differ) |
 | `results/phase3-bench/geo125/` (8.5 MB, a 125 m level) | no (git-ignored) | stage 1 reruns, 125 m benchmarks, any 125 m work | copy, or regenerate (1.4) |
 | `results/geodesign/alpha_selected.json`, `noise_levels.csv` | yes | frozen alpha and noise scale for stage 2 | nothing |
@@ -106,12 +217,27 @@ suspect. Smoke test: `.venv/bin/python scripts/bench_resolution.py --cases 125:1
 `results/phase3-bench/resolution_cost.csv`; use `--out` to keep the committed CSV untouched, and expect 71 s, 0.38 GB).
 
 ### 1.5 Regression gate (run once after setting up, and after any code change)
+
+**The gate is architecture-scoped — decision D-005.** Compare against the baseline for the architecture
+you are on, or you will see 18 spurious differences:
+
 ```
+# on the cluster (x86_64)
 .venv/bin/python scripts/capture_regression.py --out results/solver-regression/hpc-check
+.venv/bin/python scripts/compare_runs.py results/solver-regression-x86_64/before results/solver-regression/hpc-check
+# on a laptop (arm64)
 .venv/bin/python scripts/compare_runs.py results/solver-regression/before results/solver-regression/hpc-check
-# required last line: 21 files compared, 0 differ
+# required last line either way: 21 files compared, 0 differ
 ```
-(commands from the scripts' `--help`; `before` is the committed capture.) Do not commit `hpc-check`.
+(commands from the scripts' `--help`.) Do not commit `hpc-check`.
+
+Cross-architecture bit-identity is **not** achievable: arm64/NEON and x86_64 OpenBLAS `DYNAMIC_ARCH`
+with AVX-512 reassociate floating-point sums differently. Evidence that this is architectural rather
+than a regression: two captures on one cluster node give `0 differ`; Intel Xeon 4310 and AMD EPYC 7513
+give bit-identical values to each other; and a local venv at the pinned numpy 2.5.3 reproduces
+`0 differ` on arm64. Largest difference in a physical quantity: 5.0e-08 relative. **Never loosen a
+tolerance to make this pass.** Report the ~5e-08 architectural floor as a limitation when cluster
+numbers are compared with laptop-computed Phase 1-3 numbers.
 
 ## 2. Cost model (sources)
 

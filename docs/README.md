@@ -18,7 +18,7 @@ Panel (`.research/bin/research current`), not here.
 | Geographic sensor design, robustness, exports | `geodesign.md` |
 | Run the geodesign pipeline on another municipality (what to supply, what is still Belauri-specific) | `transfer.md` |
 | What phase 2 established, what did not, known issues, requirement table | `phase2-validation.md` |
-| Move the repo to an HPC cluster and run the heavy Phase 3 experiments (set-up, order, EXP-015 stage 2, EXP-016 spec, registration, known gaps) | `hpc-runbook.md` |
+| Run on HPC: submit, monitor, retrieve, recover (Research OS path, verified) + set-up, order, EXP-015 stage 2, EXP-016 spec, registration, known gaps | `hpc-runbook.md` |
 | Population data sources (WorldPop, GHS-POP): units, CRS, licences, regrid caveats, how to plug a raster in | `population-data.md` |
 | Numerical verification and uncertainty methodology: definitions, scheme and convergence results, decision-stability metrics, interval wording | `numerical-methodology.md` |
 | Phase 3 findings, limitations, what is still open, Phase 4 recommendations | `phase3-findings.md` |

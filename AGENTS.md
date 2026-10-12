@@ -17,9 +17,10 @@ Do not read everything; do not re-derive what a finding or doc already states. F
 (`python -m pravah {simulate,inverse,benchmark,geo}`; `benchmark` dispatches on `cfg["experiment"]`). Configs in `configs/`, notebooks `01`–`06` in `notebooks/`.
 
 ### Commands
-Env: `uv venv --python 3.12 .venv && uv pip install -e ".[dev,geo]" -c requirements-lock-geo.txt`. Tests `.venv/bin/pytest -q` (447 tests, ~13 min; geo/real-data
+Env: `uv venv --python 3.12 .venv && uv pip install -e ".[dev,geo]" -c requirements-lock-geo.txt`. Tests `.venv/bin/pytest -q` (585 tests, ~21 min; geo/real-data
 tests skip without `data/belauri/manifest.json`). Types `.venv/bin/pyright` (0 errors expected). Notebooks `.venv/bin/python scripts/verify_notebooks.py`.ob
-FiPy regression gate: `scripts/capture_regression.py` + `scripts/compare_runs.py results/solver-regression/before <new>` must print `21 files compared, 0 differ`.
+FiPy regression gate: `scripts/capture_regression.py` + `scripts/compare_runs.py <baseline> <new>` must print `21 files compared, 0 differ`.
+The gate is **architecture-scoped** (D-005): baseline `results/solver-regression/before` on arm64 (laptop), `results/solver-regression-x86_64/before` on the x86_64 cluster. Comparing across architectures gives 18 spurious differences (reassociation only, <=5e-08 relative in any physical quantity); never loosen a tolerance for it.
 Geography: `python -m pravah geo fetch --config configs/belauri_geo.json` (network; Overpass main endpoint is flaky, a mirror fallback is built in) then `geo prepare` (offline).
 Scientific runs go through `.research/bin/research run exec EXP-… -- <cmd>` (register the experiment first; synthesise before the 5-run budget).
 
@@ -41,7 +42,7 @@ Scientific runs go through `.research/bin/research run exec EXP-… -- <cmd>` (r
 Done and reviewed: solver interface, external/local study, verified Belauri geography, Belauri forward runs, geographic design + robustness. Known limits: numerical diffusion
 dominates the nominal K (K_eff/K ≈ 2.4–9.4); small-budget sensor rankings are unresolved at 6 test scenarios; identifiability flags are saturated in the geodesign runs; test noise level
 was derived from the test ensemble (2.6% off the design value); no terrain-coupled flow. The G2 fixes (validation-scale test noise, chi2/dof, candidate flags) were applied in commit 0370f3e, but the geodesign results and their doc numbers have NOT been rerun with them.
-Phase 3 state and what to run on HPC: `docs/hpc-runbook.md`; also `docs/transfer.md`, `docs/numerical-methodology.md`, `docs/winds.md`, `docs/population-data.md`.
+HPC runs go through Research OS (`research hpc doctor|submit|status|sync`), NOT `sbatch slurm/phase3.sbatch` (superseded); the venv lives outside the bundle, artifacts must be written under `$RESEARCH_RUN_DIR`, datasets are staged on the cluster and linked by `scripts/hpc_link_datasets.sh`, and every reservation needs the user's explicit approval. Phase 3 state and what to run on HPC: `docs/hpc-runbook.md`; also `docs/transfer.md`, `docs/numerical-methodology.md`, `docs/winds.md`, `docs/population-data.md`.
 Best next experiment: add a chi-square-per-dof model check to the robustness study and rerun it with the noise level fixed from the validation scale.
 
 <!-- research:begin — managed by `research init`; edit outside these markers freely -->
