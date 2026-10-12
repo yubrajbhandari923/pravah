@@ -51,6 +51,18 @@ them into the paths the frozen configs expect:
 sit idle. EXP-016 has 36 (6 fixtures x 6 draws, ~2 GB RSS each) and does profit from 36+. This site
 also rounds requests up (1 CPU requested -> 2 allocated).
 
+Measured on this cluster (RUN-0057, RUN-0058, node004): one 250 m/dt 50 response basis = **308 s**,
+so a cluster core is about **2.2x slower than the M2 laptop** the runbook's section-2 table was
+measured on. Scale every estimate there accordingly. Per-case costs: 500 m/dt 100 ~50 s,
+500 m/dt 50 ~104 s, 250 m/dt 100 ~159 s, 250 m/dt 50 ~308 s. Stage 2 end to end took ~75 min at
+12 workers with peak RSS 0.56 GB.
+
+**Stage 2's last phase is single-process.** The pool covers only the mesh layout sets and the
+replicate ensembles; the test ensemble, tables and figures run sequentially in the main process
+afterwards (`run_parallel` fills `work/`, then the main process reads it). So the final ~31 min
+(6 reference test cases x ~308 s) uses **one** core while the other 11 sit idle. Reserving more than
+12 CPUs buys nothing, and even 12 are only busy for the first half of the run.
+
 ### While it runs
 
 ```bash
