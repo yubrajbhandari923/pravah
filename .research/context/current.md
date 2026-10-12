@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2720 tokens.
-> Generated 2026-10-12T15:17:38-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2759 tokens.
+> Generated 2026-10-12T15:51:13-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `3eadfabbd6`
+Git: `master` @ `853f390dab`
 
 ## Latest checkpoint
 
@@ -81,6 +81,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - EXP-020 EXP toy population design with exact selection and replicated settings (pre-registered) (0 unsynthesized runs)
 - EXP-021 EXP toy prescribed winds, converged reference domain and deflecting channel (pre-registered) (0 unsynthesized runs)
 - EXP-023 EXP toy wind-error controls from F-029 review (alpha, offset prior grid, model error, base wind) (pre-registered) (0 unsynthesized runs)
+- EXP-024 INFRA HPC round-trip smoke test (not a scientific experiment) (3 unsynthesized runs)
 
 ## Active decisions
 
@@ -91,6 +92,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 ## Blockers
 
 - [checkpoint] CP-006: EXP-015 stage 2 and Belauri-scale EXP-016 not run (need the PI's Slurm job); F-031/F-032/F-034 await non-author review
+- [run] RUN-0048: RUN-0048 (EXP-024) failed — not yet reviewed
 
 ## Project skills
 

@@ -1,0 +1,51 @@
+{
+  "checks": [
+    {
+      "actual": 5000050000,
+      "expected": 5000050000,
+      "name": "sum",
+      "ok": true
+    },
+    {
+      "actual": 333338333350000,
+      "expected": 333338333350000,
+      "name": "sum_squares",
+      "ok": true
+    }
+  ],
+  "execution": {
+    "cpu_count": 128,
+    "cwd": "/home/yb107/research-os/projects/pravah/code/EXP-024/RUN-0050/source",
+    "hostname": "node004",
+    "platform": "Linux-5.15.0-130-generic-x86_64-with-glibc2.29",
+    "python_executable": "/usr/bin/python3",
+    "python_version": "3.8.10",
+    "research": {
+      "RESEARCH_IN_JOB": "1",
+      "RESEARCH_RUN_DIR": "/home/yb107/research-os/projects/pravah/runs/RUN-0050",
+      "RESEARCH_RUN_ID": "RUN-0050"
+    },
+    "slurm": {
+      "SLURM_CPUS_PER_TASK": "1",
+      "SLURM_JOB_ACCOUNT": "railabs",
+      "SLURM_JOB_ID": "201811",
+      "SLURM_JOB_NAME": "EXP-024-RUN-0050",
+      "SLURM_JOB_NODELIST": "node004",
+      "SLURM_JOB_PARTITION": "defq",
+      "SLURM_MEM_PER_NODE": "2048",
+      "SLURM_SUBMIT_DIR": "/home/yb107/research-os/projects/pravah/code/EXP-024/RUN-0050"
+    }
+  },
+  "input": {
+    "n": 100000,
+    "path": "configs/hpc_smoke.json",
+    "sha256": "fd3012107d72705b804b97add0409f5409e979e1392fc61049cb53ad4e64e326"
+  },
+  "ok": true,
+  "schema": 1,
+  "timing": {
+    "finished_utc": "2026-10-12T19:49:44+00:00",
+    "started_utc": "2026-10-12T19:49:44+00:00",
+    "wall_seconds": 0.005
+  }
+}

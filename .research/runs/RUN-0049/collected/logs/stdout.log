@@ -1,0 +1,4 @@
+ok   sum: 5000050000 (expected 5000050000)
+ok   sum_squares: 333338333350000 (expected 333338333350000)
+host node004 job 201810 python 3.8.10 wall 0.01s
+wrote results/hpc-smoke/result.json

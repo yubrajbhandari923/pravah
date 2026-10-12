@@ -1,0 +1,9 @@
+{
+  "name": "hpc_smoke",
+  "notes": "Deterministic input for scripts/hpc_smoke.py. n=100000 so the expected sums are fixed and checkable by hand.",
+  "n": 100000,
+  "expected": {
+    "sum": 5000050000,
+    "sum_squares": 333338333350000
+  }
+}

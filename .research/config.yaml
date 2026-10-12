@@ -16,6 +16,26 @@ hpc:
     duke:
       project:
         slug: pravah
+  bundle:
+    # Added to the default exclude list. results/ is 2.1 GB of registered evidence and data/ holds the
+    # datasets: neither is source, and both belong on the cluster (shared_data) or nowhere near a bundle.
+    exclude:
+      - .git
+      - .research
+      - __pycache__
+      - '*.pyc'
+      - .venv
+      - venv
+      - node_modules
+      - .mypy_cache
+      - .pytest_cache
+      - .DS_Store
+      - '*.egg-info'
+      - .ipynb_checkpoints
+      - results
+      - data
+      - notebooks
+      - tools
 
 # ── Commonly adjusted settings (uncomment a line to override it) ──
 # agent_policy:
