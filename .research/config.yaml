@@ -32,10 +32,24 @@ hpc:
       - .DS_Store
       - '*.egg-info'
       - .ipynb_checkpoints
-      - results
+      # Not all of results/: scripts/compare_runs.py needs the 3.8 MB solver-regression baseline on the
+      # cluster to run the FiPy regression gate there. Only the heavy evidence dirs are excluded.
+      - results/phase3-*
+      - results/geodesign-robust
+      - results/belauri-forward
+      - results/transboundary-rerun
+      # NOT results/geodesign itself: EXP-015 stage 2 reads its frozen alpha_selected.json and
+      # noise_levels.csv (4.6 KB together). Only its two 29 MB raw ensembles are dropped.
+      - results/geodesign/validation_raw.csv
+      - results/geodesign/test_raw.csv
       - data
       - notebooks
       - tools
+  collect:
+    # User instruction (2026-10-12): do not pull big datasets off the cluster — only analysed results.
+    # Anything larger stays on the cluster and is recorded by remote path + size + sha256, so a big
+    # .npz field dump is never silently downloaded. Raise it only after checking with the user.
+    max_artifact_bytes: 268435456   # 256 MB per artifact
 
 # ── Commonly adjusted settings (uncomment a line to override it) ──
 # agent_policy:

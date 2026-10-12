@@ -1,0 +1,28 @@
+{
+  "min_concentration": 0.0,
+  "n_negative": 0,
+  "n_steps": 240,
+  "max_abs_budget_residual": 1.6167759895324707e-06,
+  "max_rel_budget_residual": 1.633107060133809e-14,
+  "backend": {
+    "name": "fipy",
+    "version": "fipy 4.0.3; pravah 0.1.0",
+    "settings": {
+      "convection": null,
+      "tolerance": null
+    },
+    "capabilities": {
+      "linear": true,
+      "budget": true,
+      "boundary_bases": true,
+      "wind_field": true
+    }
+  },
+  "total_emission": 4752000000.0,
+  "total_removal": 886759921.1791673,
+  "total_inflow": -1148608.0614815718,
+  "total_outflow": 2170872983.0038166,
+  "status": "ok",
+  "runtime_s": 3.7475808411836624,
+  "max_concentration": 0.16076671122515926
+}

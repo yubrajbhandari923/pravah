@@ -1,0 +1,6 @@
+{
+  "extends": "/home/yb107/research-os/projects/pravah/code/EXP-025/RUN-0053/source/configs/smoke_mismatch.json",
+  "mismatch": {
+    "layouts_from": "/home/yb107/research-os/projects/pravah/runs/RUN-0053/selfcheck/capA/smoke"
+  }
+}

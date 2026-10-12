@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2759 tokens.
-> Generated 2026-10-12T15:51:13-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2908 tokens.
+> Generated 2026-10-12T18:02:39-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `853f390dab`
+Git: `master` @ `ebc0e1963c` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -53,6 +53,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Current experiments
 
+- EXP-025 [needs_review] INFRA cluster environment build and production preflight (not a scientific experiment) — runs 3, ⚠ 3 unsynthesized
 - EXP-023 [needs_review] EXP toy wind-error controls from F-029 review (alpha, offset prior grid, model error, base wind) (pre-registered) — runs 12
 - EXP-021 [needs_review] EXP toy prescribed winds, converged reference domain and deflecting channel (pre-registered) — runs 1
 - EXP-020 [needs_review] EXP toy population design with exact selection and replicated settings (pre-registered) — runs 1
@@ -81,10 +82,11 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - EXP-020 EXP toy population design with exact selection and replicated settings (pre-registered) (0 unsynthesized runs)
 - EXP-021 EXP toy prescribed winds, converged reference domain and deflecting channel (pre-registered) (0 unsynthesized runs)
 - EXP-023 EXP toy wind-error controls from F-029 review (alpha, offset prior grid, model error, base wind) (pre-registered) (0 unsynthesized runs)
-- EXP-024 INFRA HPC round-trip smoke test (not a scientific experiment) (3 unsynthesized runs)
+- EXP-025 INFRA cluster environment build and production preflight (not a scientific experiment) (3 unsynthesized runs)
 
 ## Active decisions
 
+- D-005 (2026-10-12) FiPy regression gate is architecture-scoped: the 21 files / 0 differ requirement is binding WITHIN an architecture; the x86_64 cluster gets its own committed baseline and the arm64 baseline stays authoritative for laptop work. Cross-architecture bit-identity is not achievable and is not required. No tolerance was loosened.
 - D-004 (2026-10-11) Phase 3 baseline and deferrals
 - D-003 (2026-10-10) Phase 2 baseline: solver interface (results/solver-regression), external/local study (results/transboundary-rerun), verified Belauri geography (data/belauri/manifest.json, results/geography), Belauri forward (results/belauri-forward), geographic design and robustness (results/geodesign, results/geodesign-robust) — all synthetic emissions/meteorology; v0 baseline D-002 stands
 - D-002 (2026-10-10) Baseline v0: results/reference-v0 + results/inverse-v0 (configs/reference.json); comparison evidence is results/alpha-selection, results/benchmark-final, results/mismatch-final (alpha=0.1 frozen on validation, fresh test seeds 33/7000). results/benchmark, benchmark-unregularized, mismatch are exploratory and superseded.
@@ -92,7 +94,8 @@ EXP-002 — EXP inverse recovery (frozen reference)
 ## Blockers
 
 - [checkpoint] CP-006: EXP-015 stage 2 and Belauri-scale EXP-016 not run (need the PI's Slurm job); F-031/F-032/F-034 await non-author review
-- [run] RUN-0048: RUN-0048 (EXP-024) failed — not yet reviewed
+- [run] RUN-0053: RUN-0053 (EXP-025) failed — not yet reviewed
+- [run] RUN-0052: RUN-0052 (EXP-025) failed — not yet reviewed
 
 ## Project skills
 

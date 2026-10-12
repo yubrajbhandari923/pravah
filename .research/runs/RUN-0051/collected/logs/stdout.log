@@ -1,0 +1,14 @@
+host node004 job 201812 cpus 4 src /home/yb107/research-os/projects/pravah/code/EXP-025/RUN-0051/source
+building venv at /home/yb107/research-os/projects/pravah/env/venv
+=== versions ===
+python 3.12.12
+numpy 2.5.3
+scipy 1.18.1
+fipy 4.0.3
+pravah 0.1.0
+rasterio 1.5.2
+pyproj 3.8.0
+shapely 2.2.0
+=== solver smoke (FiPy must actually solve) ===
+ForwardSolver import ok <class 'pravah.forward.ForwardSolver'>
+PREFLIGHT_ENV_OK

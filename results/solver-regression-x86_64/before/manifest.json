@@ -1,0 +1,126 @@
+{
+  "git_revision": "",
+  "jobs": [
+    {
+      "job": "simulate",
+      "cmd": [
+        "/home/yb107/research-os/projects/pravah/env/venv/bin/python",
+        "-m",
+        "pravah",
+        "simulate",
+        "--config",
+        "configs/reference.json",
+        "--out",
+        "/home/yb107/research-os/projects/pravah/runs/RUN-0053/selfcheck/capA/simulate"
+      ],
+      "returncode": 0,
+      "wall_s": 7.443212009966373,
+      "stdout_tail": "simulate: 240 steps, 3.7 s, max budget residual 1.63e-14, 0 negative cells -> /home/yb107/research-os/projects/pravah/runs/RUN-0053/selfcheck/capA/simulate\n",
+      "stderr_tail": ""
+    },
+    {
+      "job": "inverse",
+      "cmd": [
+        "/home/yb107/research-os/projects/pravah/env/venv/bin/python",
+        "-m",
+        "pravah",
+        "inverse",
+        "--config",
+        "configs/reference.json",
+        "--direct",
+        "--out",
+        "/home/yb107/research-os/projects/pravah/runs/RUN-0053/selfcheck/capA/inverse"
+      ],
+      "returncode": 0,
+      "wall_s": 117.17373290657997,
+      "stdout_tail": "inverse: q_hat=[97531.0, 146718.0, 78807.0] true=[100000.0, 150000.0, 80000.0] rank=3 cond=5.62 regional_rmse=0.000969 -> /home/yb107/research-os/projects/pravah/runs/RUN-0053/selfcheck/capA/inverse\n",
+      "stderr_tail": ""
+    },
+    {
+      "job": "smoke",
+      "cmd": [
+        "/home/yb107/research-os/projects/pravah/env/venv/bin/python",
+        "-m",
+        "pravah",
+        "benchmark",
+        "--config",
+        "configs/smoke.json",
+        "--out",
+        "/home/yb107/research-os/projects/pravah/runs/RUN-0053/selfcheck/capA/smoke"
+      ],
+      "returncode": 0,
+      "wall_s": 19.232982896268368,
+      "stdout_tail": "building 2 design + 2 test cases\ngreedy selection (design cases only)\nevaluating on test cases (uniform metric)\nevaluating on test cases (population metric)\nbenchmark written to /home/yb107/research-os/projects/pravah/runs/RUN-0053/selfcheck/capA/smoke\n",
+      "stderr_tail": ""
+    },
+    {
+      "job": "smoke-alpha",
+      "cmd": [
+        "/home/yb107/research-os/projects/pravah/env/venv/bin/python",
+        "-m",
+        "pravah",
+        "benchmark",
+        "--config",
+        "configs/smoke_alpha_selection.json",
+        "--out",
+        "/home/yb107/research-os/projects/pravah/runs/RUN-0053/selfcheck/capA/smoke-alpha"
+      ],
+      "returncode": 0,
+      "wall_s": 10.20132303237915,
+      "stdout_tail": "building 2 validation cases\nalpha = 0\nalpha = 1\nalpha = 100\nselected alpha = 1 (criterion 0.01377)\nalpha_selection written to /home/yb107/research-os/projects/pravah/runs/RUN-0053/selfcheck/capA/smoke-alpha\n",
+      "stderr_tail": ""
+    },
+    {
+      "job": "smoke-mismatch",
+      "cmd": [
+        "/home/yb107/research-os/projects/pravah/env/venv/bin/python",
+        "-m",
+        "pravah",
+        "benchmark",
+        "--config",
+        "/home/yb107/research-os/projects/pravah/runs/RUN-0053/selfcheck/capA/smoke_mismatch.local.json",
+        "--out",
+        "/home/yb107/research-os/projects/pravah/runs/RUN-0053/selfcheck/capA/smoke-mismatch"
+      ],
+      "returncode": 0,
+      "wall_s": 17.81902562826872,
+      "stdout_tail": "condition matched\ncondition refined_truth\ncondition wind_perturbed\ncondition extra_source\nmismatch written to /home/yb107/research-os/projects/pravah/runs/RUN-0053/selfcheck/capA/smoke-mismatch\n",
+      "stderr_tail": ""
+    }
+  ],
+  "file_sha256": {
+    "inverse/inverse_metrics.json": "bc26402235df6e7863182df50c58e321b3b8c0ee7e85aca98f07b28b363b1e53",
+    "inverse/provenance.json": "2cb428dd48f28017e1697151162b2f28323ad7a94adcb6ccc6a72b620387f3e2",
+    "simulate/budget.nc": "46b8608b56685f1ed88cf9f83da7dbefcb95869587290fb84f3ada0a9ca8ec2a",
+    "simulate/concentration.nc": "4e0b9f639bd7347b3bf14b51a396e1d314a3b66db4c37a3a1a6b0c317a4edf9b",
+    "simulate/metrics.json": "4d2a308b0e7849977f9f18529d54bce042d8193e0a0c7b794c06a54518bd7fb0",
+    "simulate/provenance.json": "0c290e0415f4e8dc20c86761c5d9c793d4c3dcc5f00f710a1f1c527f229042ba",
+    "smoke/config.json": "9478daf797553ac9d351f8059170eaad0a1a9b389da042db16e120053fdee89e",
+    "smoke/design_scores.csv": "70ecdd4ae306f51bc74ed924953537292fda3cfb325572047dd87cba6f5ebaf9",
+    "smoke/layouts.json": "9a6a90566b13d7307d78a70403c2d48a45011afa817e6f22fc15b940c65a894e",
+    "smoke/paired_comparisons.csv": "7e47582a66b62e719a687f2bb88891337732d29a01e266045e8c7a139c108ac4",
+    "smoke/provenance.json": "e2cf24d7a3f3dfb936b8b53ab147f3f69f7bc3884cf42533c976a5f98f895f7b",
+    "smoke/raw_metrics.csv": "75c2dc01d6abca5adf354cc8be0f07cf21fe8cdf8c6151077942074cd28d1cbe",
+    "smoke/summary.csv": "fdaeab2d6ec617b578a5d88edf8ffff76bd97da8fda04241d077e3cf9423f9be",
+    "smoke/summary.json": "beb5091baed76bb813d33602c85e579db4d22efb2e7afbe7e9977d939e8a1ea3",
+    "smoke/timings.json": "33e05372d440939187f51c29e36357bfcc179fad74923a9594d40a5af72b08d6",
+    "smoke-alpha/alpha_selected.json": "b29c79ce234233d04b0520ff331decfbe4cabff16030d9bdbf7081f0849afd96",
+    "smoke-alpha/config.json": "3eb0e786b2141eeb3e272794f95ffe3f681f0439023f804f4b9ceaec827763ae",
+    "smoke-alpha/layouts.json": "ff575c5af7b7490dc2645909e1c676188de2a8aa16eb74cd523e3f7ce29020ce",
+    "smoke-alpha/provenance.json": "663a037c6c34f67c93409a04278f6aef4229d85e7a402cfff06c3ec23c003afb",
+    "smoke-alpha/timings.json": "bd2778a24bc540a68227ee0b180fc6a5ec3733f66a47405bd24ec14fd6e68952",
+    "smoke-alpha/validation_raw.csv": "55a04b3aeb0281704580ee10afd5ff346952ba4d3dcc7ee9ec31ecbe5a7fada6",
+    "smoke-mismatch/config.json": "641dc0b3f529320fbd955a7e33c65aa5d909f963408f7b5bff303e9656b4f635",
+    "smoke-mismatch/layouts.json": "05dab2113effb016c498466c00d7c7c94936f724937760839d9530b631d72b8f",
+    "smoke-mismatch/paired_mismatch.csv": "1c89d7116ae8a2ba793fa7bb2160d70b592b9f313c5c22a5d97639421a0a3c98",
+    "smoke-mismatch/paired_mismatch_rows.csv": "2aedf40695498c7ec192f9f22f72d67677aa26c26fa4e2a4f3e05cee31b13482",
+    "smoke-mismatch/poor_layout_diagnostics.csv": "ee2c02192385bf71b41c1e30c042055b951470426ec985255dd670eeca005e10",
+    "smoke-mismatch/poor_layout_paired.csv": "eca8897800f2202889a417df3fe408595d0f43ebb508c03529986f18fd9a3baa",
+    "smoke-mismatch/provenance.json": "e4d4c54bd1226fec2287eeeeda417db27fdcf04943480569432f9cef6e34fea5",
+    "smoke-mismatch/raw_metrics.csv": "e58b250e845a296bed8de886048af413f85081a2485c6ef1668330d6ec68a5c1",
+    "smoke-mismatch/summary.csv": "f3b9888ffe8675de23fc5669a6d9dce24b0f2d5c20c4c797f9e20bbc45b80b03",
+    "smoke-mismatch/summary.json": "2716c1be63ff89f4f602180946ab90df899d3dc8322f4410295b6ac1271f884a",
+    "smoke-mismatch/timings.json": "5bc7d146e8a65fd071cfb764c1bbd83d829c421061c4dd1c65d0f6d88b444010",
+    "smoke_mismatch.local.json": "a021c223648b977e9c4d2f9f970cc00098b979765f331c9f4bd32d217e51cb04"
+  }
+}

@@ -1,0 +1,13 @@
+host node004 job 201814
+model name	: AMD EPYC 7513 32-Core Processor
+=== capture A ===
+=== capture B ===
+
+=== A vs B on the same node (must be: 21 files compared, 0 differ) ===
+21 files compared, 0 differ
+SELFCHECK_DETERMINISTIC_OK
+
+=== for the record: this architecture vs the committed arm64 baseline ===
+21 files compared, 18 differ
+  inverse/inverse_metrics.json ['/direct/fit_sensor_rmse: 0.000921399888719901 != 0.0009213998644646732', '/direct/heldout_sensor_rmse: 0.00043335546069423484 != 0.0004333554822003457', '/direct/q_hat[0]: 97530.66494926854 != 97530.66482059578']
+  simulate/budget.nc ['variable removal differs', 'variable inflow differs', 'variable outflow differs']
