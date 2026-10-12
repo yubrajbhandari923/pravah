@@ -27,15 +27,20 @@ print(json.dumps({'python': sys.version.split()[0], 'numpy': numpy.__version__,
 
 echo
 echo "=== 2. FiPy regression gate (must print: 21 files compared, 0 differ) ==="
-if [ -d results/solver-regression/before ]; then
+# D-005: the gate is architecture-scoped. On x86_64 compare against the cluster baseline; the arm64
+# baseline in results/solver-regression/before is for laptop work and differs here by reassociation only.
+BASE=results/solver-regression-x86_64/before
+[ "$(uname -m)" = x86_64 ] && [ -d "$BASE" ] || BASE=results/solver-regression/before
+echo "baseline: $BASE ($(uname -m))"
+if [ -d "$BASE" ]; then
   "$PY" scripts/capture_regression.py --out "$OUT/regression-cluster" > "$OUT/regression-capture.log" 2>&1 \
-    && "$PY" scripts/compare_runs.py results/solver-regression/before "$OUT/regression-cluster" \
+    && "$PY" scripts/compare_runs.py "$BASE" "$OUT/regression-cluster" \
          2>&1 | tee "$OUT/regression-compare.log" \
     || { echo "regression gate FAILED (see logs)"; rc=1; }
   grep -q "21 files compared, 0 differ" "$OUT/regression-compare.log" 2>/dev/null \
     && echo "REGRESSION_GATE_OK" || { echo "REGRESSION_GATE_DIFFERS — do NOT loosen tolerances; investigate"; rc=1; }
 else
-  echo "baseline results/solver-regression/before missing from the bundle" >&2; rc=1
+  echo "baseline $BASE missing from the bundle" >&2; rc=1
 fi
 
 echo
