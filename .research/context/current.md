@@ -1,20 +1,26 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2624 tokens.
-> Generated 2026-10-12T23:11:13-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2839 tokens.
+> Generated 2026-10-12T23:12:19-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `a48df0af4f` (uncommitted changes)
+Git: `master` @ `761c9c23f8`
 
 ## Latest checkpoint
 
-**CP-006** Laptop side closed; waiting on HPC job (2026-10-11)
-- **Understanding:** Unchanged from CP-005 (toy-scale Phase 3, all synthetic). Since then: EXP-022 (F-032) and EXP-023 (F-034) synthesized; real inputs recorded (WorldPop CC BY with sha256; ERA5 2023 10 m wind with DOI, sha256, licence). Gate: 581 tests pass, pyright 0 errors, FiPy regression 21 files / 0 differ.
-- **Current problem:** EXP-015 stage 2 and Belauri-scale EXP-016 not run (need the PI's Slurm job); F-031/F-032/F-034 await non-author review
-- **Next step:** PI runs slurm/phase3.sbatch per docs/hpc-runbook.md; then T-034..T-036, T-038
+**CP-007** Checkpoint — 2026-10-12 (2026-10-12)
+- **Understanding:** - Solver routing refactor preserves every deterministic FiPy output bit-for-bit (F-009, supported)
+  - FINAL: hidden wind error and unmodelled source dominate discretisation mismatch; poor layout unidentifiable (F-007, supported)
+  - FINAL: greedy layouts beat spread/random on fresh test scenarios with alpha frozen on validation (matched, synthetic) (F-006, supported)
+  - Matched synthetic recovery of three amplitudes works; cached and direct routes agree (F-002, supported)
+  - EXP-015 stage 2: H1 untested (baseline not commensurable); 500 m provisionally admissible on narrow grounds (F-035, preliminary)
+  - Toy wind-error controls (reviewed): wind-error penalty and C's gain survive alpha and off-member priors, but C's gain shrinks with distance to the nearest prior member; chi2 detection power is NOT an inverse-crime artefact (specificity and coverage are); base-wind rotation controls are confounded (F-034, preliminary)
+  - Toy: greedy layouts cost test error at 2-4 sensors (area RMSE 3.3x / 6.8x / 2.5x the best-found layout at 2 / 3 / 4 sensors, ~1.1x at 5-8); a large design-objective gap carries over to test; uniform stop check passes (F-032, preliminary)
+  - Toy prescribed winds, converged domain: for T = 12 h an outer half-width of ~UT/2 (40 km here) suffices (<1% exposure); smaller domains cut off the return of the plume; channel and vortex effects depend on placement; returned mass is good to ~10% (F-031, preliminary)
+- **Next step:** EXP-027 — EXP-015v2 decision stability with a COMMENSURABLE paired baseline (pre-registered fix)
 
 ## Current baseline
 
@@ -88,7 +94,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Blockers
 
-- [checkpoint] CP-006: EXP-015 stage 2 and Belauri-scale EXP-016 not run (need the PI's Slurm job); F-031/F-032/F-034 await non-author review
+_none_
 
 ## Project skills
 
