@@ -18,11 +18,18 @@ Do not read everything; do not re-derive what a finding or doc already states. F
 
 ### Commands
 Env: `uv venv --python 3.12 .venv && uv pip install -e ".[dev,geo]" -c requirements-lock-geo.txt`. Tests `.venv/bin/pytest -q` (585 tests, ~21 min; geo/real-data
-tests skip without `data/belauri/manifest.json`). Types `.venv/bin/pyright` (0 errors expected). Notebooks `.venv/bin/python scripts/verify_notebooks.py`.ob
+tests skip without `data/belauri/manifest.json`). Types `.venv/bin/pyright` (0 errors expected). Notebooks `.venv/bin/python scripts/verify_notebooks.py`.
 FiPy regression gate: `scripts/capture_regression.py` + `scripts/compare_runs.py <baseline> <new>` must print `21 files compared, 0 differ`.
 The gate is **architecture-scoped** (D-005): baseline `results/solver-regression/before` on arm64 (laptop), `results/solver-regression-x86_64/before` on the x86_64 cluster. Comparing across architectures gives 18 spurious differences (reassociation only, <=5e-08 relative in any physical quantity); never loosen a tolerance for it.
 Geography: `python -m pravah geo fetch --config configs/belauri_geo.json` (network; Overpass main endpoint is flaky, a mirror fallback is built in) then `geo prepare` (offline).
 Scientific runs go through `.research/bin/research run exec EXP-… -- <cmd>` (register the experiment first; synthesise before the 5-run budget).
+Research OS is **1.0.0** (`research --version`; `research config check`, `research upgrade --dry-run` are clean). Project use of its features:
+* **Evidence binding**: findings F-002/F-006/F-007/F-009 are `supported` but have `no_bindings` (`research evidence status` lists their legacy numbers). New findings: bind every number
+  (`research evidence bind F-… --run RUN-… --metric NAME`, then `evidence verify`) before asking for `supported`. Do not bind retroactively without checking the run record.
+* **Tuning** (alpha, layouts, noise): `research tuning declare|trial|select|test` (the held-out test is one-shot; test seed 304 is the only unspent one). Replaces the old `orchestrate tuning` form.
+* **Hooks / strategy**: none active (`research hook list`, `research strategy show`). If wanted, *propose* (never enable or approve yourself) a `post_implementation` hook running the regression gate
+  and a pyright check; the human approves via `research hook approve`. Delegated tasks: `research task context T-…`, then `research orchestrate verify T-… --tier LEVEL --record`.
+* **MCP** covers the core loop only; use the CLI for HPC, orchestration, hooks, tuning.
 
 ### Rules learned the hard way
 * **Do not touch the user's notebook kernels or notebook files**: the six notebooks in the working tree contain outputs the user saved from VS Code; do not clear,
@@ -57,8 +64,12 @@ Best next experiment: EXP-027 (resolve the mesh question properly) or Q-013 (res
 <!-- research:begin — managed by `research init`; edit outside these markers freely -->
 ## Research OS
 
-This repo uses Research OS for research memory and task coordination. Every tool below is also available as an
-MCP tool if the `research` MCP server is configured (`research mcp install`).
+This repo uses Research OS for research memory and task coordination. The core loop (current state, tasks,
+experiments, runs, findings, review, search) is also exposed as MCP tools if the `research` MCP server is configured
+(`research mcp install`). MCP does **not** cover orchestration (`orchestrate freeze|contract|attempt|delegate|verify`),
+hooks, skills editing, strategy/configuration, tuning, or most `hpc` commands: use the CLI for those.
+`research task context T-…` prints the effective task specification (objective, constraints, permitted files,
+acceptance criteria, checks, hooks needing human approval, conflicts) and is the same on CLI, MCP and the editor.
 
 ### Running the CLI (no install needed)
 Use `.research/bin/research` from the project root (e.g. `.research/bin/research current`). It is a project-local
@@ -124,8 +135,10 @@ the human to open the project in VS Code with the Research Panel extension, or t
   block. Everything outside the two marker comments below is the project's — never rewrite it.
 
 ### Tiered agents (optional)
-If `orchestration.enabled`: Opus = science/synthesis/guide, Sonnet = contracts + tests + review, Haiku = frozen-test
-implementation. `research orchestrate route T-001`; protocol: `research skill show engineering-loop`. Never edit frozen tests.
+If `orchestration.enabled`: `research strategy show` says which model level does what (or the legacy Opus/Sonnet/Haiku tiers when no
+strategy is active). `research orchestrate route T-001`; protocol: `research skill show engineering-loop`. Never edit frozen tests.
+A delegated task has a contract (`research task context T-001`); check your work with `research orchestrate verify T-001 --tier LEVEL --record`.
+Project hooks (`research hook list`) are run by Research OS only after a human approves them; propose one with `research hook add`.
 
 ### Recording work
 ```bash

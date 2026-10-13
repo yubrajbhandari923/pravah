@@ -13,3 +13,8 @@ bin/
 reports/
 hpc/bundles/
 hpc/incoming/
+# transient locks and crash-recovery journal (added for 1.0.0)
+.write.lock
+.transaction.json
+.recovery-needed
+locks/

@@ -93,3 +93,5 @@ hpc:
 # value in force, including the agent profiles and orchestration tiers not shown here.
 # Values marked ← come from /Users/yubraj/.config/research-os/config.yaml
 # Uncommenting one here overrides it for this project only.
+orchestration:
+  active_strategy: sonnet_first

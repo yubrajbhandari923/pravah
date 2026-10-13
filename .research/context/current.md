@@ -1,26 +1,19 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2599 tokens.
-> Generated 2026-10-13T00:08:14-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2658 tokens.
+> Generated 2026-10-13T00:25:44-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `54abc6ddb3`
+Git: `master` @ `4d9d68b5c6` (uncommitted changes)
 
 ## Latest checkpoint
 
-**CP-008** Checkpoint — 2026-10-13 (2026-10-13)
-- **Understanding:** - Solver routing refactor preserves every deterministic FiPy output bit-for-bit (F-009, supported)
-  - FINAL: hidden wind error and unmodelled source dominate discretisation mismatch; poor layout unidentifiable (F-007, supported)
-  - FINAL: greedy layouts beat spread/random on fresh test scenarios with alpha frozen on validation (matched, synthetic) (F-006, supported)
-  - Matched synthetic recovery of three amplitudes works; cached and direct routes agree (F-002, supported)
-  - EXP-015 stage 2: H1 untested (baseline not commensurable); 500 m provisionally admissible on narrow grounds (F-035, preliminary)
-  - Toy wind-error controls (reviewed): wind-error penalty and C's gain survive alpha and off-member priors, but C's gain shrinks with distance to the nearest prior member; chi2 detection power is NOT an inverse-crime artefact (specificity and coverage are); base-wind rotation controls are confounded (F-034, preliminary)
-  - Toy: greedy layouts cost test error at 2-4 sensors (area RMSE 3.3x / 6.8x / 2.5x the best-found layout at 2 / 3 / 4 sensors, ~1.1x at 5-8); a large design-objective gap carries over to test; uniform stop check passes (F-032, preliminary)
-  - Toy prescribed winds, converged domain: for T = 12 h an outer half-width of ~UT/2 (40 km here) suffices (<1% exposure); smaller domains cut off the return of the plume; channel and vortex effects depend on placement; returned mass is good to ~10% (F-031, preliminary)
-- **Next step:** EXP-027 — EXP-015v2 decision stability with a COMMENSURABLE paired baseline (pre-registered fix)
+**CP-009** Phase 2 architecture audit complete (engineering only) (2026-10-13)
+- **Understanding:** Engineering audit PLAN-005; report docs/ARCHITECTURE_WORKFLOW_AUDIT.md. Core sound (pyright 0, no import cycles, FiPy in forward.py only); debt is duplicated study scaffolding (leakage guards x3-4), stale docs, unbound evidence, orchestration not enabled. No scientific claim changed; science state is as in CP-008 (Q-013, F-035 open).
+- **Next step:** Answer Q-014 / report section 10 (O-1..O-10), then start Phase 3 batch 0. Science queue (EXP-027/Q-013) is separate.
 
 ## Current baseline
 
@@ -32,8 +25,9 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - Q-012 [investigating] Q-E: How does wind error limit source inference (known / wrong-fixed / uncertain-wind estimators)?
 - Q-009 [investigating] Q-B: When does population-weighted sensor placement help, and what does it cost region-wide and in attribution?
 - Q-011 [investigating] Q-D: Do inverse conclusions and sensor selections converge with mesh, dt and scheme?
+- Q-014 [open] Phase 3 refactor scope: move study drivers out of the installed package (physical toy/Belauri/observed split) or only into pravah.studies with shims? Also hooks (5.2), orchestration.enabled, archive/remove list, .claude/skills and tools/ retention. See docs/ARCHITECTURE_WORKFLOW_AUDIT.md section 10 (O-1..O-10).
 - Q-013 [open] Q-F: Is the sensor-design objective identifiable at all with 6 design cases? EXP-015 stage 2 measured eps_sd/J_ref = 1.01-2.52 at noise 0.05, i.e. the replicate-to-replicate spread of the design objective is comparable to or larger than the objective itself. If the objective cannot be estimated from 6 cases, then which layout greedy selects at small budgets is arbitrary, and every small-budget conclusion in EXP-013, EXP-014, EXP-020, EXP-026 and EXP-015 is affected. How many design cases are needed, and does the answer change the published small-budget rankings?
-- … 1 more (`research question list`)
+- Q-008 [open] Q-A: Can a new region run the same pipeline by changing only config + assets?
 
 ## Established findings (what we believe)
 
@@ -42,7 +36,10 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - F-006 [supported, medium] FINAL: greedy layouts beat spread/random on fresh test scenarios with alpha frozen on validation (matched, synthetic) — evidence: EXP-005, EXP-006, RUN-0008, RUN-0009
 - F-002 [supported, high] Matched synthetic recovery of three amplitudes works; cached and direct routes agree — evidence: EXP-002, RUN-0003
 - F-035 [preliminary, high] EXP-015 stage 2: H1 untested (baseline not commensurable); 500 m provisionally admissible on narrow grounds — evidence: EXP-015, RUN-0058
-- … 13 more (`research finding list`)
+- F-034 [preliminary, medium] Toy wind-error controls (reviewed): wind-error penalty and C's gain survive alpha and off-member priors, but C's gain shrinks with distance to the nearest prior member; chi2 detection power is NOT an inverse-crime artefact (specificity and coverage are); base-wind rotation controls are confounded — evidence: EXP-023
+- F-032 [preliminary, medium] Toy: greedy layouts cost test error at 2-4 sensors (area RMSE 3.3x / 6.8x / 2.5x the best-found layout at 2 / 3 / 4 sensors, ~1.1x at 5-8); a large design-objective gap carries over to test; uniform stop check passes — evidence: EXP-022, RUN-0035
+- F-031 [preliminary, medium] Toy prescribed winds, converged domain: for T = 12 h an outer half-width of ~UT/2 (40 km here) suffices (<1% exposure); smaller domains cut off the return of the plume; channel and vortex effects depend on placement; returned mass is good to ~10% — evidence: EXP-021, RUN-0034
+- … 10 more (`research finding list`)
 
 ## Failed directions (do not repeat without a new reason)
 
@@ -55,6 +52,8 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - EXP-021 [needs_review] EXP toy prescribed winds, converged reference domain and deflecting channel (pre-registered) — runs 1
 - EXP-020 [needs_review] EXP toy population design with exact selection and replicated settings (pre-registered) — runs 1
 - EXP-027 [proposed] EXP-015v2 decision stability with a COMMENSURABLE paired baseline (pre-registered fix) — runs 0
+- EXP-026 [proposed] EXP-016v population-aware sensor placement at Belauri scale, with the WorldPop fixture and replicated fixture draws (pre-registered variant) — runs 0
+- EXP-016 [proposed] EXP population-aware sensor placement: area vs population vs mixed vs capped objectives (pre-registered) — runs 0
 
 ## Active plans
 
@@ -73,18 +72,13 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - [awaiting review] F-032 Toy: greedy layouts cost test error at 2-4 sensors (area RMSE 3.3x / 6.8x / 2.5x the best-found layout at 2 / 3 / 4 sensors, ~1.1x at 5-8); a large design-objective gap carries over to test; uniform stop check passes: Agent finding awaiting an independent review
 - [awaiting review] F-031 Toy prescribed winds, converged domain: for T = 12 h an outer half-width of ~UT/2 (40 km here) suffices (<1% exposure); smaller domains cut off the return of the plume; channel and vortex effects depend on placement; returned mass is good to ~10%: Agent finding awaiting an independent review
 
-## ⚠ Needs synthesis before new experiments
-
-- EXP-015 EXP convergence of sensor-design decisions with mesh, time step and scheme (pre-registered) (0 unsynthesized runs)
-- EXP-020 EXP toy population design with exact selection and replicated settings (pre-registered) (0 unsynthesized runs)
-- EXP-021 EXP toy prescribed winds, converged reference domain and deflecting channel (pre-registered) (0 unsynthesized runs)
-- EXP-023 EXP toy wind-error controls from F-029 review (alpha, offset prior grid, model error, base wind) (pre-registered) (0 unsynthesized runs)
-
 ## Active decisions
 
+- D-008 (2026-10-13) Model allocation strategy sonnet_first selected (orchestration.active_strategy). orchestration.enabled remains false; what that blocks is untested.
 - D-007 (2026-10-12) PRAVAH pre-migration, pre-refactor baseline is frozen at git d395b78 (tag baseline/pre-refactor-2026-10). This is a WORKING ENGINEERING BASELINE, not a scientifically validated model: the solver, inverse, design and HPC pipelines run reproducibly and are regression-locked, but every quantitative atmospheric result remains synthetic and only 4 of 35 findings (F-002, F-006, F-007, F-009) have passed independent review. No empirical validation exists. Future refactors must preserve the invariants listed in this decision.
 - D-006 (2026-10-12) EXP-015's acceptance criterion is amended POST HOC (dated 2026-10-12, after results were seen) from the two-sided 'within the replicate-pair IQR' to the one-sided 'no larger than the replicate-pair distribution' that its own hypothesis states; and EXP-015 stage 2 is recorded as NOT having tested H1, because its baseline is not commensurable with its mesh comparison. 500 m / dt 100 is provisionally admissible for EXP-026 on the narrow grounds in F-035 - no evidence against, not shown adequate.
 - D-005 (2026-10-12) FiPy regression gate is architecture-scoped: the 21 files / 0 differ requirement is binding WITHIN an architecture; the x86_64 cluster gets its own committed baseline and the arm64 baseline stays authoritative for laptop work. Cross-architecture bit-identity is not achievable and is not required. No tolerance was loosened.
+- D-004 (2026-10-11) Phase 3 baseline and deferrals
 
 ## Blockers
 
