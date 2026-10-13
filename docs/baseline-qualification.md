@@ -47,7 +47,7 @@ This snapshot is a **working engineering baseline**. It is **not** a scientifica
 
 | | |
 |---|---|
-| Commit | `d395b78e0423810a1b0bab8b978ff17d09819174` |
+| Commit | `48e3f811a1db68d8b74043beff0cb734ae71625a` |
 | Tag | `baseline/pre-refactor-2026-10` (annotated) |
 | Branch | `master` |
 | Tree state | clean for tracked paths (`tools/.DS_Store` untracked and ignored; `notebooks/` deliberately untouched) |
