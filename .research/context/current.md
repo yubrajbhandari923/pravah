@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2839 tokens.
-> Generated 2026-10-12T23:12:19-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2599 tokens.
+> Generated 2026-10-12T23:37:40-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `761c9c23f8`
+Git: `master` @ `d395b78e04`
 
 ## Latest checkpoint
 
@@ -32,7 +32,8 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - Q-012 [investigating] Q-E: How does wind error limit source inference (known / wrong-fixed / uncertain-wind estimators)?
 - Q-009 [investigating] Q-B: When does population-weighted sensor placement help, and what does it cost region-wide and in attribution?
 - Q-011 [investigating] Q-D: Do inverse conclusions and sensor selections converge with mesh, dt and scheme?
-- Q-008 [open] Q-A: Can a new region run the same pipeline by changing only config + assets?
+- Q-013 [open] Q-F: Is the sensor-design objective identifiable at all with 6 design cases? EXP-015 stage 2 measured eps_sd/J_ref = 1.01-2.52 at noise 0.05, i.e. the replicate-to-replicate spread of the design objective is comparable to or larger than the objective itself. If the objective cannot be estimated from 6 cases, then which layout greedy selects at small budgets is arbitrary, and every small-budget conclusion in EXP-013, EXP-014, EXP-020, EXP-026 and EXP-015 is affected. How many design cases are needed, and does the answer change the published small-budget rankings?
+- … 1 more (`research question list`)
 
 ## Established findings (what we believe)
 
@@ -41,10 +42,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - F-006 [supported, medium] FINAL: greedy layouts beat spread/random on fresh test scenarios with alpha frozen on validation (matched, synthetic) — evidence: EXP-005, EXP-006, RUN-0008, RUN-0009
 - F-002 [supported, high] Matched synthetic recovery of three amplitudes works; cached and direct routes agree — evidence: EXP-002, RUN-0003
 - F-035 [preliminary, high] EXP-015 stage 2: H1 untested (baseline not commensurable); 500 m provisionally admissible on narrow grounds — evidence: EXP-015, RUN-0058
-- F-034 [preliminary, medium] Toy wind-error controls (reviewed): wind-error penalty and C's gain survive alpha and off-member priors, but C's gain shrinks with distance to the nearest prior member; chi2 detection power is NOT an inverse-crime artefact (specificity and coverage are); base-wind rotation controls are confounded — evidence: EXP-023
-- F-032 [preliminary, medium] Toy: greedy layouts cost test error at 2-4 sensors (area RMSE 3.3x / 6.8x / 2.5x the best-found layout at 2 / 3 / 4 sensors, ~1.1x at 5-8); a large design-objective gap carries over to test; uniform stop check passes — evidence: EXP-022, RUN-0035
-- F-031 [preliminary, medium] Toy prescribed winds, converged domain: for T = 12 h an outer half-width of ~UT/2 (40 km here) suffices (<1% exposure); smaller domains cut off the return of the plume; channel and vortex effects depend on placement; returned mass is good to ~10% — evidence: EXP-021, RUN-0034
-- … 10 more (`research finding list`)
+- … 13 more (`research finding list`)
 
 ## Failed directions (do not repeat without a new reason)
 
@@ -57,8 +55,6 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - EXP-021 [needs_review] EXP toy prescribed winds, converged reference domain and deflecting channel (pre-registered) — runs 1
 - EXP-020 [needs_review] EXP toy population design with exact selection and replicated settings (pre-registered) — runs 1
 - EXP-027 [proposed] EXP-015v2 decision stability with a COMMENSURABLE paired baseline (pre-registered fix) — runs 0
-- EXP-026 [proposed] EXP-016v population-aware sensor placement at Belauri scale, with the WorldPop fixture and replicated fixture draws (pre-registered variant) — runs 0
-- EXP-016 [proposed] EXP population-aware sensor placement: area vs population vs mixed vs capped objectives (pre-registered) — runs 0
 
 ## Active plans
 
@@ -86,11 +82,9 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Active decisions
 
+- D-007 (2026-10-12) PRAVAH pre-migration, pre-refactor baseline is frozen at git d395b78 (tag baseline/pre-refactor-2026-10). This is a WORKING ENGINEERING BASELINE, not a scientifically validated model: the solver, inverse, design and HPC pipelines run reproducibly and are regression-locked, but every quantitative atmospheric result remains synthetic and only 4 of 35 findings (F-002, F-006, F-007, F-009) have passed independent review. No empirical validation exists. Future refactors must preserve the invariants listed in this decision.
 - D-006 (2026-10-12) EXP-015's acceptance criterion is amended POST HOC (dated 2026-10-12, after results were seen) from the two-sided 'within the replicate-pair IQR' to the one-sided 'no larger than the replicate-pair distribution' that its own hypothesis states; and EXP-015 stage 2 is recorded as NOT having tested H1, because its baseline is not commensurable with its mesh comparison. 500 m / dt 100 is provisionally admissible for EXP-026 on the narrow grounds in F-035 - no evidence against, not shown adequate.
 - D-005 (2026-10-12) FiPy regression gate is architecture-scoped: the 21 files / 0 differ requirement is binding WITHIN an architecture; the x86_64 cluster gets its own committed baseline and the arm64 baseline stays authoritative for laptop work. Cross-architecture bit-identity is not achievable and is not required. No tolerance was loosened.
-- D-004 (2026-10-11) Phase 3 baseline and deferrals
-- D-003 (2026-10-10) Phase 2 baseline: solver interface (results/solver-regression), external/local study (results/transboundary-rerun), verified Belauri geography (data/belauri/manifest.json, results/geography), Belauri forward (results/belauri-forward), geographic design and robustness (results/geodesign, results/geodesign-robust) — all synthetic emissions/meteorology; v0 baseline D-002 stands
-- D-002 (2026-10-10) Baseline v0: results/reference-v0 + results/inverse-v0 (configs/reference.json); comparison evidence is results/alpha-selection, results/benchmark-final, results/mismatch-final (alpha=0.1 frozen on validation, fresh test seeds 33/7000). results/benchmark, benchmark-unregularized, mismatch are exploratory and superseded.
 
 ## Blockers
 

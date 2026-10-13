@@ -43,7 +43,16 @@ Done and reviewed: solver interface, external/local study, verified Belauri geog
 dominates the nominal K (K_eff/K ≈ 2.4–9.4); small-budget sensor rankings are unresolved at 6 test scenarios; identifiability flags are saturated in the geodesign runs; test noise level
 was derived from the test ensemble (2.6% off the design value); no terrain-coupled flow. The G2 fixes (validation-scale test noise, chi2/dof, candidate flags) were applied in commit 0370f3e, but the geodesign results and their doc numbers have NOT been rerun with them.
 HPC runs go through Research OS (`research hpc doctor|submit|status|sync`), NOT `sbatch slurm/phase3.sbatch` (superseded); the venv lives outside the bundle, artifacts must be written under `$RESEARCH_RUN_DIR`, datasets are staged on the cluster and linked by `scripts/hpc_link_datasets.sh`, and every reservation needs the user's explicit approval. Phase 3 state and what to run on HPC: `docs/hpc-runbook.md`; also `docs/transfer.md`, `docs/numerical-methodology.md`, `docs/winds.md`, `docs/population-data.md`.
-Best next experiment: add a chi-square-per-dof model check to the robustness study and rerun it with the noise level fixed from the validation scale.
+**BASELINE FROZEN (2026-10-12).** `baseline/pre-refactor-2026-10` @ d395b78 is the pre-migration, pre-refactor snapshot: see **D-007** for what is
+established vs uncertain and the invariants a refactor must preserve, and `docs/baseline-qualification.md` for environment, config and dataset hashes plus
+verification commands. It is a **working engineering baseline, NOT a scientifically validated model**: only F-002/F-006/F-007/F-009 are independently
+reviewed, everything quantitative is synthetic, and there is no empirical validation.
+**EXP-015 did NOT establish numerical adequacy for sensor-placement decisions**: F-035 records H1 as UNTESTED (the resampling baseline is not commensurable
+with the mesh comparison, so the test could not fail; review F-035/R1 = needs_work). 500 m / dt 100 is PROVISIONALLY admissible only. D-006 records the dated
+post-hoc criterion amendment. EXP-027 is the pre-registered fix (with a 2 km falsification control); EXP-026 is gated on a defensible mesh decision.
+Open and consequential: **Q-013** — the design objective may not be identifiable at 6 design cases (eps_sd/J_ref 1.01-2.52), which would affect the
+small-budget conclusions of EXP-013/014/020/026 too. Test seed 303 is burned; 304 is unspent.
+Best next experiment: EXP-027 (resolve the mesh question properly) or Q-013 (resolve identifiability first — arguably the more fundamental of the two).
 
 <!-- research:begin — managed by `research init`; edit outside these markers freely -->
 ## Research OS
