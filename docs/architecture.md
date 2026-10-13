@@ -17,19 +17,38 @@ Core (v0, extended in phase 2; imports never need the GIS libraries):
 | `attribution` | Origin tags (`contributions`), `external_fraction` / `origin_fractions`, component errors, `emission_error`, `identifiability_report` |
 | `metrics` | Field RMSE / MSE with weights |
 | `design` | Candidates with categories, `Constraints`, `DesignCase` (cached arrays and named `QuadForm` objectives), greedy / spread / random layouts, role guards (design / test / validation), held-out blocks |
-| `experiments` | Benchmark, alpha-selection and mismatch runners with separate truth and inference solvers |
+| `winds`, `era5` | Prescribed spatiotemporal winds and ERA5 ingestion (see `winds.md`); `population` is the population-raster layer (`population-data.md`) |
+| `runner` | Helpers shared by the study drivers: `say` (progress), `save_fig`, `check_frozen` (freeze guard), `guard_out` (run guard). Only behaviour that was identical in every copy lives here |
 | `io`, `plotting`, `cli` | Output writers; figures; `python -m pravah ...` |
 
-Phase 2 studies:
+## Study drivers (`src/pravah/studies/`)
+
+Drivers orchestrate a scientific study (ensembles, seeds, freeze, tables, figures). They use the core and data layers and never the reverse;
+nothing in the core imports `pravah.studies` or `research`.
+
+| Package | Module | Role |
+|---|---|---|
+| `studies.toy` | `experiments` | Benchmark, alpha-selection and mismatch runners with separate truth and inference solvers; scenario ensembles (`CaseSpec`, `check_ensembles`) |
+| | `transboundary` | External-versus-local synthetic study (named scenarios, domains A / B, recovery, prior and scale sensitivity, boundary-versus-plume equivalence, confounded, no-arrival, wind-mismatch cases) |
+| | `windunc` | Wind-error response and three inference strategies (EXP-019/023, synthetic); holds its own freeze file and `assert_frozen` |
+| `studies.belauri` | `belauri` | Forward simulations on the prepared Belauri region (winds, outer-domain size, mesh, what-changes table). Real geography; synthetic emissions and winds |
+| | `geodesign` | Candidate sites (CSV + GeoJSON), ensembles, alpha frozen on validation, four layout methods, two settings, held-out evaluation |
+| | `geodesign_robust` | Re-uses the fixed layouts and alphas of a `geodesign` run; mismatch conditions; numerical refinement |
+
+The old import paths (`pravah.experiments`, `pravah.transboundary`, `pravah.windunc`, `pravah.belauri`, `pravah.geodesign`,
+`pravah.geodesign_robust`) are one-line aliases that make the old name the same module object as the new one. Notebooks and scripts keep working;
+new code should import from `pravah.studies.*`. There is no `studies.observed` yet because no observations exist; add one when they do.
+
+The same operations are deliberately *not* merged where they differ scientifically: the three `check_ensembles` functions use different
+draw-key payloads, noise-seed arithmetic and messages, and `windunc` freezes into its own file with a different exception. Share only
+what is identical in every copy (`runner`).
+
+Other modules:
 
 | Module | Role |
 |---|---|
-| `transboundary` | External-versus-local synthetic study (named scenarios, domains A / B, recovery, prior and scale sensitivity, boundary-versus-plume equivalence, confounded, no-arrival, wind-mismatch cases) |
 | `indoor` | One-way-coupled indoor box (exact piecewise-linear integration); not part of the outdoor inverse problem |
 | `geo/` (optional extra `[geo]`) | `fetch` (bounded, cached network access), `prepare` (offline: raw to processed arrays and `data/belauri/manifest.json`, boundary verification, `Region`), `regionio` (CRS, grids, polygon-cell fractions, rasterisation, DEM aggregation, candidate lattice), `scenarios` (Belauri scenario builders, winds, cropping, numerical-diffusion estimate). GIS libraries are imported lazily |
-| `belauri` | Forward simulations on the prepared region (winds, outer-domain size, mesh, what-changes table) |
-| `geodesign` | Candidate sites (CSV + GeoJSON), ensembles, alpha frozen on validation, four layout methods, two settings, held-out evaluation |
-| `geodesign_robust` | Re-uses the fixed layouts and alphas of a `geodesign` run; mismatch conditions; numerical refinement |
 
 Research Panel is used only from `scripts/`, never imported by the package.
 

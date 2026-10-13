@@ -255,8 +255,10 @@ package never imports it. To register a finished run directory as artifacts and 
 ## Layout
 
 ```
-src/pravah/   config forward sources observations inverse metrics design experiments io plotting cli
-              attribution transboundary indoor belauri geodesign geodesign_robust geo/(fetch prepare regionio scenarios)   [phase 2]
+src/pravah/   config forward sources observations inverse metrics design io plotting cli attribution indoor winds era5 population runner
+              geo/(fetch prepare regionio scenarios)
+              studies/toy/(experiments transboundary windunc)  studies/belauri/(belauri geodesign geodesign_robust)
+              (old top-level names of the six study modules remain as aliases)
 configs/      reference smoke smoke_alpha_selection alpha_selection benchmark benchmark_unregularized mismatch wind_change (JSON, "extends" supported)
               transboundary(_smoke) belauri_geo belauri_forward(_smoke) geodesign(_smoke) geodesign_robust(_smoke)   [phase 2]
 notebooks/    01_transport 02_inverse 03_sensor_design   04_transboundary_pollution 05_belauri_forward 06_belauri_sensor_design

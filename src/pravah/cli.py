@@ -40,7 +40,7 @@ def _kwargs(text: str | None, flag: str) -> dict[str, Any] | None:
 def _forwards(args: argparse.Namespace, cfg: dict[str, Any]) -> tuple[ForwardSolver, ForwardSolver]:
     """(truth, inference) solvers: CLI flags win over cfg['backends'] (a role without any flag uses the config /
     FiPy).  --solver / --solver-kwargs are the shared defaults of both roles."""
-    from .experiments import resolve_backends
+    from .studies.toy.experiments import resolve_backends
     shared_kw = _kwargs(args.solver_kwargs, "--solver-kwargs")
     shared = get_forward(args.solver, shared_kw) if (args.solver is not None or shared_kw is not None) else None
     out: dict[str, ForwardSolver | None] = {}
@@ -151,22 +151,22 @@ def cmd_inverse(args: argparse.Namespace) -> int:
 
 
 def cmd_benchmark(args: argparse.Namespace) -> int:
-    from .experiments import run_alpha_selection, run_benchmark, run_mismatch
+    from .studies.toy.experiments import run_alpha_selection, run_benchmark, run_mismatch
     cfg = load_config(args.config)
     out = Path(args.out)
     truth_fwd, inf_fwd = _forwards(args, cfg)
     kind = cfg.get("experiment", "benchmark")
     if kind == "transboundary":
-        from .transboundary import run_transboundary
+        from .studies.toy.transboundary import run_transboundary
         run_transboundary(cfg, out, overwrite=args.overwrite, progress=print)
     elif kind == "geodesign":
-        from .geodesign import run_geodesign
+        from .studies.belauri.geodesign import run_geodesign
         run_geodesign(cfg, out, overwrite=args.overwrite, progress=print)
     elif kind == "geodesign_robust":
-        from .geodesign_robust import run_geodesign_robust
+        from .studies.belauri.geodesign_robust import run_geodesign_robust
         run_geodesign_robust(cfg, out, overwrite=args.overwrite, progress=print)
     elif kind == "belauri_forward":
-        from .belauri import run_belauri_forward
+        from .studies.belauri.belauri import run_belauri_forward
         run_belauri_forward(cfg, out, overwrite=args.overwrite, progress=print)
     elif kind == "alpha_selection":
         sel = run_alpha_selection(cfg, out, overwrite=args.overwrite, progress=print, truth_forward=truth_fwd,
