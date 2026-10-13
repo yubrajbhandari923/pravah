@@ -47,7 +47,8 @@ This snapshot is a **working engineering baseline**. It is **not** a scientifica
 
 | | |
 |---|---|
-| Commit | `48e3f811a1db68d8b74043beff0cb734ae71625a` |
+| Commit | `4320f8bc3d6492a5a296ee1e3035183faaea299f` (what the tag points at) |
+| Earlier refs | D-007's statement names `d395b78` and section 7 was filled at `48e3f81`; both predate the tag. See note `d-007-commit-correction`. |
 | Tag | `baseline/pre-refactor-2026-10` (annotated) |
 | Branch | `master` |
 | Tree state | clean for tracked paths (`tools/.DS_Store` untracked and ignored; `notebooks/` deliberately untouched) |
