@@ -1,17 +1,17 @@
 # Research context — pravah
 
 > Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2599 tokens.
-> Generated 2026-10-12T23:37:40-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated 2026-10-13T00:08:14-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `d395b78e04`
+Git: `master` @ `54abc6ddb3`
 
 ## Latest checkpoint
 
-**CP-007** Checkpoint — 2026-10-12 (2026-10-12)
+**CP-008** Checkpoint — 2026-10-13 (2026-10-13)
 - **Understanding:** - Solver routing refactor preserves every deterministic FiPy output bit-for-bit (F-009, supported)
   - FINAL: hidden wind error and unmodelled source dominate discretisation mismatch; poor layout unidentifiable (F-007, supported)
   - FINAL: greedy layouts beat spread/random on fresh test scenarios with alpha frozen on validation (matched, synthetic) (F-006, supported)
