@@ -127,7 +127,28 @@ per-file sha256, at `/scratch/railabs/yb107/research-os/shared-data/belauri-geog
 
 ## 7. Measured test results at this revision
 
-See section 7 table below (filled from the actual run, not from memory).
+Measured on 2026-10-13 at this revision, local arm64 `.venv` (numpy 2.5.4):
+
+| Check | Command | Result |
+|---|---|---|
+| Test suite | `.venv/bin/pytest -q` | **585 passed, 0 failed**, 23 warnings, 24:09 |
+| Type check | `.venv/bin/pyright` | **0 errors**, 0 warnings (scope: `src/pravah`) |
+| Regression gate, arm64 | `compare_runs.py results/solver-regression/{before,after}` | **21 files compared, 0 differ** |
+| Regression gate, x86_64 baseline self-consistency | `compare_runs.py results/solver-regression-x86_64/before <same>` | **21 files compared, 0 differ** |
+| Cross-architecture (expected to differ, D-005) | `compare_runs.py results/solver-regression/before results/solver-regression-x86_64/before` | **18 differ** — reassociation only, NOT a regression |
+| Lock-exact arm64 venv (numpy 2.5.3) | rebuilt venv + `capture_regression.py` + compare | **21 files compared, 0 differ** — confirms the local 2.5.4 drift is benign |
+
+Geo/real-data tests do not skip at this revision because `data/belauri/manifest.json` is present.
+The suite includes an EXP-015 stage-2 smoke test, which is why it runs ~24 min rather than the ~13 min
+recorded for the older 447-test suite.
+
+**Reproducibility limitations.** (1) The numpy drift in section 3 — benign, but rebuild from the
+lockfile for an exact match. (2) Cross-architecture bit-identity is not achievable (D-005); use the
+baseline for your own architecture. (3) EXP-015 stage 2's 721 MB response-basis cache was deliberately
+left on the cluster, so `stability.csv` cannot be re-derived locally from the layout JSONs — only its
+internal consistency and its sha256 against the cluster copy were checked. (4) Physics and solver
+internals were not re-verified during this baseline audit; the regression gate locks behaviour, it does
+not prove correctness.
 
 ## 8. Invariants a future refactor must preserve
 
