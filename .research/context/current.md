@@ -1,19 +1,19 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2658 tokens.
-> Generated 2026-10-13T00:25:44-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2775 tokens.
+> Generated 2026-10-13T01:46:41-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `4d9d68b5c6` (uncommitted changes)
+Git: `master` @ `e4695e1656` (uncommitted changes)
 
 ## Latest checkpoint
 
-**CP-009** Phase 2 architecture audit complete (engineering only) (2026-10-13)
-- **Understanding:** Engineering audit PLAN-005; report docs/ARCHITECTURE_WORKFLOW_AUDIT.md. Core sound (pyright 0, no import cycles, FiPy in forward.py only); debt is duplicated study scaffolding (leakage guards x3-4), stale docs, unbound evidence, orchestration not enabled. No scientific claim changed; science state is as in CP-008 (Q-013, F-035 open).
-- **Next step:** Answer Q-014 / report section 10 (O-1..O-10), then start Phase 3 batch 0. Science queue (EXP-027/Q-013) is separate.
+**CP-010** Phase 3 refactor complete (engineering only) (2026-10-13)
+- **Understanding:** PLAN-006 done: pravah.runner, pravah.studies.{toy,belauri} with aliases, data_provenance, winds decoupled from geo, register_research removed. Scientific behaviour preserved: gate 21/0, 595 tests, reviewer-confirmed protocol equivalence. Audit D1/D2/D7/D8 overstated (D-009). No scientific finding changed; science state as in CP-008 (Q-013, F-035).
+- **Next step:** Answer Q-014/Q-015, then EXP-027 or Q-013 (science). Before next cluster job re-run the x86_64 gate.
 
 ## Current baseline
 
@@ -25,6 +25,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - Q-012 [investigating] Q-E: How does wind error limit source inference (known / wrong-fixed / uncertain-wind estimators)?
 - Q-009 [investigating] Q-B: When does population-weighted sensor placement help, and what does it cost region-wide and in attribution?
 - Q-011 [investigating] Q-D: Do inverse conclusions and sensor selections converge with mesh, dt and scheme?
+- Q-015 [open] Remaining engineering follow-ups after Phase 3: hook proposals, slow markers, jupyter dependency move, doc archive, hpc-runbook trim, x86_64 gate re-run before next cluster job, F-030..F-035 independent review.
 - Q-014 [open] Phase 3 refactor scope: move study drivers out of the installed package (physical toy/Belauri/observed split) or only into pravah.studies with shims? Also hooks (5.2), orchestration.enabled, archive/remove list, .claude/skills and tools/ retention. See docs/ARCHITECTURE_WORKFLOW_AUDIT.md section 10 (O-1..O-10).
 - Q-013 [open] Q-F: Is the sensor-design objective identifiable at all with 6 design cases? EXP-015 stage 2 measured eps_sd/J_ref = 1.01-2.52 at noise 0.05, i.e. the replicate-to-replicate spread of the design objective is comparable to or larger than the objective itself. If the objective cannot be estimated from 6 cases, then which layout greedy selects at small budgets is arbitrary, and every small-budget conclusion in EXP-013, EXP-014, EXP-020, EXP-026 and EXP-015 is affected. How many design cases are needed, and does the answer change the published small-budget rankings?
 - Q-008 [open] Q-A: Can a new region run the same pipeline by changing only config + assets?
@@ -74,11 +75,11 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Active decisions
 
+- D-009 (2026-10-13) Study drivers live in pravah.studies.{toy,belauri} with module aliases at the old paths; shared helpers limited to what was identical (pravah.runner). Per-study protocol code (check_ensembles x3, windunc freeze, hash payloads) stays separate because the copies differ scientifically.
 - D-008 (2026-10-13) Model allocation strategy sonnet_first selected (orchestration.active_strategy). orchestration.enabled remains false; what that blocks is untested.
 - D-007 (2026-10-12) PRAVAH pre-migration, pre-refactor baseline is frozen at git d395b78 (tag baseline/pre-refactor-2026-10). This is a WORKING ENGINEERING BASELINE, not a scientifically validated model: the solver, inverse, design and HPC pipelines run reproducibly and are regression-locked, but every quantitative atmospheric result remains synthetic and only 4 of 35 findings (F-002, F-006, F-007, F-009) have passed independent review. No empirical validation exists. Future refactors must preserve the invariants listed in this decision.
 - D-006 (2026-10-12) EXP-015's acceptance criterion is amended POST HOC (dated 2026-10-12, after results were seen) from the two-sided 'within the replicate-pair IQR' to the one-sided 'no larger than the replicate-pair distribution' that its own hypothesis states; and EXP-015 stage 2 is recorded as NOT having tested H1, because its baseline is not commensurable with its mesh comparison. 500 m / dt 100 is provisionally admissible for EXP-026 on the narrow grounds in F-035 - no evidence against, not shown adequate.
 - D-005 (2026-10-12) FiPy regression gate is architecture-scoped: the 21 files / 0 differ requirement is binding WITHIN an architecture; the x86_64 cluster gets its own committed baseline and the arm64 baseline stays authoritative for laptop work. Cross-architecture bit-identity is not achievable and is not required. No tolerance was loosened.
-- D-004 (2026-10-11) Phase 3 baseline and deferrals
 
 ## Blockers
 

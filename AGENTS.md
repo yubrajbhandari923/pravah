@@ -12,8 +12,8 @@ decisions, what needs review). 2. `docs/README.md` (index: which doc answers whi
 Do not read everything; do not re-derive what a finding or doc already states. Findings carry a status: only **supported** ones were independently reviewed.
 
 ### Where things are
-`src/pravah/`: `config` (frozen dataclasses, theta kinds), `forward` (FiPy + `ForwardSolver`/`BackendInfo`), `inverse`, `attribution`, `design`, `experiments`,
-`transboundary`, `indoor`, `belauri`, `geodesign`, `geodesign_robust`, `geo/` (fetch/prepare/regionio/scenarios; optional GIS extra), `cli.py`
+`src/pravah/`: `config` (frozen dataclasses, theta kinds), `forward` (FiPy + `ForwardSolver`/`BackendInfo`), `inverse`, `attribution`, `design`, `winds`, `population`, `era5`, `runner` (shared study helpers),
+`indoor`, `geo/` (fetch/prepare/regionio/scenarios; optional GIS extra), `studies/toy/` (`experiments`, `transboundary`, `windunc`), `studies/belauri/` (`belauri`, `geodesign`, `geodesign_robust`; the old top-level names still import, as aliases), `cli.py`
 (`python -m pravah {simulate,inverse,benchmark,geo}`; `benchmark` dispatches on `cfg["experiment"]`). Configs in `configs/`, notebooks `01`–`06` in `notebooks/`.
 
 ### Commands
