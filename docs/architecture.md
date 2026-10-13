@@ -125,5 +125,4 @@ in the prepared manifest; arrays are `[y, x]`, y increasing northward.
 
 User docs: `../README.md`, `extending.md` (worked examples, including phase 2), `validation.md` (v0 record) and
 `phase2-validation.md` (phase-2 record and requirement table). Scripts: `scripts/verification.py`, `verify_notebooks.py`,
-`capture_regression.py`, `compare_runs.py`, `geo_report.py`, `geo_relief_profile.py`, `transboundary_tables.py`,
-`register_research.py`. See `implementation-plan.md` for the discretisation and conventions.
+`capture_regression.py`, `compare_runs.py`, `geo_report.py`, `geo_relief_profile.py`, `transboundary_tables.py`. See `implementation-plan.md` for the discretisation and conventions.

@@ -108,7 +108,20 @@ def archive_git_state(out_dir: str | Path, cap: int = GIT_PATCH_CAP, cwd: str | 
             "note": "git_diff.patch is `git diff HEAD` (tracked files only; untracked files are listed in git_status.txt)"}
 
 
-def provenance(config: dict[str, Any], seeds: dict[str, Any], extra: dict[str, Any] | None = None) -> dict[str, Any]:
+DATA_KINDS = ("synthetic", "geography_only", "observed")
+
+
+def data_provenance(kind: str, datasets: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+    """Scientific input identity of a run: ``kind`` is synthetic (nothing external), geography_only (real geometry, synthetic
+    emissions/meteorology) or observed (measurements); ``datasets`` lists only inputs whose identity is known
+    (``{"role", "path", "sha256"}``). Execution metadata stays with Research OS."""
+    if kind not in DATA_KINDS:
+        raise ValueError(f"data kind {kind!r} not in {DATA_KINDS}")
+    return {"kind": kind, "datasets": datasets or []}
+
+
+def provenance(config: dict[str, Any], seeds: dict[str, Any], extra: dict[str, Any] | None = None,
+               data: dict[str, Any] | None = None) -> dict[str, Any]:
     rev = _git("rev-parse", "HEAD")
     status = _git("status", "--porcelain") if rev else None
     return {
@@ -122,6 +135,7 @@ def provenance(config: dict[str, Any], seeds: dict[str, Any], extra: dict[str, A
         **_dirty_info(rev),
         "timestamp_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
         "extra": extra or {},
+        **({"data_provenance": data} if data is not None else {}),
     }
 
 

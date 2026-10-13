@@ -1,4 +1,5 @@
 #!/bin/bash
+# DEPRECATED (kept for a cluster without SSH access): the supported route is `research hpc submit` (docs/hpc-runbook.md, D-005).
 # ONE job for all heavy Phase 3 work: phases run in sequence inside scripts/hpc_run.py, parallelism is Python processes.
 # The code is CPU-only: GPUs are not used. Fill the <PLACEHOLDERS>; submit with:  sbatch slurm/phase3.sbatch
 # (CPUS=128 sbatch --cpus-per-task=128 ... to use a whole node; the directive below is overridden by the command line.)

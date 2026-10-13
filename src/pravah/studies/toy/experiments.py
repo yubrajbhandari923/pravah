@@ -45,7 +45,7 @@ from ...design import (Candidates, Constraints, DesignCase, DesignOptions, Layou
                      score_layout, spread_layout)
 from ...forward import FIPY, ForwardSolver, forward_info, get_forward
 from ...inverse import ResponseCache, run_forward
-from ...io import make_run_dir, provenance, write_csv, write_json
+from ...io import data_provenance, make_run_dir, provenance, write_csv, write_json
 from ...metrics import population_weight
 
 
@@ -433,7 +433,7 @@ def run_alpha_selection(cfg: dict[str, Any], out_dir: Path | str | None = None, 
         write_json(run_dir / "alpha_selected.json", selected)
         write_json(run_dir / "provenance.json", provenance(cfg, seeds, {
             "experiment": "alpha_selection", "criterion": CRITERION_TEXT, "backends": st.backend_dict(),
-            "note": "synthetic idealised experiment; independent of every test scenario"}))
+            "note": "synthetic idealised experiment; independent of every test scenario"}, data=data_provenance("synthetic")))
         write_csv(run_dir / "validation_raw.csv", raw)
         write_json(run_dir / "layouts.json", {"candidates_n": int(d["candidates_n"]),
                                               "layouts": _jsonable_layouts(layouts)})
@@ -632,7 +632,7 @@ def _write_benchmark(res: BenchmarkResult, cfg: dict[str, Any], run_dir: Path, s
     write_json(run_dir / "config.json", cfg)
     write_json(run_dir / "provenance.json", provenance(cfg, res.seeds, {
         "experiment": "benchmark", "noise_std": st.noise_std, "alpha": st.alpha_info, "backends": st.backend_dict(),
-        "note": "synthetic idealised experiment; RMSE in microgram/m^3 on the inference grid"}))
+        "note": "synthetic idealised experiment; RMSE in microgram/m^3 on the inference grid"}, data=data_provenance("synthetic")))
     write_csv(run_dir / "raw_metrics.csv", res.raw)
     write_csv(run_dir / "summary.csv", res.summary)
     write_json(run_dir / "summary.json", {"sd_label": SD_LABEL, "alpha": st.alpha_info, "backend": st.backend_dict(),
@@ -905,7 +905,7 @@ def _write_mismatch(res: MismatchResult, cfg: dict[str, Any], run_dir: Path, st:
     write_json(run_dir / "provenance.json", provenance(cfg, seeds, {
         "experiment": "mismatch", "alpha": st.alpha_info, "backends": st.backend_dict(), "layouts_from": src if isinstance(src, str) else "dict", "mismatch": m,
         "poor_layout": [list(contrast["poor"]), [cands.ids[i] for i in contrast["poor"]]],
-        "note": "mismatch differences are descriptive; they need not worsen every draw"}))
+        "note": "mismatch differences are descriptive; they need not worsen every draw"}, data=data_provenance("synthetic")))
     write_csv(run_dir / "raw_metrics.csv", res.raw)
     write_csv(run_dir / "summary.csv", res.summary)
     write_json(run_dir / "summary.json", {"sd_label": SD_LABEL, "alpha": st.alpha_info, "backend": st.backend_dict(),

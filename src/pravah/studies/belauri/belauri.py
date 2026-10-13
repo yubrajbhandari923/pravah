@@ -43,7 +43,7 @@ from ...geo.prepare import GridLevel, Region, load_region
 from ...geo.scenarios import (LABEL, BelauriCase, WindFactory, belauri_scenario, build_wind, crop_region,
                             numerical_diffusion_estimate, study_weights_of)
 from ...inverse import ResponseCache, Responses, run_forward
-from ...io import make_run_dir, provenance, save_field, write_csv, write_json
+from ...io import data_provenance, make_run_dir, provenance, save_field, write_csv, write_json
 from ...metrics import quadrature_weights
 from ...sources import cell_centres
 from ..toy.transboundary import arrival_time, fraction_timeseries
@@ -754,5 +754,5 @@ def run_belauri_forward(cfg: dict[str, Any], out_dir: Path | str, overwrite: boo
         "experiment": "belauri_forward", "label": LABEL, "manifest": str(study.manifest_path), "manifest_sha256": study.manifest_sha256,
         "boundary_status": study.full.boundary_status, "resolution_m": study.res, "dt_s": study.dt, "seeds": "none (deterministic)",
         "amplitudes_ug_s": study.amplitudes, "points": study.points,
-        "note": "emissions and meteorology are SYNTHETIC; DEM/hillshade/slope are plotting-only context"}))
+        "note": "emissions and meteorology are SYNTHETIC; DEM/hillshade/slope are plotting-only context"}, data=data_provenance("geography_only", [{"role": "geography_manifest", "path": str(study.manifest_path), "sha256": study.manifest_sha256}])))
     return BelauriResult(out, run_names, figs, tim)

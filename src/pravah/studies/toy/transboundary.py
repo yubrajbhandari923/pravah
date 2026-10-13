@@ -59,7 +59,7 @@ from ...config import (Boundary, Domain, GaussianSource, InflowBasis, Scenario, 
 from .experiments import perturb_wind
 from ...forward import FIPY
 from ...inverse import SCALE_BY_KIND, InferenceOptions, ResponseCache, Responses, fit_sources, run_forward
-from ...io import make_run_dir, provenance, write_csv, write_json
+from ...io import data_provenance, make_run_dir, provenance, write_csv, write_json
 from ...metrics import field_rmse, quadrature_weights
 from ...observations import ObservationSpec, Observations, SensorLayout, observe, sample
 from ...sources import check_origin_tags, study_weights
@@ -1118,6 +1118,6 @@ def run_transboundary(cfg: dict[str, Any], out_dir: Path | str, overwrite: bool 
              "special_noise_seed": cfg["special"]["noise_seed"], "equivalence_noise_seed": cfg["domain_size"]["equivalence"]["noise_seed"]}
     write_json(out / "provenance.json", provenance(cfg, seeds, {
         "experiment": "transboundary", "studies": done, "alpha_by_noise_fraction": run.alpha_by_noise,
-        "note": "synthetic demonstration, not an estimate for any place; tags never reach fit_sources"}))
+        "note": "synthetic demonstration, not an estimate for any place; tags never reach fit_sources"}, data=data_provenance("synthetic")))
     write_json(out / "timings.json", run.tim)
     return TransboundaryResult(out, run.alpha_by_noise, run.tim, run.figures, done)

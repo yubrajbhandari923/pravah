@@ -12,9 +12,21 @@ from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import lsqr
 
 from .config import Domain, WindSegment
-from .geo.scenarios import eddy_streamfunction  # psi = u*y - v*x + A*exp(-r^2/2s^2); no Belauri data is read
 
 LABEL = "prescribed wind, not terrain-derived"
+
+Offset = tuple[float, float]
+
+
+def eddy_streamfunction(domain: Domain, offset: Offset, u: float, v: float, centre: tuple[float, float],
+                        sigma: float, amplitude: float) -> np.ndarray:
+    """psi (ny+1, nx+1) at cell corners [m^2/s] for the SYNTHETIC channelled demo: a uniform wind (u, v) plus a Gaussian
+    eddy psi' = amplitude * exp(-r^2 / 2 sigma^2) centred at ``centre`` (standard-domain local metres).  The face
+    velocities are (d psi/dy, -d psi/dx), exactly divergence free.  Not derived from the DEM."""
+    x = (np.arange(domain.nx + 1) * domain.dx + offset[0])[None, :]
+    y = (np.arange(domain.ny + 1) * domain.dy + offset[1])[:, None]
+    r2 = (x - centre[0]) ** 2 + (y - centre[1]) ** 2
+    return u * y - v * x + amplitude * np.exp(-r2 / (2.0 * sigma**2))
 
 
 def _corner_psi(domain: Domain, u: float, v: float, centre: tuple[float, float] | None, sigma: float,

@@ -28,6 +28,7 @@ import numpy as np
 from ..config import (Boundary, Domain, GaussianSource, InflowBasis, Initial, Scenario, StudyMask, Times, Transport,
                       WindSegment)
 from ..sources import check_origin_tags
+from ..winds import eddy_streamfunction  # noqa: F401  (moved to pravah.winds; re-exported here)
 from .prepare import GeoRef, GridLevel, Region
 from .regionio import GridSpec
 
@@ -67,17 +68,6 @@ def uniform_wind(segments: Sequence[tuple[float, float]], speed: float) -> WindF
     def make(domain: Domain, offset: Offset) -> tuple[WindSegment, ...]:
         return tuple(WindSegment(t, *toward_vector(f, speed)) for t, f in segs)
     return make
-
-
-def eddy_streamfunction(domain: Domain, offset: Offset, u: float, v: float, centre: tuple[float, float],
-                        sigma: float, amplitude: float) -> np.ndarray:
-    """psi (ny+1, nx+1) at cell corners [m^2/s] for the SYNTHETIC channelled demo: a uniform wind (u, v) plus a Gaussian
-    eddy psi' = amplitude * exp(-r^2 / 2 sigma^2) centred at ``centre`` (standard-domain local metres).  The face
-    velocities are (d psi/dy, -d psi/dx), exactly divergence free.  Not derived from the DEM."""
-    x = (np.arange(domain.nx + 1) * domain.dx + offset[0])[None, :]
-    y = (np.arange(domain.ny + 1) * domain.dy + offset[1])[:, None]
-    r2 = (x - centre[0]) ** 2 + (y - centre[1]) ** 2
-    return u * y - v * x + amplitude * np.exp(-r2 / (2.0 * sigma**2))
 
 
 def eddy_wind(from_deg: float, speed: float, centre: tuple[float, float], sigma: float, amplitude: float) -> WindFactory:

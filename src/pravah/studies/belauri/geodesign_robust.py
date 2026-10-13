@@ -56,7 +56,7 @@ from .geodesign import (ALPHA_ZERO, INTERIOR, LABEL, PROVISIONAL, SD_NOTE, SELEC
 from .geodesign import paired_tables as method_contrasts
 from ...geo.scenarios import numerical_diffusion_estimate, toward_vector
 from ...inverse import ResponseCache, run_forward
-from ...io import archive_git_state, make_run_dir, provenance, write_csv, write_json
+from ...io import archive_git_state, data_provenance, make_run_dir, provenance, write_csv, write_json
 from ...sources import check_origin_tags
 
 CONDITIONS = ("matched", "unseen_wind", "unseen_wind_declared", "hidden_wind_error", "boundary_time_profile",
@@ -921,6 +921,6 @@ def run_geodesign_robust(cfg: dict[str, Any], out_dir: Path | str, overwrite: bo
         "git_archive": git_archive,
         "identifiability_note": "flags are a function of the operator and sigma only; they cannot detect a wrong model "
                                 "(chi2_per_dof in test_raw.csv / chi2_by_condition.csv is the data-based check)",
-        "note": "emissions, inflow, winds and noise are SYNTHETIC; mismatch differences are descriptive and need not worsen every draw"}))
+        "note": "emissions, inflow, winds and noise are SYNTHETIC; mismatch differences are descriptive and need not worsen every draw"}, data=data_provenance("geography_only", [{"role": "geography_manifest", "path": str(st.geo.manifest_path), "sha256": st.geo.manifest_sha256}])))
     files += ["timings.json", "provenance.json"] + (["git_diff.patch", "git_status.txt"] if git_archive.get("dirty") else [])
     return RobustResult(out, files, tim, raw, ps, figs)

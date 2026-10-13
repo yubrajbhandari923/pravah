@@ -810,3 +810,23 @@ Real geography; synthetic emissions and meteorology.
 `belauri_scenario` returns a `BelauriCase` (`scenario`, `theta`, `labels`, `georef`, `region`). Sources are `RasterSource`s from the
 prepared `w_road`, `w_builtup` and the external patch, normalised so sum f dA = 1; the study region is a `StudyMask` of
 polygon-cell area fractions. The emission rates and the wind are synthetic values you choose; the DEM is not read.
+
+## 14. Add a scientific study (where it goes and what it must do)
+
+A study is an orchestration of core pieces (scenario, ensembles, inference, design) that writes tables, figures and `provenance.json`.
+
+* **Where.** A toy or benchmark study with no external data goes in `src/pravah/studies/toy/`; a study on the prepared Belauri region goes in
+  `src/pravah/studies/belauri/`. Observation-driven studies will get `studies/observed/` once measurements exist; do not create it empty. Reusable
+  algorithms (a new inversion, a new placement objective) belong in `inverse` / `design`, not in a study. Executable entry points stay in
+  `scripts/` (or `python -m pravah`) and should only parse arguments, call the study function and write outputs.
+* **Dependencies.** A study may import the core, the data layer (`geo`, `population`, `era5`) and other studies; the core never imports a study
+  (`tests/test_architecture.py` enforces the core rule).
+* **Protocol, per study.** Declare design / validation / test seeds that are disjoint from each other and from every earlier config; choose alpha
+  and layouts on design/validation data only; write the frozen-choice hash before touching test data and re-check it with
+  `pravah.runner.check_frozen` before evaluating; use `pravah.runner.guard_out` so a resumed run cannot silently mix configs. The test set is
+  spent once. The guard code is deliberately **not** shared beyond those helpers: how a draw is keyed and how noise-seed ranges are counted differ
+  between studies and are part of each study's registered protocol.
+* **Provenance.** Call `io.provenance(cfg, seeds, extra, data=io.data_provenance(kind, datasets))` with `kind` one of `synthetic`,
+  `geography_only`, `observed`, listing only datasets whose identity (path and sha256) you know. Research OS owns execution provenance; do not
+  copy run metadata into it.
+* **Do not claim validation.** `observed` is the only kind that can support an empirical claim, and none exists yet.

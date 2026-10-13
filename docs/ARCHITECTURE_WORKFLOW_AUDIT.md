@@ -134,9 +134,9 @@ Only items with **zero references outside their own file and tests** by AST + te
 | `era5.py:59 box_mean` | Library API with a test; keep unless ERA5 ingestion is dropped. |
 | `forward.py:141 _boundary_coefficients` | Private; one test uses it. Test of an internal; relocate the test. |
 | `geo/regionio.py:32 to_metric` | Public helper, tested, unused by code. Keep or remove with its test. |
-| `plotting.py:87 plot_layout`, `:137 plot_error_vs_budget` | Not called from src/scripts/tests/notebooks by name [V] (notebooks searched as raw JSON). Suspected dead. |
+| `plotting.py:87 plot_layout`, `:137 plot_error_vs_budget` | **Correction (Phase 3):** used by `tests/test_observations.py:181`; not dead. Keep. |
 | `slurm/phase3.sbatch` (+ `slurm/setup_env.sh` which it and `hpc_run.py` mention) | **Superseded** by Research OS submission (hpc-runbook says so) but still referenced by AGENTS.md, notebook 10, PLAN-004/T-033 text. Deprecate; do not delete while T-033's text still says "submit slurm/phase3.sbatch". |
-| `scripts/hpc_regression_selfcheck.sh` | No references anywhere [V]. Suspected unused; confirm before removal. |
+| `scripts/hpc_regression_selfcheck.sh` | **Correction (Phase 3):** run by RUN-0053 (`.research/runs/RUN-0053/run.json`); my grep excluded `.research/runs`. Not dead. Keep. |
 | `tools/PRAVAH_CLAUDE_CODE_PROMPT.md` (15 KB) | A task prompt for building the explorer, not documentation. Relocate to `.research/notes` or delete. |
 | `.claude/skills/*` (322 tracked files, 23 MB: design, impeccable, ui-ux, vercel-react, ...) | Generic front-end design skills; not related to a numerical Python project. They enlarge the skill list every session. Remove from tracking or move to user scope. Needs your decision (O-6). |
 | `tools/architecture-explorer/` (27 files, 81 MB on disk incl. `node_modules`) | A separate React app unrelated to run/test of PRAVAH. Keep if you use it; otherwise move out of the repo. Needs your decision (O-7). |

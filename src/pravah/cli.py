@@ -86,7 +86,8 @@ def cmd_simulate(args: argparse.Namespace) -> int:
         io.save_field(out / "budget.nc", res.budget)
     io.write_json(out / "metrics.json", _budget_summary(res))
     io.write_json(out / "provenance.json", io.provenance(cfg, {}, {"solver": to_dict(solver),
-                                                                       "backend": forward_info(truth_fwd).to_dict()}))
+                                                                       "backend": forward_info(truth_fwd).to_dict()},
+                                                                       data=io.data_provenance("synthetic")))
     plotting.plot_field_snapshots(res.concentration).savefig(out / "snapshots.png", dpi=120)
     if res.budget is not None:
         plotting.plot_mass_budget(res.budget).savefig(out / "mass_budget.png", dpi=120)
@@ -143,7 +144,8 @@ def cmd_inverse(args: argparse.Namespace) -> int:
     io.write_json(out / "inverse_metrics.json", report)
     io.write_json(out / "provenance.json", io.provenance(cfg, {"noise_seed": inv["seed"]},
                                                   {"backends": {"truth": forward_info(truth_fwd).to_dict(),
-                                                                "inference": forward_info(inf_fwd).to_dict()}}))
+                                                                "inference": forward_info(inf_fwd).to_dict()}},
+                                                  data=io.data_provenance("synthetic")))
     lin = report["linear"]
     print(f"inverse: q_hat={np.round(lin['q_hat'], 0).tolist()} true={q.tolist()} rank={lin['rank']} "
           f"cond={lin['condition']:.3g} regional_rmse={lin['regional_rmse']:.3g} -> {out}")

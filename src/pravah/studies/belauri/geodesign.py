@@ -48,7 +48,7 @@ from ...geo.prepare import Region, load_region
 from ...geo.scenarios import LABEL as REGION_LABEL
 from ...geo.scenarios import BelauriCase, belauri_scenario, crop_region, study_weights_of, toward_vector
 from ...inverse import FitResult, ResponseCache, run_forward
-from ...io import archive_git_state, make_run_dir, provenance, write_csv, write_json
+from ...io import archive_git_state, data_provenance, make_run_dir, provenance, write_csv, write_json
 
 
 LABEL = "Real geography; synthetic emissions and meteorology"
@@ -1073,6 +1073,6 @@ def run_geodesign(cfg: dict[str, Any], out_dir: Path | str, overwrite: bool = Fa
         "noise_sigma_ug_m3": {r: {f"{f:g}": e.sigma[f] for f in st.fractions} for r, e in ens.items()},
         "infeasible_budgets": {k: sorted(v) for k, v in stage.infeasible.items()},
         "git_archive": git_archive,
-        "note": "emissions, inflow, winds and noise are SYNTHETIC; layouts are greedy heuristics, never called optimal"}))
+        "note": "emissions, inflow, winds and noise are SYNTHETIC; layouts are greedy heuristics, never called optimal"}, data=data_provenance("geography_only", [{"role": "geography_manifest", "path": str(st.geo.manifest_path), "sha256": st.geo.manifest_sha256}])))
     files += ["timings.json", "provenance.json"] + (["git_diff.patch", "git_status.txt"] if git_archive.get("dirty") else [])
     return GeodesignResult(out, stage.alpha, files, tim, figs)

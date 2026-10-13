@@ -249,8 +249,8 @@ Status of each requirement and measured results: `docs/phase2-validation.md`.
 ## Optional: Research Panel
 
 The repo is also tracked with Research OS (`.research/`, see `AGENTS.md`). This is optional and the `pravah`
-package never imports it. To register a finished run directory as artifacts and metrics:
-`python scripts/register_research.py RUN-001 EXP-001 results/<dir>`.
+package never imports it. Run studies with `.research/bin/research run exec EXP-... -- <command>` and register outputs with
+`research artifact add` / `research.log_metric` (the former `scripts/register_research.py` adapter was removed; Research OS covers it).
 
 ## Layout
 
@@ -262,7 +262,7 @@ src/pravah/   config forward sources observations inverse metrics design io plot
 configs/      reference smoke smoke_alpha_selection alpha_selection benchmark benchmark_unregularized mismatch wind_change (JSON, "extends" supported)
               transboundary(_smoke) belauri_geo belauri_forward(_smoke) geodesign(_smoke) geodesign_robust(_smoke)   [phase 2]
 notebooks/    01_transport 02_inverse 03_sensor_design   04_transboundary_pollution 05_belauri_forward 06_belauri_sensor_design
-scripts/      verification.py  verify_notebooks.py  register_research.py  capture_regression.py compare_runs.py geo_report.py
+scripts/      verification.py  verify_notebooks.py  capture_regression.py compare_runs.py geo_report.py
               geo_relief_profile.py transboundary_tables.py
 tests/        pytest suite (scientific checks, no mocks of the solver)
 docs/         specification  architecture  implementation-plan  extending  validation  phase2-plan  solver-interchangeability
