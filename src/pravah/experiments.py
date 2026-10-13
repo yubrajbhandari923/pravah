@@ -29,7 +29,7 @@ import sys
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -37,6 +37,7 @@ import pandas as pd
 import xarray as xr
 from matplotlib.figure import Figure
 
+from .runner import Progress, say as _say
 from .config import (GaussianSource, Scenario, SolverOptions, Times, Transport, WindSegment, scenario_from_dict,
                      to_dict)
 from .design import (Candidates, Constraints, DesignCase, DesignOptions, Layout, assert_disjoint, build_case,
@@ -47,7 +48,6 @@ from .inverse import ResponseCache, run_forward
 from .io import make_run_dir, provenance, write_csv, write_json
 from .metrics import population_weight
 
-Progress = Callable[[str], None] | None
 
 WIND_SPEED_RANGE = (0.6, 1.6)  # m/s
 WIND_DIRECTION_SPREAD_DEG = 40.0  # +/- around the nominal direction
@@ -296,11 +296,6 @@ def _flatten(layouts: dict[str, dict[int, list[Layout]]]) -> dict[str, list[Layo
 def _peak_mb() -> float:
     r = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
     return r / 1e6 if sys.platform == "darwin" else r / 1e3  # bytes on macOS, KiB on Linux
-
-
-def _say(progress: Progress, msg: str) -> None:
-    if progress is not None:
-        progress(msg)
 
 
 def _jsonable_layouts(layouts: dict[str, dict[int, list[Layout]]]) -> dict[str, dict[str, list[list[int]]]]:

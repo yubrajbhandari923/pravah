@@ -35,6 +35,7 @@ from matplotlib.animation import FuncAnimation
 from matplotlib.figure import Figure
 from matplotlib.patches import Circle, Rectangle
 
+from .runner import Progress, save_fig as _save_fig, say as _say
 from .attribution import contributions, external_fraction
 from .config import FieldResult, InflowBasis, SolverOptions, to_dict
 from .forward import FIPY
@@ -47,14 +48,8 @@ from .metrics import quadrature_weights
 from .sources import cell_centres
 from .transboundary import arrival_time, fraction_timeseries
 
-Progress = Callable[[str], None] | None
 PLOTTING_ONLY_LAYERS = ("dem_mean", "dem_valid_fraction", "slope_deg", "hillshade", "profile_ns_z", "profile_ew_z")
 REPO_ROOT = Path(__file__).resolve().parents[2]
-
-
-def _say(progress: Progress, msg: str) -> None:
-    if progress is not None:
-        progress(msg)
 
 
 def resolve_manifest(path: str | Path) -> Path:
@@ -645,14 +640,6 @@ class BelauriResult:
     figures: list[str]
     timings: dict[str, float]
     files: list[str] = field(default_factory=list)
-
-
-def _save_fig(out: Path, fig: Figure, name: str, figures: list[str]) -> None:
-    d = out / "figures"
-    d.mkdir(exist_ok=True)
-    fig.savefig(d / name, dpi=110, bbox_inches="tight")
-    plt.close(fig)
-    figures.append(name)
 
 
 def run_belauri_forward(cfg: dict[str, Any], out_dir: Path | str, overwrite: bool = False, progress: Progress = None

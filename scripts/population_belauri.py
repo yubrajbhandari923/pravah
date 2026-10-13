@@ -52,6 +52,7 @@ from pravah.config import _merge, load_config  # noqa: E402
 from pravah.forward import FIPY  # noqa: E402
 from pravah.inverse import SCALE_BY_KIND, ResponseCache, run_forward  # noqa: E402
 from pravah.io import provenance, write_json  # noqa: E402
+from pravah.runner import check_frozen, guard_out as guard_out_rec  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -186,15 +187,7 @@ def cfg_hash(cfg: dict[str, Any]) -> str:
 def guard_out(out: Path, cfg: dict[str, Any], profile: str) -> None:
     """Output dir must be empty (new) or carry run_guard.json with the same config hash and profile (resume)."""
     rec = {"config_hash": cfg_hash(cfg), "profile": profile, "types": cfg["run"]["types"], "draws": cfg["run"]["draws"]}
-    gp = out / "run_guard.json"
-    if out.exists() and any(out.iterdir()):
-        if not gp.exists():
-            raise RuntimeError(f"{out} is not empty and has no run_guard.json; use a new --out")
-        if json.loads(gp.read_text()) != rec:
-            raise RuntimeError(f"{out} was made with a different frozen config or run selection; use a new --out")
-    else:
-        out.mkdir(parents=True, exist_ok=True)
-        write_json(gp, rec)
+    guard_out_rec(out, rec)
 
 
 def historic_seeds(skip: str = "population_belauri") -> tuple[set[int], list[tuple[int, int]]]:
@@ -867,9 +860,7 @@ def freeze_hash(cfg: dict[str, Any], alphas: dict[float, float], sigmas: dict[fl
 
 
 def assert_frozen(out: Path, now: str) -> None:
-    rec = json.loads((out / "provenance.json").read_text())["frozen_config_hash"]
-    if rec != now:
-        raise RuntimeError(f"freeze guard: frozen config hash changed ({rec} -> {now})")
+    check_frozen(out, now)
 
 
 def eval_layout_sets(ctx: Ctx, rec: pd.DataFrame, split: pd.DataFrame) -> dict[tuple[int, int], list[tuple[int, ...]]]:

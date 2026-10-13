@@ -41,6 +41,7 @@ from pravah.config import _merge, load_config
 from pravah.geo.regionio import GridSpec
 from pravah.inverse import SCALE_BY_KIND, ResponseCache
 from pravah.io import provenance, write_json
+from pravah.runner import check_frozen, guard_out as guard_out_rec
 
 ROOT = Path(__file__).resolve().parents[1]
 _spec = importlib.util.spec_from_file_location("population_design", ROOT / "scripts/population_design.py")
@@ -149,26 +150,12 @@ def frozen_hash(cfg: dict[str, Any], alphas: dict[str, float] | None) -> str:
 
 
 def assert_frozen(out: Path, cfg: dict[str, Any], alphas: dict[str, float]) -> str:
-    rec = json.loads((out / "provenance.json").read_text())["frozen_config_hash"]
-    now = frozen_hash(cfg, alphas)
-    if rec != now:
-        raise RuntimeError(f"freeze guard: frozen config hash changed ({rec} -> {now})")
-    return now
+    return check_frozen(out, frozen_hash(cfg, alphas))
 
 
 def guard_out(out: Path, cfg: dict[str, Any], selection: dict[str, Any]) -> None:
     """Output dir must be empty (new) or carry run_guard.json with the same config hash and run selection (resume)."""
-    gp = out / "run_guard.json"
-    rec = {"config_hash_without_alpha": frozen_hash(cfg, None), "selection": selection}
-    if out.exists() and any(out.iterdir()):
-        if not gp.exists():
-            raise RuntimeError(f"{out} is not empty and has no run_guard.json; use a new --out")
-        old = json.loads(gp.read_text())
-        if old != rec:
-            raise RuntimeError(f"{out} was made with a different frozen config or run selection; use a new --out")
-    else:
-        out.mkdir(parents=True, exist_ok=True)
-        write_json(gp, rec)
+    guard_out_rec(out, {"config_hash_without_alpha": frozen_hash(cfg, None), "selection": selection})
 
 
 # ------------------------------------------------------------------------------------------------ batched bounded fit

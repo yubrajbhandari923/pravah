@@ -28,13 +28,14 @@ import time
 from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, cast
+from typing import Any, cast
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.figure import Figure
 
+from .runner import Progress, save_fig as _save_fig, say as _say
 from . import design as D
 from .attribution import base_parts, contributions, external_part, identifiability_report
 from .belauri import draw_map, file_sha256, resolve_manifest
@@ -49,7 +50,6 @@ from .geo.scenarios import BelauriCase, belauri_scenario, crop_region, study_wei
 from .inverse import FitResult, ResponseCache, run_forward
 from .io import archive_git_state, make_run_dir, provenance, write_csv, write_json
 
-Progress = Callable[[str], None] | None
 
 LABEL = "Real geography; synthetic emissions and meteorology"
 PROVISIONAL = "provisional simulation design, not field-validated"
@@ -64,11 +64,6 @@ SELECTED, ALPHA_ZERO, STRONG = "selected", "alpha_zero", "strong_prior"
 SD_NOTE = "sd across layouts x cases x noise reps (descriptive, never a confidence interval; cases/reps are not independent)"
 PARAMS = ("road", "builtup", "external_patch", "bg")
 DEFAULT_FACILITIES = ("school", "college", "kindergarten", "university", "hospital", "clinic", "doctors", "health_post")
-
-
-def _say(progress: Progress, msg: str) -> None:
-    if progress is not None:
-        progress(msg)
 
 
 def config_hash(cfg: dict[str, Any], drop: tuple[str, ...] = ()) -> str:
@@ -986,14 +981,6 @@ class GeodesignResult:
     files: list[str]
     timings: dict[str, float]
     figures: list[str] = field(default_factory=list)
-
-
-def _save_fig(out: Path, fig: Figure, name: str, figs: list[str]) -> None:
-    d = out / "figures"
-    d.mkdir(exist_ok=True)
-    fig.savefig(d / name, dpi=110, bbox_inches="tight")
-    plt.close(fig)
-    figs.append(name)
 
 
 def noise_levels(st: Setup, ens: dict[str, Ensemble]) -> pd.DataFrame:

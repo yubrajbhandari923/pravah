@@ -35,6 +35,7 @@ from pravah.geo.regionio import GridSpec
 from pravah.inverse import ResponseCache, Responses, run_forward
 from pravah.io import provenance, write_json
 from pravah.metrics import quadrature_weights
+from pravah.runner import check_frozen
 
 ROOT = Path(__file__).resolve().parents[1]
 STAMP = "EXP-017"
@@ -99,11 +100,7 @@ def frozen_hash(cfg: dict[str, Any], alpha: float) -> str:
 
 def assert_frozen(out: Path, cfg: dict[str, Any], alpha: float) -> str:
     """Freeze guard: the hash recorded in provenance.json before test evaluation must equal the live one."""
-    rec = json.loads((out / "provenance.json").read_text())["frozen_config_hash"]
-    now = frozen_hash(cfg, alpha)
-    if rec != now:
-        raise RuntimeError(f"freeze guard: frozen config hash changed ({rec} -> {now})")
-    return now
+    return check_frozen(out, frozen_hash(cfg, alpha))
 
 
 def check_uniform_equals_area(layouts: dict[tuple[str, str, int], tuple[int, ...]], budgets: list[int], objs: list[str]) -> None:

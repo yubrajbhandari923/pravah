@@ -43,6 +43,7 @@ import pandas as pd
 import xarray as xr
 from matplotlib.figure import Figure
 
+from .runner import save_fig as _save_fig
 from . import design as D
 from .belauri import draw_map
 from .config import Boundary, GaussianSource, RasterSource, Scenario, StudyMask, Times, WindSegment
@@ -798,14 +799,6 @@ class RobustResult:
     raw: pd.DataFrame
     paired: pd.DataFrame
     figures: list[str] = field(default_factory=list)
-
-
-def _save_fig(out: Path, fig: Figure, name: str, figs: list[str]) -> None:
-    d = out / "figures"
-    d.mkdir(exist_ok=True)
-    fig.savefig(d / name, dpi=110, bbox_inches="tight")
-    plt.close(fig)
-    figs.append(name)
 
 
 def run_geodesign_robust(cfg: dict[str, Any], out_dir: Path | str, overwrite: bool = False, progress: Progress = None,

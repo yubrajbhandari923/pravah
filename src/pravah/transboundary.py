@@ -43,7 +43,7 @@ import math
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, cast
+from typing import Any, cast
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
@@ -51,6 +51,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
+from .runner import Progress, say as _say
 from .attribution import (component_errors, contributions, emission_error, external_part, identifiability_report,
                           origin_fractions, total_field)
 from .config import (Boundary, Domain, GaussianSource, InflowBasis, Scenario, SolverOptions, StudyRegion, Times,
@@ -63,14 +64,8 @@ from .metrics import field_rmse, quadrature_weights
 from .observations import ObservationSpec, Observations, SensorLayout, observe, sample
 from .sources import check_origin_tags, study_weights
 
-Progress = Callable[[str], None] | None
 EPS_REL = 1e-3  # fraction definitions: None when the (time-mean or instantaneous) total is below EPS_REL x the peak
 Rect = tuple[float, float, float, float]
-
-
-def _say(progress: Progress, msg: str) -> None:
-    if progress is not None:
-        progress(msg)
 
 
 # ------------------------------------------------------------------ scenarios
