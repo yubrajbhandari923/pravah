@@ -53,7 +53,7 @@ def main() -> int:
             p = pick(pairs, noise_fraction=float(f), budget=float(b))
             if not len(p):
                 print(f"  noise {f} budget {b}: NO replicate baseline rows — cannot judge"); continue
-            dq1, dmed, dq3 = iqr(p["mean_displacement_m"].astype(float))
+            dq1, dmed, dq3 = iqr(p["mean_disp_m"].astype(float))
             rq1, rmed, rq3 = iqr(p["regret"].astype(float).abs())
             print(f"\n=== noise fraction {f}, budget {b} ===")
             print(f"  replicate-pair baseline (n={len(p)}): displacement IQR [{dq1:.0f}, {dq3:.0f}] m (median {dmed:.0f})")
@@ -62,7 +62,7 @@ def main() -> int:
             disp_by_mesh = {}
             for _, r in s.sort_values(by=["res_m", "dt_s"], ascending=False).iterrows():
                 mesh = (float(r["res_m"]), float(r["dt_s"]))
-                disp, reg = float(r["mean_displacement_m"]), abs(float(r["regret"]))
+                disp, reg = float(r["mean_disp_m"]), abs(float(r["regret"]))
                 is_ref = bool(np.isclose(reg, 0.0) and np.isclose(disp, 0.0))
                 din = dq1 <= disp <= dq3
                 rin = rq1 <= reg <= rq3
@@ -85,7 +85,7 @@ def main() -> int:
             stable = None
             if len(c) and mono_d is not None:
                 row = c.iloc[0]
-                din = dq1 <= float(row["mean_displacement_m"]) <= dq3
+                din = dq1 <= float(row["mean_disp_m"]) <= dq3
                 rin = rq1 <= abs(float(row["regret"])) <= rq3
                 stable = bool(din and rin and mono_d and mono_r)
                 print(f"  --> 500 m / dt 100 ADMISSIBLE per the registered rule: {stable} "

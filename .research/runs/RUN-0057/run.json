@@ -6,19 +6,19 @@
   "backend": "slurm",
   "command": "bash scripts/hpc_link_datasets.sh python scripts/convergence_stage2.py --config configs/convergence_stage2.json --out results/phase3-convergence --estimate",
   "created_at": "2026-10-12T18:13:55-04:00",
-  "ended_at": null,
+  "ended_at": "2026-10-12T18:19:29-04:00",
   "env": {
     "lockfiles": {
       "uv.lock": "cd0adfb7e3bec3fc"
     },
     "user": "yubraj"
   },
-  "exit_code": null,
+  "exit_code": 0,
   "experiment_id": "EXP-025",
   "git_branch": "master",
   "git_commit": "fa2a3af5f2a20de77066f02a83d5a5c056006672",
   "git_dirty": 1,
-  "hostname": "Yubraj-1407.local",
+  "hostname": "node004",
   "id": "RUN-0057",
   "label": null,
   "metrics_offset": 0,
@@ -30,11 +30,15 @@
   "run_dir": ".research/runs/RUN-0057",
   "slurm": {
     "hpc": {
+      "archive_sha256": "82cdb1a7b9b35690042ca1583b491d0e88b94cf6528be401c1e07660a4f11cbe",
       "bundle": ".research/hpc/bundles/EXP-025-RUN-0057.tar.gz",
       "bundle_dir": ".research/hpc/bundles/EXP-025-RUN-0057",
       "cluster": "duke",
+      "collected_at": "2026-10-12T19:33:02-04:00",
+      "collected_on": "plp-drcc-login2",
       "datasets": {},
       "experiment_id": "EXP-025",
+      "last_sync": "2026-10-12T19:33:00-04:00",
       "receipt": "/home/yb107/research-os/projects/pravah/runs/RUN-0057/submission.json",
       "remote_code": "/home/yb107/research-os/projects/pravah/code/EXP-025/RUN-0057",
       "remote_results": "/home/yb107/research-os/projects/pravah/results/RUN-0057",
@@ -47,13 +51,16 @@
       "token": "951e612935e607b780c7cab1e5b48c9c",
       "upload_detail": "all 6 file(s) match",
       "upload_verified": true
-    }
+    },
+    "nodelist": "node004",
+    "partition": "defq",
+    "state": "COMPLETED"
   },
   "slurm_job_id": "201818",
-  "started_at": null,
-  "status": "queued",
+  "started_at": "2026-10-12T18:14:16-04:00",
+  "status": "completed",
   "stderr_path": ".research/runs/RUN-0057/stderr.log",
   "stdout_path": ".research/runs/RUN-0057/stdout.log",
-  "updated_at": "2026-10-12T18:14:15-04:00",
+  "updated_at": "2026-10-12T19:33:03-04:00",
   "working_dir": "."
 }

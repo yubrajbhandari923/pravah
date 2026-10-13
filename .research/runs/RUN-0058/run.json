@@ -1,0 +1,89 @@
+{
+  "artifacts_offset": 0,
+  "author_model": null,
+  "author_name": "claude-code",
+  "author_type": "agent",
+  "backend": "slurm",
+  "command": "bash scripts/hpc_link_datasets.sh python scripts/convergence_stage2.py --config configs/convergence_stage2.json --out results/phase3-convergence --workers 12",
+  "created_at": "2026-10-12T18:20:53-04:00",
+  "ended_at": "2026-10-12T19:31:44-04:00",
+  "env": {
+    "lockfiles": {
+      "uv.lock": "cd0adfb7e3bec3fc"
+    },
+    "user": "yubraj"
+  },
+  "exit_code": 0,
+  "experiment_id": "EXP-015",
+  "git_branch": "master",
+  "git_commit": "c04e5eaf021f970c08e93bb89db8dc5d10ee2cfe",
+  "git_dirty": 0,
+  "hostname": "node004",
+  "id": "RUN-0058",
+  "label": null,
+  "metrics_offset": 0,
+  "notes": "EXP-015 stage 2 production COMPLETE, exit 0, 1h10m32s on node004 (slurm 201819), 12 workers, MaxRSS 2.6 GB of 24 G. All 12 pre-registered artifacts retrieved and sha256-verified 12/12. The 721 MB stage2_work cache was left on the cluster per the user's instruction; only 1.3 MB of analysed results came home. Stage-1 evidence in the same directory verified byte-identical (not overwritten).\n\nCORRECTED after independent review (the review is authoritative over my earlier note; see the review record):\n\nH1 IS UNTESTED, NOT SUPPORTED. The mesh comparison and the replicate baseline are NOT commensurable. convergence_stage2.py:244 and :258 build the design cases for EVERY mesh from the same seed-101 draws, so the mesh comparison has ZERO case-draw variability; :274 builds each replicate from a DIFFERENT draw (seeds 1101-1108), so the baseline carries full case-draw variability. The baseline therefore contains a variance component the mesh comparison does not, and a one-sided mesh<=baseline test cannot fail: a deliberately broken 2 km mesh would also pass. Confirmed in the data: all 48 vs_main regret rows are positive (in-sample vs out-of-sample advantage), median 0.95-2.51 x J_ref, against mesh-induced |regret| of 0.068-0.115 x J_ref.\n\nCRITERION: the registered rule tests IQR_low <= x <= IQR_high while the hypothesis says 'no larger than', so the registered rule yields NO verdict on H1. All 6 failures are below-the-floor, never above-the-ceiling. This is a POST-HOC repair found after seeing results, not a reinterpretation, and must be registered as a dated amendment. Correction to my earlier note: at noise 0.05 budget 5 the displacement was INSIDE the IQR (2771 in [2565,3673]); only regret failed low, so 'failed in all six cells for the same reason' was wrong.\n\nTEST RESULT RETRACTED. The '6-35% better on held-out test' claim is a single-case artefact: n=6 cases (not 18 rows; 6 cases x 3 noise reps), case 0 carries the headline, leave-one-out drops budget 3 from -26.5% to -4.0% and budget 5 from -35.3% to -8.7%, sign counts 4/6, Wilcoxon p=0.22-0.56. Correct reading: NO DETECTABLE DIFFERENCE.\n\n'OBJECTIVE IS VERY FLAT' RETRACTED - MIS-DIAGNOSED. eps_sd/J_ref is 1.01-2.52 at noise 0.05, i.e. the tie threshold is LARGER than the objective itself, so tie_fraction does not measure flatness. At f0.05 b8, 319/368 swaps degrade J by >10% of J_ref and the median degradation is +30%, yet 367/368 are labelled tied. The real problem is that the design objective is NOT IDENTIFIABLE at 6 cases. Budget 8 / noise 0.05 must be excluded from stability claims.\n\n'dt HAS NO EFFECT' OVER-SCOPED: true for dt 100 vs 50 only; dt 25 was never run and has no stop clause. The 125 m arm was dropped although its registered stop condition (250 m stage exceeding 4 h) was NOT met - an undeclared deviation.\n\nNEW FINDING NOT PREVIOUSLY FLAGGED: mesh regret is NEGATIVE at noise 0.05 (-6.8% to -11.5% of J_ref), falsifying numerical-methodology.md section 5's non-negativity expectation and bounding greedy sub-optimality at >=7-12% at the reference mesh. So 'regret vs the reference layout' partly measures greedy path-dependence, and this benignly explains the apparent test advantage.\n\nBudgets 3/5/8 are NESTED PREFIXES of one greedy trace (convergence_stage2.py:176-177), so the effective number of independent decision comparisons is 2 (one per noise fraction), not 6. Noise 0.15 is UNINFORMATIVE for mesh (sampling noise ~1.3 x J_ref swamps the mesh difference). Verified clean by the reviewer: no test-set leakage (:289 asserts layouts exist before :293 builds test cases), alpha is an exact-equality assert against the frozen file (:150-156), noise scale frozen (:142-147), ensembles machine-checked disjoint, fresh seed 304 never used. NOTE: seed 303 is now BURNED and cannot serve as held-out for EXP-026.",
+  "override_reason": null,
+  "parameters": {
+    "alpha": 0.01,
+    "budgets": [
+      3,
+      5,
+      8
+    ],
+    "design_seed": 101,
+    "dt_s": [
+      100,
+      50,
+      25
+    ],
+    "fresh_test_seed": 304,
+    "meshes_m": [
+      500,
+      250,
+      125
+    ],
+    "replicates": 8,
+    "test_seed": 303,
+    "validation_seed": 202
+  },
+  "pid": null,
+  "reviewed": 0,
+  "run_dir": ".research/runs/RUN-0058",
+  "slurm": {
+    "hpc": {
+      "archive_sha256": "64b5bc14086abc1e6e7076176b92c1f8af256824d7804302d12a2ee6113482f9",
+      "bundle": ".research/hpc/bundles/EXP-015-RUN-0058.tar.gz",
+      "bundle_dir": ".research/hpc/bundles/EXP-015-RUN-0058",
+      "cluster": "duke",
+      "collected_at": "2026-10-12T19:33:09-04:00",
+      "collected_on": "plp-drcc-login2",
+      "datasets": {},
+      "experiment_id": "EXP-015",
+      "last_sync": "2026-10-12T19:33:06-04:00",
+      "receipt": "/home/yb107/research-os/projects/pravah/runs/RUN-0058/submission.json",
+      "remote_archive": "/home/yb107/research-os/projects/pravah/code/EXP-015/results-RUN-0058.tar.gz",
+      "remote_code": "/home/yb107/research-os/projects/pravah/code/EXP-015/RUN-0058",
+      "remote_results": "/home/yb107/research-os/projects/pravah/results/RUN-0058",
+      "remote_run_dir": "/home/yb107/research-os/projects/pravah/runs/RUN-0058",
+      "sha256": "3f86e3c3f38e22730c5c99f07644f197040242d8cc30c0c00dfdfa9340dd5f62",
+      "slurm_job_id": "201819",
+      "ssh_host": "plp-drcc-login2",
+      "state": "collected",
+      "submitted_at": "2026-10-12T18:21:10-04:00",
+      "token": "20fb565b3cd3b0abc3ebf2d0cbf94017",
+      "upload_detail": "all 6 file(s) match",
+      "upload_verified": true
+    },
+    "nodelist": "node004",
+    "partition": "defq",
+    "state": "COMPLETED"
+  },
+  "slurm_job_id": "201819",
+  "started_at": "2026-10-12T18:21:12-04:00",
+  "status": "completed",
+  "stderr_path": ".research/runs/RUN-0058/stderr.log",
+  "stdout_path": ".research/runs/RUN-0058/stdout.log",
+  "updated_at": "2026-10-12T19:42:27-04:00",
+  "working_dir": "."
+}

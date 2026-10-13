@@ -1,0 +1,51 @@
+linked data/belauri -> /scratch/railabs/yb107/research-os/shared-data/belauri-geography/files
+host node004 job 201816 cpus 12
+
+=== 1. environment identity ===
+{"python": "3.12.12", "numpy": "2.5.3", "scipy": "1.18.1", "fipy": "4.0.3"}
+
+=== 2. FiPy regression gate (must print: 21 files compared, 0 differ) ===
+baseline: results/solver-regression-x86_64/before (x86_64)
+21 files compared, 0 differ
+REGRESSION_GATE_OK
+
+=== 3. EXP-015 stage-2 runtime estimate (the script's own preflight mode) ===
+[      0s rss 0.15GB] candidate table (once, UTM)
+Traceback (most recent call last):
+  File "/home/yb107/research-os/projects/pravah/code/EXP-025/RUN-0055/source/scripts/convergence_stage2.py", line 576, in <module>
+    main()
+  File "/home/yb107/research-os/projects/pravah/code/EXP-025/RUN-0055/source/scripts/convergence_stage2.py", line 561, in main
+    run = Run(cfg, out, work)
+          ^^^^^^^^^^^^^^^^^^^
+  File "/home/yb107/research-os/projects/pravah/code/EXP-025/RUN-0055/source/scripts/convergence_stage2.py", line 206, in __init__
+    geo = G.load_geography(c0)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/home/yb107/research-os/projects/pravah/env/venv/lib/python3.12/site-packages/pravah/geodesign.py", line 193, in load_geography
+    raw = _load_raw(mp, cfg)
+          ^^^^^^^^^^^^^^^^^^
+  File "/home/yb107/research-os/projects/pravah/env/venv/lib/python3.12/site-packages/pravah/geodesign.py", line 148, in _load_raw
+    p, sha["study"] = _raw_file(man, base, "study")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/yb107/research-os/projects/pravah/env/venv/lib/python3.12/site-packages/pravah/geodesign.py", line 112, in _raw_file
+    sha = file_sha256(p)
+          ^^^^^^^^^^^^^^
+  File "/home/yb107/research-os/projects/pravah/env/venv/lib/python3.12/site-packages/pravah/belauri.py", line 72, in file_sha256
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^
+  File "/home/yb107/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/pathlib.py", line 1019, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/home/yb107/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/yb107/research-os/projects/pravah/code/EXP-025/RUN-0055/source/data/belauri/raw/geoBoundaries-NPL-ADM3.geojson'
+
+=== 4. parallel units available (ceiling on useful workers) ===
+{
+ "mesh_units": 4,
+ "replicate_units": 8,
+ "total_independent_units": 12,
+ "note": "process pool maps one worker per unit; workers beyond this sit idle"
+}
+
+PREFLIGHT_PROD_FAILED rc=1

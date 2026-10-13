@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "scripts/convergence_stage2.py", line 37, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'

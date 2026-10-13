@@ -1,0 +1,5 @@
+using venv /home/yb107/research-os/projects/pravah/env/venv (Python 3.12.12)
+linked data/belauri -> /scratch/railabs/yb107/research-os/shared-data/belauri-geography/files
+[      0s rss 0.15GB] candidate table (once, UTM)
+[      2s rss 0.38GB] 142 sites mapped on meshes [250.0, 500.0]; 6 change study category vs the coarsest mesh
+[    310s rss 0.38GB] one r250_dt50 design case: 308 s; design set of 6: ~31 min

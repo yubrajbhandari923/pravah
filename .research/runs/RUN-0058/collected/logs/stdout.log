@@ -1,0 +1,115 @@
+using venv /home/yb107/research-os/projects/pravah/env/venv (Python 3.12.12)
+linked data/belauri -> /scratch/railabs/yb107/research-os/shared-data/belauri-geography/files
+[      0s rss 0.15GB] candidate table (once, UTM)
+[      1s rss 0.38GB] 142 sites mapped on meshes [250.0, 500.0]; 6 change study category vs the coarsest mesh
+[      0s rss 0.38GB] candidate table (once, UTM)
+[      0s rss 0.38GB] candidate table (once, UTM)
+[      0s rss 0.38GB] candidate table (once, UTM)
+[      0s rss 0.38GB] candidate table (once, UTM)
+[      1s rss 0.38GB] 142 sites mapped on meshes [250.0, 500.0]; 6 change study category vs the coarsest mesh
+[      1s rss 0.38GB] 142 sites mapped on meshes [250.0, 500.0]; 6 change study category vs the coarsest mesh
+[      1s rss 0.38GB] 142 sites mapped on meshes [250.0, 500.0]; 6 change study category vs the coarsest mesh
+[      1s rss 0.38GB] 142 sites mapped on meshes [250.0, 500.0]; 6 change study category vs the coarsest mesh
+[     53s rss 0.38GB] r500_dt100 design case d0 built in 52 s
+[    105s rss 0.38GB] r500_dt100 design case d1 built in 52 s
+[    107s rss 0.38GB] r500_dt50 design case d0 built in 106 s
+[    157s rss 0.38GB] r500_dt100 design case d2 built in 52 s
+[    166s rss 0.38GB] r250_dt100 design case d0 built in 164 s
+[    209s rss 0.38GB] r500_dt100 design case d3 built in 52 s
+[    213s rss 0.38GB] r500_dt50 design case d1 built in 106 s
+[    261s rss 0.38GB] r500_dt100 design case d4 built in 53 s
+[    313s rss 0.38GB] r500_dt100 design case d5 built in 52 s
+[    318s rss 0.38GB] r500_dt50 design case d2 built in 105 s
+[    320s rss 0.38GB] r500_dt100: layouts selected {'0.05': {'3': ['int_c013008', 'int_c007014', 'int_c011012'], '5': ['int_c013008', 'int_c007014', 'int_c011012', 'int_c015012', 'int_c013007'], '8': ['int_c013008', 'int_c007014', 'int_c011012', 'int_c015012', 'int_c013007', 'int_c012014', 'int_c007013', 'int_c008015']}, '0.15': {'3': ['int_c013008', 'int_c009014', 'int_c012009'], '5': ['int_c013008', 'int_c009014', 'int_c012009', 'int_c012010', 'int_c012007'], '8': ['int_c013008', 'int_c009014', 'int_c012009', 'int_c012010', 'int_c012007', 'int_c007012', 'int_c010014', 'int_c013010']}}
+[    329s rss 0.44GB] r250_dt100 design case d1 built in 163 s
+[    329s rss 0.38GB] ref r250_dt50 design case d0 built in 328 s
+[    423s rss 0.38GB] r500_dt50 design case d3 built in 104 s
+[    488s rss 0.46GB] r250_dt100 design case d2 built in 159 s
+[    527s rss 0.38GB] r500_dt50 design case d4 built in 104 s
+[    630s rss 0.38GB] r500_dt50 design case d5 built in 103 s
+[    637s rss 0.38GB] r500_dt50: layouts selected {'0.05': {'3': ['int_c013008', 'int_c007014', 'int_c011012'], '5': ['int_c013008', 'int_c007014', 'int_c011012', 'int_c015012', 'int_c013007'], '8': ['int_c013008', 'int_c007014', 'int_c011012', 'int_c015012', 'int_c013007', 'int_c012014', 'int_c007013', 'int_c008015']}, '0.15': {'3': ['int_c013008', 'int_c009014', 'int_c012009'], '5': ['int_c013008', 'int_c009014', 'int_c012009', 'int_c012010', 'int_c012007'], '8': ['int_c013008', 'int_c009014', 'int_c012009', 'int_c012010', 'int_c012007', 'int_c007012', 'int_c010014', 'int_c013010']}}
+[    648s rss 0.49GB] r250_dt100 design case d3 built in 159 s
+[    654s rss 0.44GB] ref r250_dt50 design case d1 built in 325 s
+[    807s rss 0.54GB] r250_dt100 design case d4 built in 159 s
+[    965s rss 0.56GB] r250_dt100 design case d5 built in 159 s
+[    972s rss 0.44GB] ref r250_dt50 design case d2 built in 318 s
+[    973s rss 0.56GB] r250_dt100: layouts selected {'0.05': {'3': ['int_c013008', 'int_c009013', 'int_c013014'], '5': ['int_c013008', 'int_c009013', 'int_c013014', 'int_c007014', 'int_c015012'], '8': ['int_c013008', 'int_c009013', 'int_c013014', 'int_c007014', 'int_c015012', 'int_c013007', 'int_c011012', 'int_c007013']}, '0.15': {'3': ['int_c013008', 'int_c009014', 'int_c012009'], '5': ['int_c013008', 'int_c009014', 'int_c012009', 'int_c012010', 'int_c012007'], '8': ['int_c013008', 'int_c009014', 'int_c012009', 'int_c012010', 'int_c012007', 'int_c007012', 'int_c010014', 'int_c013010']}}
+[   1280s rss 0.48GB] ref r250_dt50 design case d3 built in 308 s
+[   1591s rss 0.54GB] ref r250_dt50 design case d4 built in 311 s
+[   1896s rss 0.54GB] ref r250_dt50 design case d5 built in 305 s
+[   1904s rss 0.54GB] r250_dt50: layouts selected {'0.05': {'3': ['int_c013008', 'int_c009013', 'int_c013014'], '5': ['int_c013008', 'int_c009013', 'int_c013014', 'int_c007014', 'int_c015012'], '8': ['int_c013008', 'int_c009013', 'int_c013014', 'int_c007014', 'int_c015012', 'int_c013007', 'int_c011012', 'int_c007013']}, '0.15': {'3': ['int_c013008', 'int_c009014', 'int_c012009'], '5': ['int_c013008', 'int_c009014', 'int_c012009', 'int_c012010', 'int_c012007'], '8': ['int_c013008', 'int_c009014', 'int_c012009', 'int_c012010', 'int_c012007', 'int_c007012', 'int_c010014', 'int_c013010']}}
+[      0s rss 0.38GB] candidate table (once, UTM)
+[      0s rss 0.38GB] candidate table (once, UTM)
+[      0s rss 0.38GB] candidate table (once, UTM)
+[      0s rss 0.38GB] candidate table (once, UTM)
+[      1s rss 0.38GB] 142 sites mapped on meshes [250.0, 500.0]; 6 change study category vs the coarsest mesh
+[      1s rss 0.38GB] 142 sites mapped on meshes [250.0, 500.0]; 6 change study category vs the coarsest mesh
+[      2s rss 0.38GB] 142 sites mapped on meshes [250.0, 500.0]; 6 change study category vs the coarsest mesh
+[      2s rss 0.38GB] 142 sites mapped on meshes [250.0, 500.0]; 6 change study category vs the coarsest mesh
+[   1955s rss 0.56GB] rep 3 case r3_0 built in 51 s
+[   1955s rss 0.38GB] rep 1 case r1_0 built in 51 s
+[     57s rss 0.38GB] rep 8 case r8_0 built in 55 s
+[     58s rss 0.38GB] rep 6 case r6_0 built in 57 s
+[   1979s rss 0.38GB] rep 2 case r2_0 built in 75 s
+[   1980s rss 0.54GB] rep 4 case r4_0 built in 76 s
+[     85s rss 0.38GB] rep 5 case r5_0 built in 83 s
+[     86s rss 0.38GB] rep 7 case r7_0 built in 84 s
+[   2005s rss 0.56GB] rep 3 case r3_1 built in 50 s
+[   2008s rss 0.38GB] rep 1 case r1_1 built in 53 s
+[    111s rss 0.38GB] rep 8 case r8_1 built in 54 s
+[   2035s rss 0.38GB] rep 2 case r2_1 built in 55 s
+[    129s rss 0.38GB] rep 6 case r6_1 built in 71 s
+[   2055s rss 0.56GB] rep 3 case r3_2 built in 51 s
+[   2059s rss 0.54GB] rep 4 case r4_1 built in 79 s
+[   2062s rss 0.38GB] rep 1 case r1_2 built in 54 s
+[    165s rss 0.38GB] rep 8 case r8_2 built in 54 s
+[    170s rss 0.38GB] rep 5 case r5_1 built in 85 s
+[    170s rss 0.38GB] rep 7 case r7_1 built in 84 s
+[   2086s rss 0.38GB] rep 2 case r2_2 built in 51 s
+[   2106s rss 0.56GB] rep 3 case r3_3 built in 51 s
+[   2120s rss 0.38GB] rep 1 case r1_3 built in 58 s
+[    214s rss 0.38GB] rep 6 case r6_2 built in 84 s
+[    223s rss 0.38GB] rep 8 case r8_3 built in 58 s
+[   2132s rss 0.54GB] rep 4 case r4_2 built in 73 s
+[    234s rss 0.38GB] rep 7 case r7_2 built in 64 s
+[   2149s rss 0.38GB] rep 2 case r2_3 built in 63 s
+[   2156s rss 0.56GB] rep 3 case r3_4 built in 50 s
+[    253s rss 0.38GB] rep 5 case r5_2 built in 83 s
+[   2173s rss 0.38GB] rep 1 case r1_4 built in 54 s
+[    277s rss 0.38GB] rep 8 case r8_4 built in 54 s
+[    290s rss 0.38GB] rep 7 case r7_3 built in 55 s
+[    297s rss 0.38GB] rep 6 case r6_3 built in 84 s
+[   2206s rss 0.56GB] rep 3 case r3_5 built in 50 s
+[   2210s rss 0.54GB] rep 4 case r4_3 built in 78 s
+[   2213s rss 0.56GB] rep 3/8 done
+[   2228s rss 0.38GB] rep 2 case r2_4 built in 79 s
+[   2231s rss 0.38GB] rep 1 case r1_5 built in 58 s
+[    325s rss 0.38GB] rep 5 case r5_3 built in 72 s
+[   2241s rss 0.38GB] rep 1/8 done
+[    340s rss 0.38GB] rep 8 case r8_5 built in 62 s
+[    344s rss 0.38GB] rep 7 case r7_4 built in 55 s
+[    347s rss 0.38GB] rep 8/8 done
+[    356s rss 0.38GB] rep 6 case r6_4 built in 59 s
+[   2264s rss 0.54GB] rep 4 case r4_4 built in 54 s
+[   2281s rss 0.38GB] rep 2 case r2_5 built in 53 s
+[    378s rss 0.38GB] rep 5 case r5_4 built in 53 s
+[   2287s rss 0.38GB] rep 2/8 done
+[    396s rss 0.38GB] rep 7 case r7_5 built in 52 s
+[    402s rss 0.38GB] rep 7/8 done
+[   2313s rss 0.54GB] rep 4 case r4_5 built in 49 s
+[    408s rss 0.38GB] rep 6 case r6_5 built in 52 s
+[   2320s rss 0.54GB] rep 4/8 done
+[    415s rss 0.38GB] rep 6/8 done
+[    427s rss 0.38GB] rep 5 case r5_5 built in 49 s
+[    434s rss 0.38GB] rep 5/8 done
+[   2345s rss 0.38GB] r250_dt50: layouts found, skipped
+[   2345s rss 0.38GB] r500_dt100: layouts found, skipped
+[   2345s rss 0.38GB] r500_dt50: layouts found, skipped
+[   2345s rss 0.38GB] r250_dt100: layouts found, skipped
+[   2657s rss 0.38GB] ref test case t0 built in 312 s
+[   2970s rss 0.45GB] ref test case t1 built in 312 s
+[   3278s rss 0.45GB] ref test case t2 built in 308 s
+[   3584s rss 0.49GB] ref test case t3 built in 306 s
+[   3896s rss 0.55GB] ref test case t4 built in 312 s
+[   4208s rss 0.56GB] ref test case t5 built in 312 s
+[   4229s rss 0.56GB] done

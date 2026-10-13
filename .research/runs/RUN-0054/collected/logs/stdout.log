@@ -1,0 +1,55 @@
+host node004 job 201815 cpus 12
+
+=== 1. environment identity ===
+{"python": "3.12.12", "numpy": "2.5.3", "scipy": "1.18.1", "fipy": "4.0.3"}
+
+=== 2. FiPy regression gate (must print: 21 files compared, 0 differ) ===
+21 files compared, 18 differ
+  inverse/inverse_metrics.json ['/direct/fit_sensor_rmse: 0.000921399888719901 != 0.0009213998644646732', '/direct/heldout_sensor_rmse: 0.00043335546069423484 != 0.0004333554822003457', '/direct/q_hat[0]: 97530.66494926854 != 97530.66482059578']
+  simulate/budget.nc ['variable removal differs', 'variable inflow differs', 'variable outflow differs']
+  simulate/concentration.nc ['variable concentration differs']
+  simulate/metrics.json ['/max_abs_budget_residual: 1.6263220459222794e-06 != 1.6167759895324707e-06', '/max_concentration: 0.16076671122515923 != 0.16076671122515926', '/max_rel_budget_residual: 1.6427495413356357e-14 != 1.633107060133809e-14']
+  smoke/design_scores.csv ['7 compared columns differ']
+  smoke/paired_comparisons.csv ['7 compared columns differ']
+  smoke/raw_metrics.csv ['15 compared columns differ']
+  smoke/summary.csv ['15 compared columns differ']
+  smoke/summary.json ['/paired[0]/mean_diff: 0.01044867604721187 != 0.010448676047211919', '/paired[0]/sd_diff: 0.010206349741034248 != 0.010206349741034222', '/paired[1]/mean_diff: -0.013402069659701227 != -0.013402069659698514']
+  smoke-alpha/alpha_selected.json ['/selected_criterion: 0.013773333928453688 != 0.013773333928453731', '/table[0]/criterion: 1105.8946889764118 != 1105.894688976418', '/table[0]/mean_source_rel_err: 41096.835484731964 != 41096.83548473208']
+  smoke-alpha/validation_raw.csv ['16 compared columns differ']
+  smoke-mismatch/paired_mismatch.csv ['9 compared columns differ']
+  smoke-mismatch/paired_mismatch_rows.csv ['16 compared columns differ']
+  smoke-mismatch/poor_layout_diagnostics.csv ['18 compared columns differ']
+  smoke-mismatch/poor_layout_paired.csv ['6 compared columns differ']
+  smoke-mismatch/raw_metrics.csv ['15 compared columns differ']
+  smoke-mismatch/summary.csv ['11 compared columns differ']
+  smoke-mismatch/summary.json ['/paired_mismatch[0]/mean_diff_heldout_rmse: 0.007140061854400222 != 0.007140061854400228', '/paired_mismatch[0]/mean_diff_rmse: 0.005844952080864157 != 0.00584495208086418', '/paired_mismatch[0]/mean_diff_source_rel_err: 0.054475025640992075 != 0.05447502564099285']
+regression gate FAILED (see logs)
+REGRESSION_GATE_DIFFERS — do NOT loosen tolerances; investigate
+
+=== 3. EXP-015 stage-2 runtime estimate (the script's own preflight mode) ===
+[      0s rss 0.15GB] candidate table (once, UTM)
+Traceback (most recent call last):
+  File "/home/yb107/research-os/projects/pravah/code/EXP-025/RUN-0054/source/scripts/convergence_stage2.py", line 576, in <module>
+    main()
+  File "/home/yb107/research-os/projects/pravah/code/EXP-025/RUN-0054/source/scripts/convergence_stage2.py", line 561, in main
+    run = Run(cfg, out, work)
+          ^^^^^^^^^^^^^^^^^^^
+  File "/home/yb107/research-os/projects/pravah/code/EXP-025/RUN-0054/source/scripts/convergence_stage2.py", line 206, in __init__
+    geo = G.load_geography(c0)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/home/yb107/research-os/projects/pravah/env/venv/lib/python3.12/site-packages/pravah/geodesign.py", line 189, in load_geography
+    mp = resolve_manifest(cfg["region"]["manifest"])
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/yb107/research-os/projects/pravah/env/venv/lib/python3.12/site-packages/pravah/belauri.py", line 68, in resolve_manifest
+    raise FileNotFoundError(f"manifest {path} not found (tried the working directory and {REPO_ROOT})")
+FileNotFoundError: manifest /home/yb107/research-os/projects/pravah/code/EXP-025/RUN-0054/source/data/belauri/manifest.json not found (tried the working directory and /home/yb107/research-os/projects/pravah/env/venv/lib/python3.12)
+
+=== 4. parallel units available (ceiling on useful workers) ===
+{
+ "mesh_units": 4,
+ "replicate_units": 8,
+ "total_independent_units": 12,
+ "note": "process pool maps one worker per unit; workers beyond this sit idle"
+}
+
+PREFLIGHT_PROD_FAILED rc=1
