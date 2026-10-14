@@ -1,0 +1,74 @@
+diff --git a/configs/convergence_paired_padded.json b/configs/convergence_paired_padded.json
+index 97e5cb5..9ad168b 100644
+--- a/configs/convergence_paired_padded.json
++++ b/configs/convergence_paired_padded.json
+@@ -1,9 +1,9 @@
+ {
+  "extends": "convergence_paired.json",
+  "name": "exp027_paired_padded",
+- "notes": "EXP-027 paired decision-stability test on a COMMON PADDED domain (geodata/belauri_padded, grid.pad_to_m 2000) so that 500 m, 250 m and a true 2 km control share one domain and the original spatial question is kept. dt = res/5 (as 500/100, 250/50), so Courant u*dt/dx = 2.5*400/2000 = 0.5 = the 500 m maximum. alpha_file and noise_scale_file are FROZEN values taken from the UNPADDED domain (results/geodesign); they are reused unchanged, not re-derived on the padded grid. candidate_manifest: the 142 candidate sites are the UNPADDED ones (the interior lattice is anchored to the manifest origin, which padding shifts by 500 m); their UTM positions are kept and local coordinates are recomputed on the padded georef.",
++ "notes": "EXP-027 paired decision-stability test on a COMMON PADDED domain (configs/belauri_padded_geography, grid.pad_to_m 2000) so that 500 m, 250 m and a true 2 km control share one domain and the original spatial question is kept. dt = res/5 (as 500/100, 250/50), so Courant u*dt/dx = 2.5*400/2000 = 0.5 = the 500 m maximum. alpha_file and noise_scale_file are FROZEN values taken from the UNPADDED domain (results/geodesign); they are reused unchanged, not re-derived on the padded grid. candidate_manifest: the 142 candidate sites are the UNPADDED ones (the interior lattice is anchored to the manifest origin, which padding shifts by 500 m); their UTM positions are kept and local coordinates are recomputed on the padded georef.",
+  "region": {
+-  "manifest": "geodata/belauri_padded/manifest.json"
++  "manifest": "configs/belauri_padded_geography/manifest.json"
+  },
+  "stage2": {
+   "candidate_manifest": "data/belauri/manifest.json",
+diff --git a/configs/convergence_paired_padded_smoke.json b/configs/convergence_paired_padded_smoke.json
+index 188b4f9..ac907c9 100644
+--- a/configs/convergence_paired_padded_smoke.json
++++ b/configs/convergence_paired_padded_smoke.json
+@@ -83,7 +83,7 @@
+   "n_random_points": 20
+  },
+  "stage2": {
+-  "candidate_manifest": "geodata/belauri_padded/manifest.json",
++  "candidate_manifest": "configs/belauri_padded_geography/manifest.json",
+   "alpha_file": null,
+   "noise_scale_file": null,
+   "budgets": [
+diff --git a/src/pravah/studies/toy/dynamic_sufficiency.py b/src/pravah/studies/toy/dynamic_sufficiency.py
+index 896620d..65526b2 100644
+--- a/src/pravah/studies/toy/dynamic_sufficiency.py
++++ b/src/pravah/studies/toy/dynamic_sufficiency.py
+@@ -159,11 +159,11 @@ def test(doc: dict, workers: int) -> list[dict]:
+     eps = [{**e, "seed": TEST_SEED0 + e["id"], "stage": "sufficiency"} for e in ds.episodes("test")]
+     lays: dict[str, tuple] = {}
+     for key, rec in doc["results"].items():
+-        noise, _ = key.split("|")
+-        lays[f"{noise}|ref"] = tuple(rec["star"])
++        noise, kk = key.split("|")  # the key must carry k: k=2 and k=3 layouts were colliding (found when reading the first test run)
++        lays[f"{noise}|{kk}|ref"] = tuple(rec["star"])
+         for n, sel in rec["selected"].items():
+             for r, s in enumerate(sel):
+-                lays[f"{noise}|N{n}|r{r}"] = tuple(s["layout"])
++                lays[f"{noise}|{kk}|N{n}|r{r}"] = tuple(s["layout"])
+     names = {}
+     for key, idx in lays.items():
+         names.setdefault(tuple(sorted(idx)), f"L{len(names)}")
+
+# Untracked files (not included):
+#   .agents/skills/clean-dataset
+#   .agents/skills/engineering-loop
+#   .agents/skills/hpc-setup
+#   .agents/skills/parameter-tuning
+#   .agents/skills/reproduce-paper
+#   .agents/skills/run-experiment
+#   .agents/skills/scientific-handoff
+#   .agents/skills/scientist-guide
+#   .agents/skills/synthesize-experiment
+#   .claude/agents/research-balanced.md
+#   .claude/agents/research-deep.md
+#   .claude/agents/research-fast.md
+#   .claude/skills/clean-dataset
+#   .claude/skills/engineering-loop
+#   .claude/skills/hpc-setup
+#   .claude/skills/parameter-tuning
+#   .claude/skills/reproduce-paper
+#   .claude/skills/run-experiment
+#   .claude/skills/scientific-handoff
+#   .claude/skills/scientist-guide
+#   .claude/skills/synthesize-experiment
+#   .mcp.json
+#   results/dyn00/dyn00_checks.json
+#   tools/.DS_Store

@@ -1,0 +1,180 @@
+diff --git a/AGENTS.md b/AGENTS.md
+index a4f8b4e..546b017 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -17,7 +17,7 @@ Do not read everything; do not re-derive what a finding or doc already states. F
+ (`python -m pravah {simulate,inverse,benchmark,geo}`; `benchmark` dispatches on `cfg["experiment"]`). Configs in `configs/`, notebooks `01`–`06` in `notebooks/`.
+ 
+ ### Commands
+-Env: `uv venv --python 3.12 .venv && uv pip install -e ".[dev,geo]" -c requirements-lock-geo.txt`. Tests `.venv/bin/pytest -q` (585 tests, ~21 min; geo/real-data
++Env: `uv venv --python 3.12 .venv && uv pip install -e ".[dev,geo]" -c requirements-lock-geo.txt`. Tests `.venv/bin/pytest -q` (595 tests, ~22 min; geo/real-data
+ tests skip without `data/belauri/manifest.json`). Types `.venv/bin/pyright` (0 errors expected). Notebooks `.venv/bin/python scripts/verify_notebooks.py`.
+ FiPy regression gate: `scripts/capture_regression.py` + `scripts/compare_runs.py <baseline> <new>` must print `21 files compared, 0 differ`.
+ The gate is **architecture-scoped** (D-005): baseline `results/solver-regression/before` on arm64 (laptop), `results/solver-regression-x86_64/before` on the x86_64 cluster. Comparing across architectures gives 18 spurious differences (reassociation only, <=5e-08 relative in any physical quantity); never loosen a tolerance for it.
+diff --git a/scripts/hpc_exp027.sh b/scripts/hpc_exp027.sh
+index 7485414..ec669d5 100755
+--- a/scripts/hpc_exp027.sh
++++ b/scripts/hpc_exp027.sh
+@@ -1,6 +1,8 @@
+ #!/usr/bin/env bash
+ # EXP-027 on the cluster: link staged datasets, then the paired mesh-vs-resampling test (outputs under $RESEARCH_RUN_DIR).
++# Usage: hpc_exp027.sh [WORKERS] [CONFIG_NAME]   (default: 8, convergence_paired_padded.json)
+ set -euo pipefail
+ WORKERS="${1:-8}"
+-bash scripts/hpc_link_datasets.sh python scripts/convergence_stage2.py --config configs/convergence_paired.json \
++CONFIG="${2:-convergence_paired_padded.json}"
++bash scripts/hpc_link_datasets.sh python scripts/convergence_stage2.py --config "configs/$CONFIG" \
+   --paired --workers "$WORKERS" --out "$RESEARCH_RUN_DIR/paired" --work "$RESEARCH_RUN_DIR/paired_work"
+diff --git a/src/pravah/studies/toy/dynamic_study.py b/src/pravah/studies/toy/dynamic_study.py
+index 5b65962..2b5dcf4 100644
+--- a/src/pravah/studies/toy/dynamic_study.py
++++ b/src/pravah/studies/toy/dynamic_study.py
+@@ -167,8 +167,8 @@ def jpop(R: Responses, theta: np.ndarray, tf: np.ndarray, counts: np.ndarray) ->
+     return float(np.sqrt(pop)), float(np.sqrt(area))
+ 
+ 
+-def _cells(layout: str) -> tuple[np.ndarray, np.ndarray]:
+-    ix, iy = zip(*LAYOUTS[layout])
++def _cells(cells: tuple[tuple[int, int], ...]) -> tuple[np.ndarray, np.ndarray]:
++    ix, iy = zip(*cells)
+     return np.array(iy), np.array(ix)
+ 
+ 
+@@ -184,9 +184,12 @@ def _fit(model: str, A, y, sig, hp, prior):
+         return None
+ 
+ 
+-def run_episode(ep: dict, hp: dict[str, dict[str, list[tuple[float, float]]]], models: tuple[str, ...]) -> list[dict]:
++def run_episode(ep: dict, hp: dict[str, dict[str, list[tuple[float, float]]]], models: tuple[str, ...],
++                layouts: dict[str, tuple[tuple[int, int], ...]] | None = None) -> list[dict]:
+     """One row per (layout, noise, model, hyperparameter candidate); truth, floor and noise are shared by all of them.
+-    ``hp[key]['M0']`` must hold exactly one (frozen) entry when 'M1' / 'M2' are evaluated: it defines their static prior mean."""
++    ``hp[key]['M0']`` must hold exactly one (frozen) entry when 'M1' / 'M2' are evaluated: it defines their static prior mean.
++    ``layouts`` maps a name to sensor cells ((ix, iy), ...); default LAYOUTS.  hp keys are f"{layout}|{noise}"."""
++    layouts = LAYOUTS if layouts is None else layouts
+     R = build_responses(ep["wind"])
+     counts = population()
+     rng = np.random.default_rng([ep["seed"], 0])
+@@ -199,8 +202,8 @@ def run_episode(ep: dict, hp: dict[str, dict[str, list[tuple[float, float]]]], m
+     nan = float("nan")
+     rows = [{**base, "layout": "-", "noise": 0.0, "model": "floor", "alpha": nan, "beta": nan, "jpop": projection_floor(R, tf, counts),
+              "area": nan, "src_local": nan, "src_bnd": nan, "ident_frac": nan}]
+-    for layout, (ni, frac) in itertools.product(LAYOUTS, enumerate(NOISE)):
+-        iy, ix = _cells(layout)
++    for layout, (ni, frac) in itertools.product(layouts, enumerate(NOISE)):
++        iy, ix = _cells(layouts[layout])
+         sd = frac * s0
+         y = tf[1:, iy, ix] + np.random.default_rng([ep["seed"], 2, ni]).standard_normal((len(t) - 1, len(iy))) * sd
+         A = np.moveaxis(R.g[:, 1:, iy, ix], 0, -1).reshape(-1, R.g.shape[0])
+@@ -225,13 +228,13 @@ def run_episode(ep: dict, hp: dict[str, dict[str, list[tuple[float, float]]]], m
+     return rows
+ 
+ 
+-def _pool_rows(eps: list[dict], hp, models, workers: int) -> list[dict]:
++def _pool_rows(eps: list[dict], hp, models, workers: int, layouts=None) -> list[dict]:
+     if workers <= 1:
+-        return [r for ep in eps for r in run_episode(ep, hp, models)]
++        return [r for ep in eps for r in run_episode(ep, hp, models, layouts)]
+     for k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "VECLIB_MAXIMUM_THREADS"):
+         os.environ[k] = "1"
+     with ProcessPoolExecutor(workers, mp_context=mp.get_context("spawn")) as ex:
+-        futs = [ex.submit(run_episode, ep, hp, models) for ep in eps]
++        futs = [ex.submit(run_episode, ep, hp, models, layouts) for ep in eps]
+         return [r for f in futs for r in f.result()]
+ 
+ 
+@@ -252,17 +255,18 @@ def _score_table(rows: list[dict]) -> dict:
+     return {k: {c: float(np.mean(v)) for c, v in d.items()} for k, d in sc.items()}
+ 
+ 
+-def tune(workers: int) -> dict:
++def tune(workers: int, layouts: dict[str, tuple[tuple[int, int], ...]] | None = None) -> dict:
+     """Validation only.  Pass 1 picks M0's alpha; pass 2 picks M1z / M1 / M2 with M0@alpha* as the static prior of M1 / M2.
+     Non-converged candidates score +inf.  Edge selections are flagged, never silently accepted."""
+     _prebuild(workers)
+     eps = episodes("tune")
+-    combos = [(lay, fr) for lay in LAYOUTS for fr in NOISE]
++    layouts = LAYOUTS if layouts is None else layouts
++    combos = [(lay, fr) for lay in layouts for fr in NOISE]
+     g0 = [(a, 0.0) for a in ALPHA_M]
+-    s1 = _score_table(_pool_rows(eps, {f"{lay}|{fr}": {"M0": g0} for lay, fr in combos}, ("M0",), workers))
++    s1 = _score_table(_pool_rows(eps, {f"{lay}|{fr}": {"M0": g0} for lay, fr in combos}, ("M0",), workers, layouts))
+     m0 = {(lay, fr): min(s1[(lay, fr, "M0")], key=lambda c, d=s1[(lay, fr, "M0")]: d[c]) for lay, fr in combos}
+     grid = {"M1z": [(a, 0.0) for a in ALPHA_M], "M1": [(a, 0.0) for a in ALPHA_M], "M2": list(itertools.product(ALPHA_2, BETAS))}
+-    s2 = _score_table(_pool_rows(eps, {f"{lay}|{fr}": {"M0": [m0[(lay, fr)]], **grid} for lay, fr in combos}, ("M1z", "M1", "M2"), workers))
++    s2 = _score_table(_pool_rows(eps, {f"{lay}|{fr}": {"M0": [m0[(lay, fr)]], **grid} for lay, fr in combos}, ("M1z", "M1", "M2"), workers, layouts))
+     frozen: dict = {f"{lay}|{fr}": {"M0": [list(m0[(lay, fr)])]} for lay, fr in combos}
+     edge, scores = [], {}
+     for (lay, fr, m), d in s2.items():
+
+# Untracked files (not included):
+#   .agents/skills/clean-dataset
+#   .agents/skills/engineering-loop
+#   .agents/skills/hpc-setup
+#   .agents/skills/parameter-tuning
+#   .agents/skills/reproduce-paper
+#   .agents/skills/run-experiment
+#   .agents/skills/scientific-handoff
+#   .agents/skills/scientist-guide
+#   .agents/skills/synthesize-experiment
+#   .claude/agents/research-balanced.md
+#   .claude/agents/research-deep.md
+#   .claude/agents/research-fast.md
+#   .claude/skills/clean-dataset
+#   .claude/skills/engineering-loop
+#   .claude/skills/hpc-setup
+#   .claude/skills/parameter-tuning
+#   .claude/skills/reproduce-paper
+#   .claude/skills/run-experiment
+#   .claude/skills/scientific-handoff
+#   .claude/skills/scientist-guide
+#   .claude/skills/synthesize-experiment
+#   .mcp.json
+#   configs/belauri_geo_padded.json
+#   configs/convergence_paired_padded.json
+#   configs/convergence_paired_padded_smoke.json
+#   data/belauri_padded/manifest.json
+#   data/belauri_padded/processed/builtup_fraction_2000m.npy
+#   data/belauri_padded/processed/builtup_fraction_250m.npy
+#   data/belauri_padded/processed/builtup_fraction_500m.npy
+#   data/belauri_padded/processed/dem_mean_2000m.npy
+#   data/belauri_padded/processed/dem_mean_250m.npy
+#   data/belauri_padded/processed/dem_mean_500m.npy
+#   data/belauri_padded/processed/dem_valid_fraction_2000m.npy
+#   data/belauri_padded/processed/dem_valid_fraction_250m.npy
+#   data/belauri_padded/processed/dem_valid_fraction_500m.npy
+#   data/belauri_padded/processed/facility_count_2000m.npy
+#   data/belauri_padded/processed/facility_count_250m.npy
+#   data/belauri_padded/processed/facility_count_500m.npy
+#   data/belauri_padded/processed/hillshade_2000m.npy
+#   data/belauri_padded/processed/hillshade_250m.npy
+#   data/belauri_padded/processed/hillshade_500m.npy
+#   data/belauri_padded/processed/profile_ew_z_2000m.npy
+#   data/belauri_padded/processed/profile_ew_z_250m.npy
+#   data/belauri_padded/processed/profile_ew_z_500m.npy
+#   data/belauri_padded/processed/profile_ns_z_2000m.npy
+#   data/belauri_padded/processed/profile_ns_z_250m.npy
+#   data/belauri_padded/processed/profile_ns_z_500m.npy
+#   data/belauri_padded/processed/road_length_m_2000m.npy
+#   data/belauri_padded/processed/road_length_m_250m.npy
+#   data/belauri_padded/processed/road_length_m_500m.npy
+#   data/belauri_padded/processed/slope_deg_2000m.npy
+#   data/belauri_padded/processed/slope_deg_250m.npy
+#   data/belauri_padded/processed/slope_deg_500m.npy
+#   data/belauri_padded/processed/study_fraction_2000m.npy
+#   data/belauri_padded/processed/study_fraction_250m.npy
+#   data/belauri_padded/processed/study_fraction_500m.npy
+#   data/belauri_padded/processed/w_builtup_2000m.npy
+#   data/belauri_padded/processed/w_builtup_250m.npy
+#   data/belauri_padded/processed/w_builtup_500m.npy
+#   data/belauri_padded/processed/w_external_patch_2000m.npy
+#   data/belauri_padded/processed/w_external_patch_250m.npy
+#   data/belauri_padded/processed/w_external_patch_500m.npy
+#   data/belauri_padded/processed/w_facility_2000m.npy
+#   data/belauri_padded/processed/w_facility_250m.npy
+#   data/belauri_padded/processed/w_facility_500m.npy
+#   data/belauri_padded/processed/w_road_2000m.npy
+#   data/belauri_padded/processed/w_road_250m.npy
+#   data/belauri_padded/processed/w_road_500m.npy
+#   results/dyn00/dyn00_checks.json
+#   tools/.DS_Store

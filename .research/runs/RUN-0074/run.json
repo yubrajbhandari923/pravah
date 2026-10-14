@@ -1,0 +1,94 @@
+{
+  "artifacts_offset": 0,
+  "author_model": null,
+  "author_name": "claude-code",
+  "author_type": "agent",
+  "backend": "hpc-bundle",
+  "command": "true",
+  "created_at": "2026-10-13T23:52:27-04:00",
+  "ended_at": null,
+  "env": {
+    "lockfiles": {
+      "uv.lock": "cd0adfb7e3bec3fc"
+    },
+    "user": "yubraj"
+  },
+  "exit_code": null,
+  "experiment_id": "EXP-027",
+  "git_branch": "master",
+  "git_commit": "4c7d31cfa589496421cd7e10db200ff476d8553a",
+  "git_dirty": 1,
+  "hostname": "Yubraj-1407.local.dhe.duke.edu",
+  "id": "RUN-0074",
+  "label": null,
+  "metrics_offset": 0,
+  "notes": "created for a portable HPC bundle",
+  "override_reason": null,
+  "parameters": {
+    "alpha": 0.01,
+    "budgets": [
+      3,
+      5
+    ],
+    "criterion": "one_sided_no_larger_than",
+    "design_seed": 101,
+    "dt_s": [
+      100,
+      50,
+      25
+    ],
+    "excluded_cells": "budget 8 at noise 0.05 (objective not identifiable: eps_sd over J_ref = 1.01)",
+    "fresh_test_seed": 304,
+    "meshes": [
+      [
+        500,
+        100
+      ],
+      [
+        250,
+        50
+      ]
+    ],
+    "meshes_m": [
+      500,
+      250,
+      125
+    ],
+    "n_cases_per_draw": 6,
+    "noise_fraction_primary": 0.05,
+    "paired_replicates": 8,
+    "replicate_seeds": [
+      1101,
+      1102,
+      1103,
+      1104,
+      1105,
+      1106,
+      1107,
+      1108
+    ],
+    "replicates": 8,
+    "test_seed": 303,
+    "validation_seed": 202
+  },
+  "pid": null,
+  "reviewed": 0,
+  "run_dir": ".research/runs/RUN-0074",
+  "slurm": {
+    "hpc": {
+      "bundle": ".research/hpc/bundles/EXP-027-RUN-0074.tar.gz",
+      "bundle_dir": ".research/hpc/bundles/EXP-027-RUN-0074",
+      "cluster": "duke",
+      "experiment_id": "EXP-027",
+      "sha256": "71a4f8d17c438996507139384ce89d356ca100a5376b634d5772f976800a6b62",
+      "token": "69b4905f9bf13d540a2a5bad83627966"
+    }
+  },
+  "slurm_job_id": null,
+  "started_at": null,
+  "status": "queued",
+  "stderr_path": ".research/runs/RUN-0074/stderr.log",
+  "stdout_path": ".research/runs/RUN-0074/stdout.log",
+  "updated_at": "2026-10-13T23:52:31-04:00",
+  "working_dir": "."
+}

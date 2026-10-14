@@ -1,0 +1,438 @@
+using venv /home/yb107/research-os/projects/pravah/env/venv (Python 3.12.12)
+pravah resolved from: /home/yb107/research-os/projects/pravah/code/EXP-027/RUN-0081/source/src/pravah/__init__.py
+linked data/belauri -> /scratch/railabs/yb107/research-os/shared-data/belauri-geography/files
+[      0s rss 0.16GB] candidate table (once, UTM)
+[      3s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      4s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      5s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[    508s rss 0.41GB] prebuilt responses ref draw 1 case 4
+[    508s rss 0.41GB] prebuilt responses ref draw 1 case 3
+[    509s rss 0.41GB] prebuilt responses ref draw 3 case 5
+[    509s rss 0.41GB] prebuilt responses ref draw 2 case 3
+[    510s rss 0.41GB] prebuilt responses ref draw 1 case 0
+[    510s rss 0.41GB] prebuilt responses ref draw 1 case 2
+[    510s rss 0.41GB] prebuilt responses ref draw 1 case 1
+[    510s rss 0.41GB] prebuilt responses ref draw 4 case 5
+[    510s rss 0.41GB] prebuilt responses ref draw 3 case 3
+[    510s rss 0.41GB] prebuilt responses ref draw 2 case 0
+[    510s rss 0.41GB] prebuilt responses ref draw 2 case 4
+[    510s rss 0.41GB] prebuilt responses ref draw 1 case 5
+[    510s rss 0.41GB] prebuilt responses ref draw 2 case 5
+[    510s rss 0.41GB] prebuilt responses ref draw 4 case 4
+[    510s rss 0.41GB] prebuilt responses ref draw 4 case 0
+[    510s rss 0.41GB] prebuilt responses ref draw 6 case 0
+[    510s rss 0.41GB] prebuilt responses ref draw 3 case 4
+[    510s rss 0.41GB] prebuilt responses ref draw 2 case 2
+[    510s rss 0.41GB] prebuilt responses ref draw 5 case 5
+[    510s rss 0.41GB] prebuilt responses ref draw 3 case 0
+[    510s rss 0.41GB] prebuilt responses ref draw 5 case 0
+[    510s rss 0.41GB] prebuilt responses ref draw 5 case 2
+[    511s rss 0.41GB] prebuilt responses ref draw 4 case 1
+[    511s rss 0.41GB] prebuilt responses ref draw 5 case 3
+[    511s rss 0.41GB] prebuilt responses ref draw 2 case 1
+[    511s rss 0.41GB] prebuilt responses ref draw 3 case 2
+[    511s rss 0.41GB] prebuilt responses ref draw 4 case 2
+[    511s rss 0.41GB] prebuilt responses ref draw 6 case 1
+[    511s rss 0.41GB] prebuilt responses ref draw 4 case 3
+[    512s rss 0.41GB] prebuilt responses ref draw 5 case 1
+[    512s rss 0.41GB] prebuilt responses ref draw 3 case 1
+[    512s rss 0.41GB] prebuilt responses ref draw 5 case 4
+[    576s rss 0.41GB] prebuilt responses main draw 1 case 2
+[    577s rss 0.41GB] prebuilt responses main draw 2 case 0
+[    577s rss 0.41GB] prebuilt responses main draw 1 case 4
+[    577s rss 0.41GB] prebuilt responses main draw 2 case 3
+[    577s rss 0.41GB] prebuilt responses main draw 2 case 4
+[    577s rss 0.41GB] prebuilt responses main draw 3 case 0
+[    577s rss 0.41GB] prebuilt responses main draw 2 case 5
+[    577s rss 0.41GB] prebuilt responses main draw 2 case 1
+[    577s rss 0.41GB] prebuilt responses main draw 3 case 2
+[    578s rss 0.41GB] prebuilt responses main draw 3 case 1
+[    578s rss 0.41GB] prebuilt responses main draw 3 case 3
+[    578s rss 0.41GB] prebuilt responses main draw 1 case 0
+[    579s rss 0.41GB] prebuilt responses main draw 1 case 3
+[    579s rss 0.41GB] prebuilt responses main draw 1 case 1
+[    579s rss 0.41GB] prebuilt responses main draw 2 case 2
+[    579s rss 0.41GB] prebuilt responses main draw 1 case 5
+[    643s rss 0.41GB] prebuilt responses main draw 3 case 4
+[    643s rss 0.41GB] prebuilt responses main draw 4 case 2
+[    643s rss 0.41GB] prebuilt responses main draw 4 case 3
+[    643s rss 0.41GB] prebuilt responses main draw 4 case 1
+[    643s rss 0.41GB] prebuilt responses main draw 3 case 5
+[    644s rss 0.41GB] prebuilt responses main draw 5 case 0
+[    644s rss 0.41GB] prebuilt responses main draw 4 case 5
+[    645s rss 0.41GB] prebuilt responses main draw 5 case 1
+[    645s rss 0.41GB] prebuilt responses main draw 4 case 4
+[    645s rss 0.41GB] prebuilt responses main draw 4 case 0
+[    645s rss 0.41GB] prebuilt responses main draw 5 case 2
+[    645s rss 0.41GB] prebuilt responses main draw 5 case 3
+[    647s rss 0.41GB] prebuilt responses main draw 6 case 0
+[    647s rss 0.41GB] prebuilt responses main draw 5 case 5
+[    647s rss 0.41GB] prebuilt responses main draw 6 case 1
+[    647s rss 0.41GB] prebuilt responses main draw 5 case 4
+[    709s rss 0.41GB] prebuilt responses main draw 6 case 2
+[    709s rss 0.41GB] prebuilt responses main draw 6 case 3
+[    709s rss 0.41GB] prebuilt responses main draw 6 case 5
+[    710s rss 0.41GB] prebuilt responses main draw 6 case 4
+[    710s rss 0.41GB] prebuilt responses main draw 7 case 0
+[    710s rss 0.41GB] prebuilt responses main draw 7 case 2
+[    711s rss 0.41GB] prebuilt responses main draw 7 case 1
+[    711s rss 0.41GB] prebuilt responses main draw 7 case 5
+[    711s rss 0.41GB] prebuilt responses main draw 8 case 0
+[    712s rss 0.41GB] prebuilt responses main draw 7 case 3
+[    712s rss 0.41GB] prebuilt responses main draw 7 case 4
+[    713s rss 0.41GB] prebuilt responses main draw 8 case 1
+[    714s rss 0.41GB] prebuilt responses main draw 8 case 3
+[    714s rss 0.41GB] prebuilt responses main draw 8 case 2
+[    714s rss 0.41GB] prebuilt responses main draw 8 case 5
+[    715s rss 0.41GB] prebuilt responses main draw 8 case 4
+[    718s rss 0.41GB] prebuilt responses control draw 1 case 0
+[    719s rss 0.41GB] prebuilt responses control draw 1 case 1
+[    719s rss 0.41GB] prebuilt responses control draw 1 case 2
+[    719s rss 0.41GB] prebuilt responses control draw 1 case 3
+[    720s rss 0.41GB] prebuilt responses control draw 1 case 5
+[    720s rss 0.41GB] prebuilt responses control draw 1 case 4
+[    720s rss 0.41GB] prebuilt responses control draw 2 case 0
+[    721s rss 0.41GB] prebuilt responses control draw 2 case 2
+[    721s rss 0.41GB] prebuilt responses control draw 2 case 1
+[    722s rss 0.41GB] prebuilt responses control draw 2 case 3
+[    723s rss 0.41GB] prebuilt responses control draw 2 case 4
+[    723s rss 0.41GB] prebuilt responses control draw 2 case 5
+[    724s rss 0.41GB] prebuilt responses control draw 3 case 0
+[    724s rss 0.41GB] prebuilt responses control draw 3 case 1
+[    724s rss 0.41GB] prebuilt responses control draw 3 case 2
+[    725s rss 0.41GB] prebuilt responses control draw 3 case 3
+[    728s rss 0.41GB] prebuilt responses control draw 3 case 4
+[    728s rss 0.41GB] prebuilt responses control draw 3 case 5
+[    728s rss 0.41GB] prebuilt responses control draw 4 case 0
+[    729s rss 0.41GB] prebuilt responses control draw 4 case 1
+[    729s rss 0.41GB] prebuilt responses control draw 4 case 2
+[    729s rss 0.41GB] prebuilt responses control draw 4 case 3
+[    730s rss 0.41GB] prebuilt responses control draw 4 case 4
+[    730s rss 0.41GB] prebuilt responses control draw 4 case 5
+[    731s rss 0.41GB] prebuilt responses control draw 5 case 0
+[    732s rss 0.41GB] prebuilt responses control draw 5 case 1
+[    732s rss 0.41GB] prebuilt responses control draw 5 case 2
+[    733s rss 0.41GB] prebuilt responses control draw 5 case 3
+[    733s rss 0.41GB] prebuilt responses control draw 5 case 5
+[    734s rss 0.41GB] prebuilt responses control draw 5 case 4
+[    734s rss 0.41GB] prebuilt responses control draw 6 case 0
+[    735s rss 0.41GB] prebuilt responses control draw 6 case 1
+[    737s rss 0.41GB] prebuilt responses control draw 6 case 2
+[    738s rss 0.41GB] prebuilt responses control draw 6 case 3
+[    738s rss 0.41GB] prebuilt responses control draw 6 case 4
+[    738s rss 0.41GB] prebuilt responses control draw 7 case 0
+[    738s rss 0.41GB] prebuilt responses control draw 6 case 5
+[    739s rss 0.41GB] prebuilt responses control draw 7 case 1
+[    739s rss 0.41GB] prebuilt responses control draw 7 case 2
+[    739s rss 0.41GB] prebuilt responses control draw 7 case 3
+[    740s rss 0.41GB] prebuilt responses control draw 7 case 4
+[    741s rss 0.41GB] prebuilt responses control draw 7 case 5
+[    741s rss 0.41GB] prebuilt responses control draw 8 case 0
+[    742s rss 0.41GB] prebuilt responses control draw 8 case 2
+[    742s rss 0.41GB] prebuilt responses control draw 8 case 1
+[    743s rss 0.41GB] prebuilt responses control draw 8 case 3
+[    743s rss 0.41GB] prebuilt responses control draw 8 case 5
+[    744s rss 0.41GB] prebuilt responses control draw 8 case 4
+[    867s rss 0.41GB] prebuilt responses ref draw 6 case 2
+[    869s rss 0.41GB] prebuilt responses ref draw 7 case 0
+[    870s rss 0.41GB] prebuilt responses ref draw 7 case 3
+[    870s rss 0.41GB] prebuilt responses ref draw 8 case 2
+[    871s rss 0.41GB] prebuilt responses ref draw 8 case 5
+[    872s rss 0.41GB] prebuilt responses ref draw 7 case 2
+[    872s rss 0.41GB] prebuilt responses ref draw 8 case 0
+[    873s rss 0.41GB] prebuilt responses ref draw 6 case 5
+[    873s rss 0.41GB] prebuilt responses ref draw 8 case 3
+[    873s rss 0.41GB] prebuilt responses ref draw 8 case 1
+[    873s rss 0.41GB] prebuilt responses ref draw 6 case 3
+[    874s rss 0.41GB] prebuilt responses ref draw 6 case 4
+[    875s rss 0.41GB] prebuilt responses ref draw 7 case 1
+[    875s rss 0.41GB] prebuilt responses ref draw 8 case 4
+[    875s rss 0.41GB] prebuilt responses ref draw 7 case 5
+[    876s rss 0.41GB] prebuilt responses ref draw 7 case 4
+[    880s rss 0.41GB] pair_r2000_dt400_ 2 case r2_0 built in 4 s
+[    880s rss 0.41GB] pair_r2000_dt400_ 5 case r5_0 built in 4 s
+[    881s rss 0.41GB] pair_r2000_dt400_ 4 case r4_0 built in 5 s
+[    881s rss 0.41GB] pair_r2000_dt400_ 1 case r1_0 built in 5 s
+[    881s rss 0.41GB] pair_r2000_dt400_ 8 case r8_0 built in 5 s
+[    882s rss 0.41GB] pair_r2000_dt400_ 6 case r6_0 built in 5 s
+[    882s rss 0.41GB] pair_r2000_dt400_ 7 case r7_0 built in 5 s
+[    882s rss 0.41GB] pair_r2000_dt400_ 3 case r3_0 built in 6 s
+[    884s rss 0.41GB] pair_r2000_dt400_ 2 case r2_1 built in 4 s
+[    884s rss 0.41GB] pair_r2000_dt400_ 5 case r5_1 built in 4 s
+[    887s rss 0.41GB] pair_r2000_dt400_ 4 case r4_1 built in 6 s
+[    887s rss 0.41GB] pair_r2000_dt400_ 1 case r1_1 built in 6 s
+[    887s rss 0.41GB] pair_r2000_dt400_ 8 case r8_1 built in 6 s
+[    887s rss 0.41GB] pair_r2000_dt400_ 6 case r6_1 built in 6 s
+[    887s rss 0.41GB] pair_r2000_dt400_ 2 case r2_2 built in 4 s
+[    887s rss 0.41GB] pair_r2000_dt400_ 7 case r7_1 built in 6 s
+[    888s rss 0.41GB] pair_r2000_dt400_ 3 case r3_1 built in 6 s
+[    888s rss 0.41GB] pair_r2000_dt400_ 5 case r5_2 built in 4 s
+[    891s rss 0.41GB] pair_r2000_dt400_ 2 case r2_3 built in 4 s
+[    892s rss 0.41GB] pair_r2000_dt400_ 5 case r5_3 built in 4 s
+[    892s rss 0.41GB] pair_r2000_dt400_ 4 case r4_2 built in 5 s
+[    892s rss 0.41GB] pair_r2000_dt400_ 1 case r1_2 built in 5 s
+[    892s rss 0.41GB] pair_r2000_dt400_ 8 case r8_2 built in 5 s
+[    893s rss 0.41GB] pair_r2000_dt400_ 6 case r6_2 built in 5 s
+[    893s rss 0.41GB] pair_r2000_dt400_ 7 case r7_2 built in 5 s
+[    893s rss 0.41GB] pair_r2000_dt400_ 3 case r3_2 built in 6 s
+[    895s rss 0.41GB] pair_r2000_dt400_ 2 case r2_4 built in 4 s
+[    896s rss 0.41GB] pair_r2000_dt400_ 5 case r5_4 built in 4 s
+[    898s rss 0.41GB] pair_r2000_dt400_ 4 case r4_3 built in 6 s
+[    898s rss 0.41GB] pair_r2000_dt400_ 1 case r1_3 built in 6 s
+[    898s rss 0.41GB] pair_r2000_dt400_ 8 case r8_3 built in 6 s
+[    898s rss 0.41GB] pair_r2000_dt400_ 6 case r6_3 built in 6 s
+[    898s rss 0.41GB] pair_r2000_dt400_ 2 case r2_5 built in 4 s
+[    898s rss 0.41GB] pair_r2000_dt400_ 7 case r7_3 built in 6 s
+[    899s rss 0.41GB] pair_r500_dt100_ 6 case r6_0 built in 23 s
+[    899s rss 0.41GB] pair_r500_dt100_ 4 case r4_0 built in 23 s
+[    898s rss 0.41GB] pair_r500_dt100_ 5 case r5_0 built in 23 s
+[    899s rss 0.41GB] pair_r500_dt100_ 7 case r7_0 built in 23 s
+[    899s rss 0.41GB] pair_r2000_dt400_ 3 case r3_3 built in 6 s
+[    899s rss 0.41GB] pair_r500_dt100_ 1 case r1_0 built in 23 s
+[    899s rss 0.41GB] pair_r2000_dt400_ 5 case r5_5 built in 4 s
+[    903s rss 0.41GB] pair_r2000_dt400_ 2/8 done
+[    903s rss 0.41GB] pair_r500_dt100_ 3 case r3_0 built in 27 s
+[    903s rss 0.41GB] pair_r2000_dt400_ 4 case r4_4 built in 6 s
+[    903s rss 0.41GB] pair_r2000_dt400_ 1 case r1_4 built in 6 s
+[    904s rss 0.41GB] pair_r2000_dt400_ 8 case r8_4 built in 6 s
+[    904s rss 0.41GB] pair_r2000_dt400_ 6 case r6_4 built in 6 s
+[    904s rss 0.41GB] pair_r2000_dt400_ 5/8 done
+[    904s rss 0.41GB] pair_r2000_dt400_ 7 case r7_4 built in 6 s
+[    905s rss 0.41GB] pair_r2000_dt400_ 3 case r3_4 built in 6 s
+[    909s rss 0.41GB] pair_r2000_dt400_ 4 case r4_5 built in 5 s
+[    909s rss 0.41GB] pair_r500_dt100_ 8 case r8_0 built in 33 s
+[    909s rss 0.41GB] pair_r2000_dt400_ 1 case r1_5 built in 5 s
+[    909s rss 0.41GB] pair_r2000_dt400_ 6 case r6_5 built in 5 s
+[    909s rss 0.41GB] pair_r2000_dt400_ 8 case r8_5 built in 5 s
+[    910s rss 0.41GB] pair_r2000_dt400_ 7 case r7_5 built in 6 s
+[    910s rss 0.41GB] pair_r2000_dt400_ 3 case r3_5 built in 6 s
+[    912s rss 0.41GB] pair_r500_dt100_ 2 case r2_0 built in 36 s
+[    916s rss 0.41GB] pair_r2000_dt400_ 6/8 done
+[    916s rss 0.41GB] pair_r2000_dt400_ 4/8 done
+[    916s rss 0.41GB] pair_r2000_dt400_ 1/8 done
+[    916s rss 0.41GB] pair_r2000_dt400_ 8/8 done
+[    916s rss 0.41GB] pair_r2000_dt400_ 7/8 done
+[    917s rss 0.41GB] pair_r2000_dt400_ 3/8 done
+[    921s rss 0.41GB] pair_r500_dt100_ 6 case r6_1 built in 23 s
+[    921s rss 0.41GB] pair_r500_dt100_ 4 case r4_1 built in 23 s
+[    921s rss 0.41GB] pair_r500_dt100_ 5 case r5_1 built in 23 s
+[    922s rss 0.41GB] pair_r500_dt100_ 7 case r7_1 built in 23 s
+[    922s rss 0.41GB] pair_r500_dt100_ 1 case r1_1 built in 23 s
+[    926s rss 0.41GB] pair_r500_dt100_ 3 case r3_1 built in 23 s
+[    932s rss 0.41GB] pair_r500_dt100_ 8 case r8_1 built in 23 s
+[    936s rss 0.41GB] pair_r500_dt100_ 2 case r2_1 built in 24 s
+[    944s rss 0.41GB] pair_r500_dt100_ 6 case r6_2 built in 22 s
+[    944s rss 0.41GB] pair_r500_dt100_ 4 case r4_2 built in 22 s
+[    943s rss 0.41GB] pair_r500_dt100_ 5 case r5_2 built in 22 s
+[    944s rss 0.41GB] pair_r500_dt100_ 7 case r7_2 built in 22 s
+[    945s rss 0.41GB] pair_r500_dt100_ 1 case r1_2 built in 22 s
+[    949s rss 0.41GB] pair_r500_dt100_ 3 case r3_2 built in 23 s
+[    954s rss 0.41GB] pair_r500_dt100_ 8 case r8_2 built in 23 s
+[    958s rss 0.41GB] pair_r500_dt100_ 2 case r2_2 built in 22 s
+[    966s rss 0.41GB] pair_r500_dt100_ 6 case r6_3 built in 22 s
+[    966s rss 0.41GB] pair_r500_dt100_ 4 case r4_3 built in 22 s
+[    966s rss 0.41GB] pair_r500_dt100_ 5 case r5_3 built in 22 s
+[    966s rss 0.41GB] pair_r500_dt100_ 7 case r7_3 built in 22 s
+[    967s rss 0.41GB] pair_r500_dt100_ 1 case r1_3 built in 22 s
+[    971s rss 0.41GB] pair_r500_dt100_ 3 case r3_3 built in 23 s
+[    977s rss 0.41GB] pair_r500_dt100_ 8 case r8_3 built in 23 s
+[    980s rss 0.41GB] pair_r500_dt100_ 2 case r2_3 built in 22 s
+[    988s rss 0.41GB] pair_r500_dt100_ 6 case r6_4 built in 22 s
+[    988s rss 0.41GB] pair_r500_dt100_ 4 case r4_4 built in 22 s
+[    988s rss 0.41GB] pair_r500_dt100_ 5 case r5_4 built in 22 s
+[    989s rss 0.41GB] pair_r500_dt100_ 7 case r7_4 built in 23 s
+[    990s rss 0.41GB] pair_r500_dt100_ 1 case r1_4 built in 22 s
+[    994s rss 0.41GB] pair_r500_dt100_ 3 case r3_4 built in 23 s
+[    999s rss 0.41GB] pair_r500_dt100_ 8 case r8_4 built in 23 s
+[   1003s rss 0.41GB] pair_r500_dt100_ 2 case r2_4 built in 22 s
+[   1011s rss 0.41GB] pair_r500_dt100_ 4 case r4_5 built in 22 s
+[   1011s rss 0.41GB] pair_r500_dt100_ 6 case r6_5 built in 22 s
+[   1010s rss 0.41GB] pair_r500_dt100_ 5 case r5_5 built in 22 s
+[   1011s rss 0.41GB] pair_r500_dt100_ 7 case r7_5 built in 22 s
+[   1012s rss 0.41GB] pair_r500_dt100_ 1 case r1_5 built in 22 s
+[   1015s rss 0.41GB] pair_r500_dt100_ 4/8 done
+[   1015s rss 0.41GB] pair_r500_dt100_ 6/8 done
+[   1015s rss 0.41GB] pair_r500_dt100_ 5/8 done
+[   1016s rss 0.41GB] pair_r500_dt100_ 7/8 done
+[   1016s rss 0.41GB] pair_r500_dt100_ 3 case r3_5 built in 22 s
+[   1017s rss 0.41GB] pair_r500_dt100_ 1/8 done
+[   1021s rss 0.41GB] pair_r500_dt100_ 3/8 done
+[   1021s rss 0.41GB] pair_r500_dt100_ 8 case r8_5 built in 22 s
+[   1024s rss 0.41GB] pair_r500_dt100_ 2 case r2_5 built in 22 s
+[   1026s rss 0.41GB] pair_r500_dt100_ 8/8 done
+[   1029s rss 0.41GB] pair_r500_dt100_ 2/8 done
+[   1036s rss 0.42GB] pair_r250_dt50_ 6 case r6_0 built in 161 s
+[   1038s rss 0.41GB] pair_r250_dt50_ 7 case r7_0 built in 163 s
+[   1040s rss 0.41GB] pair_r250_dt50_ 4 case r4_0 built in 164 s
+[   1040s rss 0.41GB] pair_r250_dt50_ 2 case r2_0 built in 164 s
+[   1042s rss 0.41GB] pair_r250_dt50_ 8 case r8_0 built in 166 s
+[   1042s rss 0.41GB] pair_r250_dt50_ 3 case r3_0 built in 167 s
+[   1044s rss 0.41GB] pair_r250_dt50_ 1 case r1_0 built in 168 s
+[   1044s rss 0.41GB] pair_r250_dt50_ 5 case r5_0 built in 169 s
+[   1180s rss 0.46GB] pair_r250_dt50_ 6 case r6_1 built in 144 s
+[   1182s rss 0.47GB] pair_r250_dt50_ 7 case r7_1 built in 143 s
+[   1184s rss 0.48GB] pair_r250_dt50_ 4 case r4_1 built in 144 s
+[   1185s rss 0.46GB] pair_r250_dt50_ 2 case r2_1 built in 145 s
+[   1186s rss 0.46GB] pair_r250_dt50_ 8 case r8_1 built in 144 s
+[   1187s rss 0.47GB] pair_r250_dt50_ 3 case r3_1 built in 145 s
+[   1189s rss 0.47GB] pair_r250_dt50_ 1 case r1_1 built in 145 s
+[   1189s rss 0.47GB] pair_r250_dt50_ 5 case r5_1 built in 145 s
+[   1325s rss 0.48GB] pair_r250_dt50_ 6 case r6_2 built in 144 s
+[   1327s rss 0.49GB] pair_r250_dt50_ 7 case r7_2 built in 145 s
+[   1328s rss 0.49GB] pair_r250_dt50_ 4 case r4_2 built in 145 s
+[   1330s rss 0.47GB] pair_r250_dt50_ 2 case r2_2 built in 145 s
+[   1331s rss 0.48GB] pair_r250_dt50_ 8 case r8_2 built in 145 s
+[   1332s rss 0.47GB] pair_r250_dt50_ 3 case r3_2 built in 145 s
+[   1334s rss 0.49GB] pair_r250_dt50_ 1 case r1_2 built in 145 s
+[   1334s rss 0.49GB] pair_r250_dt50_ 5 case r5_2 built in 145 s
+[   1468s rss 0.52GB] pair_r250_dt50_ 6 case r6_3 built in 143 s
+[   1471s rss 0.52GB] pair_r250_dt50_ 7 case r7_3 built in 144 s
+[   1472s rss 0.52GB] pair_r250_dt50_ 4 case r4_3 built in 144 s
+[   1473s rss 0.52GB] pair_r250_dt50_ 2 case r2_3 built in 143 s
+[   1475s rss 0.52GB] pair_r250_dt50_ 8 case r8_3 built in 144 s
+[   1475s rss 0.52GB] pair_r250_dt50_ 3 case r3_3 built in 143 s
+[   1477s rss 0.51GB] pair_r250_dt50_ 1 case r1_3 built in 143 s
+[   1478s rss 0.51GB] pair_r250_dt50_ 5 case r5_3 built in 144 s
+[   1612s rss 0.56GB] pair_r250_dt50_ 6 case r6_4 built in 144 s
+[   1615s rss 0.57GB] pair_r250_dt50_ 7 case r7_4 built in 144 s
+[   1616s rss 0.58GB] pair_r250_dt50_ 4 case r4_4 built in 144 s
+[   1617s rss 0.57GB] pair_r250_dt50_ 2 case r2_4 built in 144 s
+[   1618s rss 0.57GB] pair_r250_dt50_ 8 case r8_4 built in 144 s
+[   1619s rss 0.56GB] pair_r250_dt50_ 3 case r3_4 built in 143 s
+[   1620s rss 0.57GB] pair_r250_dt50_ 1 case r1_4 built in 143 s
+[   1623s rss 0.57GB] pair_r250_dt50_ 5 case r5_4 built in 144 s
+[   1759s rss 0.59GB] pair_r250_dt50_ 6 case r6_5 built in 146 s
+[   1759s rss 0.58GB] pair_r250_dt50_ 7 case r7_5 built in 145 s
+[   1760s rss 0.61GB] pair_r250_dt50_ 4 case r4_5 built in 144 s
+[   1761s rss 0.58GB] pair_r250_dt50_ 2 case r2_5 built in 144 s
+[   1762s rss 0.58GB] pair_r250_dt50_ 8 case r8_5 built in 144 s
+[   1763s rss 0.58GB] pair_r250_dt50_ 3 case r3_5 built in 145 s
+[   1764s rss 0.59GB] pair_r250_dt50_ 6/8 done
+[   1764s rss 0.58GB] pair_r250_dt50_ 7/8 done
+[   1765s rss 0.60GB] pair_r250_dt50_ 1 case r1_5 built in 145 s
+[   1765s rss 0.61GB] pair_r250_dt50_ 4/8 done
+[   1766s rss 0.58GB] pair_r250_dt50_ 2/8 done
+[   1767s rss 0.59GB] pair_r250_dt50_ 5 case r5_5 built in 144 s
+[   1768s rss 0.58GB] pair_r250_dt50_ 8/8 done
+[   1768s rss 0.58GB] pair_r250_dt50_ 3/8 done
+[   1770s rss 0.60GB] pair_r250_dt50_ 1/8 done
+[   1772s rss 0.59GB] pair_r250_dt50_ 5/8 done
+[   1913s rss 0.41GB] pairj 1 case r1_0 built in 141 s
+[   1913s rss 0.41GB] pairj 8 case r8_0 built in 142 s
+[   1914s rss 0.41GB] pairj 3 case r3_0 built in 142 s
+[   1915s rss 0.41GB] pairj 7 case r7_0 built in 143 s
+[   1916s rss 0.41GB] pairj 2 case r2_0 built in 144 s
+[   1916s rss 0.41GB] pairj 6 case r6_0 built in 144 s
+[   1916s rss 0.41GB] pairj 5 case r5_0 built in 144 s
+[   1916s rss 0.41GB] pairj 4 case r4_0 built in 145 s
+[   2056s rss 0.45GB] pairj 1 case r1_1 built in 143 s
+[   2058s rss 0.45GB] pairj 8 case r8_1 built in 144 s
+[   2058s rss 0.47GB] pairj 3 case r3_1 built in 144 s
+[   2059s rss 0.46GB] pairj 7 case r7_1 built in 144 s
+[   2060s rss 0.47GB] pairj 6 case r6_1 built in 143 s
+[   2060s rss 0.46GB] pairj 5 case r5_1 built in 144 s
+[   2061s rss 0.47GB] pairj 2 case r2_1 built in 144 s
+[   2061s rss 0.47GB] pairj 4 case r4_1 built in 144 s
+[   2200s rss 0.48GB] pairj 1 case r1_2 built in 144 s
+[   2202s rss 0.47GB] pairj 8 case r8_2 built in 144 s
+[   2202s rss 0.48GB] pairj 3 case r3_2 built in 144 s
+[   2203s rss 0.49GB] pairj 7 case r7_2 built in 144 s
+[   2204s rss 0.48GB] pairj 6 case r6_2 built in 144 s
+[   2204s rss 0.47GB] pairj 5 case r5_2 built in 144 s
+[   2205s rss 0.49GB] pairj 2 case r2_2 built in 144 s
+[   2205s rss 0.48GB] pairj 4 case r4_2 built in 144 s
+[   2344s rss 0.51GB] pairj 1 case r1_3 built in 144 s
+[   2345s rss 0.51GB] pairj 8 case r8_3 built in 143 s
+[   2346s rss 0.51GB] pairj 3 case r3_3 built in 143 s
+[   2346s rss 0.50GB] pairj 5 case r5_3 built in 142 s
+[   2346s rss 0.51GB] pairj 7 case r7_3 built in 143 s
+[   2348s rss 0.51GB] pairj 6 case r6_3 built in 144 s
+[   2349s rss 0.51GB] pairj 2 case r2_3 built in 144 s
+[   2349s rss 0.51GB] pairj 4 case r4_3 built in 144 s
+[   2488s rss 0.55GB] pairj 1 case r1_4 built in 143 s
+[   2490s rss 0.57GB] pairj 3 case r3_4 built in 144 s
+[   2490s rss 0.56GB] pairj 8 case r8_4 built in 145 s
+[   2490s rss 0.58GB] pairj 5 case r5_4 built in 144 s
+[   2491s rss 0.57GB] pairj 7 case r7_4 built in 145 s
+[   2492s rss 0.58GB] pairj 6 case r6_4 built in 144 s
+[   2493s rss 0.57GB] pairj 2 case r2_4 built in 144 s
+[   2494s rss 0.57GB] pairj 4 case r4_4 built in 145 s
+[   2632s rss 0.58GB] pairj 1 case r1_5 built in 144 s
+[   2633s rss 0.58GB] pairj 1 done
+[   2634s rss 0.59GB] pairj 8 case r8_5 built in 144 s
+[   2635s rss 0.59GB] pairj 5 case r5_5 built in 145 s
+[   2635s rss 0.59GB] pairj 3 case r3_5 built in 145 s
+[   2635s rss 0.59GB] pairj 8 done
+[   2636s rss 0.59GB] pairj 5 done
+[   2636s rss 0.59GB] pairj 3 done
+[   2636s rss 0.59GB] pairj 7 case r7_5 built in 145 s
+[   2637s rss 0.59GB] pairj 2 case r2_5 built in 144 s
+[   2637s rss 0.59GB] pairj 6 case r6_5 built in 145 s
+[   2637s rss 0.59GB] pairj 7 done
+[   2638s rss 0.59GB] pairj 2 done
+[   2638s rss 0.59GB] pairj 6 done
+[   2639s rss 0.59GB] pairj 4 case r4_5 built in 145 s
+[   2640s rss 0.59GB] pairj 4 done
+[   2647s rss 0.41GB] paired verdict: void=True; main admissible per cell [(3, 0.05, True), (5, 0.05, True), (3, 0.15, True), (5, 0.15, True)]

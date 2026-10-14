@@ -1,0 +1,113 @@
+{
+  "artifacts_offset": 0,
+  "author_model": null,
+  "author_name": "claude-code",
+  "author_type": "agent",
+  "backend": "slurm",
+  "command": "bash scripts/hpc_cat.sh RUN-0081 paired paired_verdict.csv paired_summary.json paired.csv",
+  "created_at": "2026-10-14T00:59:02-04:00",
+  "ended_at": "2026-10-14T00:59:28-04:00",
+  "env": {
+    "lockfiles": {
+      "uv.lock": "cd0adfb7e3bec3fc"
+    },
+    "user": "yubraj"
+  },
+  "exit_code": 0,
+  "experiment_id": "EXP-027",
+  "git_branch": "master",
+  "git_commit": "c26cc0d4da79dda98e9b9bb163d7eb7622c45d52",
+  "git_dirty": 0,
+  "hostname": "node003",
+  "id": "RUN-0089",
+  "label": null,
+  "metrics_offset": 0,
+  "notes": "submitted to duke over ssh",
+  "override_reason": null,
+  "parameters": {
+    "alpha": 0.01,
+    "budgets": [
+      3,
+      5
+    ],
+    "criterion": "one_sided_no_larger_than",
+    "design_seed": 101,
+    "dt_s": [
+      100,
+      50,
+      25
+    ],
+    "excluded_cells": "budget 8 at noise 0.05 (objective not identifiable: eps_sd over J_ref = 1.01)",
+    "fresh_test_seed": 304,
+    "meshes": [
+      [
+        500,
+        100
+      ],
+      [
+        250,
+        50
+      ]
+    ],
+    "meshes_m": [
+      500,
+      250,
+      125
+    ],
+    "n_cases_per_draw": 6,
+    "noise_fraction_primary": 0.05,
+    "paired_replicates": 8,
+    "replicate_seeds": [
+      1101,
+      1102,
+      1103,
+      1104,
+      1105,
+      1106,
+      1107,
+      1108
+    ],
+    "replicates": 8,
+    "test_seed": 303,
+    "validation_seed": 202
+  },
+  "pid": null,
+  "reviewed": 0,
+  "run_dir": ".research/runs/RUN-0089",
+  "slurm": {
+    "hpc": {
+      "archive_sha256": "c432baa1f91165373151470a56ad83f417436279865dfbf4bc813b3c13612813",
+      "bundle": ".research/hpc/bundles/EXP-027-RUN-0089.tar.gz",
+      "bundle_dir": ".research/hpc/bundles/EXP-027-RUN-0089",
+      "cluster": "duke",
+      "collected_at": "2026-10-14T00:59:46-04:00",
+      "collected_on": "plp-drcc-login2",
+      "datasets": {},
+      "experiment_id": "EXP-027",
+      "last_sync": "2026-10-14T00:59:44-04:00",
+      "receipt": "/home/yb107/research-os/projects/pravah/runs/RUN-0089/submission.json",
+      "remote_archive": "/home/yb107/research-os/projects/pravah/code/EXP-027/results-RUN-0089.tar.gz",
+      "remote_code": "/home/yb107/research-os/projects/pravah/code/EXP-027/RUN-0089",
+      "remote_results": "/home/yb107/research-os/projects/pravah/results/RUN-0089",
+      "remote_run_dir": "/home/yb107/research-os/projects/pravah/runs/RUN-0089",
+      "sha256": "1b89ad0858bf18cd431d215131bb8daa42156f5cabdb99af26f011c59b1b3e5f",
+      "slurm_job_id": "201987",
+      "ssh_host": "plp-drcc-login2",
+      "state": "collected",
+      "submitted_at": "2026-10-14T00:59:26-04:00",
+      "token": "f369173ddde390df43a068d9078d9894",
+      "upload_detail": "all 6 file(s) match",
+      "upload_verified": true
+    },
+    "nodelist": "node003",
+    "partition": "defq",
+    "state": "COMPLETED"
+  },
+  "slurm_job_id": "201987",
+  "started_at": "2026-10-14T00:59:28-04:00",
+  "status": "completed",
+  "stderr_path": ".research/runs/RUN-0089/stderr.log",
+  "stdout_path": ".research/runs/RUN-0089/stdout.log",
+  "updated_at": "2026-10-14T00:59:46-04:00",
+  "working_dir": "."
+}

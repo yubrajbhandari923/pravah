@@ -1,0 +1,4 @@
+using venv /home/yb107/research-os/projects/pravah/env/venv (Python 3.12.12)
+pravah resolved from: /home/yb107/research-os/projects/pravah/code/EXP-027/RUN-0070/source/src/pravah/__init__.py
+linked data/belauri -> /scratch/railabs/yb107/research-os/shared-data/belauri-geography/files
+[      0s rss 0.16GB] candidate table (once, UTM)

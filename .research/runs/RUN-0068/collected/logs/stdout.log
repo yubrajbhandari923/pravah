@@ -1,0 +1,4 @@
+using venv /home/yb107/research-os/projects/pravah/env/venv (Python 3.12.12)
+pravah resolved from: /home/yb107/research-os/projects/pravah/code/EXP-031/RUN-0068/source/src/pravah/__init__.py
+linked data/belauri -> /scratch/railabs/yb107/research-os/shared-data/belauri-geography/files
+frozen 788180bef258dd0a edge selections: ['L4|0.1:RETRO:(np.float64(0.01), np.float64(100.0))', 'L9|0.02:RETRO:(np.float64(1000.0), np.float64(0.1))', 'L4|0.02:M0:(np.float64(0.01), 0.0)', 'L4|0.1:M0:(np.float64(0.01), 0.0)', 'L9|0.1:M0:(np.float64(0.01), 0.0)']

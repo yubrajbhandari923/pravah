@@ -1,0 +1,8 @@
+using venv /home/yb107/research-os/projects/pravah/env/venv (Python 3.12.12)
+pravah resolved from: /home/yb107/research-os/projects/pravah/code/EXP-025/RUN-0076/source/src/pravah/__init__.py
+linked data/belauri -> /scratch/railabs/yb107/research-os/shared-data/belauri-geography/files
+{'workers': 1, 'episodes': 32, 'wall_s': 129.76438088342547, 'episodes_per_s': 0.2466007989414859, 'speedup': 1.0, 'efficiency': 1.0, 'mean_episode_s': 3.9901506514288485, 'peak_rss_gb_children': 0.155884}
+{'workers': 2, 'episodes': 32, 'wall_s': 67.85553496330976, 'episodes_per_s': 0.471590121827243, 'speedup': 1.9123625059266058, 'efficiency': 0.9561812529633029, 'mean_episode_s': 4.089290679316036, 'peak_rss_gb_children': 0.155884}
+{'workers': 4, 'episodes': 32, 'wall_s': 36.05943647027016, 'episodes_per_s': 0.8874237407005229, 'speedup': 3.5986247591642764, 'efficiency': 0.8996561897910691, 'mean_episode_s': 4.181752554373816, 'peak_rss_gb_children': 0.155884}
+{'workers': 8, 'episodes': 32, 'wall_s': 20.112377628684044, 'episodes_per_s': 1.5910600223795501, 'speedup': 6.451966211014106, 'efficiency': 0.8064957763767633, 'mean_episode_s': 4.408659448265098, 'peak_rss_gb_children': 0.155884}
+{'workers': 16, 'episodes': 32, 'wall_s': 17.05356066301465, 'episodes_per_s': 1.876440975133177, 'speedup': 7.609225043826497, 'efficiency': 0.47557656523915603, 'mean_episode_s': 7.142253229976632, 'peak_rss_gb_children': 0.155884}

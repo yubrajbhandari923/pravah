@@ -1,0 +1,177 @@
+[
+ {
+  "check": "zero_forcing_max_abs",
+  "value": 0.0,
+  "tol": 0.0,
+  "pass": true,
+  "note": ""
+ },
+ {
+  "check": "mass_closure[activation_shutdown]",
+  "value": 2.2737367544323206e-15,
+  "tol": 1e-06,
+  "pass": true,
+  "note": ""
+ },
+ {
+  "check": "min_conc_rel[activation_shutdown]",
+  "value": 0.0,
+  "tol": -1e-09,
+  "pass": true,
+  "note": "min/max"
+ },
+ {
+  "check": "mass_closure[pulse_wind_reversal]",
+  "value": 2.4964720870984644e-15,
+  "tol": 1e-06,
+  "pass": true,
+  "note": ""
+ },
+ {
+  "check": "min_conc_rel[pulse_wind_reversal]",
+  "value": 0.0,
+  "tol": -1e-09,
+  "pass": true,
+  "note": "min/max"
+ },
+ {
+  "check": "mass_closure[rotation_changing_faces]",
+  "value": 4.394197728613153e-15,
+  "tol": 1e-06,
+  "pass": true,
+  "note": ""
+ },
+ {
+  "check": "min_conc_rel[rotation_changing_faces]",
+  "value": 0.0,
+  "tol": -1e-09,
+  "pass": true,
+  "note": "min/max"
+ },
+ {
+  "check": "mass_closure[tangential_wind]",
+  "value": 2.8588412715022246e-15,
+  "tol": 1e-06,
+  "pass": true,
+  "note": ""
+ },
+ {
+  "check": "min_conc_rel[tangential_wind]",
+  "value": 0.0,
+  "tol": -1e-09,
+  "pass": true,
+  "note": "min/max"
+ },
+ {
+  "check": "mass_closure[zero_wind]",
+  "value": 2.2737367544323206e-15,
+  "tol": 1e-06,
+  "pass": true,
+  "note": ""
+ },
+ {
+  "check": "min_conc_rel[zero_wind]",
+  "value": 0.0,
+  "tol": -1e-09,
+  "pass": true,
+  "note": "min/max"
+ },
+ {
+  "check": "basis_west_supply_pre_reversal",
+  "value": 0.0336,
+  "tol": 0.0,
+  "pass": true,
+  "note": "must be >0 (west is inflow)"
+ },
+ {
+  "check": "basis_west_supply_post_reversal",
+  "value": 0.0,
+  "tol": 0.0,
+  "pass": true,
+  "note": "must be exactly 0 (west is outflow)"
+ },
+ {
+  "check": "basis_east_supply_pre_reversal",
+  "value": 0.0,
+  "tol": 0.0,
+  "pass": true,
+  "note": "must be exactly 0 (east is outflow)"
+ },
+ {
+  "check": "basis_east_supply_post_reversal",
+  "value": 0.0336,
+  "tol": 0.0,
+  "pass": true,
+  "note": "must be >0 (east becomes inflow)"
+ },
+ {
+  "check": "mass_closure[basis_reclassification]",
+  "value": 2.125799079180622e-15,
+  "tol": 1e-06,
+  "pass": true,
+  "note": "both bases on"
+ },
+ {
+  "check": "superposition",
+  "value": 1.595676972754274e-15,
+  "tol": 1e-08,
+  "pass": true,
+  "note": ""
+ },
+ {
+  "check": "closed_box_analytic_err_dt30",
+  "value": 0.001675434227891627,
+  "tol": 0.005,
+  "pass": true,
+  "note": "orders=[0.73, 0.99, 1.0]"
+ },
+ {
+  "check": "closed_box_temporal_order_last",
+  "value": 0.9966343895480553,
+  "tol": 0.8,
+  "pass": true,
+  "note": "expect ~1 (implicit Euler)"
+ },
+ {
+  "check": "dt_refinement_monotone",
+  "value": 0.017435324675164225,
+  "tol": 0.06740982436721675,
+  "pass": true,
+  "note": "errs=[0.06741, 0.03968, 0.01744]"
+ },
+ {
+  "check": "dx_refinement_monotone",
+  "value": 0.024810865840250784,
+  "tol": 0.0959664869277167,
+  "pass": true,
+  "note": "errs(16,32 vs 64)=[0.09597, 0.02481]"
+ },
+ {
+  "check": "static_equivalence_rel",
+  "value": 1.3544420175146348e-15,
+  "tol": 1e-06,
+  "pass": true,
+  "note": ""
+ },
+ {
+  "check": "static_equivalence_nontrivial_rel",
+  "value": 1.2154089166493434e-15,
+  "tol": 1e-06,
+  "pass": true,
+  "note": "history [0,3,1,2] etc., piecewise profiles"
+ },
+ {
+  "check": "footprint_integral_err",
+  "value": 2.220446049250313e-16,
+  "tol": 1e-12,
+  "pass": true,
+  "note": ""
+ },
+ {
+  "check": "line_source_mass_closure",
+  "value": 2.8800665556142727e-15,
+  "tol": 1e-06,
+  "pass": true,
+  "note": ""
+ }
+]

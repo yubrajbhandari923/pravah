@@ -1,0 +1,116 @@
+diff --git a/scripts/convergence_stage2.py b/scripts/convergence_stage2.py
+index 1f2a59f..1713a57 100644
+--- a/scripts/convergence_stage2.py
++++ b/scripts/convergence_stage2.py
+@@ -27,6 +27,7 @@ import itertools
+ import json
+ import multiprocessing as mp
+ import os
++import pickle
+ import resource
+ import sys
+ import time
+@@ -271,13 +272,40 @@ class Run:
+     def config_layouts(self) -> dict[Any, Any]:
+         return {mesh: self.layouts_for(mesh) for mesh in [self.ref] + [m for m in self.meshes if m != self.ref]}  # reference first
+ 
++    def pair_case_file(self, mesh: tuple[float, ...], r: int, i: int) -> Path:
++        return self.work / "cases" / f"{mname(*mesh)}_{r}_{i}.pkl"
++
++    def stored_cases(self, mesh: tuple[float, ...], r: int) -> list[D.DesignCase] | None:
++        """Design cases of draw r pickled by `store_case` (None unless all are there): the layout and objective units then skip the rebuild."""
++        fs = [self.pair_case_file(mesh, r, i) for i in range(int(self.s2["replicates"]["n_cases"]))]
++        return [pickle.loads(f.read_bytes()) for f in fs] if all(f.exists() for f in fs) else None
++
++    def store_case(self, mesh: tuple[float, ...], r: int, i: int) -> None:
++        """Build case i of draw r on `mesh` once (unit responses + direct parts) and pickle it; resumable."""
++        f = self.pair_case_file(mesh, r, i)
++        if f.exists():
++            return
++        st = self.setup(mesh)
++        draws, _, ns = self.draws[f"rep{r}"]
++        t = time.perf_counter()
++        case = st.build(draws[i], "design", ns + i)[0]
++        st.cache._mem.clear()
++        st.cache.extra.clear()
++        f.parent.mkdir(parents=True, exist_ok=True)
++        tmp = f.with_suffix(".tmp")
++        tmp.write_bytes(pickle.dumps(case, protocol=pickle.HIGHEST_PROTOCOL))
++        tmp.replace(f)
++        say(f"stored case {mname(*mesh)} draw {r} case {i} in {time.perf_counter() - t:.0f} s")
++
+     def replicate(self, r: int, ref_lay: dict[str, dict[str, list[str]]], mesh: tuple[float, ...], tag: str) -> dict[str, Any]:
+         """Replicate r on `mesh`: greedy layouts and the objective of the REFERENCE layout on that replicate."""
+         f = self.work / f"{tag}{r}.json"
+         if not f.exists():
+             st, sg = self.setup(mesh), self.frozen_sigma()
+             draws, _, ns = self.draws[f"rep{r}"]
+-            cases = build_cases(st, draws, ns, "design", f"{tag} {r}")
++            cases = self.stored_cases(mesh, r) if tag.startswith("pair_") else None
++            if cases is None:
++                cases = build_cases(st, draws, ns, "design", f"{tag} {r}")
+             lay = greedy_layouts(st, cases, sg, self.alpha, self.budgets)
+             j_ref = {fk: {bk: objective(st, cases, ids, sg[float(fk)], self.alpha) for bk, ids in v.items()}
+                      for fk, v in ref_lay.items()}
+@@ -508,7 +536,9 @@ class Run:
+         if not f.exists():
+             st, sg = self.setup(self.ref), self.frozen_sigma()
+             draws, _, ns = self.draws[f"rep{r}"]
+-            cases = build_cases(st, draws, ns, "design", f"pairj {r}")
++            cases = self.stored_cases(self.ref, r)
++            if cases is None:
++                cases = build_cases(st, draws, ns, "design", f"pairj {r}")
+             n, out = int(self.s2["replicates"]["n"]), {}
+             for name, mesh in self.pair_meshes().items():
+                 for sidx in range(1, n + 1):
+@@ -612,6 +642,9 @@ def _unit(kind: str, arg: Any, ref_lay: Any = None) -> Any:
+     if kind == "prebuild":
+         run.prebuild_responses(*arg)
+         return None
++    if kind == "case":
++        run.store_case(*arg)
++        return None
+     if kind == "pair":
+         run.pair_layouts(*arg)
+         return None
+@@ -665,8 +698,9 @@ def run_paired(run: Run, workers: int) -> None:
+                                      initargs=(run.cfg, run.out, run.work, run._scale)) as ex:
+                 try:
+                     nc = int(run.s2["replicates"]["n_cases"])
+-                    pre = [("prebuild", (r, i, nm)) for nm in ("ref", "main", "control") for r in range(1, n + 1) for i in range(nc)]
+-                    for f in [ex.submit(_unit, k, a) for k, a in pre]:  # level 1: every case's unit responses in parallel
++                    pm = run.pair_meshes()  # one unit per (mesh, draw, case), heaviest mesh first; main == ref (pilot) is built once
++                    pre = list(dict.fromkeys(("case", (pm[nm], r, i)) for nm in ("ref", "main", "control") for r in range(1, n + 1) for i in range(nc)))
++                    for f in [ex.submit(_unit, k, a) for k, a in pre]:  # level 1: every case built once and pickled (layout + pairj reuse it)
+                         f.result()
+                     for f in [ex.submit(_unit, k, a) for k, a in units]:
+                         f.result()
+
+# Untracked files (not included):
+#   .agents/skills/clean-dataset
+#   .agents/skills/engineering-loop
+#   .agents/skills/hpc-setup
+#   .agents/skills/parameter-tuning
+#   .agents/skills/reproduce-paper
+#   .agents/skills/run-experiment
+#   .agents/skills/scientific-handoff
+#   .agents/skills/scientist-guide
+#   .agents/skills/synthesize-experiment
+#   .claude/agents/research-balanced.md
+#   .claude/agents/research-deep.md
+#   .claude/agents/research-fast.md
+#   .claude/skills/clean-dataset
+#   .claude/skills/engineering-loop
+#   .claude/skills/hpc-setup
+#   .claude/skills/parameter-tuning
+#   .claude/skills/reproduce-paper
+#   .claude/skills/run-experiment
+#   .claude/skills/scientific-handoff
+#   .claude/skills/scientist-guide
+#   .claude/skills/synthesize-experiment
+#   .mcp.json
+#   configs/convergence_paired_padded_48.json
+#   configs/convergence_paired_padded_pilot.json
+#   scripts/campaign_usage.py
+#   scripts/hpc_sacct.sh
+#   tools/.DS_Store

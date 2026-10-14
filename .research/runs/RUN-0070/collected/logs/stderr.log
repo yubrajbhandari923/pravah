@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/home/yb107/research-os/projects/pravah/code/EXP-027/RUN-0070/source/scripts/convergence_stage2.py", line 723, in <module>
+    main()
+  File "/home/yb107/research-os/projects/pravah/code/EXP-027/RUN-0070/source/scripts/convergence_stage2.py", line 705, in main
+    run = Run(cfg, out, work)
+          ^^^^^^^^^^^^^^^^^^^
+  File "/home/yb107/research-os/projects/pravah/code/EXP-027/RUN-0070/source/scripts/convergence_stage2.py", line 206, in __init__
+    geo = G.load_geography(c0)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/home/yb107/research-os/projects/pravah/code/EXP-027/RUN-0070/source/src/pravah/studies/belauri/geodesign.py", line 184, in load_geography
+    mp = resolve_manifest(cfg["region"]["manifest"])
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/yb107/research-os/projects/pravah/code/EXP-027/RUN-0070/source/src/pravah/studies/belauri/belauri.py", line 63, in resolve_manifest
+    raise FileNotFoundError(f"manifest {path} not found (tried the working directory and {REPO_ROOT})")
+FileNotFoundError: manifest /home/yb107/research-os/projects/pravah/code/EXP-027/RUN-0070/source/geodata/belauri_padded/manifest.json not found (tried the working directory and /home/yb107/research-os/projects/pravah/code/EXP-027/RUN-0070/source/src/pravah)

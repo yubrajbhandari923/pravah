@@ -1,0 +1,28 @@
+Traceback (most recent call last):
+  File "/home/yb107/research-os/projects/pravah/code/EXP-027/RUN-0075/source/scripts/convergence_stage2.py", line 723, in <module>
+    main()
+  File "/home/yb107/research-os/projects/pravah/code/EXP-027/RUN-0075/source/scripts/convergence_stage2.py", line 705, in main
+    run = Run(cfg, out, work)
+          ^^^^^^^^^^^^^^^^^^^
+  File "/home/yb107/research-os/projects/pravah/code/EXP-027/RUN-0075/source/scripts/convergence_stage2.py", line 206, in __init__
+    geo = G.load_geography(c0)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/home/yb107/research-os/projects/pravah/code/EXP-027/RUN-0075/source/src/pravah/studies/belauri/geodesign.py", line 188, in load_geography
+    raw = _load_raw(mp, cfg)
+          ^^^^^^^^^^^^^^^^^^
+  File "/home/yb107/research-os/projects/pravah/code/EXP-027/RUN-0075/source/src/pravah/studies/belauri/geodesign.py", line 143, in _load_raw
+    p, sha["study"] = _raw_file(man, base, "study")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/yb107/research-os/projects/pravah/code/EXP-027/RUN-0075/source/src/pravah/studies/belauri/geodesign.py", line 107, in _raw_file
+    sha = file_sha256(p)
+          ^^^^^^^^^^^^^^
+  File "/home/yb107/research-os/projects/pravah/code/EXP-027/RUN-0075/source/src/pravah/studies/belauri/belauri.py", line 67, in file_sha256
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^
+  File "/home/yb107/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/pathlib.py", line 1019, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/home/yb107/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/yb107/research-os/projects/pravah/code/EXP-027/RUN-0075/source/configs/belauri_padded_geography/../belauri/raw/geoBoundaries-NPL-ADM3.geojson'
