@@ -17,7 +17,7 @@ import numpy as np
 from pravah import dynamic as dyn
 from pravah.config import (Boundary, Domain, GaussianSource, InflowBasis, RasterSource, Scenario, Times,
                            Transport, WindSegment)
-from pravah.forward import simulate
+from pravah.forward import _boundary_arrays, simulate
 from pravah.inverse import compute_responses
 from pravah.sources import source_fields
 
@@ -47,6 +47,31 @@ def prof(s, p):
     return dataclasses.replace(s, profile=p)
 
 
+def basis_face_reclassification() -> None:
+    """Basis-face reclassification under wind reversal (replaces the vacuous west_no_import_after_reversal check
+    per F-038/R1: that west profile was zero from 1800 s, before the 3600 s reversal, so the checked 'inflow' budget
+    term was dominated by the east Dirichlet loss and tested nothing).
+
+    Constant west-only and east-only bases (amplitude 1, profile 1) under wind (+1,0) then (-1,0) at 3600 s.
+    Supply of a basis in a wind segment = sum over its sides of the cell-summed unit inflow array from
+    forward._boundary_arrays. Fixed tolerances: supply == 0.0 exactly on outflow faces, > 0 on inflow faces;
+    mass closure max_rel_budget_residual <= 1e-6 with both bases on.
+    """
+    west = InflowBasis("w_const", sides=("west",), profile=((0.0, 1.0),))
+    east = InflowBasis("e_const", sides=("east",), profile=((0.0, 1.0),))
+    scn = box(wind=((0.0, 1.0, 0.0), (H, -1.0, 0.0)), bases=(west, east))
+    unit = [_boundary_arrays(scn, w)[3] for w in scn.transport.wind]
+    w0, w1 = (float(unit[k]["west"].sum()) for k in (0, 1))
+    e0, e1 = (float(unit[k]["east"].sum()) for k in (0, 1))
+    rec("basis_west_supply_pre_reversal", w0, 0.0, w0 > 0.0, "must be >0 (west is inflow)")
+    rec("basis_west_supply_post_reversal", w1, 0.0, w1 == 0.0, "must be exactly 0 (west is outflow)")
+    rec("basis_east_supply_pre_reversal", e0, 0.0, e0 == 0.0, "must be exactly 0 (east is outflow)")
+    rec("basis_east_supply_post_reversal", e1, 0.0, e1 > 0.0, "must be >0 (east becomes inflow)")
+    res = simulate(scn, [5.0, 5.0, 1.0, 1.0])
+    rec("mass_closure[basis_reclassification]", res.diagnostics["max_rel_budget_residual"], 1e-6,
+        res.diagnostics["max_rel_budget_residual"] <= 1e-6, "both bases on")
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     # C1 zero forcing
@@ -71,16 +96,8 @@ def main() -> None:
         rec(f"mass_closure[{name}]", res.diagnostics["max_rel_budget_residual"], 1e-6,
             res.diagnostics["max_rel_budget_residual"] <= 1e-6)
         rec(f"min_conc_rel[{name}]", c.min() / max(c.max(), 1e-300), -1e-9, c.min() >= -1e-9 * c.max(), "min/max")
-    # west-only basis becomes an outflow face after reversal: inflow budget must vanish in the second half
-    res = simulate(box(wind=((0.0, 1.0, 0.0), (3600.0, -1.0, 0.0)), bases=(west,)), [0.0, 0.0, 3.0])
-    assert res.budget is not None
-    infl = res.budget["inflow"].values
-    t_end = res.budget["time"].values
-    late = infl[t_end > 3600.0]
-    # amended after the first run (recorded in T-057): the budget 'inflow' term is supply minus the Dirichlet loss
-    # a_in*c on faces that are inflow, so it is negative (not zero) once the west basis stops supplying; the physical
-    # claim is "no net import from a face that became outflow".
-    rec("west_no_import_after_reversal", late.max(), 1e-12, late.max() <= 1e-12, "amended: max<=0, was |.|<=1e-12")
+    # basis-face reclassification under reversal (replaces the vacuous west_no_import_after_reversal, F-038/R1)
+    basis_face_reclassification()
 
     # C4 superposition (linear scheme)
     s = box()
@@ -127,6 +144,13 @@ def main() -> None:
     sup = (R.field(np.repeat(amp, nb)).values - R.base)
     rec("static_equivalence_rel", np.abs(sup - direct).max() / np.abs(direct).max(), 1e-6,
         np.abs(sup - direct).max() / np.abs(direct).max() <= 1e-6)
+    # non-trivial per-bin history (n_params x nb, parameter-major): expanded-model superposition vs direct run
+    hist = np.array([[0.0, 3.0, 1.0, 2.0], [1.0, 0.0, 2.0, 4.0], [0.5, 1.5, 0.0, 3.0]])
+    edges = dyn.bin_edges(sc.times.duration, nb)
+    sup_nt = R.field(hist.reshape(-1)).values - R.base
+    direct_nt = simulate(dyn.truth_scenario(sc, hist, edges), np.ones(sc.n_params)).concentration.values
+    err_nt = np.abs(sup_nt - direct_nt).max() / np.abs(direct_nt).max()
+    rec("static_equivalence_nontrivial_rel", err_nt, 1e-6, err_nt <= 1e-6, "history [0,3,1,2] etc., piecewise profiles")
 
     # C9 footprint normalisation: point (Gaussian), line (road) and area rasters integrate to 1/m^2*m^2
     scn = box()
