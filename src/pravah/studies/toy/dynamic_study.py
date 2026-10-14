@@ -36,10 +36,10 @@ FAMILIES = ("constant", "activation", "shutdown", "ramp", "opposing", "pulse", "
 LAYOUTS = {"L4": ((6, 5), (6, 12), (17, 5), (17, 12)),  # (ix, iy) cell indices
            "L9": tuple((x, y) for x in (4, 12, 20) for y in (3, 9, 15))}
 NOISE = (0.02, 0.10)  # fraction of the episode's domain-mean clean concentration
-ALPHAS = (1e-6, 1e-4, 1e-2, 1.0)
-BETAS = (0.1, 1.0, 10.0, 100.0, 1000.0)  # extended after the first tune put M2 at the old upper edge (validation only)
+ALPHAS = (1e-6, 1e-4, 1e-2, 1.0, 100.0)  # grids widened twice on validation only (edge selections); final
+BETAS = (0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0)
 MODELS = ("M0", "M1", "M2")
-SEEDS = {"tune": 6000, "test": 7000}
+SEEDS = {"tune": 6000, "test": 7100}  # 7000-7047 burned by invalid RUN-0060 (emission units bug)
 N_SEEDS = {"tune": 2, "test": 2}  # seeds per (family, wind)
 
 
@@ -58,9 +58,9 @@ def population() -> np.ndarray:
 def make_history(family: str, rng: np.random.Generator) -> np.ndarray:
     """(5, N_FINE) true history: rows s0, s1, s2 (ug/s), B_wsw, B_ene (ug/m^3)."""
     h = np.zeros((5, N_FINE))
-    h[:3] = rng.uniform(3.0, 8.0, 3)[:, None]
+    h[:3] = rng.uniform(0.6e5, 1.6e5, 3)[:, None]  # ug/s, the project's reference scale (configs/reference.json)
     k = int(rng.integers(3, 9))
-    bamp = rng.uniform(2.0, 6.0)
+    bamp = rng.uniform(0.05, 0.15)  # ug/m^3
     if family == "activation":
         h[0, :k] = 0.0
     elif family == "shutdown":
@@ -101,6 +101,17 @@ def build_responses(wind: str) -> Responses:
     return _CACHE.get(dyn.expand(scenario(wind), N_INV))
 
 
+def scale_check(R: Responses) -> float:
+    """Guard (RUN-0060 lesson): typical emission and inflow signals must be of comparable size, else one kind of
+    parameter is invisible and the study is meaningless.  Returns the local/boundary rms ratio of the typical truth."""
+    loc = float(np.sqrt(np.mean(R.g[:3] ** 2))) * 1.1e5
+    bnd = float(np.sqrt(np.mean(R.g[3:] ** 2))) * 0.1
+    ratio = loc / bnd
+    if not 0.1 <= ratio <= 10.0:
+        raise RuntimeError(f"emission/inflow signal ratio {ratio:.3g} outside [0.1, 10]: check amplitude units")
+    return ratio
+
+
 def truth_field(wind: str, hist: np.ndarray) -> np.ndarray:
     sc = dyn.truth_scenario(scenario(wind), hist, dyn.bin_edges(DUR, N_FINE))
     return np.asarray(simulate(sc, np.ones(5)).concentration.values)
@@ -138,6 +149,8 @@ def run_episode(ep: dict, R: Responses, counts: np.ndarray,
 def _all_rows(stage: str, hp) -> list[dict]:
     counts = population()
     cache = {w: build_responses(w) for w in WINDS}
+    for w, R in cache.items():
+        print(f"scale check {w}: local/boundary signal ratio {scale_check(R):.2f}")
     rows: list[dict] = []
     for ep in episodes(stage):
         rows += run_episode(ep, cache[ep["wind"]], counts, hp)
