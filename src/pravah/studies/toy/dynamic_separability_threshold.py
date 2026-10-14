@@ -33,14 +33,19 @@ def x_pre(x: np.ndarray) -> np.ndarray:
 
 
 def scaled(sc: dict, target: float) -> tuple[np.ndarray, float, dict]:
-    """(x(m), m, analytic at m) with m chosen so d_after_rescale == target (the distance is linear in the shared change)."""
-    pre = x_pre(sc["xa"])
-    xa1, xb1 = sc["xa"], sc["xb"]
-    d1 = sp.analytic(sc["op_a"], sc["op_b"], xa1, xb1)["d_after_rescale"]
+    """(x(m), m, analytic).  Distinguishability d is defined on the CHANGE signatures (x - x_pre, each about its own pre-change state),
+    which scale exactly linearly with m, so m = target / d(1) is exact (the RUN-0082 version mixed pre-states and missed the target
+    by up to 10x for S2/S4/S5 - review F-043/R1).  The scenario simulated for attribution is a's own pre-state + m * (a's change)."""
+    pre_a, pre_b = x_pre(sc["xa"]), x_pre(sc["xb"])
+    ca, cb = sc["xa"] - pre_a, sc["xb"] - pre_b
+    d1 = sp.analytic(sc["op_a"], sc["op_b"], ca, cb)["d_after_rescale"]
+    if d1 < 1e-9:
+        raise ZeroDivisionError("change signatures are perfectly confounded (d == 0 at every amplitude)")
     m = target / d1
-    xa = np.maximum(pre + m * (xa1 - pre), 0.0)
-    xb = np.maximum(pre + m * (xb1 - pre), 0.0)
-    return xa, m, sp.analytic(sc["op_a"], sc["op_b"], xa, xb)
+    an = sp.analytic(sc["op_a"], sc["op_b"], m * ca, m * cb)
+    if abs(an["d_after_rescale"] - target) > 0.02 * target:
+        raise AssertionError(f"achieved d {an['d_after_rescale']:.3f} != target {target}")
+    return np.maximum(pre_a + m * ca, 0.0), m, an
 
 
 def attribute_calibrated(op, x, groups, alpha, reps=REPS):
@@ -60,9 +65,9 @@ def attribute_calibrated(op, x, groups, alpha, reps=REPS):
             out.append(np.abs(sp._contrib(op, th / sp.REF[:, None], groups)))
         return np.array(out)
 
-    null = contribs(pre, 9100)
+    null = contribs(pre, 9300)
     thr = np.percentile(null, 95, axis=0) + 1e-30
-    sig = contribs(x, 9200)
+    sig = contribs(x, 9400)
     ct = np.abs(sp._contrib(op, x, groups))
     truth = names[int(ct.argmax())] if ct.max() > 0 else "none"
     ratio = sig / thr
@@ -91,7 +96,11 @@ def wind_task(args) -> list[dict]:
                     rows.append({"wind": wind, "layout": lay, "noise": fr, "scenario": s, "valid": False})
                     continue
                 for t in TARGETS:
-                    xa, m, an = scaled(sc, t)
+                    try:
+                        xa, m, an = scaled(sc, t)
+                    except ZeroDivisionError:
+                        rows.append({"wind": wind, "layout": lay, "noise": fr, "scenario": s, "valid": False, "reason": "confounded", "target_d": t})
+                        continue
                     att = attribute_calibrated(op, xa, sc["groups"], alpha)
                     rows.append({"wind": wind, "layout": lay, "noise": fr, "scenario": s, "valid": True, "target_d": t, "m": m,
                                  "d_after_rescale": an["d_after_rescale"], "cos_max": an["cos_max"], "alpha": alpha, **att})
@@ -99,14 +108,19 @@ def wind_task(args) -> list[dict]:
 
 
 def controls(frozen: dict) -> dict:
+    """Registered controls under the CALIBRATED rule: (i) perfectly confounded operator: change-signature distance 0 and the named
+    group is arbitrary (misattribution + ambiguous high); (ii) no variation: the detection rate equals the false-alarm level (~5% per group)."""
     out = {}
     xa, xb, groups = sp.confounded_pair()
     op = sp.fixture_confounded()
     an = sp.analytic(op, op, xa, xb)
-    out["confounded"] = {"d_after_rescale": an["d_after_rescale"],
-                         **{f"d{t:g}": sp.attribute(op, xa * (t / max(an['d_raw'], 1e-9)), groups, (1e-2, 0.0), REPS)["conf_rate"] for t in TARGETS}}
+    res = {}
+    for amp in (1.0, 4.0, 16.0):
+        res[f"amp{amp:g}"] = attribute_calibrated(op, xa * amp / 3.0 + 0.0, groups, 1e-2)
+    out["confounded"] = {"d_after_rescale": an["d_after_rescale"], **res}
     real = sp.make_op("steady_a", ds.LAYOUTS["L4"], 0.10)
-    out["no_variation_steady_a_L4"] = sp.fixture_no_variation(real, (frozen["L4|0.1"]["M1z"][0][0], 0.0), REPS)  # legacy rule, kept for continuity
+    pre = sp._base()
+    out["no_variation_steady_a_L4"] = attribute_calibrated(real, pre, sp.LOCAL_BOUNDARY, frozen["L4|0.1"]["M1z"][0][0])
     return out
 
 
