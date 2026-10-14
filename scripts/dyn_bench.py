@@ -26,8 +26,8 @@ def one(seed: int) -> float:
     from pravah.studies.toy import dynamic_study as ds
     rng = np.random.default_rng(seed)
     t = time.perf_counter()
-    h = ds.make_history(ds.FAMILIES[seed % len(ds.FAMILIES)], rng)
-    ds.truth_field("steady", h)
+    h, _ = ds.make_history(ds.FAMILIES[seed % len(ds.FAMILIES)], rng, ds.live_mask(ds.build_responses("steady_a")))
+    ds.truth_field("steady_a", h, np.random.default_rng([seed, 1]))
     A = rng.random((72, 30))
     dyn.fit_history(A, A @ rng.random(30), np.full(72, 0.1), 5, 6, "M2", alpha=1e-4, beta=10.0)
     return time.perf_counter() - t
