@@ -40,7 +40,7 @@ def summarise(rows: list[dict]) -> list[dict]:
                          key=lambda r: r["episode"])
             return np.array([r["jpop"] for r in sel])
         m0, m1, m2, n1, n2 = v("M0"), v("M1"), v("M2"), v("M1", "nominal"), v("M2", "nominal")
-        fin = np.isfinite(m1) & np.isfinite(m2)
+        fin = np.isfinite(m1) & np.isfinite(m2) & np.isfinite(n1) & np.isfinite(n2)
         d = (m2 - m1)[fin]
         lo, hi = ds.boot_ci(d, ds.ALPHA_FWE)
         out.append({"layout": lay, "noise": fr, "condition": cond, "n": int(fin.sum()), "M0": float(m0.mean()), "M1": float(m1[fin].mean()),

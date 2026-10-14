@@ -363,6 +363,7 @@ def main() -> None:
     if a.stage == "tune":
         r = tune_hparams(a.workers, doc)
         write_json(out / "frozen_hparams.json", r)
+        print("FROZEN_JSON " + json.dumps({"hash": r["hash"], "layouts_hash": r.get("layouts_hash"), "frozen": r["frozen"], "edge_selections": r.get("edge_selections")}), flush=True)
         print("frozen", r["hash"], "layouts", doc["hash"], "edge selections:", r["edge_selections"])
         return
     fz = json.loads(Path(a.freeze or out / "frozen_hparams.json").read_text())

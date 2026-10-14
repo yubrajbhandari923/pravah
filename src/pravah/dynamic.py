@@ -67,7 +67,7 @@ class NotConverged(RuntimeError):
 
 
 def tv_nnls(A: np.ndarray, y: np.ndarray, sigma: np.ndarray, theta0: np.ndarray, alpha: float, beta: float,
-            D: np.ndarray, max_iter: int = 20000, tol: float = 1e-8) -> tuple[np.ndarray, int]:
+            D: np.ndarray, max_iter: int = 300000, tol: float = 1e-7) -> tuple[np.ndarray, int]:
     """min_{theta>=0} 0.5||(A theta - y)/sigma||^2 + alpha||theta-theta0||^2 + beta||D theta||_1  by ADMM.
     rho is matched to the data curvature (sqrt of the largest eigenvalue of the whitened Gram matrix): a fixed rho = 1 stopped
     every production-conditioned fit at the iteration cap (review of F-037).  beta == 0 is solved exactly (bvls).  Stops on relative primal AND dual residuals

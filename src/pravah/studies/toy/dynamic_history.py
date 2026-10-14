@@ -283,6 +283,7 @@ def main() -> None:
     if a.stage == "tune":
         r = tune(a.workers)
         write_json(out / "frozen_hparams.json", {"hash": _hash(r["frozen"]), **r})
+        print("FROZEN_JSON " + json.dumps({"hash": _hash(r["frozen"]), "frozen": r["frozen"], "edge_selections": r["edge_selections"]}), flush=True)
         print("frozen", _hash(r["frozen"]), "edge selections:", r["edge_selections"])
         return
     res = test(a.freeze or out / "frozen_hparams.json", out, a.workers)

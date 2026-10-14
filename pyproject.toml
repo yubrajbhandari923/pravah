@@ -31,7 +31,8 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
-markers = ["slow: longer numerical checks"]
+markers = ["slow: >= 25 s tests (deselected by default; run everything with: pytest -m \"\")"]
+addopts = "-m 'not slow'"
 
 [tool.pyright]
 include = ["src/pravah"]

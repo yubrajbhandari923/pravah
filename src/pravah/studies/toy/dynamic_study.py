@@ -47,8 +47,8 @@ LAYOUTS = {"L4": ((6, 5), (6, 12), (17, 5), (17, 12)),  # (ix, iy) cell indices
 NOISE = (0.02, 0.10)  # fraction of the wind's reference mean concentration S0 (independent of the truth field)
 ALPHA_M = tuple(10.0 ** e for e in np.arange(-2.0, 9.01, 0.5))  # M0, M1z, M1 (exact solves): half-decade
 ALPHA_2 = tuple(10.0 ** e for e in np.arange(-2.0, 9.01, 1.0))  # M2 (ADMM)
-BETAS = tuple(10.0 ** e for e in np.arange(-1.0, 7.01, 1.0))
-SEEDS = {"tune": 6000, "test": 7200}
+BETAS = (0.0, *(10.0 ** e for e in np.arange(-1.0, 7.01, 1.0)))  # beta=0 (TV off) nests M1 inside M2
+SEEDS = {"tune": 6000, "test": 7300}  # 7200-7295 consumed by RUN-0064 (v2)
 N_SEEDS = {"tune": 1, "test": 2}  # seeds per (wind, family)
 MIN_REL_GAIN = 0.10  # registered: M2 must also improve J_pop by >= 10% of M1's mean to count as an effect
 ALPHA_FWE = 0.05 / 4  # Bonferroni over the 4 primary cells (layout x noise)
@@ -292,7 +292,7 @@ def tune(workers: int, layouts: dict[str, tuple[tuple[int, int], ...]] | None = 
         frozen[k][m] = [list(best)]
         scores.setdefault(k, {})[m] = {f"{a:g}|{b:g}": v for (a, b), v in d.items()}
         al = ALPHA_M if m != "M2" else ALPHA_2
-        if best[0] in (al[0], al[-1]) or (m == "M2" and best[1] in (BETAS[0], BETAS[-1])):
+        if best[0] in (al[0], al[-1]) or (m == "M2" and best[1] in (BETAS[1], BETAS[-1])):  # beta = 0 is 'TV off', not an edge
             edge.append(f"{k}:{m}:{best}")
     for (lay, fr, _), d in s1.items():
         if m0[(lay, fr)][0] in (ALPHA_M[0], ALPHA_M[-1]):
@@ -335,13 +335,21 @@ def summarise(rows: list[dict]) -> dict:
                 v2a, v2b = vec(lay, fr, a, metric, keep), vec(lay, fr, b, metric, keep)
                 ok2 = np.isfinite(v2a) & np.isfinite(v2b)
                 leave[w] = float((v2a - v2b)[ok2].mean())
+            wl = [r["wind"] for r in sorted((r for r in rows if r["layout"] == lay and r["noise"] == fr and r["model"] == a and r["episode"] in valid_ids),
+                                             key=lambda r: r["episode"])]
+            wl = np.array(wl)[ok]
+            wm = np.array([d[wl == w].mean() for w in WINDS if (wl == w).any()])  # per-wind mean differences
+            rng_w = np.random.default_rng(1)
+            wboot = wm[rng_w.integers(0, len(wm), (10000, len(wm)))].mean(axis=1)
             out.append({"layout": lay, "noise": fr, "metric": metric, "contrast": f"{a}-{b}", "n": int(ok.sum()), "mean_diff": float(d.mean()),
+                        "wind_cluster_ci_lo": float(np.percentile(wboot, 100 * ALPHA_FWE / 2)), "wind_cluster_ci_hi": float(np.percentile(wboot, 100 * (1 - ALPHA_FWE / 2))),
                         "ci_lo": lo, "ci_hi": hi, "rel_change": rel, "frac_a_better": float((d < 0).mean()),
                         "mean_a": float(va[ok].mean()), "mean_b": float(vb[ok].mean()), "leave_one_wind_out": leave,
                         "effect_criterion_met": bool(metric == "jpop" and hi < 0 and rel <= -MIN_REL_GAIN and all(v < 0 for v in leave.values()))})
     for lay, fr, w in itertools.product(LAYOUTS, NOISE, WINDS):
         d = vec(lay, fr, "M2", "jpop", [w]) - vec(lay, fr, "M1", "jpop", [w])
-        by_wind.append({"layout": lay, "noise": fr, "wind": w, "n": len(d), "M2_minus_M1_jpop": float(d.mean())})
+        d = d[np.isfinite(d)]
+        by_wind.append({"layout": lay, "noise": fr, "wind": w, "n": len(d), "M2_minus_M1_jpop": float(d.mean()) if len(d) else float("nan")})
     floor = float(np.mean([r["jpop"] for r in rows if r["model"] == "floor" and r["valid"]]))
     return {"summary": out, "by_wind": by_wind, "mean_projection_floor": floor,
             "n_invalid_episodes": len({r["episode"] for r in rows if not r["valid"]}),
@@ -362,6 +370,7 @@ def main() -> None:
         r = tune(a.workers)
         write_json(out / "frozen_hparams.json", {"hash": _hash(r["frozen"]), **r})
         print("frozen", _hash(r["frozen"]), "edge selections:", r["edge_selections"])
+        print("FROZEN_JSON " + json.dumps({"hash": _hash(r["frozen"]), "frozen": r["frozen"], "edge_selections": r["edge_selections"]}), flush=True)
         return
     fz = json.loads(Path(a.freeze or out / "frozen_hparams.json").read_text())
     if fz["hash"] != _hash(fz["frozen"]):
