@@ -205,6 +205,11 @@ class Run:
         c0["mesh"] = {"resolution_m": cm[0], "dt_s": cm[1]}
         geo = G.load_geography(c0)
         self.table: Any = G.build_candidate_table(geo, c0)
+        if "candidate_manifest" in self.s2:  # padded domain: the lattice is anchored to the manifest origin, so reuse the unpadded sites
+            cu = copy.deepcopy(c0)
+            cu["region"]["manifest"] = str(ROOT / self.s2["candidate_manifest"])
+            self.table = G.build_candidate_table(G.load_geography(cu), cu)
+            self.table["local_x"], self.table["local_y"] = geo.region.georef.utm_to_local(self.table["utm_x"], self.table["utm_y"])
         self.xy = {i: (x, y) for i, x, y in zip(self.table['id'], self.table['utm_x'], self.table['utm_y'])}
         self.mapping = mapping_table(geo, self.table, sorted({m[0] for m in self.meshes}))
         atomic_write(out / "candidate_mapping.csv", self.mapping.to_csv(index=False))
