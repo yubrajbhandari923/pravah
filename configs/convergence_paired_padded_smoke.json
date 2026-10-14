@@ -83,7 +83,7 @@
   "n_random_points": 20
  },
  "stage2": {
-  "candidate_manifest": "geodata/belauri_padded/manifest.json",
+  "candidate_manifest": "configs/belauri_padded_geography/manifest.json",
   "alpha_file": null,
   "noise_scale_file": null,
   "budgets": [

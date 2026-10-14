@@ -159,11 +159,11 @@ def test(doc: dict, workers: int) -> list[dict]:
     eps = [{**e, "seed": TEST_SEED0 + e["id"], "stage": "sufficiency"} for e in ds.episodes("test")]
     lays: dict[str, tuple] = {}
     for key, rec in doc["results"].items():
-        noise, _ = key.split("|")
-        lays[f"{noise}|ref"] = tuple(rec["star"])
+        noise, kk = key.split("|")  # the key must carry k: k=2 and k=3 layouts were colliding (found when reading the first test run)
+        lays[f"{noise}|{kk}|ref"] = tuple(rec["star"])
         for n, sel in rec["selected"].items():
             for r, s in enumerate(sel):
-                lays[f"{noise}|N{n}|r{r}"] = tuple(s["layout"])
+                lays[f"{noise}|{kk}|N{n}|r{r}"] = tuple(s["layout"])
     names = {}
     for key, idx in lays.items():
         names.setdefault(tuple(sorted(idx)), f"L{len(names)}")
