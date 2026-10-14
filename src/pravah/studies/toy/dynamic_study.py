@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import dataclasses
 import hashlib
 import itertools
 import json
@@ -135,12 +136,28 @@ def episodes(stage: str) -> list[dict]:
             for i, (w, f, _) in enumerate(itertools.product(WINDS, FAMILIES, range(N_SEEDS[stage])))]
 
 
-def truth_field(wind: str, hist: np.ndarray, rng: np.random.Generator) -> np.ndarray:
-    """Truth simulated at dt 60 s with change times jittered by up to +-35% of a fine bin (never nested in the inverse bins)."""
+EXTRA_XY = (6000.0, 4500.0)  # location of the unmodelled source in the misspecification studies
+
+
+def truth_field(wind: str, hist: np.ndarray, rng: np.random.Generator, perturb: dict | None = None) -> np.ndarray:
+    """Truth simulated at dt 60 s with change times jittered by up to +-35% of a fine bin (never nested in the inverse bins).
+    ``perturb`` (model error, DYN-07; the INVERSE keeps the nominal model): rot_deg / speed_scale rotate and scale every wind
+    segment, K_scale scales diffusion, extra_frac adds a constant unmodelled source of that fraction of the mean local emission."""
     edges = dyn.bin_edges(DUR, N_FINE)
     edges[1:-1] += rng.uniform(-0.35, 0.35, N_FINE - 1) * (DUR / N_FINE)
     sc = dyn.truth_scenario(scenario(wind, dt=60.0), hist, edges)
-    return np.asarray(simulate(sc, np.ones(NP)).concentration.values)
+    q = np.ones(NP)
+    if perturb:
+        th, sp = np.deg2rad(perturb.get("rot_deg", 0.0)), perturb.get("speed_scale", 1.0)
+        c, sn = np.cos(th), np.sin(th)
+        winds = tuple(WindSegment(w.t_start, sp * (c * w.u - sn * w.v), sp * (sn * w.u + c * w.v)) for w in sc.transport.wind)
+        sc = dataclasses.replace(sc, transport=dataclasses.replace(sc.transport, wind=winds, K=sc.transport.K * perturb.get("K_scale", 1.0)))
+        if perturb.get("extra_frac", 0.0) > 0:
+            amp = float(perturb["extra_frac"]) * float(hist[:3].mean())
+            extra = GaussianSource("unmodelled", *EXTRA_XY, 600.0, profile=((0.0, amp),))
+            sc = dataclasses.replace(sc, sources=(*sc.sources, extra))
+            q = np.ones(NP + 1)
+    return np.asarray(simulate(sc, q).concentration.values)
 
 
 def _time_weights(t: np.ndarray) -> np.ndarray:
@@ -194,7 +211,7 @@ def run_episode(ep: dict, hp: dict[str, dict[str, list[tuple[float, float]]]], m
     counts = population()
     rng = np.random.default_rng([ep["seed"], 0])
     hist, valid = make_history(ep["family"], rng, live_mask(R))
-    tf = truth_field(ep["wind"], hist, np.random.default_rng([ep["seed"], 1]))
+    tf = truth_field(ep["wind"], hist, np.random.default_rng([ep["seed"], 1]), ep.get("perturb"))
     t = np.asarray(R.times)
     s0 = reference_scale(R)
     binned = hist.reshape(NP, N_INV, N_FINE // N_INV).mean(axis=2)
