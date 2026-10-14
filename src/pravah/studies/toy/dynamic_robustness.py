@@ -18,7 +18,7 @@ import numpy as np
 from pravah.io import write_json
 from pravah.studies.toy import dynamic_study as ds
 
-SEED0 = 8200
+SEED0 = 8500  # 8200-8295 used by the v2-hyperparameter run RUN-0065
 CONDITIONS: dict[str, dict] = {
     "nominal": {}, "rot5": {"rot_deg": 5.0}, "rot10": {"rot_deg": 10.0}, "rot20": {"rot_deg": 20.0},
     "speed0.8": {"speed_scale": 0.8}, "speed1.2": {"speed_scale": 1.2}, "K2": {"K_scale": 2.0},

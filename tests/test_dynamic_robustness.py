@@ -18,5 +18,5 @@ def test_perturbation_changes_truth_but_nominal_is_identical():
 def test_robust_episodes_use_disjoint_seeds_and_pair_across_conditions():
     e1, e2 = rb.episodes("nominal"), rb.episodes("rot10")
     assert [e["seed"] for e in e1] == [e["seed"] for e in e2]
-    assert min(e["seed"] for e in e1) == 8200 and max(e["seed"] for e in e1) < 8300
+    assert min(e["seed"] for e in e1) == 8500 and max(e["seed"] for e in e1) < 8600
     assert all(e["perturb"] is None for e in e1) and all(e["perturb"] == {"rot_deg": 10.0} for e in e2)
