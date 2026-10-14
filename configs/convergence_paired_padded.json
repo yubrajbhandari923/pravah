@@ -1,9 +1,9 @@
 {
  "extends": "convergence_paired.json",
  "name": "exp027_paired_padded",
- "notes": "EXP-027 paired decision-stability test on a COMMON PADDED domain (data/belauri_padded, grid.pad_to_m 2000) so that 500 m, 250 m and a true 2 km control share one domain and the original spatial question is kept. dt = res/5 (as 500/100, 250/50), so Courant u*dt/dx = 2.5*400/2000 = 0.5 = the 500 m maximum. alpha_file and noise_scale_file are FROZEN values taken from the UNPADDED domain (results/geodesign); they are reused unchanged, not re-derived on the padded grid. candidate_manifest: the 142 candidate sites are the UNPADDED ones (the interior lattice is anchored to the manifest origin, which padding shifts by 500 m); their UTM positions are kept and local coordinates are recomputed on the padded georef.",
+ "notes": "EXP-027 paired decision-stability test on a COMMON PADDED domain (geodata/belauri_padded, grid.pad_to_m 2000) so that 500 m, 250 m and a true 2 km control share one domain and the original spatial question is kept. dt = res/5 (as 500/100, 250/50), so Courant u*dt/dx = 2.5*400/2000 = 0.5 = the 500 m maximum. alpha_file and noise_scale_file are FROZEN values taken from the UNPADDED domain (results/geodesign); they are reused unchanged, not re-derived on the padded grid. candidate_manifest: the 142 candidate sites are the UNPADDED ones (the interior lattice is anchored to the manifest origin, which padding shifts by 500 m); their UTM positions are kept and local coordinates are recomputed on the padded georef.",
  "region": {
-  "manifest": "data/belauri_padded/manifest.json"
+  "manifest": "geodata/belauri_padded/manifest.json"
  },
  "stage2": {
   "candidate_manifest": "data/belauri/manifest.json",
