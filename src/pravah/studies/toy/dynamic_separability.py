@@ -14,6 +14,8 @@ Exploratory / plumbing code: nothing here is a confirmatory result.  Everything 
 """
 from __future__ import annotations
 
+from typing import Any
+
 import argparse
 import csv
 import functools
@@ -44,7 +46,7 @@ class Op:
     sigma: float  # per-observation noise sd
     rb: np.ndarray  # (n_obs,) temporal bin of each row
     live: np.ndarray  # (5, 6) bool: whitened column norm above 1e-6 of the max
-    R: object = None  # Responses (None for synthetic fixtures)
+    R: Any = None  # Responses (None for synthetic fixtures)
 
 
 def make_op(wind: str, cells, noise: float, R=None) -> Op:
@@ -141,7 +143,7 @@ def build(name: str, op: Op, op_b: Op | None = None) -> dict:
       S6 a: s0 x3 from bin 3                       b: s2 x3 from bin 3          (local vs local; groups s0 / s2)
     The boundary is B_wsw if live in the required bins, else B_ene; no live window -> valid False."""
     xa, ok = _base(), True
-    sc = dict(name=name, op_a=op, op_b=op, groups=LOCAL_BOUNDARY, valid=True, match_ok=True)
+    sc: dict[str, Any] = dict(name=name, op_a=op, op_b=op, groups=LOCAL_BOUNDARY, valid=True, match_ok=True)
     xb = _base()
     if name == "S1":
         xa[0, SPLIT:] = 3.0
@@ -199,7 +201,7 @@ def attribute(op: Op, x: np.ndarray, groups: dict = LOCAL_BOUNDARY, hp: tuple[fl
     ct = np.abs(_contrib(op, x, groups))
     truth = names[int(ct.argmax())] if ct.max() > 0 else "none"
     y0, sig = op.Ax @ x.ravel(), np.full(len(op.Ax), op.sigma)
-    loc_true = None
+    loc_true, norm0 = None, 0.0
     if op.R is not None:
         xl = x.copy(); xl[3:] = 0
         loc_true = np.tensordot((xl * REF[:, None]).ravel(), op.R.g, axes=1)
@@ -217,7 +219,7 @@ def attribute(op: Op, x: np.ndarray, groups: dict = LOCAL_BOUNDARY, hp: tuple[fl
                       else names[int(ce.argmax())])
         if loc_true is not None:
             tl = th.copy(); tl[3:] = 0
-            jp.append(ds.jpop(op.R, tl, loc_true, _counts())[0] / norm0 if norm0 > 0 else np.nan)
+            jp.append(ds.jpop(op.R, tl, loc_true, _counts())[0] / norm0 if norm0 > 0 else np.nan)  # pyright: ignore[reportArgumentType]
     n = len(labels)
     lab = np.array(labels)
     wrong = float(((lab != truth) & (lab != "ambiguous")).sum() + 0.5 * (lab == "ambiguous").sum())

@@ -209,7 +209,7 @@ def fig03() -> None:
 
 # ---------------------------------------------------------------- fig04 DYN-02 v2 (EXP-030)
 def fig04() -> None:
-    run = "RUN-0064"
+    run = "RUN-0087"
     doc = load(f"{run}/summary.json")
     eps_path = RUNS / run / "episodes.csv"
     if doc is None or not eps_path.exists():
@@ -311,7 +311,7 @@ def fig04() -> None:
 
 # ---------------------------------------------------------------- fig05 DYN-07 robustness (EXP-035)
 def fig05() -> None:
-    run = "RUN-0065"
+    run = "RUN-0088"
     doc = load(f"{run}/summary.json")
     if doc is None:
         return pending("fig05", f"{run}/summary.json missing")

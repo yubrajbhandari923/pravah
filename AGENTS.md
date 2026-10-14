@@ -61,6 +61,9 @@ Open and consequential: **Q-013** — the design objective may not be identifiab
 small-budget conclusions of EXP-013/014/020/026 too. Test seed 303 is burned; 304 is unspent.
 Best next experiment: EXP-027 (resolve the mesh question properly) or Q-013 (resolve identifiability first — arguably the more fundamental of the two).
 
+
+**Dynamic population-weighted program (PLAN-007, 2026-10-13/14).** Full account: `docs/DYNAMIC_POPULATION_SENSOR_RESEARCH_REPORT.md` (PROVISIONAL). Code: `pravah.dynamic` (bin expansion, truth scenarios, BVLS/ADMM solvers; the forward solver is untouched), `pravah.dynamic_design`, `pravah.studies.toy.dynamic_{study,history,design_study,robustness,sufficiency,separability,separability_threshold}`. Current findings: F-044, F-046, F-048..F-051, F-053, F-054 (all preliminary; earlier F-036..F-047, F-052 are superseded, do not cite them). Hard-won rules: ADMM must converge (it raises `NotConverged`; the old cap made results meaningless); prior scale uses fixed `REF` amplitudes, never layout-dependent norms; check (parameter, bin) sensitivity before scoring; regret needs an independent evaluation reference; Research OS collects only logs from cluster jobs (print results, see `scripts/hpc_cat.sh`); the cluster venv holds a stale `pravah`, launchers prepend the bundle `src/`. Default `pytest` now skips 15 tests >= 25 s (`pytest -m ""` runs everything; list in `tests/conftest.py`). Open: DYN-08/EXP-026 (not run), EXP-027b (needs approval), review of the final findings.
+
 <!-- research:begin — managed by `research init`; edit outside these markers freely -->
 ## Research OS
 

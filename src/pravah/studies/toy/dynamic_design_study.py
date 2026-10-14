@@ -78,7 +78,7 @@ def wind_operators(wind: str, noise: float, mode: str = "dyn", prior_var: float 
         raise ValueError(mode)
     lam, V = np.linalg.eigh((Q + Q.T) / 2)
     M = (V * np.sqrt(np.maximum(lam, 0.0))).T  # M^T M = Q
-    return DesignProblem(A, M, np.full(A.shape[2], float(prior_var)), sigma)
+    return DesignProblem(np.asarray(A, dtype=float), M, np.full(A.shape[2], float(prior_var)), sigma)
 
 
 class SumProblem:
@@ -151,11 +151,12 @@ def search(prob: SumProblem, k: int, starts: tuple[tuple[int, ...], ...] = ()) -
     g, rg = prob.greedy(k)
     gs, rgs = prob.swap_refine(g)
     out = {"k": k, "greedy": list(g), "greedy_risk": rg, "greedy_swap": list(gs), "greedy_swap_risk": rgs}
+    ex = None
     if k <= EXH_MAX or k in GAP_EXTRA:
         ex = prob.exhaustive(k, chunk=2048)
         out.update(exhaustive=list(ex.best_subset), exhaustive_risk=ex.best_risk, median_risk=ex.median_risk, worst_risk=ex.worst_risk,
                    n_evaluated=ex.n_evaluated)
-    if k <= EXH_MAX:
+    if k <= EXH_MAX and ex is not None:
         best, risk, method = ex.best_subset, ex.best_risk, "exhaustive"
     else:
         ss = [gs] + [prob.swap_refine(s)[0] for s in starts]
@@ -325,7 +326,7 @@ def summarise(rows: list[dict], doc: dict) -> dict:
             per_layout.append({"k": k, "noise": nz, "layout": fam, "surrogate_risk": s, "mean_jpop": act[-1]})
         rho = spearmanr(sv, act) if len(act) > 2 else None
         spear.append({"k": k, "noise": nz, "n_layouts": len(act), "spearman": float(rho.statistic) if rho is not None else float("nan"),
-                      "p": float(rho.pvalue) if rho is not None else float("nan")})
+                      "p": float(rho.pvalue) if rho is not None else float("nan")})  # pyright: ignore[reportAttributeAccessIssue]
     gaps = []
     for nz, s in doc["search"].items():
         for key, r in s.items():

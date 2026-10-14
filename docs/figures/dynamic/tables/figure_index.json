@@ -24,20 +24,20 @@
       "figure": "fig03_dyn00_verification",
       "file": "docs/figures/dynamic/fig03_dyn00_verification.png",
       "status": "produced",
-      "caption": "fig03 DYN-00 verification (EXP-028; .research/runs/RUN-0059/dyn00_checks.json; 20/20 checks pass) \u00b7 RUN-0059 \u00b7 n = 20 checks \u00b7 synthetic toy geometry \u00b7 mass-closure residuals (log) and temporal-order checks",
+      "caption": "fig03 DYN-00 verification (EXP-028; .research/runs/RUN-0091/dyn00_checks.json; 25/25 checks pass) \u00b7 RUN-0091 \u00b7 n = 25 checks \u00b7 synthetic toy geometry \u00b7 mass-closure residuals (log) and temporal-order checks",
       "source_runs": [
-        "RUN-0059"
+        "RUN-0091"
       ],
-      "n": "20 checks",
+      "n": "25 checks",
       "description": "DYN-00 transport verification: mass closure (log) and temporal order with pass/fail"
     },
     {
       "figure": "fig04_dyn02v2_inversion",
       "file": "docs/figures/dynamic/fig04_dyn02v2_inversion.png",
       "status": "produced",
-      "caption": "fig04 DYN-02 v2 inversion (EXP-030; J_pop = stored RMS; (c) sensitivity: nonconverged M2 replaced by M1) \u00b7 RUN-0064 \u00b7 n = 96 episodes \u00b7 synthetic toy geometry \u00b7 paired contrasts, by-wind and by-family M2 \u2212 M1",
+      "caption": "fig04 DYN-02 v2 inversion (EXP-030; J_pop = stored RMS; (c) sensitivity: nonconverged M2 replaced by M1) \u00b7 RUN-0087 \u00b7 n = 96 episodes \u00b7 synthetic toy geometry \u00b7 paired contrasts, by-wind and by-family M2 \u2212 M1",
       "source_runs": [
-        "RUN-0064"
+        "RUN-0087"
       ],
       "n": "96 episodes",
       "description": "DYN-02 v2 paired contrasts, by-wind and by-family M2-M1"
@@ -46,9 +46,9 @@
       "figure": "fig05_dyn07_robustness",
       "file": "docs/figures/dynamic/fig05_dyn07_robustness.png",
       "status": "produced",
-      "caption": "fig05 DYN-07 robustness to model error (EXP-035; test set; wind model error, K, extra source) \u00b7 RUN-0065 \u00b7 n = up to 96 episodes per cell \u00b7 synthetic toy geometry \u00b7 degradation vs rotation, relative M2 gain over all conditions",
+      "caption": "fig05 DYN-07 robustness to model error (EXP-035; test set; wind model error, K, extra source) \u00b7 RUN-0088 \u00b7 n = up to 96 episodes per cell \u00b7 synthetic toy geometry \u00b7 degradation vs rotation, relative M2 gain over all conditions",
       "source_runs": [
-        "RUN-0065"
+        "RUN-0088"
       ],
       "n": "up to 96 episodes per cell",
       "description": "DYN-07 degradation ratios and relative M2 gain per condition"
@@ -68,9 +68,9 @@
       "figure": "fig07_dyn06_detection_misattribution",
       "file": "docs/figures/dynamic/fig07_dyn06_detection_misattribution.png",
       "status": "produced",
-      "caption": "fig07 DYN-06 detection and misattribution vs target d (EXP-034; RUN-0083; lines = mean over winds, band = min-max over winds; noise 0.1) \u00b7 RUN-0083 \u00b7 n = 6 winds x 100 replicates per cell \u00b7 synthetic toy geometry \u00b7 wrong-group and detection rates",
+      "caption": "fig07 DYN-06 detection and misattribution vs target d (EXP-034; RUN-0086; lines = mean over winds, band = min-max over winds; noise 0.1) \u00b7 RUN-0086 \u00b7 n = 6 winds x 100 replicates per cell \u00b7 synthetic toy geometry \u00b7 wrong-group and detection rates",
       "source_runs": [
-        "RUN-0083"
+        "RUN-0086"
       ],
       "n": "6 winds x 100 replicates",
       "description": "DYN-06 wrong-group and detection rate vs d"
@@ -79,9 +79,9 @@
       "figure": "fig07b",
       "file": "docs/figures/dynamic/fig07b_dyn06_wrong_group_heatmap.png",
       "status": "produced",
-      "caption": "fig07b DYN-06 wrong-group heatmap at d=16 (EXP-034; RUN-0083; noise 0.1)",
+      "caption": "fig07b DYN-06 wrong-group heatmap at d=16 (EXP-034; RUN-0086; noise 0.1)",
       "source_runs": [
-        "RUN-0083"
+        "RUN-0086"
       ],
       "n": "6 winds x 100 replicates per cell",
       "description": "wrong-group rate by wind x scenario at d=16"
