@@ -1,0 +1,43 @@
+{
+ "extends": "convergence_stage2_smoke.json",
+ "name": "exp027_paired_smoke",
+ "notes": "Plumbing check only.",
+ "stage2": {
+  "meshes": [
+   [
+    500,
+    100
+   ],
+   [
+    250,
+    50
+   ],
+   [
+    500,
+    600
+   ]
+  ],
+  "budgets": [
+   1,
+   3
+  ],
+  "replicates": {
+   "n": 3,
+   "n_cases": 2
+  },
+  "paired": {
+   "main": [
+    500,
+    100
+   ],
+   "ref": [
+    250,
+    50
+   ],
+   "control": [
+    500,
+    600
+   ]
+  }
+ }
+}

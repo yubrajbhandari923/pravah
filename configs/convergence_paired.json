@@ -1,0 +1,39 @@
+{
+ "extends": "convergence_stage2.json",
+ "name": "exp027_paired",
+ "notes": "EXP-027 paired decision-stability test. Control = 500 m / dt 600 s (a 2 km level cannot be added without padding the frozen domain; see decision).",
+ "stage2": {
+  "meshes": [
+   [
+    500,
+    100
+   ],
+   [
+    250,
+    50
+   ],
+   [
+    500,
+    600
+   ]
+  ],
+  "budgets": [
+   3,
+   5
+  ],
+  "paired": {
+   "main": [
+    500,
+    100
+   ],
+   "ref": [
+    250,
+    50
+   ],
+   "control": [
+    500,
+    600
+   ]
+  }
+ }
+}

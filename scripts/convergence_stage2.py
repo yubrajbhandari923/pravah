@@ -478,6 +478,93 @@ class Run:
                   "design objective is within one SD (over replicates) of the reference layout's objective on the replicate ensembles."]
         (self.out / "README_stage2.md").write_text("\n".join(lines) + "\n")
 
+    # -------------------------------------------------------------------------------------------- EXP-027 paired mode
+    def pair_meshes(self) -> dict[str, tuple[float, float]]:
+        p = self.s2["paired"]
+        return {k: (float(p[k][0]), float(p[k][1])) for k in ("main", "ref", "control")}
+
+    def pair_layouts(self, r: int, name: str) -> dict[str, dict[str, list[str]]]:
+        """Layouts selected on replicate draw r at mesh `name` (main | ref | control); expensive unit, resumable."""
+        mesh = self.pair_meshes()[name]
+        return self.replicate(r, {}, mesh, f"pair_{mname(*mesh)}_")["layouts"]
+
+    def pair_objectives(self, r: int) -> dict[str, Any]:
+        """J of EVERY draw's layouts (all three meshes) evaluated on draw r's cases at the REFERENCE mesh."""
+        f = self.work / f"pairj{r}.json"
+        if not f.exists():
+            st, sg = self.setup(self.ref), self.frozen_sigma()
+            draws, _, ns = self.draws[f"rep{r}"]
+            cases = build_cases(st, draws, ns, "design", f"pairj {r}")
+            n, out = int(self.s2["replicates"]["n"]), {}
+            for name, mesh in self.pair_meshes().items():
+                for sidx in range(1, n + 1):
+                    lay = json.loads((self.work / f"pair_{mname(*mesh)}_{sidx}.json").read_text())["layouts"]
+                    for fk, per_b in lay.items():
+                        for bk, ids in per_b.items():
+                            out[f"{name}|{sidx}|{fk}|{bk}"] = objective(st, cases, ids, sg[float(fk)], self.alpha)
+            atomic_write(f, json.dumps(out))
+            say(f"pairj {r} done")
+        return json.loads(f.read_text())
+
+    def pair_evaluate(self) -> None:
+        """Registered EXP-027 test: per budget and noise fraction, mesh-induced (main vs ref, control vs ref) displacement and
+        |regret| on each of the n draws vs the n(n-1)/2 replicate-pair values between independent draws at the reference mesh."""
+        from scipy.stats import mannwhitneyu
+        n = int(self.s2["replicates"]["n"])
+        names = self.pair_meshes()
+        lay = {nm: [json.loads((self.work / f"pair_{mname(*m)}_{r}.json").read_text())["layouts"] for r in range(1, n + 1)]
+               for nm, m in names.items()}
+        J = [self.pair_objectives(r) for r in range(1, n + 1)]
+        rows = []
+        for f in self.fractions:
+            fk = f"{f:g}"
+            for b in self.budgets:
+                bk = str(b)
+
+                def Jon(r: int, nm: str, s: int) -> float:  # objective on draw r (1-based) of draw s's layout selected at mesh nm
+                    return J[r - 1][f"{nm}|{s}|{fk}|{bk}"]
+
+                for r in range(1, n + 1):
+                    for nm in ("main", "control"):
+                        rows.append({"kind": nm, "r": r, "s": r, "budget": b, "noise_fraction": f,
+                                     **compare_layouts(lay[nm][r - 1][fk][bk], lay["ref"][r - 1][fk][bk], self.xy, self.taus),
+                                     "abs_regret": abs(Jon(r, nm, r) - Jon(r, "ref", r))})
+                for nm in ("ref", "main"):
+                    for r, s_ in itertools.combinations(range(1, n + 1), 2):
+                        reg = 0.5 * ((Jon(s_, nm, r) - Jon(s_, nm, s_)) + (Jon(r, nm, s_) - Jon(r, nm, r)))
+                        rows.append({"kind": f"pair_{nm}", "r": r, "s": s_, "budget": b, "noise_fraction": f,
+                                     **compare_layouts(lay[nm][r - 1][fk][bk], lay[nm][s_ - 1][fk][bk], self.xy, self.taus),
+                                     "abs_regret": abs(reg)})
+        df = pd.DataFrame(rows)
+        df.to_csv(self.out / "paired.csv", index=False)
+        verdict = []
+        for f in self.fractions:
+            for b in self.budgets:
+                d = df[(df.budget == b) & (df.noise_fraction == f)]
+                base = d[d.kind == "pair_ref"]
+                for nm in ("main", "control"):
+                    m = d[d.kind == nm]
+                    row: dict[str, Any] = {"mesh": nm, "budget": b, "noise_fraction": f, "n_mesh": len(m), "n_pair": len(base)}
+                    for col in ("mean_disp_m", "abs_regret"):
+                        a_ok = bool(m[col].median() <= base[col].median())
+                        pct = float((base[col] <= m[col].median()).mean())
+                        p = float(mannwhitneyu(m[col], base[col], alternative="greater").pvalue)
+                        row |= {f"{col}_mesh_median": float(m[col].median()), f"{col}_pair_median": float(base[col].median()),
+                                f"{col}_a_median_le": a_ok, f"{col}_pair_percentile_of_mesh_median": pct, f"{col}_p_mesh_greater": p,
+                                f"{col}_admissible": bool(a_ok and p > 0.05)}
+                    row["admissible"] = bool(row["mean_disp_m_admissible"] and row["abs_regret_admissible"])
+                    verdict.append(row)
+        pd.DataFrame(verdict).to_csv(self.out / "paired_verdict.csv", index=False)
+        ctrl = [v for v in verdict if v["mesh"] == "control"]
+        main = [v for v in verdict if v["mesh"] == "main"]
+        void = all(v["admissible"] for v in ctrl)  # registered stop: the falsification control must FAIL somewhere
+        (self.out / "paired_summary.json").write_text(json.dumps({
+            "control_passes_everywhere_so_test_is_void": void,
+            "main_admissible_all_cells": all(v["admissible"] for v in main),
+            "main_cells": [(v["budget"], v["noise_fraction"], v["admissible"]) for v in main],
+            "control_cells": [(v["budget"], v["noise_fraction"], v["admissible"]) for v in ctrl]}, indent=1))
+        say(f"paired verdict: void={void}; main admissible per cell {[(v['budget'], v['noise_fraction'], v['admissible']) for v in main]}")
+
 
 def estimate(run: Run) -> None:
     """Time one reference-mesh design case (the full case = 5 unit-response solves + direct truth + base parts)."""
@@ -508,6 +595,12 @@ def _unit(kind: str, arg: Any, ref_lay: Any = None) -> Any:
     if kind == "layout":
         run.layouts_for(arg)
         return run._ref[1] if run._ref is not None and arg == run.ref else None
+    if kind == "pair":
+        run.pair_layouts(*arg)
+        return None
+    if kind == "pairj":
+        run.pair_objectives(arg)
+        return None
     r, mesh, tag = arg
     run.replicate(r, ref_lay, mesh, tag)
     return None
@@ -541,12 +634,42 @@ def run_parallel(run: Run, workers: int, ref_on_ref: bool) -> None:
             os.environ.pop(k, None) if v is None else os.environ.__setitem__(k, v)
 
 
+def run_paired(run: Run, workers: int) -> None:
+    """EXP-027: layouts per (draw, mesh) -> objectives of all layouts on each draw -> verdict."""
+    n = int(run.s2["replicates"]["n"])
+    if run._scale is None:
+        run.scale(run.setup(run.ref))
+    units = [("pair", (r, nm)) for nm in ("ref", "main", "control") for r in range(1, n + 1)]  # heaviest (ref) first
+    if workers > 1:
+        saved = {k: os.environ.get(k) for k in THREAD_VARS}
+        os.environ.update({k: "1" for k in THREAD_VARS})
+        try:
+            with ProcessPoolExecutor(workers, mp_context=mp.get_context("spawn"), initializer=_init_worker,
+                                     initargs=(run.cfg, run.out, run.work, run._scale)) as ex:
+                try:
+                    for f in [ex.submit(_unit, k, a) for k, a in units]:
+                        f.result()
+                    for f in [ex.submit(_unit, "pairj", r) for r in range(1, n + 1)]:
+                        f.result()
+                except BaseException:
+                    ex.shutdown(wait=False, cancel_futures=True)
+                    raise
+        finally:
+            for k, v in saved.items():
+                os.environ.pop(k, None) if v is None else os.environ.__setitem__(k, v)
+    else:
+        for k, a in units:
+            run.pair_layouts(*a)
+    run.pair_evaluate()
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--config", default="configs/convergence_stage2.json")
     ap.add_argument("--out", default="results/phase3-convergence")
     ap.add_argument("--work", default=None, help="resumable work dir (default OUT/stage2_work)")
     ap.add_argument("--estimate", action="store_true", help="time one reference-mesh design case and exit")
+    ap.add_argument("--paired", action="store_true", help="EXP-027 paired mesh-vs-resampling test (stage2.paired in the config)")
     ap.add_argument("--workers", type=int, default=1, help="process-pool size for the independent units (1 = sequential, as before)")
     a = ap.parse_args()
     cfg = load_config(ROOT / a.config)
@@ -561,6 +684,9 @@ def main() -> None:
     run = Run(cfg, out, work)
     if a.estimate:
         estimate(run)
+        return
+    if a.paired:
+        run_paired(run, a.workers)
         return
     ref_on_ref = bool(run.s2.get("replicates_on_reference", False))
     if a.workers > 1:
