@@ -1,0 +1,11 @@
+wind,t_start_s,u_ms,v_ms
+steady_a,0.0,1.0,0.3
+steady_b,0.0,0.4,-0.9
+rotation_a,0.0,1.0,0.3
+rotation_a,10800.0,0.0,1.0
+rotation_b,0.0,0.3,-1.0
+rotation_b,10800.0,1.0,0.4
+reversal,0.0,1.0,0.2
+reversal,10800.0,-1.0,-0.2
+slow_reversal,0.0,0.5,0.1
+slow_reversal,10800.0,-0.5,-0.1

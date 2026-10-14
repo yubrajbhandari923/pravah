@@ -1,0 +1,21 @@
+check,value,tol,pass,note
+zero_forcing_max_abs,0.0,0.0,True,
+mass_closure[activation_shutdown],2.2737367544323206e-15,1e-06,True,
+min_conc_rel[activation_shutdown],0.0,-1e-09,True,min/max
+mass_closure[pulse_wind_reversal],2.4964720870984644e-15,1e-06,True,
+min_conc_rel[pulse_wind_reversal],0.0,-1e-09,True,min/max
+mass_closure[rotation_changing_faces],4.394197728613153e-15,1e-06,True,
+min_conc_rel[rotation_changing_faces],0.0,-1e-09,True,min/max
+mass_closure[tangential_wind],2.8588412715022246e-15,1e-06,True,
+min_conc_rel[tangential_wind],0.0,-1e-09,True,min/max
+mass_closure[zero_wind],2.2737367544323206e-15,1e-06,True,
+min_conc_rel[zero_wind],0.0,-1e-09,True,min/max
+west_no_import_after_reversal,-3250.3379432809156,1e-12,True,"amended: max<=0, was |.|<=1e-12"
+superposition,1.595676972754274e-15,1e-08,True,
+closed_box_analytic_err_dt30,0.001675434227891627,0.005,True,"orders=[0.73, 0.99, 1.0]"
+closed_box_temporal_order_last,0.9966343895480553,0.8,True,expect ~1 (implicit Euler)
+dt_refinement_monotone,0.017435324675164225,0.06740982436721675,True,"errs=[0.06741, 0.03968, 0.01744]"
+dx_refinement_monotone,0.024810865840250784,0.0959664869277167,True,"errs(16,32 vs 64)=[0.09597, 0.02481]"
+static_equivalence_rel,1.3544420175146348e-15,1e-06,True,
+footprint_integral_err,2.220446049250313e-16,1e-12,True,
+line_source_mass_closure,2.8800665556142727e-15,1e-06,True,

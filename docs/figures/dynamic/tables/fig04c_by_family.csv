@@ -1,0 +1,33 @@
+layout,noise,family,variant,n,M2_minus_M1,se,n_nonconverged_M2
+L4,0.1,activation,primary: nonconverged M2 excluded,12,-0.001573527254842599,0.00044311457261520676,0
+L4,0.1,compensating,primary: nonconverged M2 excluded,12,-0.0017937772420776692,0.0008072650464603001,0
+L4,0.1,constant,primary: nonconverged M2 excluded,12,-0.0003412667219968877,8.208146122832774e-05,0
+L4,0.1,influx_end,primary: nonconverged M2 excluded,12,-0.00036322929729430426,0.0003357635613995987,0
+L4,0.1,opposing,primary: nonconverged M2 excluded,12,-0.0002586306947658971,0.00035308026145532205,0
+L4,0.1,pulse,primary: nonconverged M2 excluded,12,-0.0001930443004109721,0.0002597096348221355,0
+L4,0.1,ramp,primary: nonconverged M2 excluded,12,-0.0023394976541584183,0.0007985824611455967,0
+L4,0.1,shutdown,primary: nonconverged M2 excluded,12,0.00023755548585006883,0.00036995940346010067,0
+L4,0.1,activation,sensitivity: nonconverged M2 replaced by M1,12,-0.001573527254842599,0.00044311457261520676,0
+L4,0.1,compensating,sensitivity: nonconverged M2 replaced by M1,12,-0.0017937772420776692,0.0008072650464603001,0
+L4,0.1,constant,sensitivity: nonconverged M2 replaced by M1,12,-0.0003412667219968877,8.208146122832774e-05,0
+L4,0.1,influx_end,sensitivity: nonconverged M2 replaced by M1,12,-0.00036322929729430426,0.0003357635613995987,0
+L4,0.1,opposing,sensitivity: nonconverged M2 replaced by M1,12,-0.0002586306947658971,0.00035308026145532205,0
+L4,0.1,pulse,sensitivity: nonconverged M2 replaced by M1,12,-0.0001930443004109721,0.0002597096348221355,0
+L4,0.1,ramp,sensitivity: nonconverged M2 replaced by M1,12,-0.0023394976541584183,0.0007985824611455967,0
+L4,0.1,shutdown,sensitivity: nonconverged M2 replaced by M1,12,0.00023755548585006883,0.00036995940346010067,0
+L9,0.1,activation,primary: nonconverged M2 excluded,12,-2.4054417715300673e-05,8.947872422644488e-06,0
+L9,0.1,compensating,primary: nonconverged M2 excluded,12,-3.509482823569133e-05,1.1962586165206686e-05,0
+L9,0.1,constant,primary: nonconverged M2 excluded,12,-5.4910900739977066e-05,8.456580177187402e-06,0
+L9,0.1,influx_end,primary: nonconverged M2 excluded,12,-6.237123575725583e-05,1.9352932273980237e-05,0
+L9,0.1,opposing,primary: nonconverged M2 excluded,12,-1.5078388946326298e-05,1.1213601653963232e-05,0
+L9,0.1,pulse,primary: nonconverged M2 excluded,12,-2.336045472727852e-05,5.300264298661216e-06,0
+L9,0.1,ramp,primary: nonconverged M2 excluded,12,-6.6661879546825e-05,1.765926319853697e-05,0
+L9,0.1,shutdown,primary: nonconverged M2 excluded,12,-2.570924855319796e-05,9.629746757376437e-06,0
+L9,0.1,activation,sensitivity: nonconverged M2 replaced by M1,12,-2.4054417715300673e-05,8.947872422644488e-06,0
+L9,0.1,compensating,sensitivity: nonconverged M2 replaced by M1,12,-3.509482823569133e-05,1.1962586165206686e-05,0
+L9,0.1,constant,sensitivity: nonconverged M2 replaced by M1,12,-5.4910900739977066e-05,8.456580177187402e-06,0
+L9,0.1,influx_end,sensitivity: nonconverged M2 replaced by M1,12,-6.237123575725583e-05,1.9352932273980237e-05,0
+L9,0.1,opposing,sensitivity: nonconverged M2 replaced by M1,12,-1.5078388946326298e-05,1.1213601653963232e-05,0
+L9,0.1,pulse,sensitivity: nonconverged M2 replaced by M1,12,-2.336045472727852e-05,5.300264298661216e-06,0
+L9,0.1,ramp,sensitivity: nonconverged M2 replaced by M1,12,-6.6661879546825e-05,1.765926319853697e-05,0
+L9,0.1,shutdown,sensitivity: nonconverged M2 replaced by M1,12,-2.570924855319796e-05,9.629746757376437e-06,0

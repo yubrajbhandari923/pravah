@@ -1,0 +1,102 @@
+{
+  "generated_by": "scripts/make_dynamic_figures.py",
+  "dpi": 130,
+  "figures": [
+    {
+      "figure": "fig01_domain_population_layouts",
+      "file": "docs/figures/dynamic/fig01_domain_population_layouts.png",
+      "status": "produced",
+      "caption": "fig01 DYN scenario map (dynamic_study, 12 x 9 km, 24 x 18 cells) \u00b7 no run (scenario definition) \u00b7 n = 3 sources, 4 (L4) + 9 (L9) sensors, 13 cells in total \u00b7 synthetic toy geometry \u00b7 population: separated_settlements, 100 000 people, seed 0",
+      "source_runs": [],
+      "n": "3 sources; 4 L4 + 9 L9 sensors",
+      "description": "domain, synthetic population counts, sources and sensor cells"
+    },
+    {
+      "figure": "fig02_winds_and_example_histories",
+      "file": "docs/figures/dynamic/fig02_winds_and_example_histories.png",
+      "status": "produced",
+      "caption": "fig02 wind segments; EXAMPLE generator draws, not results \u00b7 no run (scenario definition) \u00b7 n = 6 winds; 8 families x 1 draw (8 valid) \u00b7 synthetic toy geometry \u00b7 6-bin averages in REF units",
+      "source_runs": [],
+      "n": "6 winds; 8 example draws",
+      "description": "wind histories (u,v) and example source-event profiles, generator draws only"
+    },
+    {
+      "figure": "fig03_dyn00_verification",
+      "file": "docs/figures/dynamic/fig03_dyn00_verification.png",
+      "status": "produced",
+      "caption": "fig03 DYN-00 verification (EXP-028; .research/runs/RUN-0059/dyn00_checks.json; 20/20 checks pass) \u00b7 RUN-0059 \u00b7 n = 20 checks \u00b7 synthetic toy geometry \u00b7 mass-closure residuals (log) and temporal-order checks",
+      "source_runs": [
+        "RUN-0059"
+      ],
+      "n": "20 checks",
+      "description": "DYN-00 transport verification: mass closure (log) and temporal order with pass/fail"
+    },
+    {
+      "figure": "fig04_dyn02v2_inversion",
+      "file": "docs/figures/dynamic/fig04_dyn02v2_inversion.png",
+      "status": "produced",
+      "caption": "fig04 DYN-02 v2 inversion (EXP-030; J_pop = stored RMS; (c) sensitivity: nonconverged M2 replaced by M1) \u00b7 RUN-0064 \u00b7 n = 96 episodes \u00b7 synthetic toy geometry \u00b7 paired contrasts, by-wind and by-family M2 \u2212 M1",
+      "source_runs": [
+        "RUN-0064"
+      ],
+      "n": "96 episodes",
+      "description": "DYN-02 v2 paired contrasts, by-wind and by-family M2-M1"
+    },
+    {
+      "figure": "fig05_dyn07_robustness",
+      "file": "docs/figures/dynamic/fig05_dyn07_robustness.png",
+      "status": "produced",
+      "caption": "fig05 DYN-07 robustness to model error (EXP-035; test set; wind model error, K, extra source) \u00b7 RUN-0065 \u00b7 n = up to 96 episodes per cell \u00b7 synthetic toy geometry \u00b7 degradation vs rotation, relative M2 gain over all conditions",
+      "source_runs": [
+        "RUN-0065"
+      ],
+      "n": "up to 96 episodes per cell",
+      "description": "DYN-07 degradation ratios and relative M2 gain per condition"
+    },
+    {
+      "figure": "fig06_dyn05_sufficiency",
+      "file": "docs/figures/dynamic/fig06_dyn05_sufficiency.png",
+      "status": "produced",
+      "caption": "fig06 DYN-05 sufficiency of the design ensemble (EXP-033; design hash e3968dd3e90b6902; test RUN-0080) \u00b7 RUN-0080 \u00b7 n = 16 replicate layouts per (noise,k,N); 96 test episodes \u00b7 synthetic toy geometry \u00b7 regret vs N, replicate stability, actual estimator",
+      "source_runs": [
+        "RUN-0080"
+      ],
+      "n": "16 replicates per cell",
+      "description": "DYN-05 regret, Jaccard stability and actual J_pop vs design size N"
+    },
+    {
+      "figure": "fig07_dyn06_detection_misattribution",
+      "file": "docs/figures/dynamic/fig07_dyn06_detection_misattribution.png",
+      "status": "produced",
+      "caption": "fig07 DYN-06 detection and misattribution vs target d (EXP-034; RUN-0083; lines = mean over winds, band = min-max over winds; noise 0.1) \u00b7 RUN-0083 \u00b7 n = 6 winds x 100 replicates per cell \u00b7 synthetic toy geometry \u00b7 wrong-group and detection rates",
+      "source_runs": [
+        "RUN-0083"
+      ],
+      "n": "6 winds x 100 replicates",
+      "description": "DYN-06 wrong-group and detection rate vs d"
+    },
+    {
+      "figure": "fig07b",
+      "file": "docs/figures/dynamic/fig07b_dyn06_wrong_group_heatmap.png",
+      "status": "produced",
+      "caption": "fig07b DYN-06 wrong-group heatmap at d=16 (EXP-034; RUN-0083; noise 0.1)",
+      "source_runs": [
+        "RUN-0083"
+      ],
+      "n": "6 winds x 100 replicates per cell",
+      "description": "wrong-group rate by wind x scenario at d=16"
+    },
+    {
+      "figure": "fig08_performance",
+      "file": "docs/figures/dynamic/fig08_performance.png",
+      "status": "produced",
+      "caption": "fig08 DYN bench, cluster CPU only (EXP-025; laptop file absent, not plotted) \u00b7 RUN-0076 \u00b7 n = 32 episodes per worker count \u00b7 synthetic toy geometry \u00b7 throughput and parallel efficiency vs workers",
+      "source_runs": [
+        "RUN-0076"
+      ],
+      "n": "32 episodes per worker count",
+      "description": "throughput and parallel efficiency on cluster CPU (laptop not available)"
+    }
+  ],
+  "synthetic_only": true
+}
