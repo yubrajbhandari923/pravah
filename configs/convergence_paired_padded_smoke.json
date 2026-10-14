@@ -2,26 +2,101 @@
  "extends": "convergence_paired_padded.json",
  "name": "exp027_paired_padded_smoke",
  "notes": "Plumbing check only, not for scientific conclusions: outer padded domain cropped to a 2 km buffer, T = 7200 s, 2 cases x 3 replicate draws, budgets 1 and 3, the three meshes 500/250/2000 m (small budgets as geodesign_smoke). candidate_manifest is the padded manifest itself (the cropped domain has no unpadded counterpart); the frozen alpha/noise files are disabled as in convergence_stage2_smoke.",
- "region": {"crop_buffer_m": null},
- "physics": {"T": 7200.0, "t_exclude": 1800.0},
- "model": {"external_profile": [[0.0, 0.0], [1800.0, 1.0]], "bg": {"profile": [[0.0, 0.0], [1800.0, 1.0]]}},
- "ensemble": {"switch_step_s": 1800.0},
- "ensembles": {
-  "design": {"n_cases": 2, "seed": 101, "noise_seed": 1000},
-  "validation": {"n_cases": 2, "seed": 202, "noise_seed": 2000},
-  "test": {"n_cases": 2, "seed": 303, "noise_seed": 3000}
+ "region": {
+  "crop_buffer_m": null
  },
- "noise": {"fractions": [0.05], "reps": 2, "obs_interval_s": 1800.0},
- "candidates": {"interior_spacing_m": 3000.0, "reference_spacing_m": 3000.0},
- "methods": {"budgets": [1, 3], "n_random": 5},
- "alpha": {"grid": [0.0, 1e-2, 1.0, 100.0]},
- "heldout": {"n_random_points": 20},
+ "physics": {
+  "T": 7200.0,
+  "t_exclude": 1800.0
+ },
+ "model": {
+  "external_profile": [
+   [
+    0.0,
+    0.0
+   ],
+   [
+    1800.0,
+    1.0
+   ]
+  ],
+  "bg": {
+   "profile": [
+    [
+     0.0,
+     0.0
+    ],
+    [
+     1800.0,
+     1.0
+    ]
+   ]
+  }
+ },
+ "ensemble": {
+  "switch_step_s": 1800.0
+ },
+ "ensembles": {
+  "design": {
+   "n_cases": 2,
+   "seed": 101,
+   "noise_seed": 1000
+  },
+  "validation": {
+   "n_cases": 2,
+   "seed": 202,
+   "noise_seed": 2000
+  },
+  "test": {
+   "n_cases": 2,
+   "seed": 303,
+   "noise_seed": 3000
+  }
+ },
+ "noise": {
+  "fractions": [
+   0.05
+  ],
+  "reps": 2,
+  "obs_interval_s": 1800.0
+ },
+ "candidates": {
+  "interior_spacing_m": 3000.0,
+  "reference_spacing_m": 3000.0
+ },
+ "methods": {
+  "budgets": [
+   1,
+   3
+  ],
+  "n_random": 5
+ },
+ "alpha": {
+  "grid": [
+   0.0,
+   0.01,
+   1.0,
+   100.0
+  ]
+ },
+ "heldout": {
+  "n_random_points": 20
+ },
  "stage2": {
   "candidate_manifest": "data/belauri_padded/manifest.json",
   "alpha_file": null,
   "noise_scale_file": null,
-  "budgets": [1, 3],
-  "replicates": {"n": 3, "n_cases": 2},
+  "budgets": [
+   1,
+   3
+  ],
+  "replicates": {
+   "n": 3,
+   "n_cases": 2
+  },
   "map_budget": 3
+ },
+ "origin_tol_by_resolution_m": {
+  "2000": 0.2
  }
 }

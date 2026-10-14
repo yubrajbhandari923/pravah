@@ -46,7 +46,7 @@ from ...forward import FIPY
 from ...geo import regionio as rio
 from ...geo.prepare import Region, load_region
 from ...geo.scenarios import LABEL as REGION_LABEL
-from ...geo.scenarios import BelauriCase, belauri_scenario, crop_region, study_weights_of, toward_vector
+from ...geo.scenarios import LOCAL_ORIGIN_TOL, BelauriCase, belauri_scenario, crop_region, study_weights_of, toward_vector
 from ...inverse import FitResult, ResponseCache, run_forward
 from ...io import archive_git_state, data_provenance, make_run_dir, provenance, write_csv, write_json
 
@@ -417,7 +417,8 @@ class Setup:
         return belauri_scenario(
             self.geo.region, self.res, winds, groups=tuple(m["groups"]), duration_s=self.T, dt_s=self.dt,
             output_interval_s=self.out_dt, K=float(ph["K"]), lam=float(ph["lam"]), H=float(ph["H"]), amplitudes=amp,
-            bases=(basis,), external_profile=tuple((float(t), float(v)) for t, v in m["external_profile"]))
+            bases=(basis,), external_profile=tuple((float(t), float(v)) for t, v in m["external_profile"]),
+            origin_tol=float(self.cfg.get("origin_tol_by_resolution_m", {}).get(f"{self.res:g}", LOCAL_ORIGIN_TOL)))
 
     def build(self, d: CaseDraw, role: str, noise_seed: int) -> tuple[DesignCase, dict[str, Any]]:
         """Matched case: the inference model is the truth scenario (declared wind), truth = a DIRECT forward solve; truth

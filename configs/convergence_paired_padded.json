@@ -35,5 +35,8 @@
     400
    ]
   }
+ },
+ "origin_tol_by_resolution_m": {
+  "2000": 0.2
  }
 }

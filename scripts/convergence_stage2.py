@@ -493,6 +493,15 @@ class Run:
         mesh = self.pair_meshes()[name]
         return self.replicate(r, {}, mesh, f"pair_{mname(*mesh)}_")["layouts"]
 
+    def prebuild_responses(self, r: int, i: int, name: str) -> None:
+        """Fill the on-disk response cache for case i of draw r at one mesh (the 5 unit responses are ~70% of a case's cost and
+        independent across cases, draws and meshes); the layout units then only add the direct truth and base parts."""
+        st = self.setup(self.pair_meshes()[name])
+        draws, _, _ = self.draws[f"rep{r}"]
+        st.cache.get(st.scenario(draws[i]).scenario, st.solver)
+        st.cache._mem.clear()
+        say(f"prebuilt responses {name} draw {r} case {i}")
+
     def pair_objectives(self, r: int) -> dict[str, Any]:
         """J of EVERY draw's layouts (all three meshes) evaluated on draw r's cases at the REFERENCE mesh."""
         f = self.work / f"pairj{r}.json"
@@ -600,6 +609,9 @@ def _unit(kind: str, arg: Any, ref_lay: Any = None) -> Any:
     if kind == "layout":
         run.layouts_for(arg)
         return run._ref[1] if run._ref is not None and arg == run.ref else None
+    if kind == "prebuild":
+        run.prebuild_responses(*arg)
+        return None
     if kind == "pair":
         run.pair_layouts(*arg)
         return None
@@ -652,6 +664,10 @@ def run_paired(run: Run, workers: int) -> None:
             with ProcessPoolExecutor(workers, mp_context=mp.get_context("spawn"), initializer=_init_worker,
                                      initargs=(run.cfg, run.out, run.work, run._scale)) as ex:
                 try:
+                    nc = int(run.s2["replicates"]["n_cases"])
+                    pre = [("prebuild", (r, i, nm)) for nm in ("ref", "main", "control") for r in range(1, n + 1) for i in range(nc)]
+                    for f in [ex.submit(_unit, k, a) for k, a in pre]:  # level 1: every case's unit responses in parallel
+                        f.result()
                     for f in [ex.submit(_unit, k, a) for k, a in units]:
                         f.result()
                     for f in [ex.submit(_unit, "pairj", r) for r in range(1, n + 1)]:
