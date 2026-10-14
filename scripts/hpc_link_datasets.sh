@@ -25,6 +25,11 @@ else
   exit 1
 fi
 
+# The persistent venv holds a NON-editable copy of pravah from an earlier commit; the code being recorded is the bundle's src/.
+# Without this the run silently imports the stale copy (RUN-0063 failed with "cannot import name 'dynamic'").
+export PYTHONPATH="$SRC/src${PYTHONPATH:+:$PYTHONPATH}"
+echo "pravah resolved from: $("$VENV/bin/python" -c 'import pravah;print(pravah.__file__)')"
+
 # One process per independent unit; BLAS must not also thread or the pool oversubscribes the node.
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1
 
