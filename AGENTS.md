@@ -17,7 +17,7 @@ Do not read everything; do not re-derive what a finding or doc already states. F
 (`python -m pravah {simulate,inverse,benchmark,geo}`; `benchmark` dispatches on `cfg["experiment"]`). Configs in `configs/`, notebooks `01`–`06` in `notebooks/`.
 
 ### Commands
-Env: `uv venv --python 3.12 .venv && uv pip install -e ".[dev,geo]" -c requirements-lock-geo.txt`. Tests `.venv/bin/pytest -q` (585 tests, ~21 min; geo/real-data
+Env: `uv venv --python 3.12 .venv && uv pip install -e ".[dev,geo]" -c requirements-lock-geo.txt`. Tests `.venv/bin/pytest -q` (595 tests, ~22 min; geo/real-data
 tests skip without `data/belauri/manifest.json`). Types `.venv/bin/pyright` (0 errors expected). Notebooks `.venv/bin/python scripts/verify_notebooks.py`.
 FiPy regression gate: `scripts/capture_regression.py` + `scripts/compare_runs.py <baseline> <new>` must print `21 files compared, 0 differ`.
 The gate is **architecture-scoped** (D-005): baseline `results/solver-regression/before` on arm64 (laptop), `results/solver-regression-x86_64/before` on the x86_64 cluster. Comparing across architectures gives 18 spurious differences (reassociation only, <=5e-08 relative in any physical quantity); never loosen a tolerance for it.

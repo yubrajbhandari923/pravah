@@ -167,8 +167,8 @@ def jpop(R: Responses, theta: np.ndarray, tf: np.ndarray, counts: np.ndarray) ->
     return float(np.sqrt(pop)), float(np.sqrt(area))
 
 
-def _cells(layout: str) -> tuple[np.ndarray, np.ndarray]:
-    ix, iy = zip(*LAYOUTS[layout])
+def _cells(cells: tuple[tuple[int, int], ...]) -> tuple[np.ndarray, np.ndarray]:
+    ix, iy = zip(*cells)
     return np.array(iy), np.array(ix)
 
 
@@ -184,9 +184,12 @@ def _fit(model: str, A, y, sig, hp, prior):
         return None
 
 
-def run_episode(ep: dict, hp: dict[str, dict[str, list[tuple[float, float]]]], models: tuple[str, ...]) -> list[dict]:
+def run_episode(ep: dict, hp: dict[str, dict[str, list[tuple[float, float]]]], models: tuple[str, ...],
+                layouts: dict[str, tuple[tuple[int, int], ...]] | None = None) -> list[dict]:
     """One row per (layout, noise, model, hyperparameter candidate); truth, floor and noise are shared by all of them.
-    ``hp[key]['M0']`` must hold exactly one (frozen) entry when 'M1' / 'M2' are evaluated: it defines their static prior mean."""
+    ``hp[key]['M0']`` must hold exactly one (frozen) entry when 'M1' / 'M2' are evaluated: it defines their static prior mean.
+    ``layouts`` maps a name to sensor cells ((ix, iy), ...); default LAYOUTS.  hp keys are f"{layout}|{noise}"."""
+    layouts = LAYOUTS if layouts is None else layouts
     R = build_responses(ep["wind"])
     counts = population()
     rng = np.random.default_rng([ep["seed"], 0])
@@ -199,8 +202,8 @@ def run_episode(ep: dict, hp: dict[str, dict[str, list[tuple[float, float]]]], m
     nan = float("nan")
     rows = [{**base, "layout": "-", "noise": 0.0, "model": "floor", "alpha": nan, "beta": nan, "jpop": projection_floor(R, tf, counts),
              "area": nan, "src_local": nan, "src_bnd": nan, "ident_frac": nan}]
-    for layout, (ni, frac) in itertools.product(LAYOUTS, enumerate(NOISE)):
-        iy, ix = _cells(layout)
+    for layout, (ni, frac) in itertools.product(layouts, enumerate(NOISE)):
+        iy, ix = _cells(layouts[layout])
         sd = frac * s0
         y = tf[1:, iy, ix] + np.random.default_rng([ep["seed"], 2, ni]).standard_normal((len(t) - 1, len(iy))) * sd
         A = np.moveaxis(R.g[:, 1:, iy, ix], 0, -1).reshape(-1, R.g.shape[0])
@@ -225,13 +228,13 @@ def run_episode(ep: dict, hp: dict[str, dict[str, list[tuple[float, float]]]], m
     return rows
 
 
-def _pool_rows(eps: list[dict], hp, models, workers: int) -> list[dict]:
+def _pool_rows(eps: list[dict], hp, models, workers: int, layouts=None) -> list[dict]:
     if workers <= 1:
-        return [r for ep in eps for r in run_episode(ep, hp, models)]
+        return [r for ep in eps for r in run_episode(ep, hp, models, layouts)]
     for k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "VECLIB_MAXIMUM_THREADS"):
         os.environ[k] = "1"
     with ProcessPoolExecutor(workers, mp_context=mp.get_context("spawn")) as ex:
-        futs = [ex.submit(run_episode, ep, hp, models) for ep in eps]
+        futs = [ex.submit(run_episode, ep, hp, models, layouts) for ep in eps]
         return [r for f in futs for r in f.result()]
 
 
@@ -252,17 +255,18 @@ def _score_table(rows: list[dict]) -> dict:
     return {k: {c: float(np.mean(v)) for c, v in d.items()} for k, d in sc.items()}
 
 
-def tune(workers: int) -> dict:
+def tune(workers: int, layouts: dict[str, tuple[tuple[int, int], ...]] | None = None) -> dict:
     """Validation only.  Pass 1 picks M0's alpha; pass 2 picks M1z / M1 / M2 with M0@alpha* as the static prior of M1 / M2.
     Non-converged candidates score +inf.  Edge selections are flagged, never silently accepted."""
     _prebuild(workers)
     eps = episodes("tune")
-    combos = [(lay, fr) for lay in LAYOUTS for fr in NOISE]
+    layouts = LAYOUTS if layouts is None else layouts
+    combos = [(lay, fr) for lay in layouts for fr in NOISE]
     g0 = [(a, 0.0) for a in ALPHA_M]
-    s1 = _score_table(_pool_rows(eps, {f"{lay}|{fr}": {"M0": g0} for lay, fr in combos}, ("M0",), workers))
+    s1 = _score_table(_pool_rows(eps, {f"{lay}|{fr}": {"M0": g0} for lay, fr in combos}, ("M0",), workers, layouts))
     m0 = {(lay, fr): min(s1[(lay, fr, "M0")], key=lambda c, d=s1[(lay, fr, "M0")]: d[c]) for lay, fr in combos}
     grid = {"M1z": [(a, 0.0) for a in ALPHA_M], "M1": [(a, 0.0) for a in ALPHA_M], "M2": list(itertools.product(ALPHA_2, BETAS))}
-    s2 = _score_table(_pool_rows(eps, {f"{lay}|{fr}": {"M0": [m0[(lay, fr)]], **grid} for lay, fr in combos}, ("M1z", "M1", "M2"), workers))
+    s2 = _score_table(_pool_rows(eps, {f"{lay}|{fr}": {"M0": [m0[(lay, fr)]], **grid} for lay, fr in combos}, ("M1z", "M1", "M2"), workers, layouts))
     frozen: dict = {f"{lay}|{fr}": {"M0": [list(m0[(lay, fr)])]} for lay, fr in combos}
     edge, scores = [], {}
     for (lay, fr, m), d in s2.items():
