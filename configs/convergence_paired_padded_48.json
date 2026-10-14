@@ -1,0 +1,8 @@
+{
+ "extends": "convergence_paired_padded.json",
+ "name": "exp027b_paired_padded_48",
+ "notes": "EXP-027b first batch: same draws, meshes, budgets and control as EXP-027 (padded domain, 500 m vs 250 m vs 2 km) but 48 cases per draw (the first 6 cases of each draw are identical to EXP-027's: draw_cases is sequential in its rng) and 4 draws (seeds 1101-1104; raise replicates.n to 6 or 8 to add draws 1105+ without changing the first four). Cluster cost: see T-079 note.",
+ "stage2": {
+  "replicates": {"n": 4, "n_cases": 48, "seed0": 1101, "noise_seed0": 4000, "noise_seed_stride": 100}
+ }
+}

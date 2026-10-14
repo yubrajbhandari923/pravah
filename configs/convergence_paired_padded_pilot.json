@@ -1,0 +1,11 @@
+{
+ "extends": "convergence_paired_padded.json",
+ "name": "exp027b_paired_padded_pilot",
+ "notes": "EXP-027b LOCAL falsifiability pilot (not a registered test). Reference = main = 500 m / dt 100 s so that it costs core-hours, not tens; control = 2 km / dt 400. Question: with 48 cases per draw, is the replicate-pair displacement of 500 m layouts below the 500 m -> 2 km displacement within a draw? 4 draws (seeds 1101-1104) x 48 cases; cases are a nested prefix of the n_cases draw (rng sequential), so sub-ensembles of 6/12/24 are the first cases.",
+ "stage2": {
+  "reference": [500, 100],
+  "meshes": [[500, 100], [2000, 400]],
+  "paired": {"main": [500, 100], "ref": [500, 100], "control": [2000, 400]},
+  "replicates": {"n": 4, "n_cases": 48, "seed0": 1101, "noise_seed0": 4000, "noise_seed_stride": 100}
+ }
+}
