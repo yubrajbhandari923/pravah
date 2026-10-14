@@ -69,12 +69,12 @@ def tv_nnls(A: np.ndarray, y: np.ndarray, sigma: np.ndarray, theta0: np.ndarray,
     Aw, yw = A / sigma[:, None], y / sigma
     K = np.vstack([D, np.eye(n)]) if beta > 0 else np.eye(n)
     H = Aw.T @ Aw + 2 * alpha * np.eye(n) + rho * K.T @ K
-    L = np.linalg.cholesky(H + _EPS * np.eye(n))
+    Hinv = np.linalg.inv(H)  # n is tens: explicit inverse beats re-solving every iteration
     rhs0 = Aw.T @ yw + 2 * alpha * theta0
     v = np.zeros(K.shape[0]); u = np.zeros(K.shape[0]); th = np.zeros(n)
     m = D.shape[0] if beta > 0 else 0
     for _ in range(iters):
-        th = np.linalg.solve(L.T, np.linalg.solve(L, rhs0 + rho * K.T @ (v - u)))
+        th = Hinv @ (rhs0 + rho * K.T @ (v - u))
         Kt = K @ th
         v_old = v
         w = Kt + u

@@ -20,3 +20,4 @@ results/phase3-wind-error-toy-controls/*/raw/
 results/phase3-wind-error-toy-controls/smoke/
 results/phase3-wind-error-toy/smoke/
 results/phase3-wind-error-toy/work_smoke/
+.cache/
