@@ -1,0 +1,117 @@
+{
+  "study": {
+    "name": "Belauri",
+    "geoboundaries": {
+      "iso": "NPL",
+      "level": "ADM3",
+      "shapeName": "Belauri",
+      "shapeID": "92635248B27542858320702",
+      "release": {
+        "commit": "9469f09",
+        "type": "gbOpen",
+        "built": "2023-12-12",
+        "source": "Open Data Nepal / MoFAGA 2019",
+        "license": "CC BY-SA 4.0"
+      }
+    },
+    "expected": {
+      "parent_district": "Kanchanpur",
+      "province": "Sudurpashchim",
+      "bbox_lonlat": [
+        80.258,
+        28.628,
+        80.43,
+        28.773
+      ],
+      "area_km2": 123,
+      "parent_aliases": [
+        "Kanchanpur",
+        "कञ्चनपुर"
+      ]
+    },
+    "tolerances": {
+      "area_frac": 0.1,
+      "bbox_deg": 0.03,
+      "district_cover": 0.9,
+      "osm_iou": 0.9
+    },
+    "expected_epsg": 32644,
+    "independent_locator": {
+      "nominatim_query": "Belauri, Kanchanpur, Nepal",
+      "max_distance_km": 5.0,
+      "require_osm_relation": true
+    }
+  },
+  "adm2": {
+    "iso": "NPL",
+    "level": "ADM2"
+  },
+  "adm0": [
+    {
+      "iso": "NPL",
+      "level": "ADM0"
+    },
+    {
+      "iso": "IND",
+      "level": "ADM0"
+    }
+  ],
+  "dem": {
+    "product": "Copernicus GLO-30",
+    "buffer_deg": 0.02,
+    "max_window_pixels": 25000000,
+    "min_valid_fraction": 0.95
+  },
+  "grid": {
+    "buffer_m": 8000,
+    "resolutions_m": [
+      500,
+      250,
+      2000
+    ],
+    "pad_to_m": 2000
+  },
+  "osm": {
+    "margin_m": 2000,
+    "overpass_urls": [
+      "https://overpass-api.de/api",
+      "https://maps.mail.ru/osm/tools/overpass/api"
+    ],
+    "tags": {
+      "buildings": {
+        "building": true
+      },
+      "landuse": {
+        "landuse": "residential"
+      },
+      "amenity": {
+        "amenity": [
+          "school",
+          "college",
+          "kindergarten",
+          "university",
+          "hospital",
+          "clinic",
+          "doctors",
+          "health_post"
+        ]
+      }
+    },
+    "facility_amenities": [
+      "school",
+      "college",
+      "kindergarten",
+      "university",
+      "hospital",
+      "clinic",
+      "doctors",
+      "health_post"
+    ]
+  },
+  "external_patch": {
+    "comment": "synthetic hypothesis: Gaussian patch centred beyond_polygon_m outside the municipality edge, along the bearing from the centroid to the nearest national (ADM0) boundary point",
+    "bearing_deg": "toward_border",
+    "beyond_polygon_m": 4000,
+    "sigma_m": 1000
+  }
+}
