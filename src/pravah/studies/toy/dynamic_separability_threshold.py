@@ -65,9 +65,9 @@ def attribute_calibrated(op, x, groups, alpha, reps=REPS):
             out.append(np.abs(sp._contrib(op, th / sp.REF[:, None], groups)))
         return np.array(out)
 
-    null = contribs(pre, 9300)
+    null = contribs(pre, 9500)
     thr = np.percentile(null, 95, axis=0) + 1e-30
-    sig = contribs(x, 9400)
+    sig = contribs(x, 9600)
     ct = np.abs(sp._contrib(op, x, groups))
     truth = names[int(ct.argmax())] if ct.max() > 0 else "none"
     ratio = sig / thr
@@ -76,8 +76,13 @@ def attribute_calibrated(op, x, groups, alpha, reps=REPS):
     amb = det & (top[:, 0] - top[:, 1] < 0.1 * top[:, 0]) if ratio.shape[1] > 1 else np.zeros(len(ratio), bool)
     named = ratio.argmax(axis=1)
     wrong = det & ~amb & (np.array(names)[named] != truth)
-    nd = max(int(det.sum()), 1)
-    return {"truth": truth, "n_rep": len(sig), "detect": float(det.mean()), "mis": float(wrong.sum() / nd), "ambiguous": float(amb.sum() / nd),
+    nd = int(det.sum())
+    # D-025 (review F-044/R1): misattribution is scored only where detection is clearly above the false-alarm level
+    # (one-sided binomial test, p < 0.01 against 0.10 = two groups at 5% each); elsewhere the cell is 'undetected'.
+    from scipy.stats import binomtest
+    scored = binomtest(nd, len(det), 0.10, alternative="greater").pvalue < 0.01 if len(det) else False
+    return {"truth": truth, "n_rep": len(sig), "detect": float(det.mean()), "n_det": nd, "n_wrong": int(wrong.sum()), "n_amb": int(amb.sum()),
+            "scored": bool(scored), "mis": float(wrong.sum() / nd) if scored else float("nan"), "ambiguous": float(amb.sum() / nd) if scored else float("nan"),
             "false_alarm_rate_null": 0.05}
 
 
@@ -95,6 +100,11 @@ def wind_task(args) -> list[dict]:
                 if not sc["valid"]:
                     rows.append({"wind": wind, "layout": lay, "noise": fr, "scenario": s, "valid": False})
                     continue
+                if not sc["match_ok"]:
+                    rows.append({"wind": wind, "layout": lay, "noise": fr, "scenario": s, "valid": False, "reason": "match_failed"})
+                    continue
+                cb = sc["xb"] - x_pre(sc["xb"])
+                lookalike_signal = float(np.linalg.norm(sc["op_b"].Ax @ cb.ravel()) / sc["op_b"].sigma)
                 for t in TARGETS:
                     try:
                         xa, m, an = scaled(sc, t)
@@ -103,6 +113,7 @@ def wind_task(args) -> list[dict]:
                         continue
                     att = attribute_calibrated(op, xa, sc["groups"], alpha)
                     rows.append({"wind": wind, "layout": lay, "noise": fr, "scenario": s, "valid": True, "target_d": t, "m": m,
+                                 "lookalike_signal_sd": lookalike_signal, "detectability_only": bool(lookalike_signal < 1.0 or an.get("c_star", 0) > 1e3),
                                  "d_after_rescale": an["d_after_rescale"], "cos_max": an["cos_max"], "alpha": alpha, **att})
     return rows
 
@@ -125,14 +136,21 @@ def controls(frozen: dict) -> dict:
 
 
 def summarise(rows: list[dict]) -> list[dict]:
+    """Per (scenario, layout, noise, d): detection across winds, POOLED misattribution over the winds where detection is clearly above
+    the false-alarm level (sum wrong / sum detected), and the per-wind detail stays in rows.  Cells flagged detectability_only (the
+    look-alike has no observable change signature) are reported separately from look-alike distinguishability cells."""
     out = []
     ok = [r for r in rows if r["valid"]]
-    for (s, lay, fr, t), grp in itertools.groupby(sorted(ok, key=lambda r: (r["scenario"], r["layout"], r["noise"], r["target_d"])),
-                                                  key=lambda r: (r["scenario"], r["layout"], r["noise"], r["target_d"])):
+    key = lambda r: (r["scenario"], r["layout"], r["noise"], r["target_d"])  # noqa: E731
+    for (s, lay, fr, t), grp in itertools.groupby(sorted(ok, key=key), key=key):
         g = list(grp)
-        out.append({"scenario": s, "layout": lay, "noise": fr, "target_d": t, "n_winds": len(g), "mean_mis": float(np.nanmean([r["mis"] for r in g])),
-                    "max_mis": float(np.nanmax([r["mis"] for r in g])), "mean_detect": float(np.nanmean([r["detect"] for r in g])),
-                    "mean_cos_max": float(np.mean([r["cos_max"] for r in g]))})
+        sc = [r for r in g if r["scored"]]
+        nd = sum(r["n_det"] for r in sc)
+        out.append({"scenario": s, "layout": lay, "noise": fr, "target_d": t, "n_winds": len(g), "n_winds_scored": len(sc),
+                    "mean_detect": float(np.mean([r["detect"] for r in g])), "pooled_mis": float(sum(r["n_wrong"] for r in sc) / nd) if nd else float("nan"),
+                    "pooled_ambiguous": float(sum(r["n_amb"] for r in sc) / nd) if nd else float("nan"),
+                    "n_detectability_only": int(sum(r["detectability_only"] for r in g)),
+                    "mean_cos_max": float(np.nanmean([r["cos_max"] for r in g])) if not all(np.isnan(r["cos_max"]) for r in g) else float("nan")})
     return out
 
 
@@ -156,7 +174,7 @@ def main() -> None:
                                       "controls": controls(fz["frozen"]), "rows": rows})
     for s in summ:
         if s["noise"] == 0.1:
-            print(f"{s['scenario']} {s['layout']:6s} d={s['target_d']:<4g} detect {s['mean_detect']:.2f} mis {s['mean_mis']:.2f} (max {s['max_mis']:.2f}) cos {s['mean_cos_max']:.2f}")
+            print(f"{s['scenario']} {s['layout']:6s} d={s['target_d']:<4g} detect {s['mean_detect']:.2f} pooled-mis {s['pooled_mis']:.2f} winds scored {s['n_winds_scored']}/{s['n_winds']} detectability-only {s['n_detectability_only']}")
 
 
 if __name__ == "__main__":
