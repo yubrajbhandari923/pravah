@@ -28,7 +28,7 @@ from pravah.studies.toy import dynamic_study as ds
 from pravah.studies.toy.dynamic_study import (ALPHA_2, ALPHA_FWE, ALPHA_M, BETAS, LAYOUTS, N_FINE, N_INV, NOISE, NP, REF, WINDS,
                                               _cells, _hash, _prebuild, boot_ci)
 
-TEST_SEED0 = 7600  # 96 test episodes: seeds 7600-7695 (disjoint from DYN-02's 7200-7295)
+TEST_SEED0 = 8600  # v2 (D-024); 7600-7695 consumed by RUN-0092  # 96 test episodes: seeds 7600-7695 (disjoint from DYN-02's 7200-7295)
 ESTIMATORS = ("CT", "CAUSAL", "RETRO", "M1", "oracle")
 FIT_MODELS = ("M0", "CT", "CAUSAL", "RETRO", "M1")
 CHANGE_FAMILIES = ("activation", "shutdown", "opposing", "pulse", "influx_end", "compensating")
@@ -49,7 +49,7 @@ def bin_index(obs_t: np.ndarray) -> np.ndarray:
     return np.clip(np.searchsorted(e, np.asarray(obs_t) - _TOL, side="left") - 1, 0, N_INV - 1)
 
 
-def estimate(name: str, A, y, sig, obs_t, a: float, b: float, prior: np.ndarray) -> np.ndarray | None:
+def estimate(name: str, A, y, sig, obs_t, a: float, b: float, prior: np.ndarray, a0: float = 1.0) -> np.ndarray | None:
     """(NP, N_INV) history of estimator ``name`` in {CT, CAUSAL, RETRO, M1}, or None if a fit did not converge."""
     bi = bin_index(obs_t)
     A3 = A.reshape(len(y), NP, N_INV)
@@ -60,13 +60,16 @@ def estimate(name: str, A, y, sig, obs_t, a: float, b: float, prior: np.ndarray)
             return dyn.fit_history(A, y, sig, NP, N_INV, "M1", alpha=a, theta0=prior, ref=REF).theta
         th = np.zeros((NP, N_INV))
         for k in range(N_INV):
+            # CAUSAL PRIOR (review F-053/R1): the static prior for bin k comes from data up to the end of bin k only
+            mp = bi <= k
+            pk = dyn.fit_history(A3[mp][:, :, :k + 1].reshape(mp.sum(), -1), y[mp], sig[mp], NP, k + 1, "M0", alpha=a0, ref=REF).theta
             if name == "CT":
                 m = bi == k
-                th[:, k] = dyn.fit_history(A3[m][:, :, k], y[m], sig[m], NP, 1, "M1", alpha=a, theta0=prior[:, k:k + 1], ref=REF).theta[:, 0]
+                th[:, k] = dyn.fit_history(A3[m][:, :, k], y[m], sig[m], NP, 1, "M1", alpha=a, theta0=pk[:, k:k + 1], ref=REF).theta[:, 0]
             elif name == "CAUSAL":
                 m = bi <= k
                 Ak = A3[m][:, :, :k + 1].reshape(m.sum(), -1)
-                th[:, k] = dyn.fit_history(Ak, y[m], sig[m], NP, k + 1, "M2", alpha=a, beta=b, theta0=prior[:, :k + 1], ref=REF).theta[:, k]
+                th[:, k] = dyn.fit_history(Ak, y[m], sig[m], NP, k + 1, "M2", alpha=a, beta=b, theta0=pk, ref=REF).theta[:, k]
             else:
                 raise ValueError(name)
         return th
@@ -93,6 +96,8 @@ def detect(series: np.ndarray, pre: float, post: float, c: int, e: int) -> tuple
     """Detection delay (bins after the true change bin c) = first b in [c, e) from which the estimate stays across the pre/post
     midpoint (towards post) through bin e-1; (nan, True) if never."""
     crossed = np.sign(post - pre) * (np.asarray(series, dtype=float) - (pre + post) / 2) > 0
+    if c >= 1 and crossed[c - 1]:  # already on the post side before the change: a constant estimator, not a detection (review F-053/R1)
+        return float("nan"), True
     for b in range(c, e):
         if crossed[b:e].all():
             return float(b - c), False
@@ -135,7 +140,7 @@ def run_episode(ep: dict, hp: dict, models: tuple[str, ...] = FIT_MODELS, layout
                 if model == "M0":
                     th = prior if (a, b) == (a0, b0) else dyn.fit_history(A, y, sig, NP, N_INV, "M0", alpha=a, ref=REF).theta
                 else:
-                    th = estimate(model, A, y, sig, obs_t, a, b, prior)
+                    th = estimate(model, A, y, sig, obs_t, a, b, prior, a0)
                 row = {**base, **blank, "layout": layout, "noise": frac, "model": model, "alpha": a, "beta": b}
                 if th is None:
                     rows.append({**row, "jpop": np.inf})
@@ -145,7 +150,7 @@ def run_episode(ep: dict, hp: dict, models: tuple[str, ...] = FIT_MODELS, layout
                     p, k, k2, pre, post = spec
                     c = k // 2
                     e = min(max(k2 // 2, c + 1), N_INV)
-                    if ident[p, max(c - 1, 0):e].all():
+                    if c >= 1 and ident[p, c - 1:e].all():
                         d, miss = detect(th[p], pre, post, c, e)
                         row.update(det_applicable=True, det_delay=d, det_miss=float(miss))
                 rows.append(row)
@@ -165,6 +170,10 @@ def _pool(eps, hp, models, workers, layouts=None):
         return [r for f in futs for r in f.result()]
 
 
+ALPHA_C = (0.01, 0.1, 1.0, 10.0, 100.0, 1e3, 1e4)  # D-024: reduced M2 grid for CAUSAL/RETRO (review: alpha <= 1 is a flat plateau)
+BETAS_C = (0.0, 10.0, 100.0, 1e3, 1e4, 1e5)
+
+
 def tune(workers: int, layouts=None) -> dict:
     """Validation only (dynamic_study.episodes('tune')).  M0 first; then CT / M1 (ALPHA_M) and CAUSAL / RETRO (ALPHA_2 x BETAS) with
     M0@alpha* as prior.  Selection = lowest mean J_pop per (layout, noise); non-converged = +inf; edge selections flagged."""
@@ -174,7 +183,7 @@ def tune(workers: int, layouts=None) -> dict:
     combos = [(lay, fr) for lay in layouts for fr in NOISE]
     s1 = ds._score_table(_pool(eps, {f"{lay}|{fr}": {"M0": [(a, 0.0) for a in ALPHA_M]} for lay, fr in combos}, ("M0",), workers, layouts))
     m0 = {(lay, fr): min(s1[(lay, fr, "M0")], key=lambda c, d=s1[(lay, fr, "M0")]: d[c]) for lay, fr in combos}
-    g2 = list(itertools.product(ALPHA_2, BETAS))
+    g2 = list(itertools.product(ALPHA_C, BETAS_C))
     grid = {"CT": [(a, 0.0) for a in ALPHA_M], "M1": [(a, 0.0) for a in ALPHA_M], "CAUSAL": g2, "RETRO": g2}
     s2 = ds._score_table(_pool(eps, {f"{lay}|{fr}": {"M0": [m0[(lay, fr)]], **grid} for lay, fr in combos},
                                ("CT", "M1", "CAUSAL", "RETRO"), workers, layouts))
@@ -183,10 +192,14 @@ def tune(workers: int, layouts=None) -> dict:
     for (lay, fr, m), d in s2.items():
         k = f"{lay}|{fr}"
         best = min(d, key=lambda c, d=d: d[c])
+        if m == "oracle":
+            continue
         frozen[k][m] = [list(best)]
         scores.setdefault(k, {})[m] = {f"{a:g}|{b:g}": v for (a, b), v in d.items()}
-        al = ALPHA_2 if m in ("CAUSAL", "RETRO") else ALPHA_M
-        if best[0] in (al[0], al[-1]) or (m in ("CAUSAL", "RETRO") and best[1] in (BETAS[0], BETAS[-1])):
+        if m == "oracle":
+            continue
+        al = ALPHA_C if m in ("CAUSAL", "RETRO") else ALPHA_M
+        if best[0] in (al[0], al[-1]) or (m in ("CAUSAL", "RETRO") and best[1] in (BETAS_C[1], BETAS_C[-1])):
             edge.append(f"{k}:{m}:{best}")
     for (lay, fr), c in m0.items():
         if c[0] in (ALPHA_M[0], ALPHA_M[-1]):

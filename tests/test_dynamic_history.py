@@ -97,4 +97,32 @@ def test_freeze_guard(tmp_path):
 
 def test_test_episodes():
     eps = dh.episodes_test()
-    assert len(eps) == 96 and eps[0]["seed"] == 7600 and eps[-1]["seed"] == 7695
+    assert len(eps) == 96 and eps[0]["seed"] == 8600 and eps[-1]["seed"] == 8695
+
+
+def test_constant_estimate_on_post_side_is_not_a_detection():
+    """Review F-053/R1: an estimate already past the midpoint before the change bin must not count as detecting the change."""
+    from pravah.studies.toy import dynamic_history as h
+    d, miss = h.detect(np.array([5.0, 5.0, 5.0, 5.0, 5.0, 5.0]), 1.0, 5.0, 3, 6)
+    assert miss and np.isnan(d)
+    d, miss = h.detect(np.array([1.0, 1.0, 1.0, 5.0, 5.0, 5.0]), 1.0, 5.0, 3, 6)
+    assert (not miss) and d == 0.0
+
+
+def test_causal_estimates_ignore_future_data_including_the_prior():
+    """The prior of CT/CAUSAL is now fitted from data up to the end of the bin only (review F-053/R1)."""
+    from pravah.studies.toy import dynamic_history as h
+    rng = np.random.default_rng(0)
+    nobs = 36
+    A = np.abs(rng.standard_normal((nobs, h.NP * h.N_INV))) / np.repeat(h.REF, h.N_INV)  # O(1) after REF scaling
+    y = A @ (np.abs(rng.standard_normal(h.NP * h.N_INV)) * np.repeat(h.REF, h.N_INV)) * 0.1
+    obs_t = np.repeat(np.linspace(600, 21600, nobs), 1)
+    sig = np.full(nobs, 0.3)
+    bi = h.bin_index(obs_t)
+    y2 = y.copy()
+    y2[bi >= 4] += 5.0
+    for name in ("CT", "CAUSAL"):
+        a = h.estimate(name, A, y, sig, obs_t, 1e3, 1.0, np.zeros((h.NP, h.N_INV)), a0=1e3)
+        b = h.estimate(name, A, y2, sig, obs_t, 1e3, 1.0, np.zeros((h.NP, h.N_INV)), a0=1e3)
+        assert a is not None and b is not None
+        np.testing.assert_allclose(a[:, :3], b[:, :3], atol=1e-9)
