@@ -1,0 +1,119 @@
+[
+ {
+  "figure": "fig01_concentration_fields",
+  "file": "docs/figures/final/fig01_concentration_fields.png",
+  "status": "produced",
+  "sources": [
+   "results/belauri-forward/fields/from_west_southwest.nc",
+   "re-simulation ep 34"
+  ],
+  "caption": "fig01: top, DYN toy truth field of episode 67 (re-simulated, seed 8667, reversal/activation; white squares = L4 sensors, stars = sources, white contour = 30 % of peak population). Bottom, stored Belauri forward fields (results/belauri-forward, EXP-forward Phase 1; 500 m mesh; all emissions and winds synthetic). Not a result of an inference experiment."
+ },
+ {
+  "figure": "fig02_sensor_layouts",
+  "file": "docs/figures/final/fig02_sensor_layouts.png",
+  "status": "produced",
+  "sources": [
+   "results/dyn04/layouts.json"
+  ],
+  "caption": "fig02: DYN-04 layouts (results/dyn04/layouts.json, hash 8bdef74d7c30fe2e, frozen before any test episode; F-061, RUN-0090). Grey = synthetic population, stars = sources; markers are offset slightly so coincident layouts remain visible. Random layouts (10 per budget) omitted."
+ },
+ {
+  "figure": "fig03_history_reconstruction",
+  "file": "docs/figures/final/fig03_history_reconstruction.png",
+  "status": "produced",
+  "sources": [
+   "RUN-0094/episodes.csv",
+   "results/dyn03v2/frozen_hparams.json"
+  ],
+  "caption": "fig03: DYN-03 v2 (F-064, RUN-0094, frozen hash 3c86b5e668181a3d). ONE episode (median-gain 'activation' episode at L4/10 % noise, chosen by rule, not by appearance) re-simulated because per-episode histories were not stored; right panel checks the re-simulation against the stored J_pop. Synthetic, known wind, matched model. Illustration of mechanism, not evidence."
+ },
+ {
+  "figure": "fig04_dyn03_forest",
+  "file": "docs/figures/final/fig04_dyn03_forest.png",
+  "status": "produced",
+  "sources": [
+   "RUN-0094/summary.json"
+  ],
+  "caption": "fig04: F-064 / RUN-0094 summary.json ('primary', 'wind_groups'); percentages in the left labels are relative changes. CT is a deliberately naive baseline; RETRO and M1 use future data (non-causal). Synthetic, known wind, one fixture. Preliminary, not independently reviewed."
+ },
+ {
+  "figure": "fig05_dyn04_forest",
+  "file": "docs/figures/final/fig05_dyn04_forest.png",
+  "status": "produced",
+  "sources": [
+   "RUN-0090/summary.json"
+  ],
+  "caption": "fig05: F-061 / RUN-0090 summary.json 'contrasts' (40 contrasts; 96 test episodes seeds 7800-7895; CI = lenient Bonferroni 0.05/4 as registered, converted to % of the baseline mean). Blue = effect criterion met (CI excludes 0, >= 10 %, sign persists leave-one-wind-out); grey = tie or criterion not met; red = baseline better (point estimate >= +10 % with CI above 0; several of these become ties under the strict 0.05/40 family, see F-061). Grey band = +-10 %. Synthetic, known wind, hyper-parameters tuned on the spread layout (a comparator)."
+ },
+ {
+  "figure": "fig06_dyn05_sufficiency",
+  "file": "docs/figures/final/fig06_dyn05_sufficiency.png",
+  "status": "produced",
+  "sources": [
+   "RUN-0078/design.json",
+   "RUN-0080/test_rows.json",
+   "docs/figures/dynamic/tables"
+  ],
+  "caption": "fig06: DYN-05 (F-062; design stage RUN-0078, design.json hash e3968dd3e90b6902; real-estimator check RUN-0080, 96 episodes seeds 8400-8495; tables docs/figures/dynamic/tables/fig06_design_summary.csv and dyn05_actual_regret_ci.json derived from those runs). Top: the registered surrogate criterion (met only in two of four cells). Bottom: descriptive, not the registered criterion; the CI conditions on the 16 ensemble layouts held fixed (a two-stage bootstrap in F-062 is wider). Reference layout is itself noisy (F-062 split-half). Synthetic, one fixture."
+ },
+ {
+  "figure": "fig07_dyn06_detection_misattribution",
+  "file": "docs/figures/final/fig07_dyn06_detection_misattribution.png",
+  "status": "produced",
+  "sources": [
+   "RUN-0093/summary.json"
+  ],
+  "caption": "fig07: DYN-06 v4 (F-063, RUN-0093, protocol D-025: null-calibrated detection; misattribution scored only in (wind, cell) pairs where detection clearly exceeds false alarm; pooled = wrong/detected). Gaps in the lower row mean no wind was evaluable (d = 2 mostly). No CIs are stored for these rates (a registered requirement not met). The scoring rule was adopted after F-044's headline was contradicted; under the earlier unweighted mean S1/L4 at d=16 is 0.31 (F-063). S5 has no observable look-alike (detectability only). Synthetic, known wind."
+ },
+ {
+  "figure": "fig08_dyn07_model_error",
+  "file": "docs/figures/final/fig08_dyn07_model_error.png",
+  "status": "produced",
+  "sources": [
+   "RUN-0088/summary.json"
+  ],
+  "caption": "fig08: DYN-07 v2 (F-056, RUN-0088; the same 96 episodes in 10 paired conditions; nominal inverse, frozen DYN-02 v3 hyper-parameters, never re-tuned). The 'extra source' conditions are confounded with the 9-sensor centre sensor (354 m from the unmodelled source; F-056) and are shown, not interpreted. Global wind rotations/scalings only; synthetic."
+ },
+ {
+  "figure": "fig09_exp027_void",
+  "file": "docs/figures/final/fig09_exp027_void.png",
+  "status": "produced",
+  "sources": [
+   "results/exp027/paired.csv"
+  ],
+  "caption": "fig09: EXP-027 (F-057, RUN-0081; results/exp027/paired.csv; 8 draws x 6 cases, seeds 1101-1108; 28 replicate pairs). VOID: the deliberately coarse 2 km control is not distinguishable from replicate-design noise (it was required to fail), so the 500 m mesh is only provisionally admissible. Boxes = quartiles of per-draw values (8, 8, 28); dots are the values. Padded Belauri domain, synthetic population/winds."
+ },
+ {
+  "figure": "fig10_dyn02_by_wind",
+  "file": "docs/figures/final/fig10_dyn02_by_wind.png",
+  "status": "produced",
+  "sources": [
+   "RUN-0087/episodes.csv"
+  ],
+  "caption": "fig10: DYN-02 v3 (F-055, RUN-0087 episodes.csv, 4 sensors, 16 episodes per wind). rotation_a supplies 68 % (2 % noise) / 48 % (10 %) of the pooled effect; a t-interval over the six wind means includes zero (F-055). Synthetic, known wind, matched model."
+ },
+ {
+  "figure": "fig00_dyn00_verification",
+  "file": "docs/figures/final/fig00_dyn00_verification.png",
+  "status": "reused",
+  "sources": [
+   "RUN-0091/dyn00_checks.json (via scripts/make_dynamic_figures.py)"
+  ]
+ },
+ {
+  "figure": "DYN-08",
+  "status": "pending",
+  "reason": "experiment not run / result pending: no figure (placeholder in the report)"
+ },
+ {
+  "figure": "EXP-027b",
+  "status": "pending",
+  "reason": "experiment not run / result pending: no figure (placeholder in the report)"
+ },
+ {
+  "figure": "Q-013",
+  "status": "pending",
+  "reason": "experiment not run / result pending: no figure (placeholder in the report)"
+ }
+]

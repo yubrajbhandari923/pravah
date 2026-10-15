@@ -126,3 +126,28 @@ def test_causal_estimates_ignore_future_data_including_the_prior():
         b = h.estimate(name, A, y2, sig, obs_t, 1e3, 1.0, np.zeros((h.NP, h.N_INV)), a0=1e3)
         assert a is not None and b is not None
         np.testing.assert_allclose(a[:, :3], b[:, :3], atol=1e-9)
+
+
+def test_causal_estimates_for_every_bin_ignore_later_data():
+    """Review F-064/R1: perturb data AFTER bin b and require CT/CAUSAL estimates for bins <= b to be unchanged, for every b
+    (a one-bin look-ahead would fail).  The prior is built inside estimate(); the run_episode wiring is covered by the fact that
+    estimate() ignores its `prior` argument for CT/CAUSAL (a huge bogus prior must change nothing)."""
+    from pravah.studies.toy import dynamic_history as h
+    rng = np.random.default_rng(1)
+    nobs = 36
+    A = np.abs(rng.standard_normal((nobs, h.NP * h.N_INV))) / np.repeat(h.REF, h.N_INV)
+    y = A @ (np.abs(rng.standard_normal(h.NP * h.N_INV)) * np.repeat(h.REF, h.N_INV)) * 0.1
+    obs_t = np.linspace(600, 21600, nobs)
+    sig = np.full(nobs, 0.3)
+    bi = h.bin_index(obs_t)
+    bogus = np.full((h.NP, h.N_INV), 1e9)
+    for name in ("CT", "CAUSAL"):
+        ref = h.estimate(name, A, y, sig, obs_t, 1e3, 1.0, np.zeros((h.NP, h.N_INV)), a0=1e3)
+        assert ref is not None
+        np.testing.assert_allclose(ref, h.estimate(name, A, y, sig, obs_t, 1e3, 1.0, bogus, a0=1e3), atol=1e-12)
+        for b in range(h.N_INV - 1):
+            y2 = y.copy()
+            y2[bi > b] += 5.0
+            out = h.estimate(name, A, y2, sig, obs_t, 1e3, 1.0, np.zeros((h.NP, h.N_INV)), a0=1e3)
+            assert out is not None
+            np.testing.assert_allclose(out[:, :b + 1], ref[:, :b + 1], atol=1e-9, err_msg=f"{name} bin<= {b} saw later data")

@@ -2,7 +2,7 @@
 smoother (RETRO) vs full-history independent bins (M1) vs oracle, on the DYN-02 v2 synthetic episodes (same data, sensors, truth).
 
     python -m pravah.studies.toy.dynamic_history --stage tune --out DIR [--workers 8]            # validation seeds 6000-6047
-    python -m pravah.studies.toy.dynamic_history --stage test --freeze FILE --out DIR            # 96 episodes, seeds 7600-7695
+    python -m pravah.studies.toy.dynamic_history --stage test --freeze FILE --out DIR            # 96 episodes, seeds 8600-8695 (D-024)
 
 Estimators (all share the frozen M0 static fit as prior mean, y, A, sigma and the REF scaling of dynamic_study):
   CT      bin b fitted from observations in (t_b, t_{b+1}] and bin-b columns only (ridge, exact), independently per bin.
@@ -28,7 +28,7 @@ from pravah.studies.toy import dynamic_study as ds
 from pravah.studies.toy.dynamic_study import (ALPHA_2, ALPHA_FWE, ALPHA_M, BETAS, LAYOUTS, N_FINE, N_INV, NOISE, NP, REF, WINDS,
                                               _cells, _hash, _prebuild, boot_ci)
 
-TEST_SEED0 = 8600  # v2 (D-024); 7600-7695 consumed by RUN-0092  # 96 test episodes: seeds 7600-7695 (disjoint from DYN-02's 7200-7295)
+TEST_SEED0 = 8600  # v2 (D-024); 7600-7695 consumed by RUN-0092  # 96 test episodes, seeds 8600-8695 (disjoint from DYN-02's 7200-7295)
 ESTIMATORS = ("CT", "CAUSAL", "RETRO", "M1", "oracle")
 FIT_MODELS = ("M0", "CT", "CAUSAL", "RETRO", "M1")
 CHANGE_FAMILIES = ("activation", "shutdown", "opposing", "pulse", "influx_end", "compensating")
@@ -216,7 +216,7 @@ def load_frozen(path: str | Path) -> dict:
 
 
 def test(freeze: str | Path, out: str | Path, workers: int) -> dict:
-    """Test stage (seeds 7600+).  Refuses to run without a valid frozen hyperparameter file."""
+    """Test stage (seeds 8600+).  Refuses to run without a valid frozen hyperparameter file."""
     if not freeze:
         raise RuntimeError("freeze guard: test stage requires --freeze FILE")
     hp = load_frozen(freeze)
@@ -231,7 +231,7 @@ def test(freeze: str | Path, out: str | Path, workers: int) -> dict:
         w.writerows(rows)
     res = summarise(rows)
     write_json(out / "summary.json", {"frozen_hash": json.loads(Path(freeze).read_text())["hash"], "n_episodes": len(eps), **res,
-                                      "note": "synthetic only; test seeds 7600-7695; wind known; model error not included"})
+                                      "note": "synthetic only; test seeds 8600-8695 (v2, D-024); wind known; model error not included"})
     return res
 
 

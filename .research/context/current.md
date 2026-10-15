@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~3278 tokens.
-> Generated 2026-10-14T17:12:19-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2815 tokens.
+> Generated 2026-10-15T12:14:11-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `137d1640c1`
+Git: `master` @ `db3b593298` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -59,10 +59,9 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 - [verification failed] T-070 EXP-027 on a common padded domain: 250/500/2000 m meshes (prepare, config, smoke, dry-run only): no deterministic verifier ran (no task checks and no approved post_implementation hooks): this is not a pass
 - [reviewer disagrees] F-035 EXP-015 stage 2: H1 untested (baseline not commensurable); 500 m provisionally admissible on narrow grounds: scientific-reviewer: needs work — H1 is UNTESTED, not supported. The mesh comparison and the resampling baseline are not commensurable: convergence_stage2.py:24
-- [reviewer disagrees] F-053 DYN-03 confirmatory (EXP-031, RUN-0092; supersedes F-052, which contained one wrong count: 9 of the 20 frozen hyperparameter selections were flagged as sitting on a grid bound, not '11 of 16'). 96 synthetic test episodes seeds 7600-7695, 6 winds, frozen hash be1de01dd5250121, converged solver, 0 non-converged fits, wind known. Causal filter vs current-time-only (CT; earlier emissions ignored): -56%/-52% sqrt(J_pop) at 4 sensors (2%/10% noise; -0.00695 [-0.00910,-0.00482], -0.00652 [-0.00865,-0.00449] ug/m3) and -80%/-77% at 9 sensors; retrospective smoother vs causal filter (the smoother also uses FUTURE data): -55%/-58% (4 sensors) and -32%/-36% (9 sensors); full-history independent-bin M1 vs causal filter: -43%/-45% (4) and -31%/-35% (9). All 12 primary contrasts meet the registered criterion. Change detection (n=58 step episodes): CT misses 41-55%, the causal filter 2-5% with mean delay 0.48 bins (about 29 min) at 4 sensors vs 0.32 for the smoother. REGISTERED PREDICTION CONTRADICTED: history does not help more under varying wind: the gain over CT is as large or larger in absolute terms on the two steady winds (4 sensors, 2% noise: -0.0076 steady vs -0.0066 variable; RETRO-CAUSAL -0.0044 vs -0.0024) and all 8 steady-group intervals exclude zero, so the registered steady-wind negative control fails; the gain comes from plume carry-over, not wind-driven de-confounding, which is neither tested nor supported here. Caveats: CT is a naive baseline whose tuned alpha (1e5-1e6) collapses it to the static prior; 9 of 20 selections flagged at a grid bound; causal filter evaluated on bin-b estimates only; one geometry/population fixture; matched model; preliminary, not independently reviewed.: scientific-reviewer: needs work — Partly contradicted. (1) CT and CAUSAL are NOT causal: dynamic_history.py:130 fits the M0 prior on the whole 6 h window and pa
+- [awaiting review] F-065 DYN-03 v2 (RUN-0094): causal filter vs causal static fit; interpretation corrected after review F-064/R1: Agent finding awaiting an independent review
 - [awaiting review] F-063 DYN-06 v4 identifiability (RUN-0093), predictions restated after review F-060/R1: Agent finding awaiting an independent review
 - [awaiting review] F-062 DYN-05 sufficiency (RUN-0078/0080), conclusions corrected after review F-058/R1: Agent finding awaiting an independent review
-- [awaiting review] F-061 DYN-04 confirmatory (RUN-0090), wording corrected after review F-059/R1: Agent finding awaiting an independent review
 
 ## ⚠ Needs synthesis before new experiments
 
