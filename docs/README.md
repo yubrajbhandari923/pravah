@@ -23,6 +23,13 @@ Panel (`.research/bin/research current`), not here.
 | Numerical verification and uncertainty methodology: definitions, scheme and convergence results, decision-stability metrics, interval wording | `numerical-methodology.md` |
 | Phase 3 findings, limitations, what is still open, Phase 4 recommendations | `phase3-findings.md` |
 | Reproduce the frozen pre-migration baseline (env, config and dataset hashes, verification commands, invariants to protect) | `baseline-qualification.md` |
+| Final results, current findings and what is superseded (start here for results) | `FINAL_RESEARCH_REPORT.md` |
+| Short peer-facing summary and figure walk-through | `PEER_PRESENTATION.md` |
+| EXP-027b (mesh adequacy for design) design and cost | `exp027b_design.md` |
+| DYN-08 (Belauri synthetic deployment) plan; earlier readiness assessment (pre-review, banner inside) | `dyn08_plan.md`, `dyn08_readiness.md` |
+| DYN-03 causality fix (causal CT/CAUSAL comparators) | `dyn03_causality_fix.md` |
+| Consolidated HPC batch proposal (wrap-up, not yet approved) | `HPC_BATCH_PROPOSAL.md` |
+| Pre-review dynamic-sensor report (history only; superseded banner inside); stale figures map | `DYNAMIC_POPULATION_SENSOR_RESEARCH_REPORT.md`, `figures/dynamic/README_SUPERSEDED.md` |
 | Why was it planned this way (design decisions, task map) | `implementation-plan.md`, `phase2-plan.md` |
 
 Reading order for a new agent: `../AGENTS.md` -> `research current` -> this index -> one area doc -> `phase2-validation.md` "Wrap-up log" if you will change results.

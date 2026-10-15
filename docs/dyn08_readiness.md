@@ -1,3 +1,5 @@
+> **SUPERSEDED STATUS 2026-10-15.** Written 2026-10-14, before the review corrections. Findings cited below as current were superseded: F-037, F-046, F-048, F-049, F-050, F-053, F-054 -> F-055 (DYN-02), F-056 (DYN-07), F-057 (EXP-027 void), F-061 (DYN-04), F-062 (DYN-05), F-065 (DYN-03 v2). Use `docs/FINAL_RESEARCH_REPORT.md`, `docs/dyn08_plan.md` and `docs/exp027b_design.md` for current status. Corrected facts: `data/population/` and `data/era5/` are now tracked by git (the "untracked" remarks below are stale; they are still not on the cluster unless synced); the EXP-027b cost is about 190-375 core-h for 8 draws (F-057), not 90-190.
+
 # DYN-08 readiness assessment (EXP-036) and reconciliation with EXP-026
 
 Task T-080, PLAN-007. Status: PROVISIONAL assessment, written 2026-10-14. **Nothing was run to produce this document** beyond reading files and
@@ -46,7 +48,7 @@ in one study: DYN-08 must choose one (recommendation: the padded set, section 2.
   WorldPop Global 2 R2025A, Nepal, 2025, constrained, 100 m (3 arc-seconds), people/cell, EPSG:4326, CC BY 4.0, source sha256
   `b7b581e181df5e2f84b2e20d3455429393829395619a9600e45c6907674a0639`, downloaded 2026-10-11, allocation by source-cell centre
   (`population.counts_from_lonlat`; fine for 100 m source cells into 250/500 m cells; the doc `docs/population-data.md` forbids coarser sources).
-* **Present locally; NOT tracked by git (`git ls-files data/population data/era5` is empty) and NOT on the cluster.** `research hpc datasets list`
+* **[2026-10-15: now tracked by git; the original text said untracked.] Present locally and NOT on the cluster unless synced.** `research hpc datasets list`
   shows `belauri-geography` (vbelauri-500m-250m-plus-raw-2026-10-10), `belauri-geography-padded`, an unrelated CT dataset, and `datasets` (no manifest);
   there is no population and no ERA5 dataset. `scripts/hpc_link_datasets.sh` links only `data/belauri`. Any cluster use needs the two small
   extracts staged (they are 34 kB + 137 kB population and 0.7 MB ERA5): a user decision (cluster write), see the work plan.
@@ -264,7 +266,7 @@ Required for actual validation (all outside this program, none to be done with d
 4. **Blind, prospective inversion**: choose the layout from the model, deploy, withhold part of the network (by site and by time), compare reconstructions with held-out readings; compare against a non-model baseline (spread network, kriging); pre-register.
 5. **Population exposure**: time-activity/indoor-outdoor data or an exposure model; evaluate sensitivity to the population product (WorldPop vs GHS-POP vs census) and to the 2025 epoch.
 6. **Independent review** and, ideally, replication at another site (`docs/transfer.md`).
-Before any of that, intermediate non-empirical steps would improve credibility (and are in scope for later phases): resolve the mesh/numerical-diffusion question (EXP-027b needs about 90-190 core-h and approval), Q-013, and review of F-050/F-053/F-054/F-049.
+Before any of that, intermediate non-empirical steps would improve credibility (and are in scope for later phases): resolve the mesh/numerical-diffusion question (EXP-027b needs about 190-375 core-h for 8 draws (corrected by F-057; was 90-190) and approval), Q-013, and review of F-050/F-053/F-054/F-049.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -274,10 +276,10 @@ Before any of that, intermediate non-empirical steps would improve credibility (
 |---|---|---|
 | Belauri geography (500/250 m), study mask, source rasters, DEM | **ready** | `data/belauri/`, manifest verified |
 | Padded geography (500/250/2000 m) | **ready** | `configs/belauri_padded_geography/`; cluster dataset staged; 500 m grid not aligned with standard grid |
-| WorldPop extract (standard grid) + provenance | **ready (local only)** | `data/population/`; untracked; not on cluster |
+| WorldPop extract (standard grid) + provenance | **ready (local only)** | `data/population/`; tracked by git (since 2026-10-15); not on cluster unless synced |
 | WorldPop on the padded grid | **needs adaptation** | regrid from 250 m extract with `regrid_counts`; write provenance; add study-total and nodata-in-study counts |
 | EXP-026 registration | **needs adaptation** | `worldpop_study_total` = grid total; seed overlap; mesh gate wording |
-| ERA5 file, loader, `to_segments` | **ready (local only)** | 2023 Jan + Jul only, hourly; untracked; not on cluster; 1488 hours; coarse |
+| ERA5 file, loader, `to_segments` | **ready (local only)** | 2023 Jan + Jul only, hourly; tracked by git (since 2026-10-15); not on cluster unless synced; 1488 hours; coarse |
 | ERA5 episode selector (strata rule, day-split) | **missing** | section 2.7; small, pure, testable |
 | Multi-segment wind cost | **missing (not measured)** | pilot item |
 | `pravah.dynamic` expand / truth_scenario on `RasterSource` | **ready, untested on Belauri** | needs one unit test |

@@ -63,7 +63,7 @@
     "worldpop_study_total": 184030
   },
   "pid": null,
-  "reviewed": 0,
+  "reviewed": 1,
   "run_dir": ".research/runs/RUN-0097",
   "slurm": {
     "hpc": {
