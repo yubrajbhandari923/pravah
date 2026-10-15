@@ -48,11 +48,15 @@ ROOT = Path(__file__).resolve().parents[4]
 NAMES = ("road", "builtup", "external", "bg_wsw", "bg_ene")
 NP = len(NAMES)
 BASELINES = ("random", "spread", "highpop", "static_opt", "src_opt")
-FAMILY_ORDER = ("random", "spread", "highpop", "static_opt", "dyn_opt", "src_opt", "lowpop")  # lowpop = bad-layout falsification control, not a baseline
+FAMILY_ORDER = ("random", "spread", "highpop", "static_opt", "dyn_opt", "src_opt", "lowpop", "worst")  # lowpop: v1 control, now reported only; worst: v2 control (a'), neither is a baseline
+CTL_GROUPS = ("ctlA", "ctlB")  # v2 null control (b'): two groups of random layouts, never part of the primary comparison
 HIST_MODELS = ("CT", "CAUSAL")
 # Seed ranges ALREADY SPENT or declared by other records (AGENTS.md, docs/dyn08_readiness.md 2.8, .research records); DYN-08 seeds must avoid all of them.
 USED_SEEDS = ((101, 101), (202, 202), (303, 305), (404, 404), (1101, 1108), (3500, 3500), (5000, 5999), (6000, 6999), (7000, 7999), (8000, 8999),
-              (9000, 9499), (12345, 12345), (18403, 18403), (52501, 52501))
+              (9000, 9499), (12345, 12345), (18403, 18403), (52501, 52501),
+              (43000, 43191), (46000, 46047), (49000, 49999))  # last row: DYN-08 v1 (RUN-0099) test / validation / dev seeds, SPENT
+# Ranges owned by one registration only (D-029): blocked for every other config name.  44000-45999 = DYN-08 v2 test (44000-44191) + validation (45000-45047).
+RESERVED_BY = {"dyn08_v2": ((44000, 45999),)}
 
 
 # ------------------------------------------------------------------------------------------------ configuration
@@ -69,6 +73,8 @@ def smoke_cfg(cfg: dict[str, Any]) -> dict[str, Any]:
     c["wind"]["n"] = {"design": 2, "validation": 2, "test": 2}
     c["families"] = ["constant", "activation", "pulse"]
     c["ks"], c["noise"], c["n_random"] = [2], [0.10], 3
+    if "control_b" in c:
+        c["control_b"] = {**c["control_b"], "n_per_group": 3}
     c["seeds_per_wind_family"] = {"validation": 1, "test": 1}
     c["seeds"] = {**c["seeds"], "validation": 49000, "test": 49100, "wind_selection": 49900, "design_layouts": 49950}
     c["hp_grid"] = {"alpha_m_exp": [-1.0, 3.0, 2.0], "alpha_2_exp": [-1.0, 3.0, 2.0], "beta_exp": [0.0, 4.0, 2.0], "note": "smoke"}
@@ -85,10 +91,11 @@ def _grid(spec: list[float]) -> tuple[float, ...]:
 def seed_conflicts(cfg: dict[str, Any]) -> list[str]:
     """Registered seed blocks (each block spans 1000 values) that overlap any spent / declared range."""
     bad = []
+    foreign = tuple(r for owner, rs in RESERVED_BY.items() if owner != cfg.get("name") for r in rs)
     for name, s in cfg["seeds"].items():
         if name.startswith("dev") or not isinstance(s, int):
             continue
-        for lo, hi in USED_SEEDS:
+        for lo, hi in USED_SEEDS + foreign:
             if s <= hi and s + 999 >= lo:
                 bad.append(f"{name} {s}-{s + 999} overlaps {lo}-{hi}")
     return bad
@@ -302,6 +309,7 @@ class Study:
         bi = np.clip(np.searchsorted(e, np.asarray(obs_t) - 1e-6, side="left") - 1, 0, self.nb - 1)
         A3 = A.reshape(len(y), NP, self.nb)
         th = np.zeros((NP, self.nb))
+        lead = self.acausal_bins(obs_t)
         for k in range(self.nb):
             mp_ = bi <= k
             if not mp_.any():
@@ -314,7 +322,17 @@ class Study:
             else:
                 th[:, k] = dyn.fit_history(A3[mp_][:, :, :k + 1].reshape(mp_.sum(), -1), y[mp_], sig[mp_], NP, k + 1, "M2", alpha=a, beta=b,
                                            theta0=pk, ref=self.REF).theta[:, k]
+        for k in lead:  # D-029 (4): bins with no observation before them are filled with the first observed bin's estimate (ACAUSAL, flagged in the rows)
+            th[:, k] = th[:, lead[-1] + 1]
         return th
+
+    def acausal_bins(self, obs_t) -> list[int]:
+        """Leading inverse bins that hold no observation (t_exclude = 7200 s, 4800 s bins: bin 0).  CT / CAUSAL cannot estimate them; they are filled with
+        the first observed bin's estimate, which uses later data, hence 'acausal'."""
+        e = dyn.bin_edges(self.T, self.nb)
+        bi = np.clip(np.searchsorted(e, np.asarray(obs_t) - 1e-6, side="left") - 1, 0, self.nb - 1)
+        first = int(bi.min())
+        return list(range(first))
 
 
 _STUDIES: dict[str, Study] = {}
@@ -405,6 +423,34 @@ def random_layout(S: Study, k: int, r: int) -> tuple[int, ...]:
     return tuple(sorted(int(i) for i in np.random.default_rng([int(S.cfg["seeds"]["design_layouts"]), k, r]).choice(n, k, replace=False)))
 
 
+def control_layouts(S: Study, k: int, n: int, offsets: tuple[int, int] = (100, 200)) -> dict[str, list[list[int]]]:
+    """Control (b'): two groups of ``n`` random layouts, replicate indices ``offsets[g] + i`` of the design-layout stream (the primary random layouts use 0..n_random-1,
+    the v1 control used the same ones), so the groups are fresh and disjoint from the primary comparison."""
+    return {g: [list(random_layout(S, k, o + i)) for i in range(n)] for g, o in zip(CTL_GROUPS, offsets)}
+
+
+class WorstLayoutCheckFailed(RuntimeError):
+    """The design-stage check of control (a') failed: the 'worst' layout is not at least ``min_ratio`` x the pool median surrogate risk."""
+
+
+def select_worst(risk, named: dict[str, tuple[int, ...]], n_sites: int, k: int, n_random: int, seed: int, min_ratio: float) -> dict:
+    """Control (a'): the layout with the highest surrogate risk among a FIXED pool = the ``named`` layouts + ``n_random`` random k-subsets (rng [seed, k]).
+    Non-finite risks are excluded from the pool.  Raises ``WorstLayoutCheckFailed`` unless risk(worst) >= min_ratio x median(pool risk) (design stage, before tuning)."""
+    rng = np.random.default_rng([int(seed), int(k)])
+    cands = [(n, tuple(int(i) for i in v)) for n, v in named.items()]
+    cands += [(f"pool#{i}", tuple(sorted(int(j) for j in rng.choice(n_sites, k, replace=False)))) for i in range(int(n_random))]
+    vals = np.array([float(risk(c)) for _, c in cands])
+    ok = np.isfinite(vals)
+    med = float(np.median(vals[ok]))
+    i = int(np.flatnonzero(ok)[np.argmax(vals[ok])])
+    ratio = float(vals[i] / med) if med > 0 else float("inf")
+    info = {"subset": list(cands[i][1]), "source": cands[i][0], "risk": float(vals[i]), "pool_median_risk": med, "ratio_to_median": ratio, "pool_size": int(ok.sum()),
+            "n_nonfinite_excluded": int((~ok).sum()), "n_random_subsets": int(n_random), "pool_seed": int(seed), "min_ratio": float(min_ratio)}
+    if not ratio >= min_ratio:
+        raise WorstLayoutCheckFailed(f"control (a') invalid by construction: worst-layout surrogate risk is {ratio:.3f} x the pool median at k={k} (< {min_ratio}); stopping at the design stage")
+    return info
+
+
 def wind_operator(S: Study, segs: list[list[float]], noise: float, mode: str, prior_var: float):
     """Per-wind Gaussian linear-Bayes surrogate (ported from ``dynamic_design_study.wind_operators``): x = theta/REF, A over the candidate sites at the
     observation times, M^T M = population-time weighted Gram matrix (Gram trick).  mode: dyn (30 params) | static (bins collapsed) | src (identifiable columns, M = I)."""
@@ -466,6 +512,9 @@ def design(cfg: dict[str, Any], design_winds: list[dict]) -> dict:
         idx = {k: {"spread": spread_layout(S, k), "highpop": highpop_layout(S, k)} for k in cfg["ks"]}
         lay = {k: {"random": [list(random_layout(S, k, r)) for r in range(int(cfg["n_random"]))], "spread": list(idx[k]["spread"]), "highpop": list(idx[k]["highpop"]), "lowpop": list(lowpop_layout(S, k))}
                for k in cfg["ks"]}
+        if "control_b" in cfg:
+            for k in cfg["ks"]:
+                lay[k].update(control_layouts(S, k, int(cfg["control_b"]["n_per_group"])))
         srch: dict = {}
         for fam, mode, kind in (("static_opt", "static", "risk"), ("src_opt", "src", "info"), ("dyn_opt", "dyn", "risk")):
             t0 = time.time()
@@ -479,7 +528,18 @@ def design(cfg: dict[str, Any], design_winds: list[dict]) -> dict:
                 doc["timings_s"][f"{noise}|{fam}|{k}"] = res["seconds"]
             if fam == "dyn_opt":
                 for k in cfg["ks"]:
-                    lay[k]["surrogate_risk"] = {"random": [prob.risk(tuple(r)) for r in lay[k]["random"]], **{f: prob.risk(tuple(lay[k][f])) for f in FAMILY_ORDER if f != "random"}}
+                    if "worst_pool" in cfg:  # control (a'): fixed pool = the 16 layouts of this cell + random subsets; checked HERE, before any tuning
+                        wp = cfg["worst_pool"]
+                        named = {f"random#{r}": tuple(v) for r, v in enumerate(lay[k]["random"])}
+                        named.update({f: tuple(lay[k][f]) for f in ("spread", "highpop", "static_opt", "src_opt", "dyn_opt", "lowpop")})
+                        try:
+                            wi = select_worst(prob.risk, named, len(S.sites["ids"]), k, int(wp["n_random_subsets"]), int(cfg["seeds"]["pool_layouts"]), float(wp["min_ratio_to_median"]))
+                        except WorstLayoutCheckFailed as e:
+                            raise WorstLayoutCheckFailed(f"noise {noise}: {e}") from e
+                        lay[k]["worst"], lay[k]["worst_check"] = wi["subset"], wi
+                    sr = {"random": [prob.risk(tuple(r)) for r in lay[k]["random"]], **{f: prob.risk(tuple(lay[k][f])) for f in FAMILY_ORDER if f != "random" and f in lay[k]}}
+                    sr.update({g: [prob.risk(tuple(r)) for r in lay[k][g]] for g in CTL_GROUPS if g in lay[k]})
+                    lay[k]["surrogate_risk"] = sr
             del prob
         doc["layouts"][str(noise)] = {str(k): v for k, v in lay.items()}
         doc["search"][str(noise)] = srch
@@ -494,8 +554,10 @@ def _hash(obj: Any) -> str:
 def layouts_of(doc: dict, noise: float, k: int) -> dict[str, tuple[int, ...]]:
     """name -> candidate-index tuple; random replicates are 'random#0'.."""
     d = doc["layouts"][str(noise)][str(k)]
-    out = {f: tuple(d[f]) for f in FAMILY_ORDER if f not in ("random",)}
+    out = {f: tuple(d[f]) for f in FAMILY_ORDER if f not in ("random",) and f in d}
     out.update({f"random#{r}": tuple(v) for r, v in enumerate(d["random"])})
+    for g in CTL_GROUPS:
+        out.update({f"{g}#{r}": tuple(v) for r, v in enumerate(d.get(g, []))})
     return out
 
 
@@ -518,7 +580,7 @@ def run_episode(cfg: dict[str, Any], ep: dict, doc: dict, hp: dict, models: tupl
     base = {"episode": ep["id"], "wind": ep["wind"], "family": ep["family"], "valid": valid, "stage": ep["stage"], "cond": ep.get("cond", "matched")}
     nan = float("nan")
     rows = [{**base, "k": 0, "layout": "-", "noise": 0.0, "model": "floor", "alpha": nan, "beta": nan, "jpop": S.projection_floor(R, tf), "area": nan,
-             "src_local": nan, "src_bnd": nan, "ident_frac": nan, "s0": s0, "live_frac": float(live.mean())}]
+             "src_local": nan, "src_bnd": nan, "ident_frac": nan, "s0": s0, "live_frac": float(live.mean()), "acausal_bins": 0}]
     for k, (ni, frac) in itertools.product(cfg["ks"], enumerate(cfg["noise"])):
         cfg_hp = hp[f"{k}|{frac}"]
         sd = frac * s0
@@ -544,7 +606,7 @@ def run_episode(cfg: dict[str, Any], ep: dict, doc: dict, hp: dict, models: tupl
                 else:
                     th = S.fit(model, A, y, sig, (a, b), prior, ot)
                 row = {**base, "k": k, "layout": name, "noise": frac, "model": model, "alpha": a, "beta": b, "s0": s0, "live_frac": float(live.mean()),
-                       "ident_frac": float(ident.mean())}
+                       "ident_frac": float(ident.mean()), "acausal_bins": len(S.acausal_bins(ot)) if model in HIST_MODELS else 0}
                 if th is None or prior is None:
                     rows.append({**row, "jpop": float("inf"), "area": nan, "src_local": nan, "src_bnd": nan})
                     continue
@@ -613,103 +675,179 @@ def boot_ci(d: np.ndarray, level: float, n: int = 10000, seed: int = 0) -> tuple
     return float(np.percentile(m, 100 * level / 2)), float(np.percentile(m, 100 * (1 - level / 2)))
 
 
-def vec_random_half(rows: list[dict], valid: set, k: int, nz: float, half: int) -> dict[int, float]:
-    """Episode -> mean M2 J_pop over random replicates 0-4 (half 0) or 5-9 (half 1): the null control of the contrasts."""
-    acc: dict[int, list[float]] = {}
-    for r in rows:
-        if r["k"] == k and r["noise"] == nz and r["model"] == "M2" and r["episode"] in valid and r["layout"].startswith("random#") and (int(r["layout"][7:]) >= 5) == bool(half):
-            acc.setdefault(r["episode"], []).append(r["jpop"])
-    return {e: float(np.mean(v)) if all(np.isfinite(v)) else float("nan") for e, v in acc.items()}
+def two_level_boot_diffs(A: np.ndarray, B: np.ndarray, n: int = 10000, seed: int = 0, chunk: int = 250) -> np.ndarray:
+    """Two-level (layout x episode) bootstrap of mean_episodes[ mean_layouts(A) - mean_layouts(B) ].  A is (La, E), B is (Lb, E): J_pop of every layout of
+    group A / B on the SAME E episodes.  Each resample draws episodes (shared by both groups: the contrast is paired), then layouts within each group, both
+    with replacement.  With La = 1 the layout level of A is fixed (a single designed layout vs a population of random layouts).  Returns the ``n`` resampled means."""
+    A, B = np.atleast_2d(np.asarray(A, dtype=float)), np.atleast_2d(np.asarray(B, dtype=float))
+    (la, ne), lb = A.shape, B.shape[0]
+    if B.shape[1] != ne:
+        raise ValueError("A and B need the same episodes")
+    rng = np.random.default_rng(seed)
+    out = np.empty(n)
+    for s0 in range(0, n, chunk):
+        c = min(chunk, n - s0)
+        ie = rng.integers(0, ne, (c, ne))
+        ia, ib = rng.integers(0, la, (c, la)), rng.integers(0, lb, (c, lb))
+        out[s0:s0 + c] = A[ia[:, :, None], ie[:, None, :]].mean(axis=(1, 2)) - B[ib[:, :, None], ie[:, None, :]].mean(axis=(1, 2))
+    return out
+
+
+def two_level_boot_ci(A: np.ndarray, B: np.ndarray, level: float, n: int = 10000, seed: int = 0) -> tuple[float, float]:
+    m = two_level_boot_diffs(A, B, n, seed)
+    return float(np.percentile(m, 100 * level / 2)), float(np.percentile(m, 100 * (1 - level / 2)))
+
+
+def boot_ratio_ci(num: np.ndarray, den: np.ndarray, level: float = 0.05, n: int = 10000, seed: int = 0) -> tuple[float, float]:
+    """Episode bootstrap CI of mean(num) / mean(den) (paired episodes resampled together)."""
+    num, den = np.asarray(num, dtype=float), np.asarray(den, dtype=float)
+    ix = np.random.default_rng(seed).integers(0, len(num), (n, len(num)))
+    r = num[ix].mean(axis=1) / den[ix].mean(axis=1)
+    return float(np.percentile(r, 100 * level / 2)), float(np.percentile(r, 100 * (1 - level / 2)))
+
+
+def paired_contrast(la: list[dict], lb: list[dict], lvl: float, wind_of: dict, gain: float, two_level: bool, n_boot: int = 10000) -> dict | None:
+    """Paired contrast 'a - b' of episode-wise J_pop.  ``la`` / ``lb`` = one {episode: J_pop} dict per LAYOUT of group a / b (a single baseline layout = a list of
+    one).  Episode value = mean over the group's layouts; episodes with any non-finite value are dropped.  CI: two-level (layout x episode) bootstrap if
+    ``two_level`` (the claim is about a layout POPULATION), else the episode bootstrap (the statement is about THIS layout).  Registered effect criterion: CI
+    excludes 0 AND rel. change <= -gain AND the sign persists leaving each wind out.  The wind-cluster CI is reported as in F-054."""
+    eps = sorted(set.intersection(*[set(d) for d in la + lb]))
+    A, B = np.array([[d[e] for e in eps] for d in la]), np.array([[d[e] for e in eps] for d in lb])
+    ok = np.isfinite(A).all(axis=0) & np.isfinite(B).all(axis=0)
+    if ok.sum() < 3:
+        return None
+    A, B = A[:, ok], B[:, ok]
+    eps_ok = [e for e, o in zip(eps, ok) if o]
+    a, b = A.mean(axis=0), B.mean(axis=0)
+    d = a - b
+    lo, hi = two_level_boot_ci(A, B, lvl, n_boot) if two_level else boot_ci(d, lvl, n_boot)
+    rel = float(d.mean() / b.mean()) if b.mean() else float("nan")
+    w = np.array([wind_of[e] for e in eps_ok])
+    winds = sorted(set(wind_of.values()))
+    leave = {x: float(d[w != x].mean()) for x in winds if (w != x).any()}
+    wm = np.array([d[w == x].mean() for x in winds if (w == x).any()])
+    wb = wm[np.random.default_rng(1).integers(0, len(wm), (n_boot, len(wm)))].mean(axis=1)
+    return {"n": int(ok.sum()), "mean_diff": float(d.mean()), "ci_lo": lo, "ci_hi": hi, "rel_change": rel, "frac_a_better": float((d < 0).mean()),
+            "ci_method": "two-level layout x episode bootstrap" if two_level else "episode bootstrap", "n_layouts_a": len(la), "n_layouts_b": len(lb),
+            "wind_cluster_ci": [float(np.percentile(wb, 100 * lvl / 2)), float(np.percentile(wb, 100 * (1 - lvl / 2)))],
+            "mean_a": float(a.mean()), "mean_b": float(b.mean()), "leave_one_wind_out": leave,
+            "effect_criterion_met": bool(hi < 0 and rel <= -gain and all(v < 0 for v in leave.values()))}
 
 
 def summarise(rows: list[dict], cfg: dict) -> dict:
-    """Paired contrasts per (k, noise): dyn_opt vs each baseline (M2, jpop; random = mean of replicates per episode), M2 vs M1 (spread, dyn_opt),
-    CAUSAL vs CT (spread, dyn_opt), with the registered effect criterion: Bonferroni bootstrap CI excludes 0 AND >= min_rel_gain AND sign
-    persists leaving each wind out; wind-cluster bootstrap also reported (as F-054)."""
+    """Paired contrasts per (k, noise) (M2, jpop): dyn_opt vs random (TWO-LEVEL layout x episode bootstrap: a statement about the random-layout population) and
+    vs each single baseline layout (episode bootstrap: statements about THAT layout, 'this layout'); M2 vs M1 and CAUSAL vs CT (spread, dyn_opt).  Registered
+    effect criterion: Bonferroni CI excludes 0 AND >= min_rel_gain AND sign persists leaving each wind out.  Controls (D-029): (a') spread must beat the
+    'worst' layout by the criterion in >= 3 of 4 cells; (b') 10 vs 10 random layouts, two-level bootstrap, the criterion must NOT be met in any cell.
+    The v1 lowpop layout is reported (non-gating)."""
     valid = {r["episode"] for r in rows if r["valid"]}
     wind_of = {r["episode"]: r["wind"] for r in rows}
-    winds = sorted(set(wind_of.values()))
     level = 0.05 / (len(cfg["ks"]) * len(cfg["noise"]) * len(BASELINES))
+    level_pair = 0.05 / (len(cfg["ks"]) * len(cfg["noise"]))
     gain = float(cfg["min_rel_gain"])
+    nb = int(cfg.get("bootstrap", {}).get("n", 10000))
+    idx: dict[tuple, dict[int, float]] = {}
+    for r in rows:
+        if r["model"] != "floor" and r["episode"] in valid:
+            idx.setdefault((r["k"], r["noise"], r["model"], r["layout"].split("#")[0], r["layout"]), {})[r["episode"]] = r["jpop"]
 
-    def vec(k, nz, layout, model):
-        acc: dict[int, list[float]] = {}
-        for r in rows:
-            if r["k"] == k and r["noise"] == nz and r["model"] == model and r["episode"] in valid and r["layout"].split("#")[0] == layout:
-                acc.setdefault(r["episode"], []).append(r["jpop"])
-        return {e: float(np.mean(v)) if all(np.isfinite(v)) else float("nan") for e, v in acc.items()}
+    def layers(k, nz, model, fam) -> list[dict]:
+        return [d for (kk, nn, mm, ff, _), d in sorted(idx.items(), key=lambda x: x[0][4]) if (kk, nn, mm, ff) == (k, nz, model, fam)]
 
-    def contrast(va, vb, lvl):
-        eps = sorted(set(va) & set(vb))
-        a, b = np.array([va[e] for e in eps]), np.array([vb[e] for e in eps])
-        ok = np.isfinite(a) & np.isfinite(b)
-        if ok.sum() < 3:
-            return None
-        eps_ok = [e for e, o in zip(eps, ok) if o]
-        d, a, b = (a - b)[ok], a[ok], b[ok]
-        lo, hi = boot_ci(d, lvl)
-        rel = float(d.mean() / b.mean()) if b.mean() else float("nan")
-        w = np.array([wind_of[e] for e in eps_ok])
-        leave = {x: float(d[w != x].mean()) for x in winds if (w != x).any()}
-        wm = np.array([d[w == x].mean() for x in winds if (w == x).any()])
-        wb = wm[np.random.default_rng(1).integers(0, len(wm), (10000, len(wm)))].mean(axis=1)
-        return {"n": int(ok.sum()), "mean_diff": float(d.mean()), "ci_lo": lo, "ci_hi": hi, "rel_change": rel, "frac_a_better": float((d < 0).mean()),
-                "wind_cluster_ci": [float(np.percentile(wb, 100 * lvl / 2)), float(np.percentile(wb, 100 * (1 - lvl / 2)))],
-                "mean_a": float(a.mean()), "mean_b": float(b.mean()), "leave_one_wind_out": leave,
-                "effect_criterion_met": bool(hi < 0 and rel <= -gain and all(v < 0 for v in leave.values()))}
+    def contrast(fa, fb, k, nz, ma, mb, lvl, two_level=False):
+        la, lb = layers(k, nz, ma, fa), layers(k, nz, mb, fb)
+        return paired_contrast(la, lb, lvl, wind_of, gain, two_level, nb) if la and lb else None
 
     out = []
     for k, nz in itertools.product(cfg["ks"], cfg["noise"]):
         for b in BASELINES:
-            c = contrast(vec(k, nz, "dyn_opt", "M2"), vec(k, nz, b, "M2"), level)
+            pop = b == "random"
+            c = contrast("dyn_opt", b, k, nz, "M2", "M2", level, two_level=pop)
             if c:
-                out.append({"k": k, "noise": nz, "contrast": f"dyn_opt-{b} (M2)", **c})
+                out.append({"k": k, "noise": nz, "contrast": f"dyn_opt-{b} (M2)" + ("" if pop else " [this layout only]"),
+                            "scope": "random-layout population (two-level bootstrap)" if pop else "this layout only (field note: not a statement about the design rule)", **c})
         for lay in ("spread", "dyn_opt"):
             for a, b2 in (("M2", "M1"), ("CAUSAL", "CT")):
-                c = contrast(vec(k, nz, lay, a), vec(k, nz, lay, b2), 0.05 / (len(cfg["ks"]) * len(cfg["noise"])))
+                c = contrast(lay, lay, k, nz, a, b2, level_pair)
                 if c:
-                    out.append({"k": k, "noise": nz, "layout": lay, "contrast": f"{a}-{b2}", **c})
-    controls = []
+                    out.append({"k": k, "noise": nz, "layout": lay, "contrast": f"{a}-{b2}", "scope": "this layout only", **c,
+                                **({"acausal_bin0": "bin 0 (no observation precedes t_exclude) filled with the bin-1 estimate in BOTH arms; exploratory"} if a == "CAUSAL" else {})})
+    controls, reported = [], []
     for k, nz in itertools.product(cfg["ks"], cfg["noise"]):
-        bad = contrast(vec(k, nz, "lowpop", "M2"), vec(k, nz, "spread", "M2"), level)
+        bad = contrast("spread", "worst", k, nz, "M2", "M2", level)
         if bad:
-            controls.append({"k": k, "noise": nz, "control": "lowpop-spread (M2): must be > 0", "passed": bool(bad["mean_diff"] > 0), **bad})
-        nul = contrast(vec_random_half(rows, valid, k, nz, 0), vec_random_half(rows, valid, k, nz, 1), level)
+            controls.append({"k": k, "noise": nz, "control": "a': spread vs worst-surrogate-risk layout (M2): registered effect criterion (spread better) must be met", "gating": "a",
+                             "passed": bool(bad["effect_criterion_met"]), **bad})
+        low = contrast("spread", "lowpop", k, nz, "M2", "M2", level)
+        if low:
+            reported.append({"k": k, "noise": nz, "control": "v1 lowpop layout vs spread (M2): REPORTED, NOT GATING", "gating": None, "criterion_spread_better_met": bool(low["effect_criterion_met"]), **low})
+        nul = contrast("ctlA", "ctlB", k, nz, "M2", "M2", level, two_level=True)
         if nul:
-            controls.append({"k": k, "noise": nz, "control": "random replicates 0-4 vs 5-9 (M2): registered effect criterion must NOT be met",
-                             "passed": not nul["effect_criterion_met"], **nul})
+            rev = contrast("ctlB", "ctlA", k, nz, "M2", "M2", level, two_level=True)
+            controls.append({"k": k, "noise": nz, "control": "b': random group A vs B (M2, two-level bootstrap): registered effect criterion must NOT be met", "gating": "b",
+                             "passed": not nul["effect_criterion_met"], "reverse_direction_criterion_met_reported": bool(rev["effect_criterion_met"]) if rev else None, **nul})
+    ca, cb = [c for c in controls if c["gating"] == "a"], [c for c in controls if c["gating"] == "b"]
+    need_a = 3 if len(ca) >= 4 else len(ca)
+    a_ok, b_ok = sum(c["passed"] for c in ca) >= need_a if ca else None, all(c["passed"] for c in cb) if cb else None
     floor = [r["jpop"] for r in rows if r["model"] == "floor" and r["valid"]]
-    return {"summary": out, "controls": controls, "controls_all_passed": all(c["passed"] for c in controls) if controls else None, "mean_projection_floor": float(np.mean(floor)) if floor else float("nan"), "n_invalid_episodes": len({r["episode"] for r in rows if not r["valid"]}),
-            "n_nonconverged_fits": int(sum(1 for r in rows if not np.isfinite(r["jpop"]))), "bonferroni_level": level, "min_rel_gain": gain}
+    return {"summary": out, "controls": controls, "reported_layouts": reported, "control_a_cells_met": sum(c["passed"] for c in ca), "control_a_required": need_a,
+            "control_a_passed": a_ok, "control_b_passed": b_ok,
+            "controls_all_passed": (bool(a_ok) and bool(b_ok)) if (ca and cb) else None, "mean_projection_floor": float(np.mean(floor)) if floor else float("nan"),
+            "n_invalid_episodes": len({r["episode"] for r in rows if not r["valid"]}),
+            "n_nonconverged_fits": int(sum(1 for r in rows if not np.isfinite(r["jpop"]))), "bonferroni_level": level, "min_rel_gain": gain,
+            "acausal_note": "CT / CAUSAL: bins without any observation (bin 0) are filled with the bin-1 estimate in both arms and flagged (rows: acausal_bins > 0); H8c exploratory"}
 
 
 def summarise_model_error(rows: list[dict], cfg: dict) -> dict:
-    """Mean M2 J_pop per (cond, k, noise, layout family) relative to the matched condition on the same episodes; M2 vs M1 relative change per condition."""
+    """Per (cond, k, noise, layout family): ratios of means with EPISODE-bootstrap 95 % CIs (paired episodes resampled together): M2 under the perturbed truth
+    / M2 matched; M2 / M1 (same condition); M2 / projection floor of the perturbed truth (floor rows of the same condition)."""
     valid = {r["episode"] for r in rows if r["valid"]}
     out = []
+    ep_mean: dict[tuple, dict[int, list[float]]] = {}
+    for r in rows:
+        if r["episode"] in valid:
+            key = (r["cond"], "floor", 0, 0.0, "-") if r["model"] == "floor" else (r["cond"], r["model"], r["k"], r["noise"], r["layout"].split("#")[0])
+            ep_mean.setdefault(key, {}).setdefault(r["episode"], []).append(r["jpop"])
+    val = lambda key: {e: float(np.mean(v)) for e, v in ep_mean.get(key, {}).items()}  # noqa: E731
+
+    def ratio(num: dict, den: dict) -> dict | None:
+        eps = sorted(e for e in set(num) & set(den) if np.isfinite(num[e]) and np.isfinite(den[e]))
+        if len(eps) < 3:
+            return None
+        n_, d_ = np.array([num[e] for e in eps]), np.array([den[e] for e in eps])
+        lo, hi = boot_ratio_ci(n_, d_)
+        return {"ratio": float(n_.mean() / d_.mean()), "ci95": [lo, hi], "n_episodes": len(eps)}
+
     for cond in sorted({r["cond"] for r in rows}):
         for k, nz, lay in itertools.product(cfg["ks"], cfg["noise"], FAMILY_ORDER):
-            sel = lambda c, m: [r["jpop"] for r in rows if r["cond"] == c and r["k"] == k and r["noise"] == nz and r["model"] == m and r["layout"].split("#")[0] == lay and r["episode"] in valid]  # noqa: E731
-            a2, a1, m2 = sel(cond, "M2"), sel(cond, "M1"), sel("matched", "M2")
-            if a2 and m2:
-                out.append({"cond": cond, "k": k, "noise": nz, "layout": lay, "M2_mean": float(np.mean(a2)), "M2_ratio_vs_matched": float(np.mean(a2) / np.mean(m2)),
-                            "M2_minus_M1_rel": float((np.mean(a2) - np.mean(a1)) / np.mean(a1)) if a1 else float("nan")})
-    return {"model_error": out}
+            a2, a1, m2, fl = val((cond, "M2", k, nz, lay)), val((cond, "M1", k, nz, lay)), val(("matched", "M2", k, nz, lay)), val((cond, "floor", 0, 0.0, "-"))
+            vs_m = ratio(a2, m2)
+            if vs_m:
+                vs_1, vs_f = ratio(a2, a1), ratio(a2, fl)
+                out.append({"cond": cond, "k": k, "noise": nz, "layout": lay, "M2_mean": float(np.mean([v for v in a2.values() if np.isfinite(v)])),
+                            "M2_ratio_vs_matched": vs_m["ratio"], "M2_ratio_vs_matched_ci95": vs_m["ci95"], "n_episodes": vs_m["n_episodes"],
+                            "M2_over_M1": vs_1["ratio"] if vs_1 else float("nan"), "M2_over_M1_ci95": vs_1["ci95"] if vs_1 else None,
+                            "M2_minus_M1_rel": vs_1["ratio"] - 1.0 if vs_1 else float("nan"),
+                            "M2_over_projection_floor": vs_f["ratio"] if vs_f else float("nan"), "M2_over_projection_floor_ci95": vs_f["ci95"] if vs_f else None,
+                            "projection_floor_mean": float(np.mean([v for v in fl.values() if np.isfinite(v)])) if fl else float("nan")})
+    return {"model_error": out, "ci_note": "ratios of means over paired episodes, episode bootstrap (10000 resamples, 95 %, seed 0); per-episode rows and perturbed-truth floors: modelerr_rows.csv"}
 
 
-def model_error(cfg: dict, winds: dict, doc: dict, fz: dict, workers: int, test_rows: list[dict] | None = None) -> dict:
+def model_error(cfg: dict, winds: dict, doc: dict, fz: dict, workers: int, test_rows: list[dict] | None = None) -> tuple[dict, list[dict]]:
     """Model-error conditions (truth perturbed, inverse nominal, layouts and hyperparameters frozen) on a SUBSET of the test episodes: the first seed of
-    every (wind, family).  The matched condition is the test stage's own rows for the same episodes (re-run only if ``test_rows`` is None)."""
+    every (wind, family).  The matched condition is the test stage's own rows for the same episodes (re-run only if ``test_rows`` is None).  Returns
+    (summary, per-episode rows incl. the perturbed-truth projection floors); only the primary layouts are evaluated (no control groups)."""
     n_per = int(cfg["seeds_per_wind_family"]["test"])
     sub = [e for e in episodes(cfg, "test", winds["test"]) if e["id"] % n_per == 0]
     prebuild(cfg, winds["test"], workers)
     ids = {e["id"] for e in sub}
-    rows = [r for r in (test_rows or []) if r["episode"] in ids and r["model"] in ("floor", "M1", "M2")]
+    keep = lambda r: r["episode"] in ids and r["model"] in ("floor", "M1", "M2") and (r["layout"] == "-" or r["layout"].split("#")[0] in FAMILY_ORDER)  # noqa: E731
+    rows = [r for r in (test_rows or []) if keep(r)]
     if test_rows is None:
-        rows = pool_rows(cfg, [{**e, "cond": "matched"} for e in sub], doc, fz["frozen"], ("M1", "M2"), workers)
+        rows = pool_rows(cfg, [{**e, "cond": "matched"} for e in sub], doc, fz["frozen"], ("M1", "M2"), workers, only=FAMILY_ORDER)
     for name, pert in cfg["model_error"]["conditions"].items():
-        rows += pool_rows(cfg, [{**e, "perturb": pert, "cond": name} for e in sub], doc, fz["frozen"], ("M1", "M2"), workers)
-    return summarise_model_error(rows, cfg)
+        rows += pool_rows(cfg, [{**e, "perturb": pert, "cond": name} for e in sub], doc, fz["frozen"], ("M1", "M2"), workers, only=FAMILY_ORDER)
+    return summarise_model_error(rows, cfg), rows
 
 
 # ------------------------------------------------------------------------------------------------ cost model
@@ -729,7 +867,9 @@ def cost_model(cfg: dict) -> dict[str, Any]:
     n_me = nw["test"] * nf  # first seed of each (wind, family): a subset of the test episodes
     am = len(_grid(cfg["hp_grid"]["alpha_m_exp"]))
     n2 = len(_grid(cfg["hp_grid"]["alpha_2_exp"])) * (1 + len(_grid(cfg["hp_grid"]["beta_exp"])))
-    n_layouts = len(BASELINES) - 1 + 1 + 1 + cfg["n_random"]  # spread, highpop, static, src + dyn + lowpop control + random replicates
+    n_layouts = len(BASELINES) - 1 + 1 + 1 + cfg["n_random"]  # spread, highpop, static, src + dyn + lowpop (reported) + random replicates
+    n_layouts_me = n_layouts + (1 if "worst_pool" in cfg else 0)  # + worst (model error runs FAMILY_ORDER layouts only)
+    n_layouts_test = n_layouts_me + (2 * int(cfg["control_b"]["n_per_group"]) if "control_b" in cfg else 0)
     h, ms, ro = 3600.0, 1e-3, c["row_overhead_ms"]
     prior = c["fit_M0_ms"] + ro
     parts = {
@@ -738,14 +878,14 @@ def cost_model(cfg: dict) -> dict[str, Any]:
         "tune: truth solves": n_val * c["solve_500_dt50_s"] / h,
         "tune: fits (full grid, spread layout)": n_val * (c["episode_fixed_s"] + ks * nz * c["tune_cell_episode_s"]) / h,
         "test: truth solves": n_test * c["solve_500_dt50_s"] / h,
-        "test: fits (M0, M1, M2 on 6 designed + 10 random layouts; CT, CAUSAL on 2)": n_test * (c["episode_fixed_s"] + ks * nz * (n_layouts * (c["fit_M0_ms"] + c["fit_M1_ms"] + c["fit_M2_ms"] + 3 * ro)
+        "test: fits (M0, M1, M2 on 6 designed + 10 random layouts; CT, CAUSAL on 2)": n_test * (c["episode_fixed_s"] + ks * nz * (n_layouts_test * (c["fit_M0_ms"] + c["fit_M1_ms"] + c["fit_M2_ms"] + 3 * ro)
                                                                          + 2 * (c["fit_history_ms"] + 2 * ro)) * ms) / h,
     }
     truth_s = {k: (c.get("solve_250_dt50_s") if v.get("truth_res_m") == 250.0 else c["solve_500_dt50_s"]) for k, v in conds.items()}
     if any(v is None for v in truth_s.values()):
         return {"error": "solve_250_dt50_s not measured"}
     parts["model error: truth solves"] = n_me * sum(truth_s.values()) / h
-    parts["model error: fits (M0, M1, M2)"] = n_me * len(conds) * (c["episode_fixed_s"] + ks * nz * n_layouts * (c["fit_M0_ms"] + c["fit_M1_ms"] + c["fit_M2_ms"] + 3 * ro) * ms) / h
+    parts["model error: fits (M0, M1, M2)"] = n_me * len(conds) * (c["episode_fixed_s"] + ks * nz * n_layouts_me * (c["fit_M0_ms"] + c["fit_M1_ms"] + c["fit_M2_ms"] + 3 * ro) * ms) / h
     tot = sum(parts.values()) * c["cluster_speed_factor"]
     return {"parts_core_h": {k: v * c["cluster_speed_factor"] for k, v in parts.items()}, "total_core_h": tot, "contingency": c["contingency"],
             "total_with_contingency": tot * c["contingency"], "n_episodes": {"validation": n_val, "test": n_test, "model_error_per_condition": n_me},
@@ -882,7 +1022,9 @@ def stage_smoke(cfg: dict, out: Path) -> None:
     rows = pool_rows(c, test, doc, tu["frozen"], ("M0", "M1", "M2"), 1, hist_layouts=("spread", "dyn_opt"))
     _write_rows(out / "episodes.csv", rows)
     res = summarise(rows, c)
-    res.update(model_error(c, winds, doc, fz, 1, rows))
+    me, me_rows = model_error(c, winds, doc, fz, 1, rows)
+    res.update(me)
+    _write_rows(out / "modelerr_rows.csv", me_rows)
     write_json(out / "summary.json", {"frozen_hash": fz["hash"], "layouts_hash": doc["hash"], "n_test_episodes": len(test), **res,
                                       "note": "SMOKE on the 2000 m padded level: plumbing check only, no scientific content"})
     print(f"smoke ok: {len(rows)} rows, nonconverged {res['n_nonconverged_fits']}, invalid episodes {res['n_invalid_episodes']}, layouts {doc['hash']}, hparams {fz['hash']}")
@@ -915,7 +1057,10 @@ def main() -> None:
     layouts_path, freeze_path = Path(a.layouts or out / "layouts.json"), Path(a.freeze or out / "frozen_hparams.json")
     if a.stage in ("design", "all"):
         prebuild(cfg, winds["design"], a.workers)
-        doc = design(cfg, winds["design"])
+        try:
+            doc = design(cfg, winds["design"])
+        except WorstLayoutCheckFailed as e:
+            raise SystemExit(f"STOP (design stage, before tuning): {e}")
         write_json(layouts_path, doc)
         print("LAYOUTS_JSON " + json.dumps({"hash": doc["hash"], "layouts": doc["layouts"], "surrogate": {n: {k: v["surrogate_risk"] for k, v in d.items()} for n, d in doc["layouts"].items()}}), flush=True)
     if a.stage == "design":
@@ -942,7 +1087,8 @@ def main() -> None:
         print("SUMMARY_JSON " + json.dumps({"frozen_hash": fz["hash"], "layouts_hash": doc["hash"], **res}), flush=True)
     if a.stage == "test":
         return
-    me = model_error(cfg, winds, doc, fz, a.workers, rows)
+    me, me_rows = model_error(cfg, winds, doc, fz, a.workers, rows)
+    _write_rows(out / "modelerr_rows.csv", me_rows)
     write_json(out / "modelerr_summary.json", {"frozen_hash": fz["hash"], "layouts_hash": doc["hash"], **me})
     print("MODELERR_JSON " + json.dumps(me), flush=True)
 

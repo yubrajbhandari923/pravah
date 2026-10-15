@@ -1,0 +1,166 @@
+{
+  "name": "dyn08_v2",
+  "notes": "DYN-08 v2 (EXP-036 corrected rerun), decision D-029, registered BEFORE any v2 run. Extends configs/dyn08.json (v1, RUN-0099, F-069, stopped at stop rules 4.5(a),(b)) with: control (a') worst-surrogate-risk layout, control (b') 10 vs 10 random layouts with a two-level layout x episode bootstrap, two-level primary dyn_opt-vs-random, bin-0 fill for CT/CAUSAL, model-error CIs, fresh test/validation seeds. Everything else unchanged. Post-hoc-corrected confirmatory rerun, NOT a rescue of v1. Disclosure: v1 test episodes were viewed; wind windows and design layouts are not fresh, only episodes/noise are.",
+  "region": {
+    "manifest": "configs/belauri_padded_geography/manifest.json",
+    "candidate_cfg": "configs/geodesign.json",
+    "population_500m": "data/population/belauri_padded_worldpop_500m.npy",
+    "era5": "data/era5/belauri_era5_10m_wind.nc",
+    "centroid_lonlat": [
+      80.354,
+      28.7
+    ]
+  },
+  "mesh": {
+    "resolution_m": 500.0,
+    "dt_s": 100.0,
+    "truth_dt_s": 50.0
+  },
+  "physics": {
+    "K": 100.0,
+    "lam": 4.6296296296296294e-05,
+    "H": 500.0,
+    "T": 28800.0,
+    "output_interval": 900.0,
+    "obs_interval_s": 1800.0,
+    "t_exclude": 7200.0
+  },
+  "bins": {
+    "n_inv": 6,
+    "n_fine": 12
+  },
+  "ref": {
+    "road": 1500000.0,
+    "builtup": 1000000.0,
+    "external": 500000.0,
+    "bg_wsw": 0.05,
+    "bg_ene": 0.05
+  },
+  "wind": {
+    "hours": 8,
+    "vmax_m_s": 2.5,
+    "turn_deg": 45.0,
+    "n": {
+      "design": 12,
+      "validation": 6,
+      "test": 12
+    }
+  },
+  "families": [
+    "constant",
+    "activation",
+    "shutdown",
+    "ramp",
+    "opposing",
+    "pulse",
+    "influx_end",
+    "compensating"
+  ],
+  "ks": [
+    3,
+    5
+  ],
+  "noise": [
+    0.02,
+    0.1
+  ],
+  "n_random": 10,
+  "seeds_per_wind_family": {
+    "validation": 1,
+    "test": 2
+  },
+  "seeds": {
+    "wind_selection": 41100,
+    "design_layouts": 41200,
+    "pool_layouts": 41300,
+    "validation": 45000,
+    "test": 44000,
+    "dev_smoke": 49000,
+    "note": "v2 only (RESERVED_BY in dynamic_belauri.py): test 44000-44191, validation 45000-45047. Spent v1 ranges 43000-43191, 46000-46047, 49000+ are in USED_SEEDS. wind_selection/design_layouts/pool_layouts feed seeded RNG streams only (control (b') groups use design-layout replicate indices 100-109 and 200-209; the primary random layouts 0-9 are unchanged from v1). dev/smoke seeds >= 49000 never enter a claim."
+  },
+  "hp_grid": {
+    "alpha_m_exp": [
+      -2.0,
+      9.0,
+      1.0
+    ],
+    "alpha_2_exp": [
+      -2.0,
+      9.0,
+      1.0
+    ],
+    "beta_exp": [
+      -1.0,
+      5.0,
+      1.0
+    ],
+    "note": "exponents (start, stop inclusive, step) of 10**e; M0/M1: alpha_m; M2: alpha_2 x {0, 10**beta_exp}; tuned on the SPREAD layout per (k, noise) on validation episodes only"
+  },
+  "min_rel_gain": 0.1,
+  "alpha_fwe_rule": "0.05 / (|ks| x |noise| x |baselines|) = 0.05 / (2 x 2 x 5)",
+  "highpop_min_sep_m": 2250.0,
+  "design": {
+    "prior_var": 1.0,
+    "exh_max": 3,
+    "n_extra_starts": 6
+  },
+  "model_error": {
+    "conditions": {
+      "rot5": {
+        "rot_deg": 5.0
+      },
+      "rot10": {
+        "rot_deg": 10.0
+      },
+      "rot20": {
+        "rot_deg": 20.0
+      },
+      "speed1.2": {
+        "speed_scale": 1.2
+      },
+      "mesh250": {
+        "truth_res_m": 250.0
+      }
+    },
+    "note": "truth perturbed, inverse nominal, layouts and hyperparameters frozen; run on a SUBSET of the test episodes (first seed of each wind x family); the matched condition is the test stage's own rows for those episodes. rot5/10/20 mirror DYN-07 (F-049); mesh250 = truth on the 250 m padded level block-averaged onto 500 m (a proxy for numerical error, not a mesh-adequacy test, F-048 void)."
+  },
+  "cost": {
+    "unit": "core-hours = single-core wall seconds / 3600. Constants below were measured on the local WSL2 workstation (16 logical CPUs) on 2026-10-15 UNDER LOAD (load average 13: another job occupied ~13 CPUs), so they are about 2x the lightly-loaded values (5.5 s per dt-100 solve measured earlier in the session). Cluster-core speed is NOT measured: first cluster action = `--stage time` on one core (~10 min).",
+    "solve_500_dt100_s": 10.9,
+    "solve_500_dt50_s": 22.7,
+    "solve_250_dt50_s": 76.1,
+    "response_set_31_solves_s": 383.0,
+    "fit_M0_ms": 0.5,
+    "fit_M1_ms": 1.0,
+    "fit_M2_ms": 6.0,
+    "fit_history_ms": 20.0,
+    "design_search_s_per_noise": 120.0,
+    "row_overhead_ms": 2.5,
+    "cluster_speed_factor": 1.0,
+    "contingency": 1.5,
+    "idle_reference": {
+      "solve_500_dt100_s": 5.5,
+      "solve_500_dt50_s": 12.5,
+      "solve_250_dt50_s": 38.4,
+      "response_set_31_solves_s": 187.2,
+      "note": "measured with 3 of my own processes and little other load; probable lower bound"
+    },
+    "episode_fixed_s": 2.0,
+    "row_overhead_note": "row_overhead_ms = S.jpop per fitted row (measured 2.5 ms); episode_fixed_s = reference scale + live mask + projection floor per episode (measured ~1.8 s)",
+    "tune_cell_episode_s": 3.0,
+    "tune_note": "tune_cell_episode_s = full hyperparameter grid (12 M1 + 96 M2 candidates, incl. J_pop rows) on ONE episode in ONE (k, noise) cell: measured 0.9-5.8 s (mean 3.0), 0 non-converged of 864 fits, max single fit 0.86 s (2 episodes x 4 cells, wind 4)"
+  },
+  "worst_pool": {
+    "n_random_subsets": 500,
+    "min_ratio_to_median": 1.5,
+    "note": "control (a'): worst = highest design-stage (dyn_opt) surrogate risk among the 16 layouts of the cell + 500 random k-subsets (rng [pool_layouts, k]); asserted >= 1.5 x pool median before tuning, else stop."
+  },
+  "control_b": {
+    "n_per_group": 10,
+    "note": "control (b'): two groups of 10 random layouts (replicate indices 100+i and 200+i of the design-layout stream), two-level bootstrap; criterion must NOT be met in any cell."
+  },
+  "bootstrap": {
+    "n": 10000,
+    "note": "two-level (layout x episode) for dyn_opt-vs-random and control (b'); episode bootstrap for single-layout contrasts ('this layout only'); level = 0.05/(|ks| x |noise| x |baselines|) = 0.0025."
+  }
+}

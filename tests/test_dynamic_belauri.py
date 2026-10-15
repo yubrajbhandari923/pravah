@@ -112,11 +112,115 @@ def test_candidate_sites_map_to_distinct_cells_at_500m():
 
 
 def test_registered_seeds_are_disjoint_from_spent_ranges():
-    cfg = db.load_cfg()
-    assert db.seed_conflicts(cfg) == []
+    cfg = db.load_cfg()  # v1: its ranges are now SPENT (RUN-0099), so the v1 config must be rejected
+    assert any("test 43000" in c for c in db.seed_conflicts(cfg)) and any("validation 46000" in c for c in db.seed_conflicts(cfg))
     bad = {**cfg, "seeds": {**cfg["seeds"], "test": 7300}}
     assert db.seed_conflicts(bad)
     assert db.seed_conflicts({**cfg, "seeds": {"validation": 6501}})
+
+
+def test_v2_seeds_fresh_and_reserved_for_v2_only():
+    v2 = db.load_cfg("configs/dyn08_v2.json")
+    assert v2["name"] == "dyn08_v2" and db.seed_conflicts(v2) == []
+    s, n = v2["seeds"], len(v2["families"])
+    assert (s["test"], s["validation"], s["wind_selection"], s["pool_layouts"]) == (44000, 45000, 41100, 41300)
+    assert s["test"] + 12 * n * 2 - 1 == 44191 and s["validation"] + 6 * n - 1 == 45047  # 192 test / 48 validation episodes
+    for lo, hi in ((43000, 43191), (46000, 46047), (49000, 49999)):  # v1 spent ranges
+        assert any(a <= lo and hi <= b for a, b in db.USED_SEEDS)
+        assert not (s["test"] <= hi and s["test"] + 999 >= lo) and not (s["validation"] <= hi and s["validation"] + 999 >= lo)
+    assert db.seed_conflicts({**v2, "name": "dyn08_other"})  # 44000-45999 belong to v2 only
+    assert db.seed_conflicts({**v2, "seeds": {**s, "test": 43100}})
+
+
+def _groups(rng, n_layouts=10, n_ep=96, layout_sd=0.2, shift=1.0):
+    ep = np.exp(rng.normal(0, 0.5, n_ep))  # shared episode difficulty
+    def grp(mult):
+        return {i: dict(enumerate(ep * np.exp(rng.normal(0, layout_sd)) * mult * np.exp(rng.normal(0, 0.1, n_ep)))) for i in range(n_layouts)}
+    return list(grp(1.0).values()), list(grp(shift).values())
+
+
+def test_two_level_bootstrap_null_rarely_meets_criterion_and_real_shift_does():
+    wind_of = {e: f"w{e % 6}" for e in range(96)}
+    rng = np.random.default_rng(7)
+    met_null = 0
+    for _ in range(25):  # identical-distribution layout groups with large layout-to-layout spread (sd 0.2)
+        a, b = _groups(rng)
+        c = db.paired_contrast(a, b, 0.0025, wind_of, 0.1, True, n_boot=1000)
+        assert c is not None
+        met_null += c["effect_criterion_met"]
+    assert met_null <= 1
+    hits = 0
+    for _ in range(10):  # a real 30 % shift of group B (A better by ~23 %), layout sd 0.1
+        a, b = _groups(rng, layout_sd=0.1, shift=1 / 0.7)
+        c = db.paired_contrast(a, b, 0.0025, wind_of, 0.1, True, n_boot=1000)
+        assert c is not None
+        hits += c["effect_criterion_met"]
+        assert c["ci_method"].startswith("two-level") and c["rel_change"] < -0.1
+    assert hits >= 9
+
+
+def test_two_level_ci_is_wider_than_episode_only_ci():
+    a, b = _groups(np.random.default_rng(3))
+    A, B = np.array([list(d.values()) for d in a]), np.array([list(d.values()) for d in b])
+    lo2, hi2 = db.two_level_boot_ci(A, B, 0.0025, 2000)
+    lo1, hi1 = db.boot_ci(A.mean(0) - B.mean(0), 0.0025, 2000)
+    assert hi2 - lo2 > 1.5 * (hi1 - lo1)
+    # a single layout vs a population: the layout level of A is fixed, the draw is reproducible
+    m = db.two_level_boot_diffs(A[:1], B, 500, seed=1)
+    assert m.shape == (500,) and np.array_equal(m, db.two_level_boot_diffs(A[:1], B, 500, seed=1))
+
+
+def test_select_worst_is_argmax_of_fixed_pool_and_enforces_ratio():
+    n, k = 20, 3
+    risk = lambda s: float(sum(s)) ** 2 + 1.0  # noqa: E731  larger index sums = worse
+    named = {"spread": (0, 1, 2), "dyn_opt": (3, 4, 5)}
+    w = db.select_worst(risk, named, n, k, 500, 41300, 1.5)
+    assert w["pool_size"] == 502 and w["risk"] == max(risk(tuple(w["subset"])), 0) and w["ratio_to_median"] >= 1.5
+    again = db.select_worst(risk, named, n, k, 500, 41300, 1.5)
+    assert again["subset"] == w["subset"]  # fixed pool: reproducible
+    assert w["risk"] >= risk((17, 18, 19)) * 0.5 and w["risk"] > risk((3, 4, 5))
+    assert db.select_worst(risk, {**named, "bad": (17, 18, 19)}, n, k, 500, 41300, 1.5)["risk"] >= risk((17, 18, 19))
+    with pytest.raises(db.WorstLayoutCheckFailed, match="pool median"):
+        db.select_worst(lambda s: 1.0, named, n, k, 50, 41300, 1.5)  # constant risk: no layout is 1.5x the median
+    assert np.isfinite(db.select_worst(lambda s: float("inf") if 0 in s else 1.0 + sum(s), named, n, k, 50, 1, 1.0)["risk"])  # non-finite excluded
+
+
+def test_history_bin0_is_filled_and_flagged():
+    S = object.__new__(db.Study)
+    S.T, S.nb, S.REF = 28800.0, 6, np.ones(db.NP)
+    obs_t = np.arange(9000.0, 28801.0, 1800.0)  # t_exclude 7200 s: nothing in bin 0 (0-4800 s)
+    assert S.acausal_bins(obs_t) == [0]
+    n_site = 3
+    ot = np.repeat(obs_t, n_site)
+    rng = np.random.default_rng(0)
+    A = rng.uniform(0.0, 1.0, (len(ot), db.NP * S.nb))
+    y, sig = A @ rng.uniform(0.5, 1.5, db.NP * S.nb), np.full(len(ot), 0.1)
+    for m in db.HIST_MODELS:
+        th = S._history_estimate(m, A, y, sig, ot, 1.0, 1.0)
+        assert th.shape == (db.NP, 6) and np.abs(th[:, 1]).max() > 0
+        np.testing.assert_array_equal(th[:, 0], th[:, 1])  # bin 0 = bin-1 estimate in BOTH arms
+    assert S.acausal_bins(np.arange(1800.0, 28801.0, 1800.0)) == []  # with early observations nothing is filled
+
+
+def test_v2_summarise_gates_controls():
+    cfg = {**db.load_cfg("configs/dyn08_v2.json"), "ks": [3], "noise": [0.1]}
+    rng = np.random.default_rng(1)
+    rows = []
+    layouts = ["spread", "worst", "dyn_opt", "lowpop"] + [f"{g}#{i}" for g in db.CTL_GROUPS for i in range(4)] + [f"random#{i}" for i in range(3)]
+    for e in range(24):
+        for lay in layouts:
+            base = {"worst": 2.0, "lowpop": 1.0}.get(lay, 1.0) * np.exp(rng.normal(0, 0.1)) * (1 + 0.05 * (e % 6))
+            for m in ("M1", "M2"):
+                rows.append({"episode": e, "wind": f"w{e % 6}", "valid": True, "k": 3, "noise": 0.1, "layout": lay, "model": m, "jpop": float(base)})
+    res = db.summarise(rows, cfg)
+    assert res["control_a_required"] == 1 and res["control_a_passed"] and res["control_b_passed"] and res["controls_all_passed"]
+    assert [c["gating"] for c in res["reported_layouts"]] == [None]
+    assert any(c["contrast"].startswith("dyn_opt-random") and c["ci_method"].startswith("two-level") for c in res["summary"])
+    assert all("[this layout only]" in c["contrast"] for c in res["summary"] if c["contrast"].startswith("dyn_opt-spread"))
+    for r in rows:  # worst no longer worse than spread: control (a') fails
+        if r["layout"] == "worst":
+            r["jpop"] = 1.0
+    assert db.summarise(rows, cfg)["controls_all_passed"] is False
 
 
 def test_cost_model_requires_measured_constants_and_adds_up():
