@@ -1,0 +1,44 @@
+{
+  "source_extract": "belauri_worldpop_2025_CN_250m.npy",
+  "method": "regrid_counts (conservative area overlap) from the standard 250 m extract",
+  "500": {
+    "grid": {
+      "x0": 418899.649701516,
+      "y0": 3157975.0300549963,
+      "nx": 68,
+      "ny": 68,
+      "dx": 500.0,
+      "dy": 500.0,
+      "epsg": 32644
+    },
+    "total_in": 184029.5719529275,
+    "total_out": 184029.5719529275,
+    "lost_outside": 0.0,
+    "nodata_cells": 0.0,
+    "grid_total": 184029.5719529275,
+    "study_polygon_total": 54357.31673894178,
+    "nan_cells_in_study": 0,
+    "sha256": "613973b284cb951bd3adcec4a5fdfbc8705da6c484caf40fe8fbd70ea08c98b5"
+  },
+  "250": {
+    "grid": {
+      "x0": 418899.649701516,
+      "y0": 3157975.0300549963,
+      "nx": 136,
+      "ny": 136,
+      "dx": 250.0,
+      "dy": 250.0,
+      "epsg": 32644
+    },
+    "total_in": 184029.5719529275,
+    "total_out": 184029.5719529275,
+    "lost_outside": 0.0,
+    "nodata_cells": 0.0,
+    "grid_total": 184029.5719529275,
+    "study_polygon_total": 54562.52432108742,
+    "nan_cells_in_study": 0,
+    "sha256": "124114af8483889f7287ede76118fb53e235a7dd0d3a3ab4b7a44c9a2fcf3f93"
+  },
+  "check_250_aggregates_to_500_max_abs": 0.0,
+  "check_conserved_abs": 0.0
+}
