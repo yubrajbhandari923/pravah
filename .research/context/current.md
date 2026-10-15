@@ -1,19 +1,20 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2905 tokens.
-> Generated 2026-10-15T19:38:45-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~3444 tokens.
+> Generated 2026-10-15T19:50:59-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `587f0add66` (uncommitted changes)
+Git: `master` @ `d44813bd8c`
 
 ## Latest checkpoint
 
-**CP-014** PLAN-007 report written; DYN-00..07 + EXP-027 done, DYN-08 not run (2026-10-14)
-- **Understanding:** All registered experiments except DYN-08 have results. Current findings (preliminary): F-044 DYN-06, F-046 DYN-05, F-048 EXP-027 VOID, F-049 DYN-07, F-050 DYN-04, F-051 DYN-00 25/25, F-053 DYN-03, F-054 DYN-02 v3; F-036..F-047 earlier versions superseded after independent review (needs_work) or my own diagnostics. Gate 21/0 on arm64 (final tree) and x86_64 (RUN-0066); 637 default tests pass; pyright 0 errors. HPC: no jobs outstanding; reserved <=~330 CPU-h worst case. Report docs/DYNAMIC_POPULATION_SENSOR_RESEARCH_REPORT.md is PROVISIONAL.
-- **Next step:** Ask user about EXP-027b (>=48-96 cases per draw, ~90-190 core-h) and DYN-08; independent review of F-044/F-046/F-048/F-049/F-050/F-053/F-054; constrained-estimator-aware design objective.
+**CP-015** CP-015 wrap-up sprint: all planned experiments run; first-round reviews done; second-round reviews outstanding (2026-10-15)
+- **Understanding:** Experiments: DYN-00..DYN-07 done (earlier); EXP-027 void (F-057); EXP-027b run (RUN-0096 stage 1, RUN-0100 stage 2): registered outcome INADEQUATE for 500 m/dt100, borderline, gate passed (F-075); post-hoc sensitivity RUN-0102: label method-dependent, shape error ~4-12% at noise 0.05 (F-077). EXP-026 run (RUN-0098; RUN-0097 failed at inherited regression check, D-028): no robust benefit of population weighting, optimiser-dependent, low power (F-070..F-072). DYN-08: v1 RUN-0099 stopped at stop rules (F-069); v2 RUN-0101 post-hoc-corrected rerun (D-029): surrogate-designed layouts beat random layouts, static design indistinguishable, H8 supported under D-026 counting rule with post-hoc amendments (F-076). DYN-03 v2 (F-065): gain from tracking emission changes; carry-over untested. Current findings: F-051 (supported); preliminary: F-055, F-056, F-057, F-061, F-062, F-063, F-065, F-069, F-070, F-071, F-072, F-075, F-076, F-077. All first-round independent reviews returned needs_work and every finding was corrected and superseded accordingly (Corrections log in docs/FINAL_RESEARCH_REPORT.md). Second-round reviews of the corrected wording and an independent audit of the final report were launched but did not complete (reviewer agents hit a usage limit; resets 2026-10-19): outstanding. HPC: sprint jobs RUN-0095..RUN-0102 on Duke (CPU only, no GPU), ~51 core-h billed for RUN-0095..0101 plus RUN-0102 (~1 core-h); one failure RUN-0097 (regression-check stop, D-028); sacct recount of cumulative EXP-* usage ~506 core-h (earlier 424 figure was low). Task state: closed T-067, T-069, T-070, T-074..T-079, T-082, T-028, T-036; blocked as superseded/out of scope T-027, T-031, T-033, T-034, T-035; OPEN T-032 and T-038 (Phase 3 independent review of F-029..F-035 and synthesis). Questions: Q-013 NOT closed (design-objective estimability: F-062, F-070, F-072 point to large design-sample effects and low power; not directly measured). Deliverables: docs/FINAL_RESEARCH_REPORT.md, docs/PEER_PRESENTATION.md, docs/figures/final/ (20 figures; scripts/make_final_figures.py, make_wrapup_figures.py, make_exp026_figures.py), docs/HPC_BATCH_PROPOSAL.md, docs/dyn08_plan.md, docs/exp027b_design.md, docs/dyn03_causality_fix.md; results copies in results/exp026-hpc, results/dyn08-hpc, results/dyn08-v2-hpc, results/exp027b-hpc; run artifacts in .research/runs/RUN-0094..RUN-0102.
+- **Current problem:** Second-round independent reviews of corrected findings and an independent audit of the final report are outstanding; Phase 3 findings F-029..F-035 never independently reviewed; mesh (500 m/dt100) is only provisionally admissible; Q-013 unresolved; no empirical validation exists.
+- **Next step:** After 2026-10-19: run second-round reviews (F-061, F-062, F-063, F-065, F-069..F-072, F-075..F-077) and the report audit; T-032/T-038; consider 250 m DYN-08 inverse and a 1 km control, larger/stratified design ensembles with power analysis, registered test of the history mechanism, terrain-coupled flow, empirical data. Untracked: .mcp.json files (machine specific).
 
 ## Current baseline
 
@@ -45,16 +46,14 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Active plans
 
-- PLAN-007 Dynamic Population-Weighted Sensor Deployment and Source-History Inference — 27/30 tasks done · objective: Develop and evaluate a physics-informed dynamical inverse framework for optimal fixed air-quality sensor placement, using time-series observations to infer changing local and transboundary emissions while minimizing population-weighted concentration reconstruction error under uncertain transport.
-  - next ready: T-069 Final report, figures, checkpoint (`research task context T-069`)
-  - BLOCKED: T-067 Belauri synthetic deployment DYN-08; reconcile EXP-026 — Not run: DYN-08 Belauri synthetic dynamic deployment (and EXP-026 reconciliation) needs a Belauri-scale dynamic response build (~hundreds of core-hours) and the F-046/F-048 conclusion that design ensembles must be much larger first; needs user direction.
-- PLAN-004 PRAVAH phase 3 HPC execution, interpretation and synthesis — 1/6 tasks done · objective: Run the deferred heavy Phase 3 experiments as one Slurm job, import results, interpret with independent review, finish synthesis
-  - next ready: T-036 H4 Interpret Belauri-scale EXP-016 (exact vs greedy on test, population/mixed/capped, cluster bootstrap, design-split optimism) (`research task context T-036`)
+- PLAN-007 Dynamic Population-Weighted Sensor Deployment and Source-History Inference — 30/30 tasks done · objective: Develop and evaluate a physics-informed dynamical inverse framework for optimal fixed air-quality sensor placement, using time-series observations to infer changing local and transboundary emissions while minimizing population-weighted concentration reconstruction error under uncertain transport.
+- PLAN-004 PRAVAH phase 3 HPC execution, interpretation and synthesis — 2/6 tasks done · objective: Run the deferred heavy Phase 3 experiments as one Slurm job, import results, interpret with independent review, finish synthesis
+  - next ready: T-038 H6 Phase 3 synthesis update, revised Phase 4 list, final checkpoint (`research task context T-038`)
   - BLOCKED: T-033 H1 PI: set up repo on cluster (slurm/setup_env.sh), copy data/belauri/raw, submit slurm/phase3.sbatch, download results bundle — Superseded: per-experiment HPC workflow (RUN-0081, RUN-0098, RUN-0099) replaced phase3.sbatch bundle.
   - BLOCKED: T-034 H2 Register the cluster runs: research run attach per phase from hpc_manifest.json (command, times, exit code, git commit, hashes), artifacts, no rewriting of history — Superseded: cluster runs registered per experiment; no hpc_manifest.json exists.
   - BLOCKED: T-035 H3 Interpret EXP-015 stage 2 (displacement/regret vs replicate baseline, monotone in refinement, tolerance fractions) and decide the design mesh — Superseded by EXP-027 (F-057) and EXP-037; mesh stays provisional per D-006.
-- PLAN-003 PRAVAH phase 3: portability, population-aware design, numerical convergence of decisions, wind uncertainty — 6/10 tasks done · objective: Transferable framework whose sensor decisions are robust to discretisation and wind uncertainty, with population-aware design; testbed only, no empirical validation
-  - next ready: T-028 S3 EXP population-aware design: area vs pop vs mixed beta vs capped on 5 fixtures; Pareto; held-out (`research task context T-028`)
+- PLAN-003 PRAVAH phase 3: portability, population-aware design, numerical convergence of decisions, wind uncertainty — 7/10 tasks done · objective: Transferable framework whose sensor decisions are robust to discretisation and wind uncertainty, with population-aware design; testbed only, no empirical validation
+  - next ready: T-032 S5b Independent scientific review of all findings, Phase 3 synthesis, docs, notebooks, checkpoint (`research task context T-032`)
   - BLOCKED: T-027 S2b EXP convergence of decisions: space, time, joint, scheme; physical-coordinate candidates; displacement, regret, ties vs resampling baseline — Superseded by EXP-027 (F-057, void) and EXP-037 (EXP-027b); no further PLAN-003 work.
   - BLOCKED: T-031 S5a Conditional: wind-robust and population-robust placement — Out of scope: conditional on a Belauri-scale wind effect not shown (F-029, F-034); not pursued.
 
@@ -78,7 +77,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Blockers
 
-_none_
+- [checkpoint] CP-015: Second-round independent reviews of corrected findings and an independent audit of the final report are outstanding; Phase 3 findings F-029..F-035 never independently reviewed; mesh (500 m/dt100) is only provisionally admissible; Q-013 unresolved; no empirical validation exists.
 
 ## Project skills
 
