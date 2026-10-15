@@ -1,0 +1,6 @@
+{
+ "extends": "population_belauri.json",
+ "name": "population_belauri_hpc",
+ "notes": "EXP-026 production on Duke HPC: identical to population_belauri.json (registered, amendment D-027) except run.workers is pinned to the allocated CPU count (os.cpu_count() would see the whole node).",
+ "run": {"workers": 8}
+}
