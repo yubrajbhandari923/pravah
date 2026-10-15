@@ -72,7 +72,7 @@
     "validation_seed": 202
   },
   "pid": null,
-  "reviewed": 0,
+  "reviewed": 1,
   "run_dir": ".research/runs/RUN-0075",
   "slurm": {
     "hpc": {

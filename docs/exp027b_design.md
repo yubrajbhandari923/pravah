@@ -29,7 +29,7 @@ objects stayed on the cluster), so the scaling above is from the new local 500 m
 Idea: do not estimate a sampling floor at all. Evaluate the mesh on the SAME ensemble of cases at every mesh, with a fixed menu of candidate layouts. The mesh effect is then deterministic
 given the cases (no design-selection noise); case-to-case variation enters only through a bootstrap over cases. Falsifiability comes from an absolute margin and from the control.
 
-* **Cases (the only expensive part).** K = 3 independent draws x N = 24 cases = 72 cases, seeds 1101-1103 (nested prefixes of the 48-case draws; the first 6 cases of each equal EXP-027's),
+* **Cases (the only expensive part).** K = 3 independent draws x N = 24 cases = 72 cases, seeds 1201-1203 (fresh; amended from 1101-1103 after pilot B, disclosure retained) (nested prefixes of the 48-case draws; the first 6 cases of each equal EXP-027's),
   noise seeds 4000/4100/4200, each simulated once at 250 m (reference, dt 50), 500 m (main, dt 100) and 2 km (control, dt 400; D-016 origin tolerance inherited). Config
   `configs/convergence_paired_padded_exp027b.json`; the driver is unchanged. Each case is pickled and reused for layout selection and scoring (response-cache reuse across draws and
   across evaluation: every case is simulated once; draws are just groupings).
@@ -53,7 +53,7 @@ close to, perhaps above, the 5 % margin: the experiment can return INADEQUATE, a
 ## 3. Registered criteria (ready to paste; margins are open decision D1)
 
 > EXP-027b registered before any 250 m case is built. Meshes: 250 m / dt 50 (reference), 500 m / dt 100 (main), 2 km / dt 400 (falsification control, D-016 tolerance). Ensemble: K=3 independent
-> design draws (seeds 1101-1103) x N=24 cases = 72 cases, each simulated once per mesh; stage 1 uses draws 1-2 only. Cells: noise fraction {0.05, 0.15} x budget {3, 5}; greedy_total; alpha and noise
+> design draws (seeds 1201-1203 (fresh; amended from 1101-1103 after pilot B, disclosure retained)) x N=24 cases = 72 cases, each simulated once per mesh; stage 1 uses draws 1-2 only. Cells: noise fraction {0.05, 0.15} x budget {3, 5}; greedy_total; alpha and noise
 > scale frozen as in EXP-027. Per cell a menu of candidate layouts is built from greedy selections at each mesh (per-draw layouts, pooled-ensemble layouts, 8 random 24-case sub-ensembles per mesh,
 > seed 27) and scored case by case on every mesh. Shape error E_m = median over the menu of |(J_m(L)/median J_m)/(J_ref(L)/median J_ref) - 1|; its 95 % interval is a case bootstrap (400 resamples).
 > (G) FALSIFIABILITY GATE: the 2 km control must have E_lo95 > 0.05 in at least 3 of the 4 cells. If not, the experiment is VOID and no statement about the 500 m mesh is made. (If the gate fails on

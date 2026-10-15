@@ -26,7 +26,7 @@
   "override_reason": null,
   "parameters": {},
   "pid": null,
-  "reviewed": 0,
+  "reviewed": 1,
   "run_dir": ".research/runs/RUN-0067",
   "slurm": {
     "hpc": {

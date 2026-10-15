@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2815 tokens.
-> Generated 2026-10-15T12:14:11-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2939 tokens.
+> Generated 2026-10-15T13:56:22-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `db3b593298` (uncommitted changes)
+Git: `master` @ `401f02e4ab` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -21,17 +21,21 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Active & open questions
 
+- Q-021 [investigating] RQ-D6: Are optimal sensor decisions stable under changes in discretization?
 - Q-019 [investigating] RQ-D4: Can changing local emissions be distinguished from short-lived transboundary episodes?
 - Q-022 [investigating] RQ-D7: How do wind uncertainty and missing sources affect inference and deployment?
 - Q-024 [investigating] RQ-D9: Do conclusions transfer from toy geometry to Belauri-like population geography?
-- … 14 more (`research question list`)
+- Q-017 [investigating] RQ-D2: When does historical information improve source identifiability relative to independent-time or static inference?
+- … 12 more (`research question list`)
 
 ## Established findings (what we believe)
 
 - F-051 [supported, high] DYN-00 (RUN-0091, 25/25 pre-set checks pass; supersedes F-038 after its independent review F-038/R1): includes the replacement for the vacuous west_no_import check: a constant west inflow basis through a 3600 s wind reversal has cell-summed supply 3.36e-2 (>0) before and exactly 0.0 after, an east basis exactly 0.0 before and 3.36e-2 after, mass closure 2.1e-15 with both on; a non-trivial piecewise history [[0,3,1,2],[1,0,2,4],[0.5,1.5,0,3]] matches direct simulation to 1.2e-15; all other values as in F-038 (mass closure <=4.4e-15 in five dynamic cases, superposition 1.6e-15, closed-box analytic order 0.997, footprints integrate to 1). Verified numerical behaviour of the implicit-Euler/exponential scheme on a 16x12 toy box; not verified: Van Leer scheme, Belauri-scale runs, spatial order beyond monotone convergence. — evidence: EXP-028, RUN-0091
 - F-009 [supported, high] Solver routing refactor preserves every deterministic FiPy output bit-for-bit — evidence: EXP-008, RUN-0012, RUN-0013
 - F-007 [supported, medium] FINAL: hidden wind error and unmodelled source dominate discretisation mismatch; poor layout unidentifiable — evidence: EXP-007, RUN-0011
-- … 24 more (`research finding list`)
+- F-006 [supported, medium] FINAL: greedy layouts beat spread/random on fresh test scenarios with alpha frozen on validation (matched, synthetic) — evidence: EXP-005, EXP-006, RUN-0008, RUN-0009
+- F-002 [supported, high] Matched synthetic recovery of three amplitudes works; cached and direct routes agree — evidence: EXP-002, RUN-0003
+- … 22 more (`research finding list`)
 
 ## Failed directions (do not repeat without a new reason)
 
@@ -39,9 +43,11 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Current experiments
 
-- EXP-031 [needs_review] DYN-03 Value of measurement history — runs 4, ⚠ 4 unsynthesized
-- EXP-034 [needs_review] DYN-06 Local activity vs transboundary influx identifiability — runs 4, ⚠ 4 unsynthesized
-- EXP-032 [needs_review] DYN-04 Dynamic population-weighted sensor design — runs 3, ⚠ 3 unsynthesized
+- EXP-015 [needs_review] EXP convergence of sensor-design decisions with mesh, time step and scheme (pre-registered) — runs 2
+- EXP-023 [needs_review] EXP toy wind-error controls from F-029 review (alpha, offset prior grid, model error, base wind) (pre-registered) — runs 12
+- EXP-021 [needs_review] EXP toy prescribed winds, converged reference domain and deflecting channel (pre-registered) — runs 1
+- EXP-020 [needs_review] EXP toy population design with exact selection and replicated settings (pre-registered) — runs 1
+- EXP-037 [proposed] EXP-027b mesh adequacy on common cases (same-ensemble shape error, 2 km falsification gate) — runs 0
 
 ## Active plans
 
@@ -63,28 +69,15 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - [awaiting review] F-063 DYN-06 v4 identifiability (RUN-0093), predictions restated after review F-060/R1: Agent finding awaiting an independent review
 - [awaiting review] F-062 DYN-05 sufficiency (RUN-0078/0080), conclusions corrected after review F-058/R1: Agent finding awaiting an independent review
 
-## ⚠ Needs synthesis before new experiments
-
-- EXP-025 INFRA cluster environment build and production preflight (not a scientific experiment) (4 unsynthesized runs)
-- EXP-027 EXP-015v2 decision stability with a COMMENSURABLE paired baseline (pre-registered fix) (4 unsynthesized runs)
-- EXP-028 DYN-00 Dynamical transport verification (3 unsynthesized runs)
-- EXP-030 DYN-02 Historical source inversion (M0/M1/M2) (4 unsynthesized runs)
-- EXP-031 DYN-03 Value of measurement history (4 unsynthesized runs)
-- EXP-032 DYN-04 Dynamic population-weighted sensor design (3 unsynthesized runs)
-- EXP-033 DYN-05 P0 design-scenario statistical sufficiency (4 unsynthesized runs)
-- EXP-034 DYN-06 Local activity vs transboundary influx identifiability (4 unsynthesized runs)
-- EXP-035 DYN-07 Robustness and model mismatch (2 unsynthesized runs)
-
 ## Active decisions
 
+- D-027 (2026-10-15) EXP-026 registration amendment A-1 (filed before any EXP-026 run): (1) worldpop_study_total 184030 is the whole 8 km-buffered grid total; registered quantities are worldpop_grid_total=184029.57 and worldpop_study_total=54370.05 (500 m; 54562.52 at 250 m); (2) stop condition becomes grid totals agree to 1e-6 relative, study totals expected 0.35% apart; (3) mesh gate becomes '500 m dt 100 PROVISIONAL only (D-006; F-057)'; budgets [2,3,4,5,8] as in parameters; (4) seeds unchanged (101, 202, 305, noise 3500, fixture 6501-6506); (5) EXP-026 uses the standard 500 m grid, DYN-08 the padded one; layouts exchanged via UTM site coordinates; only worldpop_real layouts are imported into DYN-08 as a labelled static baseline. Full text: docs/dyn08_plan.md section 5.
+- D-026 (2026-10-15) DYN-08 (EXP-036) registration amendment A-1, filed BEFORE any DYN-08 layout is designed. Replaces the registered seeds (5000-5999/6000-6999/7000-7999/8000-8999, which overlap spent seeds) and the stop 'gated on EXP-027' (EXP-027 is void). Full text: docs/dyn08_plan.md section 4 (commit 401f02e), with these choices: reduced design 500 m padded grid dt 100, 12/6/12 ERA5 winds, 192 test episodes, k in {3,5}, noise 0.02/0.10, 54 interior sites; seeds wind selection 41100, random layouts 41200+, validation 46000-46047, test 43000-43191, 44000-45999 reserved, dev >=49000; ERA5 speed clip 2.5 m/s; noise scale = mean at the 54 candidate sites; mesh gate relaxed to '500 m/dt100 PROVISIONAL, mesh250 model-error proxy only'; H8 verdict rule: arms H8a, H8b, H8d count (H8c history arm EXPLORATORY because hyperparameters are borrowed): supported if >=2 of 3 transfer and none reverses with the criterion met, not supported if >=2 fail or a key arm reverses, else unresolved; H8c prediction text 'gain expected from plume carry-over' is WITHDRAWN (F-065: carry-over untested, CAUSAL-vs-CT compares time-varying vs causal static fit). Effect criterion, 20 primary contrasts at 0.0025, controls (lowpop, null replicates), stop rules and 'what this does not say' as in section 4. Stop rule: if the lowpop control fails or >25% of tuned hyperparameters sit on a grid edge, stop and report.
 - D-025 (2026-10-14) DYN-06 v4 (supersedes D-022's scoring), registered before the run, after review F-044/R1. Changes: (1) misattribution is scored only in a (wind, cell) where detection is clearly above the false-alarm level (one-sided binomial test of the detected count against 0.10, p < 0.01); other cells are 'undetected' and reported as such; (2) the summary statistic is POOLED misattribution (sum of wrong labels / sum of detected replicates over the scored winds) alongside the number of winds scored and the mean detection, never an unweighted mean of per-wind rates; (3) cells whose look-alike has no observable change signature (|A cb|/sigma < 1) or an unphysical rescale (c* > 1e3) are flagged detectability_only and reported separately; scenarios whose amplitude matching failed (match_ok False) are invalid, not scored; (4) P4 is evaluated ONLY for S7 (the S1 pair, L4_ref vs L4_interior) as registered in D-019; P1-P3 are adjudicated on the gated pooled metric and on detection (P3 at d=2 is expected to be uninformative because detection is near the false-alarm level there; it is reported as 'not evaluable' where detection is not above null); (5) new noise seeds: null 9500-9599, signal 9600-9699; all other design (d targets, 6 winds, layouts L4/L9/L4_ref, noise 0.02/0.10, frozen ridge alpha, controls) as in D-022. The earlier headline numbers (F-044) are superseded by the v4 finding.
-- D-024 (2026-10-14) DYN-03 v2 protocol (supersedes D-014 for EXP-031), registered before the tune or test is run, after review F-053/R1. Changes: (1) CT and CAUSAL are now truly causal: their static prior for bin k is the M0 ridge fit (frozen alpha) on data up to the end of bin k only (previously the prior used the whole window); (2) detection requires the estimate to be on the PRE side at the bin before the change (a constant estimator that is already past the midpoint no longer 'detects'); changes at bin 0 are not scored; (3) test seeds 8600-8695 (7600-7695 consumed by RUN-0092); validation seeds 6000-6047; (4) CAUSAL/RETRO M2 grid reduced to alpha in {0.01,0.1,1,10,100,1e3,1e4} x beta in {0,10,1e2,1e3,1e4,1e5} (the reviewer showed alpha <= 1 is a flat plateau; beta=0 nests M1), CT/M1 alpha grid unchanged; (5) the steady-wind 'negative control' of D-014 is RETIRED as ill-posed (history helps in steady winds through plume carry-over, so the registered stop rule 'steady gain => invalid' fired for a reason unrelated to the analysis); the replacement registered prediction is in RELATIVE terms: the relative gain of CAUSAL over CT and of RETRO over CAUSAL is larger on the four variable winds than on the two steady winds, reported in both absolute and relative terms; (6) primary contrasts, Bonferroni, effect criterion and leave-one-wind-out as in D-014, plus a t-interval over the six wind means as a reported (not decisive) generalisation check. The earlier result remains on record as F-053 (superseded by the v2 finding when written) and its stop-rule firing is acknowledged.
 
 ## Blockers
 
-- [run] RUN-0075: RUN-0075 (EXP-027) failed — not yet reviewed
-- [run] RUN-0070: RUN-0070 (EXP-027) failed — not yet reviewed
-- [run] RUN-0067: RUN-0067 (EXP-025) failed — not yet reviewed
+_none_
 
 ## Project skills
 
