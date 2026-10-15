@@ -1,0 +1,8 @@
+{
+ "extends": "convergence_paired_padded_exp027b.json",
+ "name": "exp027b_paired_padded_K2N24_stage1",
+ "notes": "EXP-027b stage 1 (draws 1-2 of the registered K3 x N24 configuration; 48 cases per mesh). Stop rule: if the control gate fails on these 48 cases (scripts/exp027b.py evaluate), stage 2 is NOT run. Stage 2 = the K3 config in a NEW work dir seeded with this stage's WORK/cases (the config hash differs), so no case is simulated twice.",
+ "stage2": {
+  "replicates": {"n": 2, "n_cases": 24, "seed0": 1101, "noise_seed0": 4000, "noise_seed_stride": 100}
+ }
+}

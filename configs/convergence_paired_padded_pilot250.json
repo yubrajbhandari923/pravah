@@ -1,0 +1,8 @@
+{
+ "extends": "convergence_paired_padded.json",
+ "name": "exp027b_paired_padded_pilot250",
+ "notes": "EXP-027b LOCAL end-to-end pilot (not a registered test): 250 m reference, 500 m main, 2 km control; 2 draws x 12 cases (seeds 1101-1102; cases are the first 12 of the corresponding 48-case draws, because draw_cases is sequential in its rng). Proves the pipeline and gives one real 250 m data point for the power analysis; far too small to be a test.",
+ "stage2": {
+  "replicates": {"n": 2, "n_cases": 12, "seed0": 1101, "noise_seed0": 4000, "noise_seed_stride": 100}
+ }
+}
