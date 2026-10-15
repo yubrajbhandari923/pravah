@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2814 tokens.
-> Generated 2026-10-15T18:16:16-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2802 tokens.
+> Generated 2026-10-15T18:23:14-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `2f1866bd6f` (uncommitted changes)
+Git: `master` @ `14d7248a67` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -62,9 +62,9 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 - [reviewer disagrees] F-035 EXP-015 stage 2: H1 untested (baseline not commensurable); 500 m provisionally admissible on narrow grounds: scientific-reviewer: needs work — H1 is UNTESTED, not supported. The mesh comparison and the resampling baseline are not commensurable: convergence_stage2.py:24
 - [reviewer disagrees] F-069 EXP-036 / DYN-08 (RUN-0099): STOPPED at registered stop rules 4.5(a) and (b); no H8 verdict; descriptive results only: scientific-reviewer: needs work — Review of RUN-0099 as a confirmatory test of H8: all numbers reproduce (max abs diff 2.8e-17); no pipeline bug behind the cont
-- [awaiting review] F-068 EXP-026 (RUN-0098): greedy gaps, near ties and design-sample optimism swamp differences among weighted objectives: Agent finding awaiting an independent review
-- [awaiting review] F-067 EXP-026 (RUN-0098): WorldPop fixture shows the same null as the synthetic fixtures; synthetic population layouts are worse than area layouts on WorldPop: Agent finding awaiting an independent review
-- [awaiting review] F-066 EXP-026 (RUN-0098): population-weighted layouts do not reduce population-weighted RMSE at Belauri scale (H1 not supported, H2 area part supported, H3-H6 unresolved): Agent finding awaiting an independent review
+- [awaiting review] F-072 EXP-026 (RUN-0098): greedy gaps and design-sample optimism are large; objectives differ rather than tie (replaces F-068): Agent finding awaiting an independent review
+- [awaiting review] F-071 EXP-026 (RUN-0098): WorldPop fixture is a joint null with the synthetic fixtures (replaces F-067): Agent finding awaiting an independent review
+- [awaiting review] F-070 EXP-026 (RUN-0098): no robust reduction of population-weighted RMSE from population-weighted layouts; result depends on optimiser and is low-powered (replaces F-066): Agent finding awaiting an independent review
 
 ## Active decisions
 
