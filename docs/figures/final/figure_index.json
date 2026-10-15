@@ -115,5 +115,66 @@
   "figure": "Q-013",
   "status": "pending",
   "reason": "experiment not run / result pending: no figure (placeholder in the report)"
+ },
+ {
+  "figure": "wrapup_exp027b_adequacy",
+  "file": "docs/figures/final/wrapup_exp027b_adequacy.png",
+  "status": "produced",
+  "sources": [
+   "results/exp027b-hpc/stage1/exp027b/exp027b_cells.csv",
+   "results/exp027b-hpc/stage2/exp027b/exp027b_cells.csv",
+   "results/exp027b-hpc/stage1/exp027b/exp027b_verdict.json",
+   "results/exp027b-hpc/stage2/exp027b/exp027b_verdict.json"
+  ],
+  "caption": "EXP-027b (F-073): E with 95 % intervals for the 500 m main mesh vs the 2 km control in the 4 (budget, noise) cells, stage 1 (hollow) vs stage 2 (filled), margin 0.05; J-ratio and rho panels. Stage 2 verdict main INADEQUATE with all 4 control cells failing the gate; stage 1 was main INCONCLUSIVE. Per-cell labels recomputed from the stored intervals. Synthetic scenarios."
+ },
+ {
+  "figure": "wrapup_dyn08v2_forest",
+  "file": "docs/figures/final/wrapup_dyn08v2_forest.png",
+  "status": "produced",
+  "sources": [
+   "results/dyn08-v2-hpc/dyn08_all/summary.json"
+  ],
+  "caption": "DYN-08 v2 (RUN-0101, F-074): dyn_opt minus random (two-level layout x episode bootstrap) and minus spread/highpop/static_opt/src_opt (single layouts, labelled 'this layout only') in the 4 (k, noise) cells, with relative change. Synthetic emissions/episodes; real geometry; model-free of empirical validation."
+ },
+ {
+  "figure": "wrapup_dyn08v2_controls",
+  "file": "docs/figures/final/wrapup_dyn08v2_controls.png",
+  "status": "produced",
+  "sources": [
+   "results/dyn08-v2-hpc/dyn08_all/summary.json"
+  ],
+  "caption": "DYN-08 v2 gating controls: a' (spread vs worst-surrogate-risk layout, effect expected) and b' (random group A vs B, no effect expected) in the 4 cells, relative M2 change with 95 % CI, plus the v1 lowpop-vs-spread layout (reported, not gating). All gates passed."
+ },
+ {
+  "figure": "wrapup_dyn08v2_model_error",
+  "file": "docs/figures/final/wrapup_dyn08v2_model_error.png",
+  "status": "produced",
+  "sources": [
+   "results/dyn08-v2-hpc/dyn08_all/modelerr_summary.json"
+  ],
+  "caption": "DYN-08 v2 model error: M2 error ratio vs matched under truth rotation 0/5/10/20 deg, speed x1.2 and 250 m mesh for dyn_opt and spread (95 % CI), and the M2/M1 ratio crossing 1. Synthetic episodes."
+ },
+ {
+  "figure": "wrapup_dyn08_v1_v2_controls",
+  "file": "docs/figures/final/wrapup_dyn08_v1_v2_controls.png",
+  "status": "produced",
+  "sources": [
+   "results/dyn08-hpc/dyn08_all/summary.json",
+   "results/dyn08-v2-hpc/dyn08_all/summary.json"
+  ],
+  "caption": "DYN-08 v1 vs v2 control outcomes per cell (relative M2 change with 95 % CI and the stored pass/fail). The v1 controls failed (lowpop not worse than spread in 3 of 4 cells; random replicate groups differed at k=5), which is why D-029 registered v2 with new controls. Shown unedited."
+ },
+ {
+  "figure": "wrapup_dyn08v2_layout_map",
+  "file": "docs/figures/final/wrapup_dyn08v2_layout_map.png",
+  "status": "produced",
+  "sources": [
+   "results/dyn08-v2-hpc/dyn08_all/layouts.json",
+   "results/geodesign/candidates.csv",
+   "data/population/belauri_padded_worldpop_500m.npy",
+   "configs/geodesign.json (study polygon via geodesign.load_geography)"
+  ],
+  "caption": "DYN-08 v2 layouts (dyn_opt, spread, highpop, worst, first random replicate) at k=5, noise 2 %, on the Belauri study polygon with WorldPop 500 m population shading; sites mapped from candidate indices through layouts.json 'candidates' ids to the geodesign candidate table UTM coordinates. Modelled population estimate, synthetic design study."
  }
 ]

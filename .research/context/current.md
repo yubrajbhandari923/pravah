@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2880 tokens.
-> Generated 2026-10-15T19:17:56-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2899 tokens.
+> Generated 2026-10-15T19:24:43-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `2fb7856195`
+Git: `master` @ `4507a1c2cf` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -62,8 +62,8 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 - [reviewer disagrees] F-035 EXP-015 stage 2: H1 untested (baseline not commensurable); 500 m provisionally admissible on narrow grounds: scientific-reviewer: needs work — H1 is UNTESTED, not supported. The mesh comparison and the resampling baseline are not commensurable: convergence_stage2.py:24
 - [reviewer disagrees] F-069 EXP-036 / DYN-08 (RUN-0099): STOPPED at registered stop rules 4.5(a) and (b); no H8 verdict; descriptive results only: scientific-reviewer: needs work — Review of RUN-0099 as a confirmatory test of H8: all numbers reproduce (max abs diff 2.8e-17); no pipeline bug behind the cont
-- [awaiting review] F-074 EXP-036 / DYN-08 v2 (RUN-0101): controls pass; dynamic design beats random layouts at Belauri scale; H8 arms H8a, H8b, H8d transfer (post-hoc-corrected rerun): Agent finding awaiting an independent review
-- [awaiting review] F-073 EXP-027b (EXP-037; RUN-0096 stage 1, RUN-0100 stage 2): registered outcome INADEQUATE for the 500 m / dt 100 mesh (2 of 4 cells), falsification gate passed: Agent finding awaiting an independent review
+- [awaiting review] F-076 EXP-036 / DYN-08 v2 (RUN-0101): surrogate-designed layouts beat random layouts at Belauri scale; static design indistinguishable; H8 supported under the D-026 counting rule, with post-hoc amendments (replaces F-074): Agent finding awaiting an independent review
+- [awaiting review] F-075 EXP-027b (EXP-037; RUN-0096, RUN-0100): registered outcome INADEQUATE (rule-based, borderline) for the 500 m / dt 100 mesh; gate passed; replaces F-073: Agent finding awaiting an independent review
 - [awaiting review] F-072 EXP-026 (RUN-0098): greedy gaps and design-sample optimism are large; objectives differ rather than tie (replaces F-068): Agent finding awaiting an independent review
 
 ## ⚠ Needs synthesis before new experiments
