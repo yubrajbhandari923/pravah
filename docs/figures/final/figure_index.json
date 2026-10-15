@@ -26,7 +26,7 @@
    "RUN-0094/episodes.csv",
    "results/dyn03v2/frozen_hparams.json"
   ],
-  "caption": "fig03: DYN-03 v2 (F-064, RUN-0094, frozen hash 3c86b5e668181a3d). ONE episode (median-gain 'activation' episode at L4/10 % noise, chosen by rule, not by appearance) re-simulated because per-episode histories were not stored; right panel checks the re-simulation against the stored J_pop. Synthetic, known wind, matched model. Illustration of mechanism, not evidence."
+  "caption": "fig03: DYN-03 v2 (F-065, RUN-0094, frozen hash 3c86b5e668181a3d). ONE episode (median-gain 'activation' episode at L4/10 % noise, chosen by rule, not by appearance) re-simulated because per-episode histories were not stored; right panel checks the re-simulation against the stored J_pop. Synthetic, known wind, matched model. Illustration of mechanism, not evidence."
  },
  {
   "figure": "fig04_dyn03_forest",
@@ -35,7 +35,7 @@
   "sources": [
    "RUN-0094/summary.json"
   ],
-  "caption": "fig04: F-064 / RUN-0094 summary.json ('primary', 'wind_groups'); percentages in the left labels are relative changes. CT is a deliberately naive baseline; RETRO and M1 use future data (non-causal). Synthetic, known wind, one fixture. Preliminary, not independently reviewed."
+  "caption": "fig04: F-065 (corrects F-064) / RUN-0094 summary.json ('primary', 'wind_groups'); percentages in the left labels are relative changes. CT is the causal running static fit (a time-invariant model on the same causal data), not a current-time-only estimator (F-065); the D-014 negative control was retired by D-024 before RUN-0094, and the right panel shows only that steady winds also gain (it would fire). RETRO and M1 use future data (non-causal). Synthetic, known wind, one fixture. Preliminary, not independently reviewed."
  },
  {
   "figure": "fig05_dyn04_forest",
@@ -96,10 +96,11 @@
  {
   "figure": "fig00_dyn00_verification",
   "file": "docs/figures/final/fig00_dyn00_verification.png",
-  "status": "reused",
+  "status": "regenerated",
   "sources": [
-   "RUN-0091/dyn00_checks.json (via scripts/make_dynamic_figures.py)"
-  ]
+   "RUN-0091/dyn00_checks.json (via scripts/make_dynamic_figures.py fig03, relabelled fig00)"
+  ],
+  "caption": "fig00 DYN-00 verification (EXP-028; .research/runs/RUN-0091/dyn00_checks.json; 25/25 checks pass) \u00b7 RUN-0091 \u00b7 n = 25 checks \u00b7 synthetic toy geometry \u00b7 mass-closure residuals (log) and temporal-order checks"
  },
  {
   "figure": "DYN-08",
@@ -126,7 +127,7 @@
    "results/exp027b-hpc/stage1/exp027b/exp027b_verdict.json",
    "results/exp027b-hpc/stage2/exp027b/exp027b_verdict.json"
   ],
-  "caption": "EXP-027b (F-073): E with 95 % intervals for the 500 m main mesh vs the 2 km control in the 4 (budget, noise) cells, stage 1 (hollow) vs stage 2 (filled), margin 0.05; J-ratio and rho panels. Stage 2 verdict main INADEQUATE with all 4 control cells failing the gate; stage 1 was main INCONCLUSIVE. Per-cell labels recomputed from the stored intervals. Synthetic scenarios."
+  "caption": "EXP-027b (F-075; post-hoc sensitivity F-077): E with 95 % intervals for the 500 m main mesh vs the 2 km control in the 4 (budget, noise) cells, stage 1 (hollow) vs stage 2 (filled), margin 0.05; J-ratio and rho panels. Stage 2 verdict main INADEQUATE with all 4 control cells failing the gate; stage 1 was main INCONCLUSIVE. Per-cell labels recomputed from the stored intervals. Synthetic scenarios."
  },
  {
   "figure": "wrapup_dyn08v2_forest",
@@ -135,7 +136,7 @@
   "sources": [
    "results/dyn08-v2-hpc/dyn08_all/summary.json"
   ],
-  "caption": "DYN-08 v2 (RUN-0101, F-074): dyn_opt minus random (two-level layout x episode bootstrap) and minus spread/highpop/static_opt/src_opt (single layouts, labelled 'this layout only') in the 4 (k, noise) cells, with relative change. Synthetic emissions/episodes; real geometry; model-free of empirical validation."
+  "caption": "DYN-08 v2 (RUN-0101, F-076): dyn_opt minus random (two-level layout x episode bootstrap) and minus spread/highpop/static_opt/src_opt (single layouts, labelled 'this layout only') in the 4 (k, noise) cells, with relative change. Synthetic emissions/episodes; real geometry; model-free of empirical validation."
  },
  {
   "figure": "wrapup_dyn08v2_controls",
@@ -163,7 +164,7 @@
    "results/dyn08-hpc/dyn08_all/summary.json",
    "results/dyn08-v2-hpc/dyn08_all/summary.json"
   ],
-  "caption": "DYN-08 v1 vs v2 control outcomes per cell (relative M2 change with 95 % CI and the stored pass/fail). The v1 controls failed (lowpop not worse than spread in 3 of 4 cells; random replicate groups differed at k=5), which is why D-029 registered v2 with new controls. Shown unedited."
+  "caption": "DYN-08 v1 vs v2 control outcomes per cell (relative M2 change with 95 % CI and the stored pass/fail). The v1 controls failed (F-069: lowpop did not lose to spread in 3 of 4 cells; the stored 'must be > 0' flag passes on sign alone at +2 % [-12, +16]; random replicate groups differed at k=5), which is why D-029 registered v2 with new controls (F-076). Shown unedited."
  },
  {
   "figure": "wrapup_dyn08v2_layout_map",

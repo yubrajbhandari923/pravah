@@ -133,7 +133,7 @@ def fig01(E) -> None:
         for ax, (k, var) in zip(axes[1], ((8, "combined"), (32, "combined"), (32, "external"))):
             im2 = ax.imshow(d[var].isel(time=k).values, origin="lower", cmap="viridis", vmin=0, vmax=vm,
                             extent=(0, float(d.x[-1]) / 1000 + .25, 0, float(d.y[-1]) / 1000 + .25))
-            ax.set_title(f"Belauri (synthetic WSW wind), {var}, t = {float(d.time[k]) / 3600:.0f} h", fontsize=9)
+            ax.set_title(f"Belauri (synthetic WSW wind)\n{var}, t = {float(d.time[k]) / 3600:.0f} h", fontsize=9)
             ax.set_xlabel("x (km)")
             ax.set_ylabel("y (km)")
             ax.grid(False)
@@ -184,7 +184,7 @@ def fig03(E) -> None:
     ax.step(tfine, np.r_[hist[p], hist[p, -1]] / REF[p], where="post", color=OI["black"], lw=1.2, ls=":", label="truth, 12 fine bins")
     tb = np.arange(binned.shape[1] + 1)
     ax.step(tb, np.r_[binned[p], binned[p, -1]] / REF[p], where="post", color=OI["black"], lw=2.2, label="truth, 6-bin average (inverse basis)")
-    sty = {"CT": (OI["orange"], "--", "CT: current-time-only"), "CAUSAL": (OI["blue"], "-", "CAUSAL filter (bin-b estimate)"),
+    sty = {"CT": (OI["orange"], "--", "CT: causal running static fit (F-065)"), "CAUSAL": (OI["blue"], "-", "CAUSAL filter (bin-b estimate)"),
            "RETRO": (OI["green"], "-.", "RETRO smoother (uses future data)")}
     for m, (c, ls, lab) in sty.items():
         th = est[m]
@@ -193,7 +193,8 @@ def fig03(E) -> None:
     ax.set_xlabel("time (h)")
     ax.set_ylabel(f"{names[p]} (units of reference amplitude)")
     ax.set_title(f"episode {E['ep']['id']}: wind {E['ep']['wind']}, family {E['ep']['family']}, L4, 10 % noise", fontsize=9)
-    ax.legend(fontsize=7.5, loc="best")
+    ax.set_ylim(-0.05, 1.95)  # headroom so the legend does not sit on the curves
+    ax.legend(fontsize=7.5, loc="upper left")
     ax = axes[1]
     ms = ["CT", "CAUSAL", "RETRO"]
     resim = [E["jp"].get(m, np.nan) for m in ms]
@@ -205,7 +206,7 @@ def fig03(E) -> None:
     ax.set_ylabel("sqrt(J_pop) (ug/m3)")
     ax.set_title("population-weighted error of this episode", fontsize=9)
     ax.legend(fontsize=7.5)
-    cap = ("fig03: DYN-03 v2 (F-064, RUN-0094, frozen hash 3c86b5e668181a3d). ONE episode (median-gain 'activation' episode at L4/10 % noise, chosen by rule, "
+    cap = ("fig03: DYN-03 v2 (F-065, RUN-0094, frozen hash 3c86b5e668181a3d). ONE episode (median-gain 'activation' episode at L4/10 % noise, chosen by rule, "
            "not by appearance) re-simulated because per-episode histories were not stored; right panel checks the re-simulation against the stored J_pop. "
            "Synthetic, known wind, matched model. Illustration of mechanism, not evidence.")
     save(fig, "fig03_history_reconstruction", cap, ["RUN-0094/episodes.csv", "results/dyn03v2/frozen_hparams.json"])
@@ -240,8 +241,8 @@ def fig04() -> None:
     ax.invert_yaxis()
     ax.axvline(0, color="k", lw=0.8)
     ax.set_xlabel("CAUSAL - CT (1e-3 ug/m3)")
-    ax.set_title("registered 'negative control' FAILS: steady winds gain too\n(grey = steady, red = variable; intervals as stored)", fontsize=9)
-    cap = ("fig04: F-064 / RUN-0094 summary.json ('primary', 'wind_groups'); percentages in the left labels are relative changes. CT is a deliberately naive baseline; "
+    ax.set_title("steady winds gain too: the retired D-014 negative control\nwould fire (retired by D-024 before RUN-0094; not scored)\n(grey = steady, red = variable; intervals as stored)", fontsize=9)
+    cap = ("fig04: F-065 (corrects F-064) / RUN-0094 summary.json ('primary', 'wind_groups'); percentages in the left labels are relative changes. CT is the causal running static fit (a time-invariant model on the same causal data), not a current-time-only estimator (F-065); the D-014 negative control was retired by D-024 before RUN-0094, and the right panel shows only that steady winds also gain (it would fire). "
            "RETRO and M1 use future data (non-causal). Synthetic, known wind, one fixture. Preliminary, not independently reviewed.")
     save(fig, "fig04_dyn03_forest", cap, ["RUN-0094/summary.json"])
 
@@ -460,11 +461,26 @@ def main() -> None:
         except Exception as exc:
             pending(f.__name__, repr(exc))
     # reuse: DYN-00 verification figure from the earlier script (same RUN-0091 data)
-    src = ROOT / "docs/figures/dynamic/fig03_dyn00_verification.png"
-    if src.exists():
-        shutil.copy(src, OUT / "fig00_dyn00_verification.png")
-        INDEX.append({"figure": "fig00_dyn00_verification", "file": "docs/figures/final/fig00_dyn00_verification.png", "status": "reused",
-                      "sources": ["RUN-0091/dyn00_checks.json (via scripts/make_dynamic_figures.py)"]})
+    # fig00: regenerate the DYN-00 verification panel from scripts/make_dynamic_figures.py with the internal label 'fig00'
+    try:
+        import sys
+        import tempfile
+
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import make_dynamic_figures as mdf
+
+        tmp = Path(tempfile.mkdtemp())
+        mdf.OUT, mdf.TAB = tmp, tmp / "tables"
+        _cap = mdf.cap
+        mdf.cap = lambda exp, *a, **k: _cap(exp.replace("fig03 DYN-00", "fig00 DYN-00"), *a, **k)
+        mdf.INDEX.clear()
+        mdf.fig03()
+        shutil.copy(tmp / "fig03_dyn00_verification.png", OUT / "fig00_dyn00_verification.png")
+        e = mdf.INDEX[0]
+        INDEX.append({"figure": "fig00_dyn00_verification", "file": "docs/figures/final/fig00_dyn00_verification.png", "status": "regenerated",
+                      "sources": ["RUN-0091/dyn00_checks.json (via scripts/make_dynamic_figures.py fig03, relabelled fig00)"], "caption": e["caption"]})
+    except Exception as exc:
+        pending("fig00_dyn00_verification", repr(exc))
     for name in ("DYN-08", "EXP-027b", "Q-013"):
         pending(name, "experiment not run / result pending: no figure (placeholder in the report)")
     (OUT / "figure_index.json").write_text(json.dumps(INDEX, indent=1))

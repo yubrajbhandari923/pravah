@@ -84,11 +84,12 @@ def fig_exp027b():
                  f"Control cells failing the gate: stage 2 = {v2['control_cells_failing']}/{v2['n_cells']}, stage 1 = {v1['control_cells_failing']}/{v1['n_cells']}; "
                  "the control can fail, so the test is not void.", x=0.01, ha="left", fontsize=10)
     fig.text(0.01, 0.005, f"Per-cell verdict label (blue text) = stage-2 rule E_lo > {delta} -> INADEQUATE, E_hi < {delta} -> ADEQUATE, else INCONCLUSIVE (recomputed from the stored intervals; "
-             f"stored counts inadequate/adequate stage 2 = {stored['s2']}, stage 1 = {stored['s1']}).  Hollow = stage 1, filled = stage 2.", fontsize=7.5, color=MUTED)
-    fig.tight_layout(rect=(0, 0.03, 1, 0.94)); fig.savefig(OUT / "wrapup_exp027b_adequacy.png", dpi=160); plt.close(fig)
+             f"stored counts inadequate/adequate stage 2 = {stored['s2']}, stage 1 = {stored['s1']}).  Hollow = stage 1, filled = stage 2.\n"
+             "The INADEQUATE call is borderline and interval-method dependent (F-075; F-077, post-hoc).", fontsize=7.5, color=MUTED)
+    fig.tight_layout(rect=(0, 0.05, 1, 0.94)); fig.savefig(OUT / "wrapup_exp027b_adequacy.png", dpi=160); plt.close(fig)
     rec("wrapup_exp027b_adequacy", ["results/exp027b-hpc/stage1/exp027b/exp027b_cells.csv", "results/exp027b-hpc/stage2/exp027b/exp027b_cells.csv",
         "results/exp027b-hpc/stage1/exp027b/exp027b_verdict.json", "results/exp027b-hpc/stage2/exp027b/exp027b_verdict.json"],
-        "EXP-027b (F-073): E with 95 % intervals for the 500 m main mesh vs the 2 km control in the 4 (budget, noise) cells, stage 1 (hollow) vs stage 2 (filled), "
+        "EXP-027b (F-075; post-hoc sensitivity F-077): E with 95 % intervals for the 500 m main mesh vs the 2 km control in the 4 (budget, noise) cells, stage 1 (hollow) vs stage 2 (filled), "
         "margin 0.05; J-ratio and rho panels. Stage 2 verdict main INADEQUATE with all 4 control cells failing the gate; stage 1 was main INCONCLUSIVE. "
         "Per-cell labels recomputed from the stored intervals. Synthetic scenarios.")
 
@@ -115,7 +116,7 @@ def fig_dyn08_forest(S):
                  "\nGrey: single fixed layouts, episode bootstrap CI (not a statement about the design rule).  Numbers = relative change.", x=0.01, ha="left", fontsize=9)
     fig.tight_layout(rect=(0, 0, 1, 0.9)); fig.savefig(OUT / "wrapup_dyn08v2_forest.png", dpi=160); plt.close(fig)
     rec("wrapup_dyn08v2_forest", ["results/dyn08-v2-hpc/dyn08_all/summary.json"],
-        "DYN-08 v2 (RUN-0101, F-074): dyn_opt minus random (two-level layout x episode bootstrap) and minus spread/highpop/static_opt/src_opt (single layouts, labelled 'this layout only') "
+        "DYN-08 v2 (RUN-0101, F-076): dyn_opt minus random (two-level layout x episode bootstrap) and minus spread/highpop/static_opt/src_opt (single layouts, labelled 'this layout only') "
         "in the 4 (k, noise) cells, with relative change. Synthetic emissions/episodes; real geometry; model-free of empirical validation.")
 
 
@@ -194,13 +195,14 @@ def fig_v1_v2(S1, S2):
             ax.text(x, y, cell(r), fontsize=9, transform=ax.transAxes, va="center", color=INK if r["passed"] else RED, fontweight="normal" if r["passed"] else "bold")
     n1 = sum(r["passed"] for r in S1["controls"]); n2 = sum(r["passed"] for r in S2["controls"])
     ax.text(0, 0.0, f"Relative M2 change (A - B)/B [95 % CI], % ; v1 controls passed {n1}/{len(S1['controls'])} (frozen v1 gate: not passed), v2 controls passed {n2}/{len(S2['controls'])} (gate passed). "
-            "v1 'PASS/FAIL' is the stored per-control verdict (the v1 lowpop check appears to pass on the sign of mean_diff alone: PASS at +2 % [-12, +16], FAIL at -0 % [-13, +12]).\nv1 failed controls: the lowpop layout did not do worse than spread (it did better at k=3, 2 %), and random replicate groups differed at k=5. "
-            "v2 replaced them with new controls (worst-surrogate layout; random groups A/B with a two-level bootstrap).", fontsize=8, color=MUTED, transform=ax.transAxes, va="bottom")
+            "v1 'PASS/FAIL' is the stored per-control verdict; the stored 'must be > 0' flag for the v1 lowpop control passes on the sign of mean_diff alone (PASS at +2 % [-12, +16]), so it is not evidence that lowpop was worse (F-069).\n"
+            "v1 (F-069, stopped at its stop rules): lowpop did not lose to spread in 3 of 4 cells (it did better at k=3, 2 %, -16 %), and random replicate groups differed at k=5 (the control was badly constructed). "
+            "v2 (F-076) replaced them with new controls (worst-surrogate layout; random groups A/B with a two-level bootstrap).", fontsize=8, color=MUTED, transform=ax.transAxes, va="bottom")
     fig.suptitle("DYN-08 control checks: v1 (failed) vs v2 (passed)", x=0.01, ha="left", fontsize=11)
     fig.savefig(OUT / "wrapup_dyn08_v1_v2_controls.png", dpi=160, bbox_inches="tight"); plt.close(fig)
     rec("wrapup_dyn08_v1_v2_controls", ["results/dyn08-hpc/dyn08_all/summary.json", "results/dyn08-v2-hpc/dyn08_all/summary.json"],
-        "DYN-08 v1 vs v2 control outcomes per cell (relative M2 change with 95 % CI and the stored pass/fail). The v1 controls failed (lowpop not worse than spread in 3 of 4 cells; random replicate groups "
-        "differed at k=5), which is why D-029 registered v2 with new controls. Shown unedited.")
+        "DYN-08 v1 vs v2 control outcomes per cell (relative M2 change with 95 % CI and the stored pass/fail). The v1 controls failed (F-069: lowpop did not lose to spread in 3 of 4 cells; the stored 'must be > 0' flag passes on sign alone at +2 % [-12, +16]; random replicate groups "
+        "differed at k=5), which is why D-029 registered v2 with new controls (F-076). Shown unedited.")
 
 
 # ------------------------------------------------------------------------------------------------ (4) Belauri map
