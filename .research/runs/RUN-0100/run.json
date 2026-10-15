@@ -6,19 +6,19 @@
   "backend": "slurm",
   "command": "bash scripts/hpc_exp027b.sh 16 convergence_paired_padded_exp027b.json /home/yb107/research-os/projects/pravah/runs/RUN-0096/paired_work/cases",
   "created_at": "2026-10-15T18:08:36-04:00",
-  "ended_at": null,
+  "ended_at": "2026-10-15T18:40:47-04:00",
   "env": {
     "lockfiles": {
       "uv.lock": "cd0adfb7e3bec3fc"
     },
     "user": "yubraj"
   },
-  "exit_code": null,
+  "exit_code": 0,
   "experiment_id": "EXP-037",
   "git_branch": "master",
   "git_commit": "32bd79ecdba5fcf47c8ecfd131baef1059e0007b",
   "git_dirty": 0,
-  "hostname": "RAD-88300596",
+  "hostname": "node004",
   "id": "RUN-0100",
   "label": null,
   "metrics_offset": 0,
@@ -38,30 +38,38 @@
   "run_dir": ".research/runs/RUN-0100",
   "slurm": {
     "hpc": {
+      "archive_sha256": "39f0a2f9f3959c8688d70187778355b53c5f6f628bbf01cbc5ef75a8dcd2228b",
       "bundle": ".research/hpc/bundles/EXP-037-RUN-0100.tar.gz",
       "bundle_dir": ".research/hpc/bundles/EXP-037-RUN-0100",
       "cluster": "duke",
+      "collected_at": "2026-10-15T19:17:00-04:00",
+      "collected_on": "plp-drcc-login2",
       "datasets": {},
       "experiment_id": "EXP-037",
+      "last_sync": "2026-10-15T19:16:58-04:00",
       "receipt": "/home/yb107/research-os/projects/pravah/runs/RUN-0100/submission.json",
+      "remote_archive": "/home/yb107/research-os/projects/pravah/code/EXP-037/results-RUN-0100.tar.gz",
       "remote_code": "/home/yb107/research-os/projects/pravah/code/EXP-037/RUN-0100",
       "remote_results": "/home/yb107/research-os/projects/pravah/results/RUN-0100",
       "remote_run_dir": "/home/yb107/research-os/projects/pravah/runs/RUN-0100",
       "sha256": "ff3e928c787f06bee2e2f8553f54327b017050ed086281053db7dc8ca1a18590",
       "slurm_job_id": "202542",
       "ssh_host": "plp-drcc-login2",
-      "state": "submitted",
+      "state": "collected",
       "submitted_at": "2026-10-15T18:08:54-04:00",
       "token": "1e460e83a27b1eaa312065c772b3546f",
       "upload_detail": "all 6 file(s) match",
       "upload_verified": true
-    }
+    },
+    "nodelist": "node004",
+    "partition": "defq",
+    "state": "COMPLETED"
   },
   "slurm_job_id": "202542",
-  "started_at": null,
-  "status": "queued",
+  "started_at": "2026-10-15T18:08:57-04:00",
+  "status": "completed",
   "stderr_path": ".research/runs/RUN-0100/stderr.log",
   "stdout_path": ".research/runs/RUN-0100/stdout.log",
-  "updated_at": "2026-10-15T18:08:56-04:00",
+  "updated_at": "2026-10-15T19:17:00-04:00",
   "working_dir": "."
 }

@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2802 tokens.
-> Generated 2026-10-15T18:23:14-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2880 tokens.
+> Generated 2026-10-15T19:17:56-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `14d7248a67` (uncommitted changes)
+Git: `master` @ `2fb7856195`
 
 ## Latest checkpoint
 
@@ -31,7 +31,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - F-051 [supported, high] DYN-00 (RUN-0091, 25/25 pre-set checks pass; supersedes F-038 after its independent review F-038/R1): includes the replacement for the vacuous west_no_import check: a constant west inflow basis through a 3600 s wind reversal has cell-summed supply 3.36e-2 (>0) before and exactly 0.0 after, an east basis exactly 0.0 before and 3.36e-2 after, mass closure 2.1e-15 with both on; a non-trivial piecewise history [[0,3,1,2],[1,0,2,4],[0.5,1.5,0,3]] matches direct simulation to 1.2e-15; all other values as in F-038 (mass closure <=4.4e-15 in five dynamic cases, superposition 1.6e-15, closed-box analytic order 0.997, footprints integrate to 1). Verified numerical behaviour of the implicit-Euler/exponential scheme on a 16x12 toy box; not verified: Van Leer scheme, Belauri-scale runs, spatial order beyond monotone convergence. — evidence: EXP-028, RUN-0091
 - F-009 [supported, high] Solver routing refactor preserves every deterministic FiPy output bit-for-bit — evidence: EXP-008, RUN-0012, RUN-0013
 - F-007 [supported, medium] FINAL: hidden wind error and unmodelled source dominate discretisation mismatch; poor layout unidentifiable — evidence: EXP-007, RUN-0011
-- … 28 more (`research finding list`)
+- … 30 more (`research finding list`)
 
 ## Failed directions (do not repeat without a new reason)
 
@@ -39,8 +39,8 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Current experiments
 
-- EXP-037 [running] EXP-027b mesh adequacy on common cases (same-ensemble shape error, 2 km falsification gate) — runs 2, ⚠ 1 unsynthesized
-- EXP-036 [needs_review] DYN-08 Belauri synthetic population-weighted deployment — runs 2
+- EXP-036 [needs_review] DYN-08 Belauri synthetic population-weighted deployment — runs 3, ⚠ 1 unsynthesized
+- EXP-037 [needs_review] EXP-027b mesh adequacy on common cases (same-ensemble shape error, 2 km falsification gate) — runs 2, ⚠ 2 unsynthesized
 - EXP-029 [proposed] DYN-01 Temporal event-generation study — runs 0
 
 ## Active plans
@@ -62,9 +62,14 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 - [reviewer disagrees] F-035 EXP-015 stage 2: H1 untested (baseline not commensurable); 500 m provisionally admissible on narrow grounds: scientific-reviewer: needs work — H1 is UNTESTED, not supported. The mesh comparison and the resampling baseline are not commensurable: convergence_stage2.py:24
 - [reviewer disagrees] F-069 EXP-036 / DYN-08 (RUN-0099): STOPPED at registered stop rules 4.5(a) and (b); no H8 verdict; descriptive results only: scientific-reviewer: needs work — Review of RUN-0099 as a confirmatory test of H8: all numbers reproduce (max abs diff 2.8e-17); no pipeline bug behind the cont
+- [awaiting review] F-074 EXP-036 / DYN-08 v2 (RUN-0101): controls pass; dynamic design beats random layouts at Belauri scale; H8 arms H8a, H8b, H8d transfer (post-hoc-corrected rerun): Agent finding awaiting an independent review
+- [awaiting review] F-073 EXP-027b (EXP-037; RUN-0096 stage 1, RUN-0100 stage 2): registered outcome INADEQUATE for the 500 m / dt 100 mesh (2 of 4 cells), falsification gate passed: Agent finding awaiting an independent review
 - [awaiting review] F-072 EXP-026 (RUN-0098): greedy gaps and design-sample optimism are large; objectives differ rather than tie (replaces F-068): Agent finding awaiting an independent review
-- [awaiting review] F-071 EXP-026 (RUN-0098): WorldPop fixture is a joint null with the synthetic fixtures (replaces F-067): Agent finding awaiting an independent review
-- [awaiting review] F-070 EXP-026 (RUN-0098): no robust reduction of population-weighted RMSE from population-weighted layouts; result depends on optimiser and is low-powered (replaces F-066): Agent finding awaiting an independent review
+
+## ⚠ Needs synthesis before new experiments
+
+- EXP-036 DYN-08 Belauri synthetic population-weighted deployment (1 unsynthesized runs)
+- EXP-037 EXP-027b mesh adequacy on common cases (same-ensemble shape error, 2 km falsification gate) (2 unsynthesized runs)
 
 ## Active decisions
 

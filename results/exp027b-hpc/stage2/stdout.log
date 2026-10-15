@@ -1,0 +1,146 @@
+using venv /home/yb107/research-os/projects/pravah/env/venv (Python 3.12.12)
+pravah resolved from: /home/yb107/research-os/projects/pravah/code/EXP-037/RUN-0100/source/src/pravah/__init__.py
+linked data/belauri -> /scratch/railabs/yb107/research-os/shared-data/belauri-geography/files
+[      0s rss 0.16GB] candidate table (once, UTM)
+[      3s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      0s rss 0.41GB] candidate table (once, UTM)
+[      6s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      6s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      6s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      6s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      6s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      6s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      6s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      6s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      6s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      6s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      6s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      6s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      6s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      6s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      6s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[      6s rss 0.41GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[    718s rss 0.44GB] stored case r250_dt50 draw 3 case 1 in 712 s
+[    719s rss 0.41GB] stored case r250_dt50 draw 3 case 12 in 712 s
+[    720s rss 0.41GB] stored case r250_dt50 draw 3 case 9 in 714 s
+[    721s rss 0.41GB] stored case r250_dt50 draw 3 case 2 in 714 s
+[    721s rss 0.41GB] stored case r250_dt50 draw 3 case 3 in 715 s
+[    722s rss 0.41GB] stored case r250_dt50 draw 3 case 15 in 715 s
+[    722s rss 0.44GB] stored case r250_dt50 draw 3 case 7 in 715 s
+[    722s rss 0.41GB] stored case r250_dt50 draw 3 case 8 in 716 s
+[    722s rss 0.41GB] stored case r250_dt50 draw 3 case 5 in 716 s
+[    723s rss 0.43GB] stored case r250_dt50 draw 3 case 10 in 716 s
+[    723s rss 0.41GB] stored case r250_dt50 draw 3 case 14 in 716 s
+[    723s rss 0.41GB] stored case r250_dt50 draw 3 case 6 in 716 s
+[    723s rss 0.41GB] stored case r250_dt50 draw 3 case 11 in 716 s
+[    724s rss 0.41GB] stored case r250_dt50 draw 3 case 0 in 718 s
+[    724s rss 0.44GB] stored case r250_dt50 draw 3 case 4 in 717 s
+[    724s rss 0.43GB] stored case r250_dt50 draw 3 case 13 in 717 s
+[    817s rss 0.44GB] stored case r500_dt100 draw 3 case 6 in 93 s
+[    817s rss 0.41GB] stored case r500_dt100 draw 3 case 2 in 94 s
+[    817s rss 0.41GB] stored case r500_dt100 draw 3 case 0 in 95 s
+[    817s rss 0.41GB] stored case r500_dt100 draw 3 case 3 in 94 s
+[    818s rss 0.41GB] stored case r500_dt100 draw 3 case 5 in 94 s
+[    818s rss 0.43GB] stored case r500_dt100 draw 3 case 7 in 94 s
+[    818s rss 0.43GB] stored case r500_dt100 draw 3 case 1 in 95 s
+[    818s rss 0.41GB] stored case r500_dt100 draw 3 case 4 in 95 s
+[    910s rss 0.44GB] stored case r500_dt100 draw 3 case 8 in 94 s
+[    911s rss 0.43GB] stored case r500_dt100 draw 3 case 13 in 94 s
+[    912s rss 0.41GB] stored case r500_dt100 draw 3 case 12 in 94 s
+[    912s rss 0.41GB] stored case r500_dt100 draw 3 case 15 in 94 s
+[    912s rss 0.43GB] stored case r500_dt100 draw 3 case 14 in 94 s
+[    912s rss 0.41GB] stored case r500_dt100 draw 3 case 11 in 95 s
+[    913s rss 0.41GB] stored case r500_dt100 draw 3 case 9 in 96 s
+[    913s rss 0.41GB] stored case r500_dt100 draw 3 case 10 in 96 s
+[   1010s rss 0.44GB] stored case r500_dt100 draw 3 case 16 in 100 s
+[   1011s rss 0.43GB] stored case r500_dt100 draw 3 case 17 in 99 s
+[   1012s rss 0.41GB] stored case r500_dt100 draw 3 case 18 in 100 s
+[   1012s rss 0.41GB] stored case r500_dt100 draw 3 case 19 in 100 s
+[   1013s rss 0.43GB] stored case r500_dt100 draw 3 case 20 in 101 s
+[   1013s rss 0.41GB] stored case r500_dt100 draw 3 case 21 in 100 s
+[   1014s rss 0.41GB] stored case r500_dt100 draw 3 case 22 in 101 s
+[   1015s rss 0.41GB] stored case r500_dt100 draw 3 case 23 in 101 s
+[   1025s rss 0.44GB] stored case r2000_dt400 draw 3 case 0 in 15 s
+[   1026s rss 0.43GB] stored case r2000_dt400 draw 3 case 1 in 15 s
+[   1026s rss 0.41GB] stored case r2000_dt400 draw 3 case 2 in 14 s
+[   1027s rss 0.41GB] stored case r2000_dt400 draw 3 case 3 in 15 s
+[   1027s rss 0.41GB] stored case r2000_dt400 draw 3 case 5 in 15 s
+[   1028s rss 0.43GB] stored case r2000_dt400 draw 3 case 4 in 15 s
+[   1029s rss 0.41GB] stored case r2000_dt400 draw 3 case 6 in 15 s
+[   1030s rss 0.41GB] stored case r2000_dt400 draw 3 case 7 in 15 s
+[   1040s rss 0.44GB] stored case r2000_dt400 draw 3 case 8 in 15 s
+[   1041s rss 0.43GB] stored case r2000_dt400 draw 3 case 9 in 15 s
+[   1041s rss 0.41GB] stored case r2000_dt400 draw 3 case 10 in 15 s
+[   1042s rss 0.41GB] stored case r2000_dt400 draw 3 case 12 in 15 s
+[   1042s rss 0.41GB] stored case r2000_dt400 draw 3 case 11 in 15 s
+[   1043s rss 0.43GB] stored case r2000_dt400 draw 3 case 13 in 15 s
+[   1043s rss 0.41GB] stored case r2000_dt400 draw 3 case 14 in 15 s
+[   1045s rss 0.41GB] stored case r2000_dt400 draw 3 case 15 in 15 s
+[   1055s rss 0.44GB] stored case r2000_dt400 draw 3 case 16 in 15 s
+[   1055s rss 0.43GB] stored case r2000_dt400 draw 3 case 17 in 15 s
+[   1056s rss 0.41GB] stored case r2000_dt400 draw 3 case 18 in 15 s
+[   1056s rss 0.41GB] stored case r2000_dt400 draw 3 case 20 in 14 s
+[   1057s rss 0.41GB] stored case r2000_dt400 draw 3 case 19 in 15 s
+[   1057s rss 0.43GB] stored case r2000_dt400 draw 3 case 21 in 15 s
+[   1058s rss 0.41GB] stored case r2000_dt400 draw 3 case 22 in 15 s
+[   1060s rss 0.41GB] stored case r2000_dt400 draw 3 case 23 in 15 s
+[   1245s rss 0.44GB] stored case r250_dt50 draw 3 case 16 in 527 s
+[   1257s rss 0.41GB] stored case r250_dt50 draw 3 case 17 in 538 s
+[   1258s rss 0.41GB] stored case r250_dt50 draw 3 case 18 in 537 s
+[   1259s rss 0.41GB] stored case r250_dt50 draw 3 case 21 in 537 s
+[   1260s rss 0.41GB] stored case r250_dt50 draw 3 case 23 in 537 s
+[   1260s rss 0.41GB] stored case r250_dt50 draw 3 case 20 in 539 s
+[   1261s rss 0.43GB] stored case r250_dt50 draw 3 case 19 in 540 s
+[   1262s rss 0.44GB] stored case r250_dt50 draw 3 case 22 in 540 s
+[   1278s rss 0.41GB] pair_r2000_dt400_ 2/3 done
+[   1278s rss 0.41GB] pair_r2000_dt400_ 1/3 done
+[   1279s rss 0.43GB] pair_r500_dt100_ 3/3 done
+[   1279s rss 0.41GB] pair_r500_dt100_ 2/3 done
+[   1282s rss 0.43GB] pair_r250_dt50_ 2/3 done
+[   1282s rss 0.41GB] pair_r250_dt50_ 3/3 done
+[   1282s rss 0.44GB] pair_r250_dt50_ 1/3 done
+[   1284s rss 0.44GB] pair_r2000_dt400_ 3/3 done
+[   1285s rss 0.41GB] pair_r500_dt100_ 1/3 done
+[   1286s rss 0.41GB] pairj 3 done
+[   1286s rss 0.41GB] pairj 1 done
+[   1286s rss 0.41GB] pairj 2 done
+[   1297s rss 0.41GB] paired verdict: void=False; main admissible per cell [(3, 0.05, False), (5, 0.05, True), (3, 0.15, True), (5, 0.15, True)]
+using venv /home/yb107/research-os/projects/pravah/env/venv (Python 3.12.12)
+pravah resolved from: /home/yb107/research-os/projects/pravah/code/EXP-037/RUN-0100/source/src/pravah/__init__.py
+linked data/belauri -> /scratch/railabs/yb107/research-os/shared-data/belauri-geography/files
+[      0s rss 0.15GB] candidate table (once, UTM)
+[      3s rss 0.40GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+  noise budget     mesh  menu  cases       R  R_lo95  R_hi95       E  E_lo95  E_hi95     rho  J_ratio_median
+0  0.05      3     main    30     72  0.0000  0.0000  0.2634  0.0873  0.0595  0.1881  0.9417          0.8463
+1  0.05      3  control    30     72  1.8761  0.2414  5.9034  0.4431  0.2678  0.6154 -0.1497          0.5297
+2  0.05      5     main    35     72  0.0062  0.0000  0.3184  0.0919  0.0516  0.1948  0.9485          0.8791
+3  0.05      5  control    35     72  0.0000  0.0000  1.4629  0.3791  0.1821  0.4715  0.1230          0.6379
+4  0.15      3     main    28     72  0.0000  0.0000  0.1159  0.0765  0.0336  0.1025  0.9622          0.8971
+5  0.15      3  control    28     72  0.5726  0.0000  1.1287  0.2341  0.1276  0.2717  0.4658          0.6984
+6  0.15      5     main    35     72  0.0285  0.0000  0.1128  0.0284  0.0262  0.0723  0.9571          0.9342
+7  0.15      5  control    35     72  1.0769  0.0000  1.8264  0.1146  0.0747  0.1917  0.4790          0.7762
+{
+ "delta": 0.05,
+ "eps": 0.05,
+ "control_cells_failing": 4,
+ "n_cells": 4,
+ "gate_control_can_fail": true,
+ "main_cells_adequate": 0,
+ "main_cells_inadequate": 2,
+ "status": "main INADEQUATE"
+}
