@@ -1,0 +1,10 @@
+{
+ "delta": 0.05,
+ "eps": 0.05,
+ "control_cells_failing": 3,
+ "n_cells": 4,
+ "gate_control_can_fail": true,
+ "main_cells_adequate": 1,
+ "main_cells_inadequate": 0,
+ "status": "main INCONCLUSIVE"
+}

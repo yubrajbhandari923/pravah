@@ -1,0 +1,22 @@
+{
+  "profile": "production",
+  "workers": 8,
+  "design_validation_cases_s": 210.4756492972374,
+  "verify_rel_f0.05": 9.70175438587828e-13,
+  "verify_rel_f0.15": 4.251337442299323e-14,
+  "greedy_f0.05_s": 2.0073778331279755,
+  "enum_f0.05_b2_wall_s": 3.2135768234729767,
+  "enum_f0.05_b3_wall_s": 1.0090677663683891,
+  "enum_f0.05_b4_wall_s": 11.784163177013397,
+  "search_f0.05_wall_s": 91.85928213596344,
+  "greedy_f0.15_s": 2.3424749672412872,
+  "enum_f0.15_b2_wall_s": 0.11814448237419128,
+  "enum_f0.15_b3_wall_s": 1.0713583007454872,
+  "enum_f0.15_b4_wall_s": 3.6193130761384964,
+  "search_f0.15_wall_s": 88.03882747143507,
+  "test_cases_s": 208.57563377171755,
+  "eval_s": 23.78245198726654,
+  "total_s": 783.8147675096989,
+  "peak_rss_gb": 0.413508,
+  "freeze_hash_verified": "62a324743a74f3738c69cbbc2449a36c64ec38d95505b18f1bb4de3ca3720c42"
+}

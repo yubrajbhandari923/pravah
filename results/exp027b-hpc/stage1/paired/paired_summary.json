@@ -1,0 +1,48 @@
+{
+ "control_passes_everywhere_so_test_is_void": false,
+ "main_admissible_all_cells": false,
+ "main_cells": [
+  [
+   3,
+   0.05,
+   true
+  ],
+  [
+   5,
+   0.05,
+   false
+  ],
+  [
+   3,
+   0.15,
+   true
+  ],
+  [
+   5,
+   0.15,
+   true
+  ]
+ ],
+ "control_cells": [
+  [
+   3,
+   0.05,
+   false
+  ],
+  [
+   5,
+   0.05,
+   true
+  ],
+  [
+   3,
+   0.15,
+   false
+  ],
+  [
+   5,
+   0.15,
+   true
+  ]
+ ]
+}

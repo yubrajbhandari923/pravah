@@ -6,19 +6,19 @@
   "backend": "slurm",
   "command": "bash scripts/hpc_exp027b.sh 16 convergence_paired_padded_exp027b_s1.json",
   "created_at": "2026-10-15T13:57:46-04:00",
-  "ended_at": null,
+  "ended_at": "2026-10-15T14:44:57-04:00",
   "env": {
     "lockfiles": {
       "uv.lock": "cd0adfb7e3bec3fc"
     },
     "user": "yubraj"
   },
-  "exit_code": null,
+  "exit_code": 0,
   "experiment_id": "EXP-037",
   "git_branch": "master",
   "git_commit": "fc2011e9743af77f861c26ee6544400d02527868",
   "git_dirty": 0,
-  "hostname": "RAD-88300596",
+  "hostname": "node004",
   "id": "RUN-0096",
   "label": null,
   "metrics_offset": 0,
@@ -38,20 +38,24 @@
   "run_dir": ".research/runs/RUN-0096",
   "slurm": {
     "hpc": {
+      "archive_sha256": "d9ff4a309a8f2e7367edc48d07973d6944a1a9e1c9f2cac97fdf7e4e78e34d4e",
       "bundle": ".research/hpc/bundles/EXP-037-RUN-0096.tar.gz",
       "bundle_dir": ".research/hpc/bundles/EXP-037-RUN-0096",
       "cluster": "duke",
+      "collected_at": "2026-10-15T18:08:17-04:00",
+      "collected_on": "plp-drcc-login2",
       "datasets": {},
       "experiment_id": "EXP-037",
-      "last_sync": "2026-10-15T13:59:11-04:00",
+      "last_sync": "2026-10-15T18:08:14-04:00",
       "receipt": "/home/yb107/research-os/projects/pravah/runs/RUN-0096/submission.json",
+      "remote_archive": "/home/yb107/research-os/projects/pravah/code/EXP-037/results-RUN-0096.tar.gz",
       "remote_code": "/home/yb107/research-os/projects/pravah/code/EXP-037/RUN-0096",
       "remote_results": "/home/yb107/research-os/projects/pravah/results/RUN-0096",
       "remote_run_dir": "/home/yb107/research-os/projects/pravah/runs/RUN-0096",
       "sha256": "7c7cb1f9ef2b49fe156d5cea6e0ae3db97d47b37f1f863af5f0be6d3d941542f",
       "slurm_job_id": "202524",
       "ssh_host": "plp-drcc-login2",
-      "state": "submitted",
+      "state": "collected",
       "submitted_at": "2026-10-15T13:58:04-04:00",
       "token": "dc59eb24a0cf38af6f7d70eb25a49570",
       "upload_detail": "all 6 file(s) match",
@@ -59,13 +63,13 @@
     },
     "nodelist": "node004",
     "partition": "defq",
-    "state": "RUNNING"
+    "state": "COMPLETED"
   },
   "slurm_job_id": "202524",
-  "started_at": null,
-  "status": "running",
+  "started_at": "2026-10-15T13:58:06-04:00",
+  "status": "completed",
   "stderr_path": ".research/runs/RUN-0096/stderr.log",
   "stdout_path": ".research/runs/RUN-0096/stdout.log",
-  "updated_at": "2026-10-15T13:59:11-04:00",
+  "updated_at": "2026-10-15T18:08:17-04:00",
   "working_dir": "."
 }

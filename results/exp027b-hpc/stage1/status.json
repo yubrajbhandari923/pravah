@@ -1,0 +1,12 @@
+{
+  "ended_at": "2026-10-15T14:44:57-04:00",
+  "exit_code": 0,
+  "hostname": "node004",
+  "pid": 841735,
+  "runner_pid": 841729,
+  "slurm_job_id": "202524",
+  "slurm_nodelist": "node004",
+  "slurm_partition": "defq",
+  "started_at": "2026-10-15T13:58:06-04:00",
+  "state": "completed"
+}

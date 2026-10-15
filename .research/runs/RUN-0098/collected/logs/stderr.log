@@ -1,0 +1,12 @@
+/home/yb107/research-os/projects/pravah/code/EXP-026/RUN-0098/source/scripts/population_belauri.py:997: RuntimeWarning: invalid value encountered in divide
+  im = ax[1, j].imshow(np.ma.masked_where(sf == 0, w / u["w"]["area"]), origin="lower", extent=ext, alpha=0.7, cmap="magma")
+/home/yb107/research-os/projects/pravah/code/EXP-026/RUN-0098/source/scripts/population_belauri.py:997: RuntimeWarning: invalid value encountered in divide
+  im = ax[1, j].imshow(np.ma.masked_where(sf == 0, w / u["w"]["area"]), origin="lower", extent=ext, alpha=0.7, cmap="magma")
+/home/yb107/research-os/projects/pravah/code/EXP-026/RUN-0098/source/scripts/population_belauri.py:997: RuntimeWarning: invalid value encountered in divide
+  im = ax[1, j].imshow(np.ma.masked_where(sf == 0, w / u["w"]["area"]), origin="lower", extent=ext, alpha=0.7, cmap="magma")
+/home/yb107/research-os/projects/pravah/code/EXP-026/RUN-0098/source/scripts/population_belauri.py:997: RuntimeWarning: invalid value encountered in divide
+  im = ax[1, j].imshow(np.ma.masked_where(sf == 0, w / u["w"]["area"]), origin="lower", extent=ext, alpha=0.7, cmap="magma")
+/home/yb107/research-os/projects/pravah/code/EXP-026/RUN-0098/source/scripts/population_belauri.py:997: RuntimeWarning: invalid value encountered in divide
+  im = ax[1, j].imshow(np.ma.masked_where(sf == 0, w / u["w"]["area"]), origin="lower", extent=ext, alpha=0.7, cmap="magma")
+/home/yb107/research-os/projects/pravah/code/EXP-026/RUN-0098/source/scripts/population_belauri.py:997: RuntimeWarning: invalid value encountered in divide
+  im = ax[1, j].imshow(np.ma.masked_where(sf == 0, w / u["w"]["area"]), origin="lower", extent=ext, alpha=0.7, cmap="magma")

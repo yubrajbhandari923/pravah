@@ -1,0 +1,351 @@
+{
+  "report": {
+    "n_windows_record": 186,
+    "speed_median_m_s": 1.439106042317866,
+    "strata_table": {
+      "design": {
+        "m01/turning/low": 11,
+        "m01/steady/low": 13,
+        "m01/steady/high": 6,
+        "m07/steady/high": 16,
+        "m07/turning/high": 8,
+        "m07/steady/low": 4,
+        "m07/turning/low": 2
+      },
+      "validation": {
+        "m01/steady/low": 7,
+        "m01/turning/high": 5,
+        "m01/turning/low": 12,
+        "m01/steady/high": 6,
+        "m07/steady/high": 15,
+        "m07/turning/low": 7,
+        "m07/steady/low": 7,
+        "m07/turning/high": 1
+      },
+      "test": {
+        "m01/turning/low": 8,
+        "m01/turning/high": 7,
+        "m01/steady/low": 5,
+        "m01/steady/high": 13,
+        "m07/steady/low": 7,
+        "m07/steady/high": 12,
+        "m07/turning/high": 4,
+        "m07/turning/low": 10
+      }
+    },
+    "clipped_hours": {
+      "design": 3,
+      "validation": 0,
+      "test": 9
+    },
+    "vmax_m_s": 2.5
+  },
+  "winds": {
+    "design": [
+      {
+        "name": "2023-01-01T16",
+        "meta": {
+          "stratum": "m01/steady/low",
+          "mean_speed": 1.0750296159633554,
+          "from_deg": 314.4124509585967,
+          "turn_deg": 16.5978987405928,
+          "max_speed_unclipped": 1.2995491698925346
+        }
+      },
+      {
+        "name": "2023-07-04T16",
+        "meta": {
+          "stratum": "m07/steady/high",
+          "mean_speed": 1.5390599550504378,
+          "from_deg": 68.99861755743801,
+          "turn_deg": 22.905947616663926,
+          "max_speed_unclipped": 2.157482129007254
+        }
+      },
+      {
+        "name": "2023-01-04T08",
+        "meta": {
+          "stratum": "m01/steady/high",
+          "mean_speed": 1.8961076898950195,
+          "from_deg": 252.65717857117716,
+          "turn_deg": 33.295119268057064,
+          "max_speed_unclipped": 2.107399450100464
+        }
+      },
+      {
+        "name": "2023-07-03T00",
+        "meta": {
+          "stratum": "m07/turning/high",
+          "mean_speed": 1.4734387968398008,
+          "from_deg": 141.95544697322032,
+          "turn_deg": 58.65439122710412,
+          "max_speed_unclipped": 1.6651639667184694
+        }
+      },
+      {
+        "name": "2023-01-02T00",
+        "meta": {
+          "stratum": "m01/turning/low",
+          "mean_speed": 0.8927682338989973,
+          "from_deg": 263.19443209949276,
+          "turn_deg": 79.91276349078908,
+          "max_speed_unclipped": 1.416230184717205
+        }
+      },
+      {
+        "name": "2023-07-02T08",
+        "meta": {
+          "stratum": "m07/steady/low",
+          "mean_speed": 0.8183029027053285,
+          "from_deg": 118.72797037010693,
+          "turn_deg": 7.691991488408381,
+          "max_speed_unclipped": 1.62967713623974
+        }
+      },
+      {
+        "name": "2023-07-03T08",
+        "meta": {
+          "stratum": "m07/turning/low",
+          "mean_speed": 0.9105385648326414,
+          "from_deg": 178.85280051176102,
+          "turn_deg": 130.73382914521113,
+          "max_speed_unclipped": 1.592818500020554
+        }
+      },
+      {
+        "name": "2023-01-07T16",
+        "meta": {
+          "stratum": "m01/steady/low",
+          "mean_speed": 1.3009681473795958,
+          "from_deg": 290.79842925295486,
+          "turn_deg": 25.835453848859526,
+          "max_speed_unclipped": 1.7232580811623592
+        }
+      },
+      {
+        "name": "2023-07-01T16",
+        "meta": {
+          "stratum": "m07/steady/high",
+          "mean_speed": 2.06340504290611,
+          "from_deg": 53.60775509001644,
+          "turn_deg": 16.123341370463447,
+          "max_speed_unclipped": 2.342785363964293
+        }
+      },
+      {
+        "name": "2023-01-03T08",
+        "meta": {
+          "stratum": "m01/steady/high",
+          "mean_speed": 1.5834742075764479,
+          "from_deg": 245.78784828084423,
+          "turn_deg": 32.01800701917172,
+          "max_speed_unclipped": 2.291504674296493
+        }
+      },
+      {
+        "name": "2023-07-05T00",
+        "meta": {
+          "stratum": "m07/turning/high",
+          "mean_speed": 2.2518427546238424,
+          "from_deg": 94.9143542043208,
+          "turn_deg": 49.3972644810544,
+          "max_speed_unclipped": 2.8408554013531724
+        }
+      },
+      {
+        "name": "2023-01-08T16",
+        "meta": {
+          "stratum": "m01/turning/low",
+          "mean_speed": 0.6420743173548521,
+          "from_deg": 315.73816999000917,
+          "turn_deg": 78.36092267677218,
+          "max_speed_unclipped": 1.3064428298216797
+        }
+      }
+    ],
+    "validation": [
+      {
+        "name": "2023-01-11T00",
+        "meta": {
+          "stratum": "m01/steady/low",
+          "mean_speed": 1.1291414546487415,
+          "from_deg": 148.2412908365545,
+          "turn_deg": 15.371258274906534,
+          "max_speed_unclipped": 1.9752118587914063
+        }
+      },
+      {
+        "name": "2023-07-16T08",
+        "meta": {
+          "stratum": "m07/turning/low",
+          "mean_speed": 1.043182052750208,
+          "from_deg": 158.90207621434988,
+          "turn_deg": 104.76032170802105,
+          "max_speed_unclipped": 1.5380201535019555
+        }
+      },
+      {
+        "name": "2023-01-18T00",
+        "meta": {
+          "stratum": "m01/turning/low",
+          "mean_speed": 0.6288875188466936,
+          "from_deg": 249.79831099868613,
+          "turn_deg": 61.673523913617935,
+          "max_speed_unclipped": 1.4408650110245527
+        }
+      },
+      {
+        "name": "2023-01-15T08",
+        "meta": {
+          "stratum": "m01/steady/high",
+          "mean_speed": 1.6463890033559225,
+          "from_deg": 234.78590245947123,
+          "turn_deg": 21.168603027569695,
+          "max_speed_unclipped": 1.8883421157014122
+        }
+      },
+      {
+        "name": "2023-07-11T16",
+        "meta": {
+          "stratum": "m07/steady/low",
+          "mean_speed": 1.3939772345898613,
+          "from_deg": 79.78848292227806,
+          "turn_deg": 10.87215970170342,
+          "max_speed_unclipped": 1.7706305107964453
+        }
+      },
+      {
+        "name": "2023-01-16T08",
+        "meta": {
+          "stratum": "m01/turning/high",
+          "mean_speed": 1.7369131709283205,
+          "from_deg": 252.79194032251507,
+          "turn_deg": 46.853928476658766,
+          "max_speed_unclipped": 2.229766614870877
+        }
+      }
+    ],
+    "test": [
+      {
+        "name": "2023-01-21T16",
+        "meta": {
+          "stratum": "m01/steady/low",
+          "mean_speed": 0.8907330844155714,
+          "from_deg": 332.68633861540104,
+          "turn_deg": 13.022835831212255,
+          "max_speed_unclipped": 1.0878728601296197
+        }
+      },
+      {
+        "name": "2023-07-31T00",
+        "meta": {
+          "stratum": "m07/turning/low",
+          "mean_speed": 0.9891976984501323,
+          "from_deg": 135.95454324832954,
+          "turn_deg": 123.80366007131099,
+          "max_speed_unclipped": 1.1574185663171535
+        }
+      },
+      {
+        "name": "2023-01-29T08",
+        "meta": {
+          "stratum": "m01/turning/low",
+          "mean_speed": 1.1568209849649111,
+          "from_deg": 225.4921418993237,
+          "turn_deg": 59.695889303646084,
+          "max_speed_unclipped": 1.7432470884406301
+        }
+      },
+      {
+        "name": "2023-01-26T08",
+        "meta": {
+          "stratum": "m01/steady/high",
+          "mean_speed": 2.816242763630661,
+          "from_deg": 275.6815414855231,
+          "turn_deg": 14.969789863760699,
+          "max_speed_unclipped": 3.0911514852317996
+        }
+      },
+      {
+        "name": "2023-07-29T00",
+        "meta": {
+          "stratum": "m07/steady/low",
+          "mean_speed": 0.560968946298062,
+          "from_deg": 323.96494118558337,
+          "turn_deg": 11.662052309945812,
+          "max_speed_unclipped": 1.1071315670252868
+        }
+      },
+      {
+        "name": "2023-01-23T08",
+        "meta": {
+          "stratum": "m01/turning/high",
+          "mean_speed": 1.5144950946727795,
+          "from_deg": 278.4222985444423,
+          "turn_deg": 48.99811313052317,
+          "max_speed_unclipped": 2.160844659763295
+        }
+      },
+      {
+        "name": "2023-07-22T16",
+        "meta": {
+          "stratum": "m07/steady/high",
+          "mean_speed": 1.8374716623038756,
+          "from_deg": 74.7530456097005,
+          "turn_deg": 33.67391573374182,
+          "max_speed_unclipped": 2.0410987366408344
+        }
+      },
+      {
+        "name": "2023-07-22T00",
+        "meta": {
+          "stratum": "m07/turning/high",
+          "mean_speed": 1.8118470138775098,
+          "from_deg": 72.946101411249,
+          "turn_deg": 79.63466977025104,
+          "max_speed_unclipped": 2.3342764903888558
+        }
+      },
+      {
+        "name": "2023-01-28T16",
+        "meta": {
+          "stratum": "m01/steady/low",
+          "mean_speed": 0.7864420697800665,
+          "from_deg": 93.61898901653726,
+          "turn_deg": 36.30936496903714,
+          "max_speed_unclipped": 1.5769211037707713
+        }
+      },
+      {
+        "name": "2023-07-28T08",
+        "meta": {
+          "stratum": "m07/turning/low",
+          "mean_speed": 0.9343744822887112,
+          "from_deg": 251.7387585901251,
+          "turn_deg": 46.05387783821152,
+          "max_speed_unclipped": 1.4963888948948922
+        }
+      },
+      {
+        "name": "2023-01-23T00",
+        "meta": {
+          "stratum": "m01/turning/low",
+          "mean_speed": 0.9668113357053698,
+          "from_deg": 343.94359887756445,
+          "turn_deg": 67.110422892477,
+          "max_speed_unclipped": 1.4028277242539433
+        }
+      },
+      {
+        "name": "2023-01-31T00",
+        "meta": {
+          "stratum": "m01/steady/high",
+          "mean_speed": 2.2923245474862703,
+          "from_deg": 283.1952334762535,
+          "turn_deg": 37.23278988130237,
+          "max_speed_unclipped": 2.739722200545535
+        }
+      }
+    ]
+  }
+}
