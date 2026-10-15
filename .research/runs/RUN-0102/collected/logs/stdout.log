@@ -1,0 +1,391 @@
+using venv /home/yb107/research-os/projects/pravah/env/venv (Python 3.12.12)
+pravah resolved from: /home/yb107/research-os/projects/pravah/code/EXP-037/RUN-0102/source/src/pravah/__init__.py
+linked data/belauri -> /scratch/railabs/yb107/research-os/shared-data/belauri-geography/files
+[      0s rss 0.16GB] candidate table (once, UTM)
+[      3s rss 0.40GB] 142 sites mapped on meshes [250.0, 500.0, 2000.0]; 19 change study category vs the coarsest mesh
+[     3s] loaded 3 draws x 24 cases x 3 meshes; menu seed 27, b_sub 8
+[     3s] greedy tasks: 108 on 16 workers
+[   206s] greedy done
+[   230s] cell ('0.05', '3') done (30 layouts)
+[   263s] cell ('0.05', '5') done (35 layouts)
+[   285s] cell ('0.15', '3') done (28 layouts)
+[   317s] cell ('0.15', '5') done (35 layouts)
+
+===== EXP-027b POST-HOC SENSITIVITY (exploratory; the registered outcome is unchanged by anything below) =====
+menu sizes: {"0.05/3": {"menu": 30, "menu_ref_main": 20, "sources": {"ref": 12, "main": 11, "control": 11}}, "0.05/5": {"menu": 35, "menu_ref_main": 23, "sources": {"ref": 12, "main": 12, "control": 12}}, "0.15/3": {"menu": 28, "menu_ref_main": 19, "sources": {"ref": 11, "main": 12, "control": 10}}, "0.15/5": {"menu": 35, "menu_ref_main": 23, "sources": {"ref": 12, "main": 12, "control": 12}}}
+
+--- A1/A2 interval type and bootstrap seed ---
+noise budget    mesh                             variant  n_cases  n_layouts      E  E_lo95  E_hi95  E_lo95_min  E_lo95_max  E_hi95_min  E_hi95_max  frac_inadequate  J_ratio          verdict
+ 0.05      3 control pct B=400 seed0 (registered stream)       72         30 0.4431  0.2678  0.6154         NaN         NaN         NaN         NaN              NaN   0.5297       INADEQUATE
+ 0.05      3 control                 pct B=400 x20 seeds       72         30 0.4431  0.2471  0.6177      0.2293      0.2592      0.5889      0.6507              1.0      NaN 20/20 INADEQUATE
+ 0.05      3 control                         pct B=10000       72         30 0.4431  0.2439  0.6227         NaN         NaN         NaN         NaN              NaN   0.5297       INADEQUATE
+ 0.05      3 control                       basic B=10000       72         30 0.4431  0.2635  0.6422         NaN         NaN         NaN         NaN              NaN   0.5297       INADEQUATE
+ 0.05      3 control                         bca B=10000       72         30 0.4431  0.2393  0.6169         NaN         NaN         NaN         NaN              NaN   0.5297       INADEQUATE
+ 0.05      5 control pct B=400 seed0 (registered stream)       72         35 0.3791  0.1813  0.4641         NaN         NaN         NaN         NaN              NaN   0.6379       INADEQUATE
+ 0.05      5 control                 pct B=400 x20 seeds       72         35 0.3791  0.1709  0.4710      0.1524      0.1993      0.4546      0.4935              1.0      NaN 20/20 INADEQUATE
+ 0.05      5 control                         pct B=10000       72         35 0.3791  0.1657  0.4764         NaN         NaN         NaN         NaN              NaN   0.6379       INADEQUATE
+ 0.05      5 control                       basic B=10000       72         35 0.3791  0.2819  0.5926         NaN         NaN         NaN         NaN              NaN   0.6379       INADEQUATE
+ 0.05      5 control                         bca B=10000       72         35 0.3791  0.2782  0.5807         NaN         NaN         NaN         NaN              NaN   0.6379       INADEQUATE
+ 0.15      3 control pct B=400 seed0 (registered stream)       72         28 0.2341  0.1230  0.2787         NaN         NaN         NaN         NaN              NaN   0.6984       INADEQUATE
+ 0.15      3 control                 pct B=400 x20 seeds       72         28 0.2341  0.1254  0.2793      0.1162      0.1318      0.2697      0.2958              1.0      NaN 20/20 INADEQUATE
+ 0.15      3 control                         pct B=10000       72         28 0.2341  0.1269  0.2784         NaN         NaN         NaN         NaN              NaN   0.6984       INADEQUATE
+ 0.15      3 control                       basic B=10000       72         28 0.2341  0.1898  0.3413         NaN         NaN         NaN         NaN              NaN   0.6984       INADEQUATE
+ 0.15      3 control                         bca B=10000       72         28 0.2341  0.1901  0.3413         NaN         NaN         NaN         NaN              NaN   0.6984       INADEQUATE
+ 0.15      5 control pct B=400 seed0 (registered stream)       72         35 0.1146  0.0716  0.1813         NaN         NaN         NaN         NaN              NaN   0.7762       INADEQUATE
+ 0.15      5 control                 pct B=400 x20 seeds       72         35 0.1146  0.0729  0.1827      0.0676      0.0765      0.1778      0.1909              1.0      NaN 20/20 INADEQUATE
+ 0.15      5 control                         pct B=10000       72         35 0.1146  0.0724  0.1819         NaN         NaN         NaN         NaN              NaN   0.7762       INADEQUATE
+ 0.15      5 control                       basic B=10000       72         35 0.1146  0.0472  0.1567         NaN         NaN         NaN         NaN              NaN   0.7762     INCONCLUSIVE
+ 0.15      5 control                         bca B=10000       72         35 0.1146  0.0686  0.1738         NaN         NaN         NaN         NaN              NaN   0.7762       INADEQUATE
+ 0.05      3    main pct B=400 seed0 (registered stream)       72         30 0.0873  0.0595  0.1881         NaN         NaN         NaN         NaN              NaN   0.8463       INADEQUATE
+ 0.05      3    main                 pct B=400 x20 seeds       72         30 0.0873  0.0576  0.1852      0.0538      0.0616      0.1722      0.1988              1.0      NaN 20/20 INADEQUATE
+ 0.05      3    main                         pct B=10000       72         30 0.0873  0.0575  0.1870         NaN         NaN         NaN         NaN              NaN   0.8463       INADEQUATE
+ 0.05      3    main                       basic B=10000       72         30 0.0873 -0.0125  0.1170         NaN         NaN         NaN         NaN              NaN   0.8463     INCONCLUSIVE
+ 0.05      3    main                         bca B=10000       72         30 0.0873  0.0381  0.1293         NaN         NaN         NaN         NaN              NaN   0.8463     INCONCLUSIVE
+ 0.05      5    main pct B=400 seed0 (registered stream)       72         35 0.0919  0.0546  0.1924         NaN         NaN         NaN         NaN              NaN   0.8791       INADEQUATE
+ 0.05      5    main                 pct B=400 x20 seeds       72         35 0.0919  0.0564  0.1981      0.0522      0.0596      0.1826      0.2245              1.0      NaN 20/20 INADEQUATE
+ 0.05      5    main                         pct B=10000       72         35 0.0919  0.0540  0.1998         NaN         NaN         NaN         NaN              NaN   0.8791       INADEQUATE
+ 0.05      5    main                       basic B=10000       72         35 0.0919 -0.0161  0.1298         NaN         NaN         NaN         NaN              NaN   0.8791     INCONCLUSIVE
+ 0.05      5    main                         bca B=10000       72         35 0.0919  0.0408  0.1449         NaN         NaN         NaN         NaN              NaN   0.8791     INCONCLUSIVE
+ 0.15      3    main pct B=400 seed0 (registered stream)       72         28 0.0765  0.0333  0.1022         NaN         NaN         NaN         NaN              NaN   0.8971     INCONCLUSIVE
+ 0.15      3    main                 pct B=400 x20 seeds       72         28 0.0765  0.0349  0.1006      0.0315      0.0369      0.0948      0.1058              0.0      NaN  0/20 INADEQUATE
+ 0.15      3    main                         pct B=10000       72         28 0.0765  0.0357  0.1026         NaN         NaN         NaN         NaN              NaN   0.8971     INCONCLUSIVE
+ 0.15      3    main                       basic B=10000       72         28 0.0765  0.0505  0.1174         NaN         NaN         NaN         NaN              NaN   0.8971       INADEQUATE
+ 0.15      3    main                         bca B=10000       72         28 0.0765  0.0574  0.1590         NaN         NaN         NaN         NaN              NaN   0.8971       INADEQUATE
+ 0.15      5    main pct B=400 seed0 (registered stream)       72         35 0.0284  0.0260  0.0782         NaN         NaN         NaN         NaN              NaN   0.9342     INCONCLUSIVE
+ 0.15      5    main                 pct B=400 x20 seeds       72         35 0.0284  0.0257  0.0762      0.0244      0.0267      0.0705      0.0864              0.0      NaN  0/20 INADEQUATE
+ 0.15      5    main                         pct B=10000       72         35 0.0284  0.0254  0.0756         NaN         NaN         NaN         NaN              NaN   0.9342     INCONCLUSIVE
+ 0.15      5    main                       basic B=10000       72         35 0.0284 -0.0187  0.0314         NaN         NaN         NaN         NaN              NaN   0.9342         ADEQUATE
+ 0.15      5    main                         bca B=10000       72         35 0.0284  0.0149  0.0316         NaN         NaN         NaN         NaN              NaN   0.9342         ADEQUATE
+
+--- A3 per draw / leave-one-draw-out / top-case influence ---
+noise budget    mesh                      variant  n_cases  n_layouts      E  E_lo95  E_hi95  E_lo95_min  E_lo95_max  E_hi95_min  E_hi95_max  frac_inadequate  J_ratio      verdict
+ 0.05      3 control                  draw 1 only       24         30 0.3463  0.1669  0.5692         NaN         NaN         NaN         NaN              NaN   0.5730   INADEQUATE
+ 0.05      3 control               without draw 1       48         30 0.4785  0.2490  0.7071         NaN         NaN         NaN         NaN              NaN   0.4844   INADEQUATE
+ 0.05      3 control                  draw 2 only       24         30 0.1880  0.1504  0.3207         NaN         NaN         NaN         NaN              NaN   0.7806   INADEQUATE
+ 0.05      3 control               without draw 2       48         30 0.4760  0.2692  0.6601         NaN         NaN         NaN         NaN              NaN   0.5073   INADEQUATE
+ 0.05      3 control                  draw 3 only       24         30 0.5414  0.3064  0.8876         NaN         NaN         NaN         NaN              NaN   0.4298   INADEQUATE
+ 0.05      3 control               without draw 3       48         30 0.3226  0.1638  0.4391         NaN         NaN         NaN         NaN              NaN   0.6119   INADEQUATE
+ 0.05      3 control drop top-5 influential cases       67         30 0.2256  0.1455  0.2924         NaN         NaN         NaN         NaN              NaN   0.7443   INADEQUATE
+ 0.05      5 control                  draw 1 only       24         35 0.3218  0.1303  0.5321         NaN         NaN         NaN         NaN              NaN   0.6365   INADEQUATE
+ 0.05      5 control               without draw 1       48         35 0.3472  0.1271  0.5152         NaN         NaN         NaN         NaN              NaN   0.7301   INADEQUATE
+ 0.05      5 control                  draw 2 only       24         35 0.1275  0.0944  0.2190         NaN         NaN         NaN         NaN              NaN   0.9686   INADEQUATE
+ 0.05      5 control               without draw 2       48         35 0.3903  0.1832  0.5178         NaN         NaN         NaN         NaN              NaN   0.6484   INADEQUATE
+ 0.05      5 control                  draw 3 only       24         35 0.4196  0.1629  0.6190         NaN         NaN         NaN         NaN              NaN   0.6876   INADEQUATE
+ 0.05      5 control               without draw 3       48         35 0.2526  0.0990  0.4341         NaN         NaN         NaN         NaN              NaN   0.6968   INADEQUATE
+ 0.05      5 control drop top-5 influential cases       67         35 0.1812  0.0978  0.3518         NaN         NaN         NaN         NaN              NaN   0.7790   INADEQUATE
+ 0.15      3 control                  draw 1 only       24         28 0.1855  0.1088  0.3194         NaN         NaN         NaN         NaN              NaN   0.6905   INADEQUATE
+ 0.15      3 control               without draw 1       48         28 0.2135  0.1238  0.3105         NaN         NaN         NaN         NaN              NaN   0.6641   INADEQUATE
+ 0.15      3 control                  draw 2 only       24         28 0.2862  0.1238  0.3923         NaN         NaN         NaN         NaN              NaN   0.7575   INADEQUATE
+ 0.15      3 control               without draw 2       48         28 0.2169  0.1060  0.2627         NaN         NaN         NaN         NaN              NaN   0.6677   INADEQUATE
+ 0.15      3 control                  draw 3 only       24         28 0.1863  0.1108  0.3201         NaN         NaN         NaN         NaN              NaN   0.5980   INADEQUATE
+ 0.15      3 control               without draw 3       48         28 0.1914  0.1202  0.3131         NaN         NaN         NaN         NaN              NaN   0.7354   INADEQUATE
+ 0.15      3 control drop top-5 influential cases       67         28 0.1598  0.1056  0.2438         NaN         NaN         NaN         NaN              NaN   0.7110   INADEQUATE
+ 0.15      5 control                  draw 1 only       24         35 0.0772  0.0629  0.1580         NaN         NaN         NaN         NaN              NaN   0.8253   INADEQUATE
+ 0.15      5 control               without draw 1       48         35 0.1517  0.0826  0.2360         NaN         NaN         NaN         NaN              NaN   0.7702   INADEQUATE
+ 0.15      5 control                  draw 2 only       24         35 0.1596  0.0761  0.2088         NaN         NaN         NaN         NaN              NaN   0.9218   INADEQUATE
+ 0.15      5 control               without draw 2       48         35 0.1213  0.0756  0.2213         NaN         NaN         NaN         NaN              NaN   0.7895   INADEQUATE
+ 0.15      5 control                  draw 3 only       24         35 0.2236  0.0892  0.3287         NaN         NaN         NaN         NaN              NaN   0.7290   INADEQUATE
+ 0.15      5 control               without draw 3       48         35 0.0967  0.0651  0.1468         NaN         NaN         NaN         NaN              NaN   0.8445   INADEQUATE
+ 0.15      5 control drop top-5 influential cases       67         35 0.1068  0.0667  0.1861         NaN         NaN         NaN         NaN              NaN   0.7927   INADEQUATE
+ 0.05      3    main                  draw 1 only       24         30 0.2600  0.0786  0.3775         NaN         NaN         NaN         NaN              NaN   0.9649   INADEQUATE
+ 0.05      3    main               without draw 1       48         30 0.1403  0.0726  0.2177         NaN         NaN         NaN         NaN              NaN   0.7526   INADEQUATE
+ 0.05      3    main                  draw 2 only       24         30 0.0804  0.0532  0.1416         NaN         NaN         NaN         NaN              NaN   0.9385   INADEQUATE
+ 0.05      3    main               without draw 2       48         30 0.0972  0.0609  0.2040         NaN         NaN         NaN         NaN              NaN   0.8218   INADEQUATE
+ 0.05      3    main                  draw 3 only       24         30 0.1272  0.0800  0.3114         NaN         NaN         NaN         NaN              NaN   0.7029   INADEQUATE
+ 0.05      3    main               without draw 3       48         30 0.0898  0.0621  0.1995         NaN         NaN         NaN         NaN              NaN   0.9602   INADEQUATE
+ 0.05      3    main drop top-5 influential cases       67         30 0.0746  0.0527  0.1289         NaN         NaN         NaN         NaN              NaN   0.9386   INADEQUATE
+ 0.05      5    main                  draw 1 only       24         35 0.1582  0.0617  0.3141         NaN         NaN         NaN         NaN              NaN   1.0481   INADEQUATE
+ 0.05      5    main               without draw 1       48         35 0.1535  0.0520  0.2155         NaN         NaN         NaN         NaN              NaN   0.8289   INADEQUATE
+ 0.05      5    main                  draw 2 only       24         35 0.0567  0.0359  0.1007         NaN         NaN         NaN         NaN              NaN   1.0102 INCONCLUSIVE
+ 0.05      5    main               without draw 2       48         35 0.1104  0.0603  0.2642         NaN         NaN         NaN         NaN              NaN   0.8762   INADEQUATE
+ 0.05      5    main                  draw 3 only       24         35 0.1701  0.0523  0.2959         NaN         NaN         NaN         NaN              NaN   0.7772   INADEQUATE
+ 0.05      5    main               without draw 3       48         35 0.0735  0.0513  0.2225         NaN         NaN         NaN         NaN              NaN   1.0372   INADEQUATE
+ 0.05      5    main drop top-5 influential cases       67         35 0.1005  0.0556  0.2051         NaN         NaN         NaN         NaN              NaN   0.8688   INADEQUATE
+ 0.15      3    main                  draw 1 only       24         28 0.0855  0.0394  0.1287         NaN         NaN         NaN         NaN              NaN   0.9263 INCONCLUSIVE
+ 0.15      3    main               without draw 1       48         28 0.0587  0.0370  0.1178         NaN         NaN         NaN         NaN              NaN   0.8726 INCONCLUSIVE
+ 0.15      3    main                  draw 2 only       24         28 0.0899  0.0362  0.1495         NaN         NaN         NaN         NaN              NaN   0.9096 INCONCLUSIVE
+ 0.15      3    main               without draw 2       48         28 0.0798  0.0321  0.1108         NaN         NaN         NaN         NaN              NaN   0.8896 INCONCLUSIVE
+ 0.15      3    main                  draw 3 only       24         28 0.1006  0.0323  0.1570         NaN         NaN         NaN         NaN              NaN   0.8588 INCONCLUSIVE
+ 0.15      3    main               without draw 3       48         28 0.0894  0.0410  0.1211         NaN         NaN         NaN         NaN              NaN   0.9277 INCONCLUSIVE
+ 0.15      3    main drop top-5 influential cases       67         28 0.0521  0.0315  0.0940         NaN         NaN         NaN         NaN              NaN   0.9101 INCONCLUSIVE
+ 0.15      5    main                  draw 1 only       24         35 0.0534  0.0321  0.0970         NaN         NaN         NaN         NaN              NaN   0.9566 INCONCLUSIVE
+ 0.15      5    main               without draw 1       48         35 0.0444  0.0262  0.1080         NaN         NaN         NaN         NaN              NaN   0.9168 INCONCLUSIVE
+ 0.15      5    main                  draw 2 only       24         35 0.0291  0.0200  0.0855         NaN         NaN         NaN         NaN              NaN   0.9653 INCONCLUSIVE
+ 0.15      5    main               without draw 2       48         35 0.0401  0.0278  0.0869         NaN         NaN         NaN         NaN              NaN   0.9250 INCONCLUSIVE
+ 0.15      5    main                  draw 3 only       24         35 0.0952  0.0293  0.1431         NaN         NaN         NaN         NaN              NaN   0.8874 INCONCLUSIVE
+ 0.15      5    main               without draw 3       48         35 0.0494  0.0295  0.0706         NaN         NaN         NaN         NaN              NaN   0.9572 INCONCLUSIVE
+ 0.15      5    main drop top-5 influential cases       67         35 0.0347  0.0263  0.0864         NaN         NaN         NaN         NaN              NaN   0.9347 INCONCLUSIVE
+
+--- A4 menu without 2 km-derived layouts ---
+noise budget    mesh                           variant  n_cases  n_layouts      E  E_lo95  E_hi95  E_lo95_min  E_lo95_max  E_hi95_min  E_hi95_max  frac_inadequate  J_ratio      verdict
+ 0.05      3 control menu = layouts from ref/main only       72         20 0.3977  0.2191  0.5379         NaN         NaN         NaN         NaN              NaN   0.6169   INADEQUATE
+ 0.05      5 control menu = layouts from ref/main only       72         23 0.3059  0.1953  0.5215         NaN         NaN         NaN         NaN              NaN   0.6379   INADEQUATE
+ 0.15      3 control menu = layouts from ref/main only       72         19 0.1003  0.0687  0.2070         NaN         NaN         NaN         NaN              NaN   0.7570   INADEQUATE
+ 0.15      5 control menu = layouts from ref/main only       72         23 0.0946  0.0595  0.1518         NaN         NaN         NaN         NaN              NaN   0.8373   INADEQUATE
+ 0.05      3    main menu = layouts from ref/main only       72         20 0.0807  0.0476  0.1631         NaN         NaN         NaN         NaN              NaN   0.8686 INCONCLUSIVE
+ 0.05      5    main menu = layouts from ref/main only       72         23 0.0697  0.0501  0.2208         NaN         NaN         NaN         NaN              NaN   0.8686   INADEQUATE
+ 0.15      3    main menu = layouts from ref/main only       72         19 0.0273  0.0192  0.0870         NaN         NaN         NaN         NaN              NaN   0.9171 INCONCLUSIVE
+ 0.15      5    main menu = layouts from ref/main only       72         23 0.0300  0.0218  0.0605         NaN         NaN         NaN         NaN              NaN   0.9342 INCONCLUSIVE
+
+--- A5 cross-fit (out-of-sample menu) ---
+noise budget    mesh                                            variant  n_cases  n_layouts      E  E_lo95  E_hi95  E_lo95_min  E_lo95_max  E_hi95_min  E_hi95_max  frac_inadequate  J_ratio               verdict
+ 0.05      3 control cross-fit: menu from other draws, scored on draw 1       24         25 0.2173  0.1272  0.4683         NaN         NaN         NaN         NaN              NaN   0.5705            INADEQUATE
+ 0.05      3 control cross-fit: menu from other draws, scored on draw 2       24         25 0.2134  0.1604  0.4060         NaN         NaN         NaN         NaN              NaN   0.7066            INADEQUATE
+ 0.05      3 control cross-fit: menu from other draws, scored on draw 3       24         27 0.2971  0.1767  0.5562         NaN         NaN         NaN         NaN              NaN   0.4173            INADEQUATE
+ 0.05      3 control        cross-fit: mean E over the 3 held-out draws       72         25 0.2426     NaN     NaN         NaN         NaN         NaN         NaN              NaN      NaN (point estimate only)
+ 0.05      5 control cross-fit: menu from other draws, scored on draw 1       24         33 0.2651  0.1159  0.3831         NaN         NaN         NaN         NaN              NaN   0.7328            INADEQUATE
+ 0.05      5 control cross-fit: menu from other draws, scored on draw 2       24         33 0.1834  0.1206  0.2588         NaN         NaN         NaN         NaN              NaN   0.9847            INADEQUATE
+ 0.05      5 control cross-fit: menu from other draws, scored on draw 3       24         33 0.4021  0.1384  0.6101         NaN         NaN         NaN         NaN              NaN   0.7971            INADEQUATE
+ 0.05      5 control        cross-fit: mean E over the 3 held-out draws       72         33 0.2835     NaN     NaN         NaN         NaN         NaN         NaN              NaN      NaN (point estimate only)
+ 0.15      3 control cross-fit: menu from other draws, scored on draw 1       24         25 0.1962  0.0943  0.3458         NaN         NaN         NaN         NaN              NaN   0.7415            INADEQUATE
+ 0.15      3 control cross-fit: menu from other draws, scored on draw 2       24         25 0.2153  0.1037  0.3269         NaN         NaN         NaN         NaN              NaN   0.7943            INADEQUATE
+ 0.15      3 control cross-fit: menu from other draws, scored on draw 3       24         21 0.1861  0.1012  0.3381         NaN         NaN         NaN         NaN              NaN   0.5790            INADEQUATE
+ 0.15      3 control        cross-fit: mean E over the 3 held-out draws       72         23 0.1992     NaN     NaN         NaN         NaN         NaN         NaN              NaN      NaN (point estimate only)
+ 0.15      5 control cross-fit: menu from other draws, scored on draw 1       24         30 0.0683  0.0508  0.1506         NaN         NaN         NaN         NaN              NaN   0.8352            INADEQUATE
+ 0.15      5 control cross-fit: menu from other draws, scored on draw 2       24         30 0.1309  0.0946  0.2191         NaN         NaN         NaN         NaN              NaN   0.9248            INADEQUATE
+ 0.15      5 control cross-fit: menu from other draws, scored on draw 3       24         29 0.1354  0.0638  0.2348         NaN         NaN         NaN         NaN              NaN   0.6902            INADEQUATE
+ 0.15      5 control        cross-fit: mean E over the 3 held-out draws       72         29 0.1115     NaN     NaN         NaN         NaN         NaN         NaN              NaN      NaN (point estimate only)
+ 0.05      3    main cross-fit: menu from other draws, scored on draw 1       24         25 0.1076  0.0593  0.4892         NaN         NaN         NaN         NaN              NaN   0.9642            INADEQUATE
+ 0.05      3    main cross-fit: menu from other draws, scored on draw 2       24         25 0.1275  0.0423  0.1918         NaN         NaN         NaN         NaN              NaN   0.9387          INCONCLUSIVE
+ 0.05      3    main cross-fit: menu from other draws, scored on draw 3       24         27 0.0640  0.0489  0.3157         NaN         NaN         NaN         NaN              NaN   0.8436          INCONCLUSIVE
+ 0.05      3    main        cross-fit: mean E over the 3 held-out draws       72         25 0.0997     NaN     NaN         NaN         NaN         NaN         NaN              NaN      NaN (point estimate only)
+ 0.05      5    main cross-fit: menu from other draws, scored on draw 1       24         33 0.1826  0.0680  0.2946         NaN         NaN         NaN         NaN              NaN   1.0128            INADEQUATE
+ 0.05      5    main cross-fit: menu from other draws, scored on draw 2       24         33 0.0824  0.0389  0.1259         NaN         NaN         NaN         NaN              NaN   1.0390          INCONCLUSIVE
+ 0.05      5    main cross-fit: menu from other draws, scored on draw 3       24         33 0.0833  0.0453  0.2115         NaN         NaN         NaN         NaN              NaN   0.9750          INCONCLUSIVE
+ 0.05      5    main        cross-fit: mean E over the 3 held-out draws       72         33 0.1161     NaN     NaN         NaN         NaN         NaN         NaN              NaN      NaN (point estimate only)
+ 0.15      3    main cross-fit: menu from other draws, scored on draw 1       24         25 0.0830  0.0363  0.1223         NaN         NaN         NaN         NaN              NaN   0.9260          INCONCLUSIVE
+ 0.15      3    main cross-fit: menu from other draws, scored on draw 2       24         25 0.0865  0.0342  0.1622         NaN         NaN         NaN         NaN              NaN   0.9442          INCONCLUSIVE
+ 0.15      3    main cross-fit: menu from other draws, scored on draw 3       24         21 0.0476  0.0349  0.1979         NaN         NaN         NaN         NaN              NaN   0.8596          INCONCLUSIVE
+ 0.15      3    main        cross-fit: mean E over the 3 held-out draws       72         23 0.0724     NaN     NaN         NaN         NaN         NaN         NaN              NaN      NaN (point estimate only)
+ 0.15      5    main cross-fit: menu from other draws, scored on draw 1       24         30 0.0416  0.0253  0.0736         NaN         NaN         NaN         NaN              NaN   0.9673          INCONCLUSIVE
+ 0.15      5    main cross-fit: menu from other draws, scored on draw 2       24         30 0.0541  0.0291  0.0736         NaN         NaN         NaN         NaN              NaN   0.9562          INCONCLUSIVE
+ 0.15      5    main cross-fit: menu from other draws, scored on draw 3       24         29 0.0373  0.0188  0.1502         NaN         NaN         NaN         NaN              NaN   0.9046          INCONCLUSIVE
+ 0.15      5    main        cross-fit: mean E over the 3 held-out draws       72         29 0.0444     NaN     NaN         NaN         NaN         NaN         NaN              NaN      NaN (point estimate only)
+
+--- A6 noise-debiased E (split-half) ---
+noise budget    mesh                           variant  n_cases  n_layouts      E  E_lo95  E_hi95  E_lo95_min  E_lo95_max  E_hi95_min  E_hi95_max  frac_inadequate  J_ratio      verdict
+ 0.05      3 control split-half cross-fit (200 splits)       72         30 0.3470  0.0960  0.4964         NaN         NaN         NaN         NaN              NaN      NaN   INADEQUATE
+ 0.05      5 control split-half cross-fit (200 splits)       72         35 0.2576  0.0000  0.3863         NaN         NaN         NaN         NaN              NaN      NaN INCONCLUSIVE
+ 0.15      3 control split-half cross-fit (200 splits)       72         28 0.1758  0.0254  0.2281         NaN         NaN         NaN         NaN              NaN      NaN INCONCLUSIVE
+ 0.15      5 control split-half cross-fit (200 splits)       72         35 0.0784  0.0000  0.1268         NaN         NaN         NaN         NaN              NaN      NaN INCONCLUSIVE
+ 0.05      3    main split-half cross-fit (200 splits)       72         30 0.0442  0.0000  0.1261         NaN         NaN         NaN         NaN              NaN      NaN INCONCLUSIVE
+ 0.05      5    main split-half cross-fit (200 splits)       72         35 0.0382  0.0000  0.1125         NaN         NaN         NaN         NaN              NaN      NaN INCONCLUSIVE
+ 0.15      3    main split-half cross-fit (200 splits)       72         28 0.0405  0.0000  0.0792         NaN         NaN         NaN         NaN              NaN      NaN INCONCLUSIVE
+ 0.15      5    main split-half cross-fit (200 splits)       72         35 0.0147  0.0000  0.0458         NaN         NaN         NaN         NaN              NaN      NaN     ADEQUATE
+
+--- A3 dropped cases (case(influence = E - E without case)) ---
+0.05/3 main: E 0.0873 -> 0.0746; r3_21(-0.0682);r3_3(+0.0366);r2_8(+0.0269);r3_4(-0.0234);r1_17(-0.0187)
+0.05/3 control: E 0.4431 -> 0.2256; r3_3(+0.0866);r3_21(-0.0645);r1_5(-0.0529);r1_8(-0.0392);r3_4(-0.0284)
+0.05/5 main: E 0.0919 -> 0.1005; r1_6(+0.0166);r2_21(+0.0125);r1_21(+0.0121);r2_18(+0.0113);r1_3(+0.0112)
+0.05/5 control: E 0.3791 -> 0.1812; r3_21(+0.1061);r1_8(+0.1005);r3_4(+0.0786);r2_5(+0.0668);r2_1(+0.0545)
+0.15/3 main: E 0.0765 -> 0.0521; r1_16(+0.0312);r2_5(+0.0302);r3_17(+0.0251);r1_14(+0.0214);r2_18(+0.0192)
+0.15/3 control: E 0.2341 -> 0.1598; r2_5(+0.0331);r3_17(+0.0289);r1_8(+0.0221);r1_16(+0.0218);r1_20(-0.0200)
+0.15/5 main: E 0.0284 -> 0.0347; r1_21(-0.0106);r1_9(-0.0096);r2_18(-0.0094);r2_16(-0.0068);r2_5(-0.0057)
+0.15/5 control: E 0.1146 -> 0.1068; r2_3(+0.0178);r1_21(+0.0163);r1_9(+0.0144);r2_16(+0.0122);r3_18(-0.0120)
+=====FILE sens_rows.csv
+analysis,variant,noise,budget,mesh,E,E_lo95,E_hi95,verdict,n_cases,n_layouts,J_ratio,E_lo95_min,E_lo95_max,E_hi95_min,E_hi95_max,frac_inadequate,JR_lo95,JR_hi95,dropped,influence_sum_top,influence_max,E_full,n_layouts_full,E_plain
+A1,pct B=400 seed0 (registered stream),0.05,3,main,0.08728156728139069,0.059460396395958647,0.18812011459216055,INADEQUATE,72,30,0.8463140981699708,,,,,,,,,,,,,
+A1,pct B=400 x20 seeds,0.05,3,main,0.08728156728139069,0.05756900290232099,0.18515122345217416,20/20 INADEQUATE,72,30,,0.053812396964717554,0.06162509449777056,0.17224748157755296,0.19884303147428445,1.0,,,,,,,,
+A1,pct B=10000,0.05,3,main,0.08728156728139069,0.057514114330280294,0.18701737953292633,INADEQUATE,72,30,0.8463140981699708,,,,,,0.7664768089767512,0.944145148313588,,,,,,
+A2,basic B=10000,0.05,3,main,0.08728156728139069,-0.01245424497014494,0.11704902023250109,INCONCLUSIVE,72,30,0.8463140981699708,,,,,,0.7664768089767512,0.944145148313588,,,,,,
+A2,bca B=10000,0.05,3,main,0.08728156728139069,0.03807064873121183,0.12929290545136235,INCONCLUSIVE,72,30,0.8463140981699708,,,,,,0.7664768089767512,0.944145148313588,,,,,,
+A3,draw 1 only,0.05,3,main,0.2599731906232641,0.0786158352773494,0.3774600491953256,INADEQUATE,24,30,0.964891542188539,,,,,,0.9158035907690052,1.066771365852594,,,,,,
+A3,without draw 1,0.05,3,main,0.14033464415558072,0.07256800181239138,0.217741255101723,INADEQUATE,48,30,0.7526479902111984,,,,,,0.6974358054735942,0.9126307268939635,,,,,,
+A3,draw 2 only,0.05,3,main,0.08041541763720494,0.05316336972961934,0.14159477639873963,INADEQUATE,24,30,0.9385233128260824,,,,,,0.8945252664533214,1.0368472079656732,,,,,,
+A3,without draw 2,0.05,3,main,0.09720246373955377,0.060881536138905575,0.20395744560853474,INADEQUATE,48,30,0.8217529543354576,,,,,,0.7391732165589745,0.9370348557656063,,,,,,
+A3,draw 3 only,0.05,3,main,0.12719115831296451,0.07999640773375867,0.31138732104842787,INADEQUATE,24,30,0.7028952765830009,,,,,,0.6436660020416285,0.8842648036098648,,,,,,
+A3,without draw 3,0.05,3,main,0.0897536831350898,0.06205474756813122,0.19949425029513992,INADEQUATE,48,30,0.9602275325586883,,,,,,0.9103168655528772,1.023193852162152,,,,,,
+A3,drop top-5 influential cases,0.05,3,main,0.07463287801026275,0.052721990338436754,0.12887163275471222,INADEQUATE,67,30,0.9386109250637287,,,,,,,,r3_21(-0.0682);r3_3(+0.0366);r2_8(+0.0269);r3_4(-0.0234);r1_17(-0.0187),-0.046776506456058964,0.06822223343444012,0.08728156728139069,,
+A4,menu = layouts from ref/main only,0.05,3,main,0.08069614002174696,0.047615501779771745,0.16308893485072837,INCONCLUSIVE,72,20,0.8686261779067272,,,,,,0.7942160242500408,0.9558505912879449,,,,,30.0,
+A6,split-half cross-fit (200 splits),0.05,3,main,0.04415989309685887,0.0,0.1260821833498688,INCONCLUSIVE,72,30,,,,,,,,,,,,,,0.08728156728139069
+A1,pct B=400 seed0 (registered stream),0.05,3,control,0.4430535090065062,0.26779815815632313,0.6154027121580787,INADEQUATE,72,30,0.5297049239945082,,,,,,,,,,,,,
+A1,pct B=400 x20 seeds,0.05,3,control,0.4430535090065062,0.2471170346303151,0.6176668117119848,20/20 INADEQUATE,72,30,,0.22927296586944534,0.25920024270460296,0.5889207966470228,0.6506716394202988,1.0,,,,,,,,
+A1,pct B=10000,0.05,3,control,0.4430535090065062,0.24394304360805094,0.6226565061365655,INADEQUATE,72,30,0.5297049239945082,,,,,,0.39590639382364057,0.6608978287818275,,,,,,
+A2,basic B=10000,0.05,3,control,0.4430535090065062,0.26345051187644686,0.6421639744049614,INADEQUATE,72,30,0.5297049239945082,,,,,,0.39590639382364057,0.6608978287818275,,,,,,
+A2,bca B=10000,0.05,3,control,0.4430535090065062,0.23934053458872923,0.6169477481104474,INADEQUATE,72,30,0.5297049239945082,,,,,,0.39590639382364057,0.6608978287818275,,,,,,
+A3,draw 1 only,0.05,3,control,0.34625309102725266,0.16685284702121614,0.5692386470204505,INADEQUATE,24,30,0.5730066038522686,,,,,,0.4268903797903352,0.8036251667253603,,,,,,
+A3,without draw 1,0.05,3,control,0.4784905407233572,0.2490191346228084,0.7071253784201521,INADEQUATE,48,30,0.4843554427568947,,,,,,0.36409230251613833,0.7093465143080504,,,,,,
+A3,draw 2 only,0.05,3,control,0.18800417635408773,0.15037352654492975,0.32072995923701547,INADEQUATE,24,30,0.7805986741767946,,,,,,0.6713431319441207,0.9214994809082127,,,,,,
+A3,without draw 2,0.05,3,control,0.4760114790856928,0.2692426882936112,0.6600904838005269,INADEQUATE,48,30,0.5073448389929821,,,,,,0.34434151770960025,0.6347280777784685,,,,,,
+A3,draw 3 only,0.05,3,control,0.5413590246136176,0.30636469613072526,0.8876055508368332,INADEQUATE,24,30,0.4298217776322226,,,,,,0.2636216170457997,0.6884347247275096,,,,,,
+A3,without draw 3,0.05,3,control,0.3226136811571024,0.1638225834949251,0.43909181887098925,INADEQUATE,48,30,0.6119450450053445,,,,,,0.49627051103487746,0.8104308725548995,,,,,,
+A3,drop top-5 influential cases,0.05,3,control,0.22559681076460641,0.145510513948205,0.292403963134463,INADEQUATE,67,30,0.744254434943072,,,,,,,,r3_3(+0.0866);r3_21(-0.0645);r1_5(-0.0529);r1_8(-0.0392);r3_4(-0.0284),-0.09844283419073402,0.08659281784415923,0.4430535090065062,,
+A4,menu = layouts from ref/main only,0.05,3,control,0.39774592652792534,0.21907514196619354,0.5379179162401778,INADEQUATE,72,20,0.6168953604859533,,,,,,0.49390271966474864,0.7700351048103017,,,,,30.0,
+A6,split-half cross-fit (200 splits),0.05,3,control,0.34704101641508417,0.09604020288487847,0.49637871982799825,INADEQUATE,72,30,,,,,,,,,,,,,,0.4430535090065062
+A5,"cross-fit: menu from other draws, scored on draw 1",0.05,3,main,0.10758854619783587,0.059284924989552644,0.4892436012485491,INADEQUATE,24,25,0.9642469275123059,,,,,,0.9021202156341066,1.0326827616847685,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 1",0.05,3,control,0.21726914598028968,0.12723052916701483,0.4683293425126661,INADEQUATE,24,25,0.5705488155732026,,,,,,0.3920141211303423,0.8097970467187904,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 2",0.05,3,main,0.12752489356790964,0.042284866948431525,0.19178936798442792,INCONCLUSIVE,24,25,0.9387092584070668,,,,,,0.8797977479600763,1.0522106560560227,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 2",0.05,3,control,0.21341210553053935,0.16042094609444627,0.4060382443138204,INADEQUATE,24,25,0.7066184057449666,,,,,,0.6149333876470082,0.9776418905392438,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 3",0.05,3,main,0.06401108512205034,0.048927961552719126,0.3157336214526075,INCONCLUSIVE,24,27,0.8436125706788576,,,,,,0.7460179526973539,0.9367240374853982,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 3",0.05,3,control,0.2970512093932647,0.17668178687539995,0.5562066971746514,INADEQUATE,24,27,0.4173365693269857,,,,,,0.3117053620759377,0.7052798521922061,,,,,,
+A5,cross-fit: mean E over the 3 held-out draws,0.05,3,main,0.09970817496259861,,,(point estimate only),72,25,,,,,,,,,,,,,,
+A5,cross-fit: mean E over the 3 held-out draws,0.05,3,control,0.24257748696803125,,,(point estimate only),72,25,,,,,,,,,,,,,,
+A1,pct B=400 seed0 (registered stream),0.05,5,main,0.09188696921502115,0.05455978256550677,0.19235719449458727,INADEQUATE,72,35,0.8791091681871549,,,,,,,,,,,,,
+A1,pct B=400 x20 seeds,0.05,5,main,0.09188696921502115,0.05644326925509653,0.19812671145673916,20/20 INADEQUATE,72,35,,0.05215246063187398,0.05964233960436345,0.18261618548559566,0.22445876030497228,1.0,,,,,,,,
+A1,pct B=10000,0.05,5,main,0.09188696921502115,0.0539780210157464,0.19982571356181728,INADEQUATE,72,35,0.8791091681871549,,,,,,0.8114033475527854,1.0182412724048988,,,,,,
+A2,basic B=10000,0.05,5,main,0.09188696921502115,-0.01605177513177497,0.1297959174142959,INCONCLUSIVE,72,35,0.8791091681871549,,,,,,0.8114033475527854,1.0182412724048988,,,,,,
+A2,bca B=10000,0.05,5,main,0.09188696921502115,0.040836518635709945,0.14491872181651652,INCONCLUSIVE,72,35,0.8791091681871549,,,,,,0.8114033475527854,1.0182412724048988,,,,,,
+A3,draw 1 only,0.05,5,main,0.15823674302433366,0.06168542067740838,0.31413658083515383,INADEQUATE,24,35,1.0480632676487993,,,,,,0.9814079095546807,1.094834387782314,,,,,,
+A3,without draw 1,0.05,5,main,0.15354928213515262,0.052042102605604885,0.2155094106365343,INADEQUATE,48,35,0.8288816894960489,,,,,,0.7693981430494019,0.9995245059756562,,,,,,
+A3,draw 2 only,0.05,5,main,0.0567074913322847,0.035919831705643744,0.10065050732107425,INCONCLUSIVE,24,35,1.0101666481786284,,,,,,0.9639783878582119,1.0650199371086007,,,,,,
+A3,without draw 2,0.05,5,main,0.11041311278905108,0.06028028803709056,0.2641989741954425,INADEQUATE,48,35,0.8762312640526846,,,,,,0.7872169856473245,1.0139727417450208,,,,,,
+A3,draw 3 only,0.05,5,main,0.17010603617957787,0.052300766179688915,0.29592201464520185,INADEQUATE,24,35,0.7772408236831242,,,,,,0.7226296053919796,0.9906629730871727,,,,,,
+A3,without draw 3,0.05,5,main,0.0735035120284151,0.051271583060352864,0.2225124561558306,INADEQUATE,48,35,1.0371679882067988,,,,,,0.9811776316178771,1.0731563448115902,,,,,,
+A3,drop top-5 influential cases,0.05,5,main,0.10051996544344233,0.05558842454021855,0.20513482541874198,INADEQUATE,67,35,0.8688172750582392,,,,,,,,r1_6(+0.0166);r2_21(+0.0125);r1_21(+0.0121);r2_18(+0.0113);r1_3(+0.0112),0.06366383986200108,0.016574430856499567,0.09188696921502115,,
+A4,menu = layouts from ref/main only,0.05,5,main,0.06967275439340381,0.05014493136574911,0.2208026551467738,INADEQUATE,72,23,0.8686325753732741,,,,,,0.8058520958045808,1.0103269276247322,,,,,35.0,
+A6,split-half cross-fit (200 splits),0.05,5,main,0.03816475208116299,0.0,0.11246916697977873,INCONCLUSIVE,72,35,,,,,,,,,,,,,,0.09188696921502115
+A1,pct B=400 seed0 (registered stream),0.05,5,control,0.37914538707980827,0.18130770942074168,0.46414189209367285,INADEQUATE,72,35,0.6379313600703144,,,,,,,,,,,,,
+A1,pct B=400 x20 seeds,0.05,5,control,0.37914538707980827,0.17091713513159057,0.4709815947836299,20/20 INADEQUATE,72,35,,0.15235361084418186,0.1993389212292254,0.4545717242801148,0.49346531346187544,1.0,,,,,,,,
+A1,pct B=10000,0.05,5,control,0.37914538707980827,0.16566038033675684,0.4764006455419135,INADEQUATE,72,35,0.6379313600703144,,,,,,0.5522991666279223,0.8490028902283576,,,,,,
+A2,basic B=10000,0.05,5,control,0.37914538707980827,0.281890128617703,0.5926303938228596,INADEQUATE,72,35,0.6379313600703144,,,,,,0.5522991666279223,0.8490028902283576,,,,,,
+A2,bca B=10000,0.05,5,control,0.37914538707980827,0.27823314003054944,0.5807400882478693,INADEQUATE,72,35,0.6379313600703144,,,,,,0.5522991666279223,0.8490028902283576,,,,,,
+A3,draw 1 only,0.05,5,control,0.3217792550628509,0.13029037320643605,0.5321224974392345,INADEQUATE,24,35,0.6365357121595042,,,,,,0.4842083343346124,0.9545869784929752,,,,,,
+A3,without draw 1,0.05,5,control,0.34716775285239865,0.12713407271645769,0.5152076222307114,INADEQUATE,48,35,0.730099115483461,,,,,,0.6032704701395248,0.9482846380601759,,,,,,
+A3,draw 2 only,0.05,5,control,0.1275393675712424,0.09439867570709187,0.21900606030544473,INADEQUATE,24,35,0.9685856771380323,,,,,,0.8860904574404178,1.0509694660037578,,,,,,
+A3,without draw 2,0.05,5,control,0.39027615612463984,0.18324572696267852,0.5177502817803687,INADEQUATE,48,35,0.6483994198353159,,,,,,0.5092054872124137,0.8076964488894148,,,,,,
+A3,draw 3 only,0.05,5,control,0.4195575993478632,0.16291773040518434,0.6190138437061244,INADEQUATE,24,35,0.6876123380534969,,,,,,0.5008282041393319,0.9595043392102527,,,,,,
+A3,without draw 3,0.05,5,control,0.25260546930078354,0.0989926785210333,0.4341275237425618,INADEQUATE,48,35,0.6968020097496266,,,,,,0.5916587028004637,0.967607983634737,,,,,,
+A3,drop top-5 influential cases,0.05,5,control,0.1811714781550895,0.09775152538428646,0.3517525375966893,INADEQUATE,67,35,0.7790222874484246,,,,,,,,r3_21(+0.1061);r1_8(+0.1005);r3_4(+0.0786);r2_5(+0.0668);r2_1(+0.0545),0.4065655760002973,0.10610603616165282,0.37914538707980827,,
+A4,menu = layouts from ref/main only,0.05,5,control,0.3059204246599525,0.19534745578820284,0.5214757277369103,INADEQUATE,72,23,0.6379313600703144,,,,,,0.5511271416843248,0.8842846673399868,,,,,35.0,
+A6,split-half cross-fit (200 splits),0.05,5,control,0.25760954501911465,0.0,0.38631375275357444,INCONCLUSIVE,72,35,,,,,,,,,,,,,,0.37914538707980827
+A5,"cross-fit: menu from other draws, scored on draw 1",0.05,5,main,0.18259770483655702,0.06795070883209361,0.29455940283760906,INADEQUATE,24,33,1.012808856158436,,,,,,0.9250696615173922,1.1025918784967181,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 1",0.05,5,control,0.2651198406098907,0.11585494783467574,0.38307808830557066,INADEQUATE,24,33,0.7328015322157473,,,,,,0.5715540623890092,0.9369394541458453,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 2",0.05,5,main,0.08235916319625114,0.03892841039927533,0.12590616128523957,INCONCLUSIVE,24,33,1.0389594270475735,,,,,,0.9701191217668453,1.1605739245050328,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 2",0.05,5,control,0.1833740162281312,0.12063909529535481,0.25883860175951684,INADEQUATE,24,33,0.9847301973104393,,,,,,0.9028592916511977,1.1377371569130406,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 3",0.05,5,main,0.08329896611511156,0.045259548537214075,0.21148120403465978,INCONCLUSIVE,24,33,0.9750134704391251,,,,,,0.9136471291806281,1.014086460487432,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 3",0.05,5,control,0.4020957035665931,0.13843975171943157,0.6101005403609363,INADEQUATE,24,33,0.7971071098436115,,,,,,0.7195032255471729,1.0457949281279573,,,,,,
+A5,cross-fit: mean E over the 3 held-out draws,0.05,5,main,0.11608527804930657,,,(point estimate only),72,33,,,,,,,,,,,,,,
+A5,cross-fit: mean E over the 3 held-out draws,0.05,5,control,0.283529853468205,,,(point estimate only),72,33,,,,,,,,,,,,,,
+A1,pct B=400 seed0 (registered stream),0.15,3,main,0.07654071509172378,0.03325483183972638,0.10224904852095487,INCONCLUSIVE,72,28,0.8971309254845146,,,,,,,,,,,,,
+A1,pct B=400 x20 seeds,0.15,3,main,0.07654071509172378,0.03489208093379051,0.10059764548588934,0/20 INADEQUATE,72,28,,0.03147366995804743,0.0369377232276841,0.09482225353320947,0.10578419511549363,0.0,,,,,,,,
+A1,pct B=10000,0.15,3,main,0.07654071509172378,0.0357207054834389,0.10260069703786898,INCONCLUSIVE,72,28,0.8971309254845146,,,,,,0.8506860016223022,0.9353469521903696,,,,,,
+A2,basic B=10000,0.15,3,main,0.07654071509172378,0.05048073314557858,0.11736072470000866,INADEQUATE,72,28,0.8971309254845146,,,,,,0.8506860016223022,0.9353469521903696,,,,,,
+A2,bca B=10000,0.15,3,main,0.07654071509172378,0.05740543008038578,0.15895266998102517,INADEQUATE,72,28,0.8971309254845146,,,,,,0.8506860016223022,0.9353469521903696,,,,,,
+A3,draw 1 only,0.15,3,main,0.08548977410120973,0.039379192394746236,0.12870268603233234,INCONCLUSIVE,24,28,0.9262618541780445,,,,,,0.8747991517712858,0.9784440749311263,,,,,,
+A3,without draw 1,0.15,3,main,0.05869460361423484,0.03702841387968836,0.11780577425051156,INCONCLUSIVE,48,28,0.8725583433188593,,,,,,0.8306621386565292,0.9301340414172932,,,,,,
+A3,draw 2 only,0.15,3,main,0.08985370017216798,0.03616129279190751,0.14949117879149834,INCONCLUSIVE,24,28,0.9095508294165663,,,,,,0.8777096266238202,0.9626845197017334,,,,,,
+A3,without draw 2,0.15,3,main,0.07984582646651717,0.0321296969737261,0.11079368144266984,INCONCLUSIVE,48,28,0.8896367177157101,,,,,,0.835771204171056,0.9438865358044859,,,,,,
+A3,draw 3 only,0.15,3,main,0.10060533447283482,0.03230911390185671,0.1570219943225199,INCONCLUSIVE,24,28,0.858818338931998,,,,,,0.7967275750899037,0.9458293861684163,,,,,,
+A3,without draw 3,0.15,3,main,0.08943690869057597,0.04096558744802479,0.12107859163084463,INCONCLUSIVE,48,28,0.9276693663983404,,,,,,0.8926641067673646,0.9530354211552261,,,,,,
+A3,drop top-5 influential cases,0.15,3,main,0.05212247419210331,0.03150150442422194,0.0939591671744049,INCONCLUSIVE,67,28,0.9101227733665371,,,,,,,,r1_16(+0.0312);r2_5(+0.0302);r3_17(+0.0251);r1_14(+0.0214);r2_18(+0.0192),0.12699940095643214,0.0311742815295582,0.07654071509172378,,
+A4,menu = layouts from ref/main only,0.15,3,main,0.027307062307678764,0.019158357956961622,0.08699189619883546,INCONCLUSIVE,72,19,0.9170569567792402,,,,,,0.878932026408711,0.9513691089400934,,,,,28.0,
+A6,split-half cross-fit (200 splits),0.15,3,main,0.04054364392981569,0.0,0.07919250074581917,INCONCLUSIVE,72,28,,,,,,,,,,,,,,0.07654071509172378
+A1,pct B=400 seed0 (registered stream),0.15,3,control,0.2341087721280864,0.1229558767456235,0.2787371359228936,INADEQUATE,72,28,0.6984350316599236,,,,,,,,,,,,,
+A1,pct B=400 x20 seeds,0.15,3,control,0.2341087721280864,0.1254285963090656,0.279310821146127,20/20 INADEQUATE,72,28,,0.11615046524900659,0.1317832658387111,0.2697320240237053,0.29575308733043326,1.0,,,,,,,,
+A1,pct B=10000,0.15,3,control,0.2341087721280864,0.12689161466719373,0.2783929765029385,INADEQUATE,72,28,0.6984350316599236,,,,,,0.6056154954067448,0.7720600205141054,,,,,,
+A2,basic B=10000,0.15,3,control,0.2341087721280864,0.1898245677532343,0.34132592958897906,INADEQUATE,72,28,0.6984350316599236,,,,,,0.6056154954067448,0.7720600205141054,,,,,,
+A2,bca B=10000,0.15,3,control,0.2341087721280864,0.1901432474608418,0.3412782343704637,INADEQUATE,72,28,0.6984350316599236,,,,,,0.6056154954067448,0.7720600205141054,,,,,,
+A3,draw 1 only,0.15,3,control,0.18545806351255334,0.10878343836756854,0.31937572537455294,INADEQUATE,24,28,0.6905361601818862,,,,,,0.6272650795555218,0.8263919545704859,,,,,,
+A3,without draw 1,0.15,3,control,0.2135249691447093,0.12380275492098454,0.31051693984643103,INADEQUATE,48,28,0.6641434037302734,,,,,,0.5474721510424896,0.7748570951869991,,,,,,
+A3,draw 2 only,0.15,3,control,0.28617903677974477,0.12382326357670331,0.39230985259004375,INADEQUATE,24,28,0.7574965501338407,,,,,,0.6602694825389162,0.8966383717487041,,,,,,
+A3,without draw 2,0.15,3,control,0.21688313046656205,0.10595469494573968,0.2627315077038147,INADEQUATE,48,28,0.6676925652151389,,,,,,0.5731756908056683,0.7658989846391819,,,,,,
+A3,draw 3 only,0.15,3,control,0.18632957916789084,0.1107620222118991,0.3201383830373404,INADEQUATE,24,28,0.5979650190526795,,,,,,0.4839679887928268,0.7833333249132814,,,,,,
+A3,without draw 3,0.15,3,control,0.19141438971446673,0.12016455087290721,0.3130687155064715,INADEQUATE,48,28,0.7353834118347272,,,,,,0.6690802748960484,0.8102564245604282,,,,,,
+A3,drop top-5 influential cases,0.15,3,control,0.15982051217910787,0.10556284829292904,0.24375938342629044,INADEQUATE,67,28,0.7110300090368002,,,,,,,,r2_5(+0.0331);r3_17(+0.0289);r1_8(+0.0221);r1_16(+0.0218);r1_20(-0.0200),0.08590674563133516,0.03314775148429683,0.2341087721280864,,
+A4,menu = layouts from ref/main only,0.15,3,control,0.10029830918352634,0.06866061252454303,0.2069881493503122,INADEQUATE,72,19,0.7570324816458935,,,,,,0.6665161050172845,0.808977098005638,,,,,28.0,
+A6,split-half cross-fit (200 splits),0.15,3,control,0.17579795251485109,0.02537194105691717,0.22810953681319462,INCONCLUSIVE,72,28,,,,,,,,,,,,,,0.2341087721280864
+A5,"cross-fit: menu from other draws, scored on draw 1",0.15,3,main,0.08299979364075583,0.03628318521336852,0.12228237919583149,INCONCLUSIVE,24,25,0.9259568940575831,,,,,,0.8889044495376418,0.975130526377982,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 1",0.15,3,control,0.19622538339300033,0.09428109151178062,0.3458331032525232,INADEQUATE,24,25,0.7414696626477557,,,,,,0.6389535608844726,0.8460016586888752,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 2",0.15,3,main,0.08652529476608994,0.03421549397088951,0.16219393257290238,INCONCLUSIVE,24,25,0.9442386877757747,,,,,,0.9148614922747232,0.9748874028756156,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 2",0.15,3,control,0.21525958024248926,0.10369078536879164,0.3269351514009868,INADEQUATE,24,25,0.7943398015115705,,,,,,0.7001551149327808,0.9019874516684507,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 3",0.15,3,main,0.04755819452718768,0.034862152075713304,0.1979327240123934,INCONCLUSIVE,24,21,0.8596411767429373,,,,,,0.8050564734530293,0.9406834605958039,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 3",0.15,3,control,0.18611631509921733,0.10119199163320046,0.3381214047638853,INADEQUATE,24,21,0.5789965976968059,,,,,,0.4783194649733061,0.7929547648418271,,,,,,
+A5,cross-fit: mean E over the 3 held-out draws,0.15,3,main,0.07236109431134448,,,(point estimate only),72,23,,,,,,,,,,,,,,
+A5,cross-fit: mean E over the 3 held-out draws,0.15,3,control,0.1992004262449023,,,(point estimate only),72,23,,,,,,,,,,,,,,
+A1,pct B=400 seed0 (registered stream),0.15,5,main,0.02841734180109523,0.02599936264774121,0.07819288284490554,INCONCLUSIVE,72,35,0.9341938592267653,,,,,,,,,,,,,
+A1,pct B=400 x20 seeds,0.15,5,main,0.02841734180109523,0.025681843996634823,0.07623765886440995,0/20 INADEQUATE,72,35,,0.024404174690802742,0.026667418558117877,0.07050450182267928,0.08636489718574204,0.0,,,,,,,,
+A1,pct B=10000,0.15,5,main,0.02841734180109523,0.02541495485540293,0.07557243241699935,INCONCLUSIVE,72,35,0.9341938592267653,,,,,,0.899640447875898,0.9753561458650971,,,,,,
+A2,basic B=10000,0.15,5,main,0.02841734180109523,-0.018737748814808886,0.03141972874678753,ADEQUATE,72,35,0.9341938592267653,,,,,,0.899640447875898,0.9753561458650971,,,,,,
+A2,bca B=10000,0.15,5,main,0.02841734180109523,0.01490082146429899,0.03162092790733391,ADEQUATE,72,35,0.9341938592267653,,,,,,0.899640447875898,0.9753561458650971,,,,,,
+A3,draw 1 only,0.15,5,main,0.05335246159002216,0.032062964779171116,0.09701903715785681,INCONCLUSIVE,24,35,0.9566280867323665,,,,,,0.9240624158057499,1.0188101373460936,,,,,,
+A3,without draw 1,0.15,5,main,0.04443176225617829,0.02617835681367642,0.10804754253107948,INCONCLUSIVE,48,35,0.9167749490101571,,,,,,0.8717338315036178,0.9731049428757894,,,,,,
+A3,draw 2 only,0.15,5,main,0.029100191218582983,0.01997611954382302,0.08546748065370297,INCONCLUSIVE,24,35,0.9652677796683002,,,,,,0.9397772526345674,0.9958327390964687,,,,,,
+A3,without draw 2,0.15,5,main,0.0400825321787428,0.027753728084940654,0.08693292192190603,INCONCLUSIVE,48,35,0.9250041546213325,,,,,,0.8861993507711673,0.979691647865749,,,,,,
+A3,draw 3 only,0.15,5,main,0.09519611848729914,0.029318294326414605,0.14311720852856671,INCONCLUSIVE,24,35,0.8873858757862779,,,,,,0.8279777707898456,0.9804618565109569,,,,,,
+A3,without draw 3,0.15,5,main,0.04943452101241452,0.029454922927886384,0.07058112505928005,INCONCLUSIVE,48,35,0.9572204409461305,,,,,,0.9290166206588726,0.992940598431923,,,,,,
+A3,drop top-5 influential cases,0.15,5,main,0.034714744101786654,0.026309948179025933,0.08643628737213199,INCONCLUSIVE,67,35,0.9346916482144295,,,,,,,,r1_21(-0.0106);r1_9(-0.0096);r2_18(-0.0094);r2_16(-0.0068);r2_5(-0.0057),-0.04220230744771725,0.010628983165899553,0.02841734180109523,,
+A4,menu = layouts from ref/main only,0.15,5,main,0.03001536687659634,0.021840148377528207,0.060541084960612265,INCONCLUSIVE,72,23,0.9341938592267653,,,,,,0.9120277111797829,0.9803404555067079,,,,,35.0,
+A6,split-half cross-fit (200 splits),0.15,5,main,0.014653822957128406,0.0,0.04583279454573323,ADEQUATE,72,35,,,,,,,,,,,,,,0.02841734180109523
+A1,pct B=400 seed0 (registered stream),0.15,5,control,0.11456729696000978,0.07157259942106567,0.18125069768225185,INADEQUATE,72,35,0.7761692846240811,,,,,,,,,,,,,
+A1,pct B=400 x20 seeds,0.15,5,control,0.11456729696000978,0.07288074002598972,0.18272157128510963,20/20 INADEQUATE,72,35,,0.0675628097755317,0.07652619414438158,0.17779807549325452,0.19088320333028574,1.0,,,,,,,,
+A1,pct B=10000,0.15,5,control,0.11456729696000978,0.07240384646690937,0.1819061189074208,INADEQUATE,72,35,0.7761692846240811,,,,,,0.7086909107915399,0.889201380612529,,,,,,
+A2,basic B=10000,0.15,5,control,0.11456729696000978,0.04722847501259875,0.1567307474531102,INCONCLUSIVE,72,35,0.7761692846240811,,,,,,0.7086909107915399,0.889201380612529,,,,,,
+A2,bca B=10000,0.15,5,control,0.11456729696000978,0.06864721477996893,0.17381824017886682,INADEQUATE,72,35,0.7761692846240811,,,,,,0.7086909107915399,0.889201380612529,,,,,,
+A3,draw 1 only,0.15,5,control,0.0771513858314199,0.06290839143495186,0.15797442931751599,INADEQUATE,24,35,0.8252918797568263,,,,,,0.7298242692988075,0.9393420472253383,,,,,,
+A3,without draw 1,0.15,5,control,0.1517338392098092,0.08255546894795102,0.2360209593621344,INADEQUATE,48,35,0.7702468803306488,,,,,,0.6568731906329475,0.9072525483303929,,,,,,
+A3,draw 2 only,0.15,5,control,0.15955508819492348,0.07608310466491158,0.20884614040451868,INADEQUATE,24,35,0.9218258936219965,,,,,,0.811340827047656,0.9977855189196762,,,,,,
+A3,without draw 2,0.15,5,control,0.12133604363998685,0.07563140829182285,0.22132845896763398,INADEQUATE,48,35,0.7894813278005757,,,,,,0.6775304059402726,0.8908593720528257,,,,,,
+A3,draw 3 only,0.15,5,control,0.2236185628146239,0.08923262207374946,0.32874255775211236,INADEQUATE,24,35,0.7290423880197902,,,,,,0.5813638047157403,0.9176836396100806,,,,,,
+A3,without draw 3,0.15,5,control,0.0967366989749543,0.0651379728494947,0.1467949480187542,INADEQUATE,48,35,0.8444606136177836,,,,,,0.781926480519213,0.9296160226631502,,,,,,
+A3,drop top-5 influential cases,0.15,5,control,0.10677017979843528,0.06671079993479052,0.18612687913578033,INADEQUATE,67,35,0.7927203980825333,,,,,,,,r2_3(+0.0178);r1_21(+0.0163);r1_9(+0.0144);r2_16(+0.0122);r3_18(-0.0120),0.04872223034532819,0.017759315787875485,0.11456729696000978,,
+A4,menu = layouts from ref/main only,0.15,5,control,0.09464163279860949,0.05953793091535332,0.15176007401182082,INADEQUATE,72,23,0.8372886650609522,,,,,,0.7649138138132335,0.9200911069866433,,,,,35.0,
+A6,split-half cross-fit (200 splits),0.15,5,control,0.07840888001208832,0.0,0.12675151379928845,INCONCLUSIVE,72,35,,,,,,,,,,,,,,0.11456729696000978
+A5,"cross-fit: menu from other draws, scored on draw 1",0.15,5,main,0.041641545479247255,0.025261499889920165,0.07364577512743248,INCONCLUSIVE,24,30,0.9672560258569366,,,,,,0.9163563572596809,1.0174302840546237,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 1",0.15,5,control,0.06830475372991263,0.05081848295622154,0.15055493477579474,INADEQUATE,24,30,0.8351588529055343,,,,,,0.7145330482569917,0.9661564432737565,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 2",0.15,5,main,0.05413069509343321,0.029141214839451455,0.07363372241407655,INCONCLUSIVE,24,30,0.9561570871823535,,,,,,0.9355937906120669,0.9968236498041051,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 2",0.15,5,control,0.13085992071806474,0.09461438209021591,0.21908622703137198,INADEQUATE,24,30,0.9248193263241852,,,,,,0.8391786149514991,0.9945588690296275,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 3",0.15,5,main,0.03732314478966203,0.018770230469380422,0.15020867917958275,INCONCLUSIVE,24,29,0.9045716309196647,,,,,,0.8349403865652032,0.9968564264695732,,,,,,
+A5,"cross-fit: menu from other draws, scored on draw 3",0.15,5,control,0.1354218738629609,0.063779759097699,0.2347954902498361,INADEQUATE,24,29,0.6902398000730654,,,,,,0.5401293545962019,0.9454844766650161,,,,,,
+A5,cross-fit: mean E over the 3 held-out draws,0.15,5,main,0.04436512845411417,,,(point estimate only),72,29,,,,,,,,,,,,,,
+A5,cross-fit: mean E over the 3 held-out draws,0.15,5,control,0.11152884943697942,,,(point estimate only),72,29,,,,,,,,,,,,,,
+=====END sens_rows.csv
+=====FILE sens_summary.json
+{
+ "args": {
+  "config": "configs/convergence_paired_padded_exp027b.json",
+  "work": "/home/yb107/research-os/projects/pravah/runs/RUN-0100/paired_work",
+  "out": "/home/yb107/research-os/projects/pravah/runs/RUN-0102/exp027b_sens",
+  "workers": 16,
+  "seeds": 20,
+  "boot_reg": 400,
+  "boot_big": 10000,
+  "boot": 2000,
+  "boot_deb": 1000,
+  "splits": 200,
+  "top": 5,
+  "b_sub": 8,
+  "menu_seed": 27,
+  "draws": 0,
+  "cases": 0,
+  "check_registered": false
+ },
+ "cells": {
+  "0.05/3": {
+   "menu": 30,
+   "menu_ref_main": 20,
+   "sources": {
+    "ref": 12,
+    "main": 11,
+    "control": 11
+   }
+  },
+  "0.05/5": {
+   "menu": 35,
+   "menu_ref_main": 23,
+   "sources": {
+    "ref": 12,
+    "main": 12,
+    "control": 12
+   }
+  },
+  "0.15/3": {
+   "menu": 28,
+   "menu_ref_main": 19,
+   "sources": {
+    "ref": 11,
+    "main": 12,
+    "control": 10
+   }
+  },
+  "0.15/5": {
+   "menu": 35,
+   "menu_ref_main": 23,
+   "sources": {
+    "ref": 12,
+    "main": 12,
+    "control": 12
+   }
+  }
+ },
+ "runtime_s": 316.70511651039124
+}=====END sens_summary.json

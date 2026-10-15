@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2899 tokens.
-> Generated 2026-10-15T19:24:43-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2905 tokens.
+> Generated 2026-10-15T19:38:45-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `4507a1c2cf` (uncommitted changes)
+Git: `master` @ `587f0add66` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -31,7 +31,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - F-051 [supported, high] DYN-00 (RUN-0091, 25/25 pre-set checks pass; supersedes F-038 after its independent review F-038/R1): includes the replacement for the vacuous west_no_import check: a constant west inflow basis through a 3600 s wind reversal has cell-summed supply 3.36e-2 (>0) before and exactly 0.0 after, an east basis exactly 0.0 before and 3.36e-2 after, mass closure 2.1e-15 with both on; a non-trivial piecewise history [[0,3,1,2],[1,0,2,4],[0.5,1.5,0,3]] matches direct simulation to 1.2e-15; all other values as in F-038 (mass closure <=4.4e-15 in five dynamic cases, superposition 1.6e-15, closed-box analytic order 0.997, footprints integrate to 1). Verified numerical behaviour of the implicit-Euler/exponential scheme on a 16x12 toy box; not verified: Van Leer scheme, Belauri-scale runs, spatial order beyond monotone convergence. — evidence: EXP-028, RUN-0091
 - F-009 [supported, high] Solver routing refactor preserves every deterministic FiPy output bit-for-bit — evidence: EXP-008, RUN-0012, RUN-0013
 - F-007 [supported, medium] FINAL: hidden wind error and unmodelled source dominate discretisation mismatch; poor layout unidentifiable — evidence: EXP-007, RUN-0011
-- … 30 more (`research finding list`)
+- … 31 more (`research finding list`)
 
 ## Failed directions (do not repeat without a new reason)
 
@@ -39,8 +39,8 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Current experiments
 
+- EXP-037 [needs_review] EXP-027b mesh adequacy on common cases (same-ensemble shape error, 2 km falsification gate) — runs 3, ⚠ 3 unsynthesized
 - EXP-036 [needs_review] DYN-08 Belauri synthetic population-weighted deployment — runs 3, ⚠ 1 unsynthesized
-- EXP-037 [needs_review] EXP-027b mesh adequacy on common cases (same-ensemble shape error, 2 km falsification gate) — runs 2, ⚠ 2 unsynthesized
 - EXP-029 [proposed] DYN-01 Temporal event-generation study — runs 0
 
 ## Active plans
@@ -62,14 +62,14 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 - [reviewer disagrees] F-035 EXP-015 stage 2: H1 untested (baseline not commensurable); 500 m provisionally admissible on narrow grounds: scientific-reviewer: needs work — H1 is UNTESTED, not supported. The mesh comparison and the resampling baseline are not commensurable: convergence_stage2.py:24
 - [reviewer disagrees] F-069 EXP-036 / DYN-08 (RUN-0099): STOPPED at registered stop rules 4.5(a) and (b); no H8 verdict; descriptive results only: scientific-reviewer: needs work — Review of RUN-0099 as a confirmatory test of H8: all numbers reproduce (max abs diff 2.8e-17); no pipeline bug behind the cont
+- [awaiting review] F-077 EXP-027b post-hoc sensitivity (RUN-0102): the INADEQUATE call is method-dependent; 500 m shape error is about 4-12% at noise 0.05 (exploratory): Agent finding awaiting an independent review
 - [awaiting review] F-076 EXP-036 / DYN-08 v2 (RUN-0101): surrogate-designed layouts beat random layouts at Belauri scale; static design indistinguishable; H8 supported under the D-026 counting rule, with post-hoc amendments (replaces F-074): Agent finding awaiting an independent review
 - [awaiting review] F-075 EXP-027b (EXP-037; RUN-0096, RUN-0100): registered outcome INADEQUATE (rule-based, borderline) for the 500 m / dt 100 mesh; gate passed; replaces F-073: Agent finding awaiting an independent review
-- [awaiting review] F-072 EXP-026 (RUN-0098): greedy gaps and design-sample optimism are large; objectives differ rather than tie (replaces F-068): Agent finding awaiting an independent review
 
 ## ⚠ Needs synthesis before new experiments
 
 - EXP-036 DYN-08 Belauri synthetic population-weighted deployment (1 unsynthesized runs)
-- EXP-037 EXP-027b mesh adequacy on common cases (same-ensemble shape error, 2 km falsification gate) (2 unsynthesized runs)
+- EXP-037 EXP-027b mesh adequacy on common cases (same-ensemble shape error, 2 km falsification gate) (3 unsynthesized runs)
 
 ## Active decisions
 
