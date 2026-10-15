@@ -6,19 +6,19 @@
   "backend": "slurm",
   "command": "bash scripts/hpc_dyn08.sh time 1",
   "created_at": "2026-10-15T13:57:20-04:00",
-  "ended_at": null,
+  "ended_at": "2026-10-15T14:07:30-04:00",
   "env": {
     "lockfiles": {
       "uv.lock": "cd0adfb7e3bec3fc"
     },
     "user": "yubraj"
   },
-  "exit_code": null,
+  "exit_code": 0,
   "experiment_id": "EXP-036",
   "git_branch": "master",
   "git_commit": "150394fd68eb6d72baa3cd9f2b84c5b7f8e8da66",
   "git_dirty": 0,
-  "hostname": "RAD-88300596",
+  "hostname": "node004",
   "id": "RUN-0095",
   "label": null,
   "metrics_offset": 0,
@@ -30,30 +30,38 @@
   "run_dir": ".research/runs/RUN-0095",
   "slurm": {
     "hpc": {
+      "archive_sha256": "677a03bbb5ebcd8d4bdab27cd464a2fb14e25aa5130e2bfed7d02af768f4c390",
       "bundle": ".research/hpc/bundles/EXP-036-RUN-0095.tar.gz",
       "bundle_dir": ".research/hpc/bundles/EXP-036-RUN-0095",
       "cluster": "duke",
+      "collected_at": "2026-10-15T14:08:42-04:00",
+      "collected_on": "plp-drcc-login2",
       "datasets": {},
       "experiment_id": "EXP-036",
+      "last_sync": "2026-10-15T14:08:40-04:00",
       "receipt": "/home/yb107/research-os/projects/pravah/runs/RUN-0095/submission.json",
+      "remote_archive": "/home/yb107/research-os/projects/pravah/code/EXP-036/results-RUN-0095.tar.gz",
       "remote_code": "/home/yb107/research-os/projects/pravah/code/EXP-036/RUN-0095",
       "remote_results": "/home/yb107/research-os/projects/pravah/results/RUN-0095",
       "remote_run_dir": "/home/yb107/research-os/projects/pravah/runs/RUN-0095",
       "sha256": "f3374182aaea1f85d1d3ff95251608895d4f4ef5e220ee8f422482de6dc6d972",
       "slurm_job_id": "202523",
       "ssh_host": "plp-drcc-login2",
-      "state": "submitted",
+      "state": "collected",
       "submitted_at": "2026-10-15T13:57:40-04:00",
       "token": "6c40949ec70262e403732cc63424aa80",
       "upload_detail": "all 6 file(s) match",
       "upload_verified": true
-    }
+    },
+    "nodelist": "node004",
+    "partition": "defq",
+    "state": "COMPLETED"
   },
   "slurm_job_id": "202523",
-  "started_at": null,
-  "status": "queued",
+  "started_at": "2026-10-15T13:57:44-04:00",
+  "status": "completed",
   "stderr_path": ".research/runs/RUN-0095/stderr.log",
   "stdout_path": ".research/runs/RUN-0095/stdout.log",
-  "updated_at": "2026-10-15T13:57:41-04:00",
+  "updated_at": "2026-10-15T14:08:42-04:00",
   "working_dir": "."
 }

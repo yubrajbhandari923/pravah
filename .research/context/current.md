@@ -1,13 +1,13 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2939 tokens.
-> Generated 2026-10-15T13:56:22-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~2972 tokens.
+> Generated 2026-10-15T14:09:58-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `401f02e4ab` (uncommitted changes)
+Git: `master` @ `43720e68f5` (uncommitted changes)
 
 ## Latest checkpoint
 
@@ -43,11 +43,11 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Current experiments
 
+- EXP-037 [running] EXP-027b mesh adequacy on common cases (same-ensemble shape error, 2 km falsification gate) — runs 1
+- EXP-026 [needs_review] EXP-016v population-aware sensor placement at Belauri scale, with the WorldPop fixture and replicated fixture draws (pre-registered variant) — runs 1, ⚠ 1 unsynthesized
+- EXP-036 [needs_review] DYN-08 Belauri synthetic population-weighted deployment — runs 1, ⚠ 1 unsynthesized
 - EXP-015 [needs_review] EXP convergence of sensor-design decisions with mesh, time step and scheme (pre-registered) — runs 2
 - EXP-023 [needs_review] EXP toy wind-error controls from F-029 review (alpha, offset prior grid, model error, base wind) (pre-registered) — runs 12
-- EXP-021 [needs_review] EXP toy prescribed winds, converged reference domain and deflecting channel (pre-registered) — runs 1
-- EXP-020 [needs_review] EXP toy population design with exact selection and replicated settings (pre-registered) — runs 1
-- EXP-037 [proposed] EXP-027b mesh adequacy on common cases (same-ensemble shape error, 2 km falsification gate) — runs 0
 
 ## Active plans
 
@@ -69,15 +69,20 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - [awaiting review] F-063 DYN-06 v4 identifiability (RUN-0093), predictions restated after review F-060/R1: Agent finding awaiting an independent review
 - [awaiting review] F-062 DYN-05 sufficiency (RUN-0078/0080), conclusions corrected after review F-058/R1: Agent finding awaiting an independent review
 
+## ⚠ Needs synthesis before new experiments
+
+- EXP-026 EXP-016v population-aware sensor placement at Belauri scale, with the WorldPop fixture and replicated fixture draws (pre-registered variant) (1 unsynthesized runs)
+- EXP-036 DYN-08 Belauri synthetic population-weighted deployment (1 unsynthesized runs)
+
 ## Active decisions
 
+- D-028 (2026-10-15) EXP-026 (RUN-0097 failed, RUN-0098 rerun): the registered Phase 2 regression check (area greedy layouts == results/geodesign/layouts.csv) is skipped for EXP-026 via configs/population_belauri_hpc.json (frozen.regression_layouts_file=null). Diagnosis (before any test case existed): the check compares layouts selected under different noise scales: EXP-026 uses the validation-ensemble scale (noise_levels.csv validation row, sigma 0.012548 at fraction 0.05; the G2 fix of commit 0370f3e) while results/geodesign/layouts.csv used the design scale (0.015370), so area-greedy layouts legitimately differ at budget 2 (int_c007014+int_c013008 vs int_c013008+int_c009014). It is not an architecture effect (D-005). The check therefore tests a different protocol than the one registered; it is not loosened, it is not applicable. Retained correctness guard: evaluators verified against design.score_layout / greedy_trace (printed in the run log). Disclosure: this is a deviation from the inherited EXP-016 sanity stop, decided after seeing the failure but before any test data; EXP-026 findings must state it.
 - D-027 (2026-10-15) EXP-026 registration amendment A-1 (filed before any EXP-026 run): (1) worldpop_study_total 184030 is the whole 8 km-buffered grid total; registered quantities are worldpop_grid_total=184029.57 and worldpop_study_total=54370.05 (500 m; 54562.52 at 250 m); (2) stop condition becomes grid totals agree to 1e-6 relative, study totals expected 0.35% apart; (3) mesh gate becomes '500 m dt 100 PROVISIONAL only (D-006; F-057)'; budgets [2,3,4,5,8] as in parameters; (4) seeds unchanged (101, 202, 305, noise 3500, fixture 6501-6506); (5) EXP-026 uses the standard 500 m grid, DYN-08 the padded one; layouts exchanged via UTM site coordinates; only worldpop_real layouts are imported into DYN-08 as a labelled static baseline. Full text: docs/dyn08_plan.md section 5.
 - D-026 (2026-10-15) DYN-08 (EXP-036) registration amendment A-1, filed BEFORE any DYN-08 layout is designed. Replaces the registered seeds (5000-5999/6000-6999/7000-7999/8000-8999, which overlap spent seeds) and the stop 'gated on EXP-027' (EXP-027 is void). Full text: docs/dyn08_plan.md section 4 (commit 401f02e), with these choices: reduced design 500 m padded grid dt 100, 12/6/12 ERA5 winds, 192 test episodes, k in {3,5}, noise 0.02/0.10, 54 interior sites; seeds wind selection 41100, random layouts 41200+, validation 46000-46047, test 43000-43191, 44000-45999 reserved, dev >=49000; ERA5 speed clip 2.5 m/s; noise scale = mean at the 54 candidate sites; mesh gate relaxed to '500 m/dt100 PROVISIONAL, mesh250 model-error proxy only'; H8 verdict rule: arms H8a, H8b, H8d count (H8c history arm EXPLORATORY because hyperparameters are borrowed): supported if >=2 of 3 transfer and none reverses with the criterion met, not supported if >=2 fail or a key arm reverses, else unresolved; H8c prediction text 'gain expected from plume carry-over' is WITHDRAWN (F-065: carry-over untested, CAUSAL-vs-CT compares time-varying vs causal static fit). Effect criterion, 20 primary contrasts at 0.0025, controls (lowpop, null replicates), stop rules and 'what this does not say' as in section 4. Stop rule: if the lowpop control fails or >25% of tuned hyperparameters sit on a grid edge, stop and report.
-- D-025 (2026-10-14) DYN-06 v4 (supersedes D-022's scoring), registered before the run, after review F-044/R1. Changes: (1) misattribution is scored only in a (wind, cell) where detection is clearly above the false-alarm level (one-sided binomial test of the detected count against 0.10, p < 0.01); other cells are 'undetected' and reported as such; (2) the summary statistic is POOLED misattribution (sum of wrong labels / sum of detected replicates over the scored winds) alongside the number of winds scored and the mean detection, never an unweighted mean of per-wind rates; (3) cells whose look-alike has no observable change signature (|A cb|/sigma < 1) or an unphysical rescale (c* > 1e3) are flagged detectability_only and reported separately; scenarios whose amplitude matching failed (match_ok False) are invalid, not scored; (4) P4 is evaluated ONLY for S7 (the S1 pair, L4_ref vs L4_interior) as registered in D-019; P1-P3 are adjudicated on the gated pooled metric and on detection (P3 at d=2 is expected to be uninformative because detection is near the false-alarm level there; it is reported as 'not evaluable' where detection is not above null); (5) new noise seeds: null 9500-9599, signal 9600-9699; all other design (d targets, 6 winds, layouts L4/L9/L4_ref, noise 0.02/0.10, frozen ridge alpha, controls) as in D-022. The earlier headline numbers (F-044) are superseded by the v4 finding.
 
 ## Blockers
 
-_none_
+- [run] RUN-0097: RUN-0097 (EXP-026) failed — not yet reviewed
 
 ## Project skills
 

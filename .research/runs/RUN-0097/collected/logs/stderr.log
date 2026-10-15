@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/home/yb107/research-os/projects/pravah/code/EXP-026/RUN-0097/source/scripts/population_belauri.py", line 1238, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/yb107/research-os/projects/pravah/code/EXP-026/RUN-0097/source/scripts/population_belauri.py", line 1234, in main
+    return run(a.profile, a.config, a.out, a.work)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/yb107/research-os/projects/pravah/code/EXP-026/RUN-0097/source/scripts/population_belauri.py", line 1192, in run
+    reg = regression_check(cfg, rec, ctx.st)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/yb107/research-os/projects/pravah/code/EXP-026/RUN-0097/source/scripts/population_belauri.py", line 851, in regression_check
+    raise RuntimeError(f"area greedy layout (fraction {r.fraction}, budget {r.budget}) differs from Phase 2: {sorted(mine)} vs {m['sites'].iloc[0]}")
+RuntimeError: area greedy layout (fraction 0.05, budget 2) differs from Phase 2: ['int_c007014', 'int_c013008'] vs int_c013008,int_c009014

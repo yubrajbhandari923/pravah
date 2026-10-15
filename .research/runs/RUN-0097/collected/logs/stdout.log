@@ -1,0 +1,8 @@
+using venv /home/yb107/research-os/projects/pravah/env/venv (Python 3.12.12)
+pravah resolved from: /home/yb107/research-os/projects/pravah/code/EXP-026/RUN-0097/source/src/pravah/__init__.py
+linked data/belauri -> /scratch/railabs/yb107/research-os/shared-data/belauri-geography/files
+[      2s rss 0.39GB] 31 fixture units, 130 distinct weight columns, 54 interior sites, 8 workers
+[    227s rss 0.39GB] alpha {0.05: 0.01, 0.15: 0.01}, sigma {0.05: 0.012548102221819705, 0.15: 0.037644306665459114}
+[    230s rss 0.39GB] evaluators built and verified against design.score_layout / greedy_trace (K = 130 columns, 54 interior sites)
+[    332s rss 0.42GB] selection done for noise fraction 0.05
+[    426s rss 0.42GB] selection done for noise fraction 0.15

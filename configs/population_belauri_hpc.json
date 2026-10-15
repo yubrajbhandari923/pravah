@@ -1,6 +1,7 @@
 {
  "extends": "population_belauri.json",
  "name": "population_belauri_hpc",
- "notes": "EXP-026 production on Duke HPC: identical to population_belauri.json (registered, amendment D-027) except run.workers is pinned to the allocated CPU count (os.cpu_count() would see the whole node).",
- "run": {"workers": 8}
+ "notes": "EXP-026 production on Duke HPC: identical to population_belauri.json (registered, amendment D-027) except (1) run.workers is pinned to the allocated CPU count (os.cpu_count() would see the whole node) and (2) frozen.regression_layouts_file is null (decision D-028): RUN-0097 stopped at the Phase 2 regression check BEFORE any test case was built because this config uses the validation-ensemble noise scale (sigma 0.012548 at fraction 0.05, the G2 fix) while results/geodesign/layouts.csv was produced with the design-ensemble scale (0.015370), so the layouts legitimately differ; the evaluators are still verified against design.score_layout / greedy_trace.",
+ "run": {"workers": 8},
+ "frozen": {"regression_layouts_file": null}
 }
