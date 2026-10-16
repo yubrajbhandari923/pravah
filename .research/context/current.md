@@ -1,20 +1,20 @@
 # Research context — pravah
 
-> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~3444 tokens.
-> Generated 2026-10-15T19:50:59-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
+> Generated from .research/ by `research current`. Do not edit; it is overwritten. ~3029 tokens.
+> Generated 2026-10-15T21:18:06-04:00. Details: `research show <ID>` · `research search "…"` · `research task context T-…`.
 
 ## Goal
 
 Simulate the air pollution field evolution
 
-Git: `master` @ `d44813bd8c`
+Git: `master` @ `17c0743971` (uncommitted changes)
 
 ## Latest checkpoint
 
-**CP-015** CP-015 wrap-up sprint: all planned experiments run; first-round reviews done; second-round reviews outstanding (2026-10-15)
-- **Understanding:** Experiments: DYN-00..DYN-07 done (earlier); EXP-027 void (F-057); EXP-027b run (RUN-0096 stage 1, RUN-0100 stage 2): registered outcome INADEQUATE for 500 m/dt100, borderline, gate passed (F-075); post-hoc sensitivity RUN-0102: label method-dependent, shape error ~4-12% at noise 0.05 (F-077). EXP-026 run (RUN-0098; RUN-0097 failed at inherited regression check, D-028): no robust benefit of population weighting, optimiser-dependent, low power (F-070..F-072). DYN-08: v1 RUN-0099 stopped at stop rules (F-069); v2 RUN-0101 post-hoc-corrected rerun (D-029): surrogate-designed layouts beat random layouts, static design indistinguishable, H8 supported under D-026 counting rule with post-hoc amendments (F-076). DYN-03 v2 (F-065): gain from tracking emission changes; carry-over untested. Current findings: F-051 (supported); preliminary: F-055, F-056, F-057, F-061, F-062, F-063, F-065, F-069, F-070, F-071, F-072, F-075, F-076, F-077. All first-round independent reviews returned needs_work and every finding was corrected and superseded accordingly (Corrections log in docs/FINAL_RESEARCH_REPORT.md). Second-round reviews of the corrected wording and an independent audit of the final report were launched but did not complete (reviewer agents hit a usage limit; resets 2026-10-19): outstanding. HPC: sprint jobs RUN-0095..RUN-0102 on Duke (CPU only, no GPU), ~51 core-h billed for RUN-0095..0101 plus RUN-0102 (~1 core-h); one failure RUN-0097 (regression-check stop, D-028); sacct recount of cumulative EXP-* usage ~506 core-h (earlier 424 figure was low). Task state: closed T-067, T-069, T-070, T-074..T-079, T-082, T-028, T-036; blocked as superseded/out of scope T-027, T-031, T-033, T-034, T-035; OPEN T-032 and T-038 (Phase 3 independent review of F-029..F-035 and synthesis). Questions: Q-013 NOT closed (design-objective estimability: F-062, F-070, F-072 point to large design-sample effects and low power; not directly measured). Deliverables: docs/FINAL_RESEARCH_REPORT.md, docs/PEER_PRESENTATION.md, docs/figures/final/ (20 figures; scripts/make_final_figures.py, make_wrapup_figures.py, make_exp026_figures.py), docs/HPC_BATCH_PROPOSAL.md, docs/dyn08_plan.md, docs/exp027b_design.md, docs/dyn03_causality_fix.md; results copies in results/exp026-hpc, results/dyn08-hpc, results/dyn08-v2-hpc, results/exp027b-hpc; run artifacts in .research/runs/RUN-0094..RUN-0102.
-- **Current problem:** Second-round independent reviews of corrected findings and an independent audit of the final report are outstanding; Phase 3 findings F-029..F-035 never independently reviewed; mesh (500 m/dt100) is only provisionally admissible; Q-013 unresolved; no empirical validation exists.
-- **Next step:** After 2026-10-19: run second-round reviews (F-061, F-062, F-063, F-065, F-069..F-072, F-075..F-077) and the report audit; T-032/T-038; consider 250 m DYN-08 inverse and a 1 km control, larger/stratified design ensembles with power analysis, registered test of the history mechanism, terrain-coupled flow, empirical data. Untracked: .mcp.json files (machine specific).
+**CP-016** CP-016 final scientific review, independent audit, and research closeout (2026-10-15)
+- **Understanding:** All planned experiments completed. Syntheses recorded for EXP-036 (DYN-08) and EXP-037 (EXP-027b). Exhaustive skeptical auditor review completed across all 14 corrected dynamic findings (F-051 supported; F-055..F-077 preliminary) and earlier Phase 3 findings (F-029..F-035). Figure index reconciled to include all 20 publication figures and obsolete placeholders removed. Tasks T-032 and T-038 held open with explicit documented blockers regarding non-author review debt and superseded workflows. Q-013 documented as open and partly addressed. Final report and presentation caveats updated. The codebase represents a verified mathematical and computational methods testbed with synthetic inputs; no empirical validation exists.
+- **Current problem:** No empirical air quality data; 500 m / dt 100 mesh remains provisional; Q-013 unmeasured replicate spread at Belauri scale; terrain-coupled flow absent; second-round non-author peer reviews remain external debt before manuscript submission.
+- **Next step:** Collect empirical station/low-cost sensor data in Belauri; evaluate 250 m mesh inverse with 1 km control; measure replicate spread of Belauri design objective with stratified ensembles; test terrain-coupled flow.
 
 ## Current baseline
 
@@ -40,22 +40,21 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Current experiments
 
-- EXP-037 [needs_review] EXP-027b mesh adequacy on common cases (same-ensemble shape error, 2 km falsification gate) — runs 3, ⚠ 3 unsynthesized
-- EXP-036 [needs_review] DYN-08 Belauri synthetic population-weighted deployment — runs 3, ⚠ 1 unsynthesized
 - EXP-029 [proposed] DYN-01 Temporal event-generation study — runs 0
+- EXP-016 [proposed] EXP population-aware sensor placement: area vs population vs mixed vs capped objectives (pre-registered) — runs 0
 
 ## Active plans
 
 - PLAN-007 Dynamic Population-Weighted Sensor Deployment and Source-History Inference — 30/30 tasks done · objective: Develop and evaluate a physics-informed dynamical inverse framework for optimal fixed air-quality sensor placement, using time-series observations to infer changing local and transboundary emissions while minimizing population-weighted concentration reconstruction error under uncertain transport.
 - PLAN-004 PRAVAH phase 3 HPC execution, interpretation and synthesis — 2/6 tasks done · objective: Run the deferred heavy Phase 3 experiments as one Slurm job, import results, interpret with independent review, finish synthesis
-  - next ready: T-038 H6 Phase 3 synthesis update, revised Phase 4 list, final checkpoint (`research task context T-038`)
   - BLOCKED: T-033 H1 PI: set up repo on cluster (slurm/setup_env.sh), copy data/belauri/raw, submit slurm/phase3.sbatch, download results bundle — Superseded: per-experiment HPC workflow (RUN-0081, RUN-0098, RUN-0099) replaced phase3.sbatch bundle.
   - BLOCKED: T-034 H2 Register the cluster runs: research run attach per phase from hpc_manifest.json (command, times, exit code, git commit, hashes), artifacts, no rewriting of history — Superseded: cluster runs registered per experiment; no hpc_manifest.json exists.
   - BLOCKED: T-035 H3 Interpret EXP-015 stage 2 (displacement/regret vs replicate baseline, monotone in refinement, tolerance fractions) and decide the design mesh — Superseded by EXP-027 (F-057) and EXP-037; mesh stays provisional per D-006.
+  - BLOCKED: T-038 H6 Phase 3 synthesis update, revised Phase 4 list, final checkpoint — Phase 3 bundle workflow (phase3.sbatch) was superseded by per-experiment HPC workflows (EXP-015/RUN-0058, EXP-027/RUN-0081, EXP-026/RUN-0098, EXP-036/RUN-0099). Non-author review of EXP-015 stage 2 yielded H1 untested. EXP-016 was superseded by EXP-026 and DYN-08. Final closeout synthesis is recorded in docs/FINAL_RESEARCH_REPORT.md and checkpoint CP-016.
 - PLAN-003 PRAVAH phase 3: portability, population-aware design, numerical convergence of decisions, wind uncertainty — 7/10 tasks done · objective: Transferable framework whose sensor decisions are robust to discretisation and wind uncertainty, with population-aware design; testbed only, no empirical validation
-  - next ready: T-032 S5b Independent scientific review of all findings, Phase 3 synthesis, docs, notebooks, checkpoint (`research task context T-032`)
   - BLOCKED: T-027 S2b EXP convergence of decisions: space, time, joint, scheme; physical-coordinate candidates; displacement, regret, ties vs resampling baseline — Superseded by EXP-027 (F-057, void) and EXP-037 (EXP-027b); no further PLAN-003 work.
   - BLOCKED: T-031 S5a Conditional: wind-robust and population-robust placement — Out of scope: conditional on a Belauri-scale wind effect not shown (F-029, F-034); not pursued.
+  - BLOCKED: T-032 S5b Independent scientific review of all findings, Phase 3 synthesis, docs, notebooks, checkpoint — Phase 3 findings F-029..F-034 never received external non-author review, and F-035 review found H1 untested due to incommensurable baselines (superseded by EXP-027 and EXP-027b; 500 m mesh remains provisional per D-006). Acceptance criterion (reviews recorded by non-author) cannot be legitimately satisfied without external review.
 
 ## Needs attention (verification)
 
@@ -65,11 +64,6 @@ EXP-002 — EXP inverse recovery (frozen reference)
 - [awaiting review] F-076 EXP-036 / DYN-08 v2 (RUN-0101): surrogate-designed layouts beat random layouts at Belauri scale; static design indistinguishable; H8 supported under the D-026 counting rule, with post-hoc amendments (replaces F-074): Agent finding awaiting an independent review
 - [awaiting review] F-075 EXP-027b (EXP-037; RUN-0096, RUN-0100): registered outcome INADEQUATE (rule-based, borderline) for the 500 m / dt 100 mesh; gate passed; replaces F-073: Agent finding awaiting an independent review
 
-## ⚠ Needs synthesis before new experiments
-
-- EXP-036 DYN-08 Belauri synthetic population-weighted deployment (1 unsynthesized runs)
-- EXP-037 EXP-027b mesh adequacy on common cases (same-ensemble shape error, 2 km falsification gate) (3 unsynthesized runs)
-
 ## Active decisions
 
 - D-029 (2026-10-15) DYN-08 v2 (EXP-036, corrected rerun) registration D-029, filed BEFORE any v2 run and with no v2 test result seen. v1 (RUN-0099, F-069) stopped at stop rules 4.5(a),(b); the review (F-069/R1) found the controls badly constructed, not a pipeline bug. v1 stays reported; v2 is a labelled POST-HOC-CORRECTED confirmatory rerun, NOT a rescue of v1. Changes: (1) control (a'): replace lowpop by a layout that is bad BY CONSTRUCTION: the worst-surrogate-risk subset among a fixed pool (the 16 existing layouts + 500 random subsets, pool seed 41300), required to have surrogate risk >= 1.5x the median of the pool and checked at the design stage before tuning; it must lose to spread by the registered effect criterion in >=3 of 4 cells, else stop. (2) control (b'): 10 vs 10 random layouts (fresh seeds 41200+) assessed with a TWO-LEVEL (layout x episode) bootstrap; the effect criterion must NOT be met in any cell, else stop. (3) primary claim dyn_opt vs random uses the two-level bootstrap at level 0.0025; contrasts against single baseline layouts (spread, highpop, static_opt, src_opt) are worded as statements about that layout. (4) CT/CAUSAL bin 0 (no observations precede t=7200 s) is filled with the bin-1 estimate and flagged acausal for BOTH arms; H8c stays exploratory. (5) model error: save per-episode rows and the perturbed-truth projection floors, report ratios with episode-bootstrap CIs. (6) Fresh seeds: test 44000-44191, validation 45000-45047; wind windows and design winds unchanged (selection seed 41100); disclosure: the v1 test episodes were viewed, the windows and design layouts are therefore not fresh, only the episodes/noise are. (7) Unchanged: 500 m/dt100 provisional, 54 sites, k in {3,5}, noise 0.02/0.10, tuning on validation with spread only, effect criterion, H8 verdict rule of D-026, 25% edge gate, all other stop rules. Disclosure: M2 tuning grid is larger than M1's (favours M2 slightly).
@@ -77,7 +71,7 @@ EXP-002 — EXP inverse recovery (frozen reference)
 
 ## Blockers
 
-- [checkpoint] CP-015: Second-round independent reviews of corrected findings and an independent audit of the final report are outstanding; Phase 3 findings F-029..F-035 never independently reviewed; mesh (500 m/dt100) is only provisionally admissible; Q-013 unresolved; no empirical validation exists.
+- [checkpoint] CP-016: No empirical air quality data; 500 m / dt 100 mesh remains provisional; Q-013 unmeasured replicate spread at Belauri scale; terrain-coupled flow absent; second-round non-author peer reviews remain external debt before manuscript submission.
 
 ## Project skills
 

@@ -103,19 +103,33 @@
   "caption": "fig00 DYN-00 verification (EXP-028; .research/runs/RUN-0091/dyn00_checks.json; 25/25 checks pass) \u00b7 RUN-0091 \u00b7 n = 25 checks \u00b7 synthetic toy geometry \u00b7 mass-closure residuals (log) and temporal-order checks"
  },
  {
-  "figure": "DYN-08",
-  "status": "pending",
-  "reason": "experiment not run / result pending: no figure (placeholder in the report)"
+  "figure": "exp026_fig1_pop_rmse_effect",
+  "file": "docs/figures/final/exp026_fig1_pop_rmse_effect.png",
+  "status": "produced",
+  "sources": [
+   "results/exp026-hpc/cases.csv",
+   "results/exp026-hpc/tables/table_heldout_pop_rmse_diff_rel.csv"
+  ],
+  "caption": "fig17: EXP-026 (F-070, RUN-0098). Test population-weighted RMSE of the population layout minus the area layout, as a percentage of the area-layout RMSE (positive = population layout worse), by budget (2, 3, 4, 5, 8) for noise 0.05 (left) and 0.15 (right). Blue dots: concentrated synthetic fixtures (mean of 6 draws); orange diamonds: WorldPop with 95 % case-bootstrap intervals (12 cases). Low power: benefits of 20 % or more are not excluded in 15 of 35 cells."
  },
  {
-  "figure": "EXP-027b",
-  "status": "pending",
-  "reason": "experiment not run / result pending: no figure (placeholder in the report)"
+  "figure": "exp026_fig2_tradeoff_plane",
+  "file": "docs/figures/final/exp026_fig2_tradeoff_plane.png",
+  "status": "produced",
+  "sources": [
+   "results/exp026-hpc/cases.csv"
+  ],
+  "caption": "fig18: EXP-026 (F-070, RUN-0098). Population-weighted versus area-weighted RMSE change for each non-identical comparison (35 synthetic concentrated cells in blue, 9 WorldPop cells in orange). The two RMSEs mostly move together along the diagonal; true trade-offs are in the minority."
  },
  {
-  "figure": "Q-013",
-  "status": "pending",
-  "reason": "experiment not run / result pending: no figure (placeholder in the report)"
+  "figure": "exp026_fig3_greedy_gap_optimism",
+  "file": "docs/figures/final/exp026_fig3_greedy_gap_optimism.png",
+  "status": "produced",
+  "sources": [
+   "results/exp026-hpc/cases.csv",
+   "results/exp026-hpc/layouts.csv"
+  ],
+  "caption": "fig19: EXP-026 (F-072, RUN-0098). Left: greedy design objective lies 28-79 % above the best found. Right: design-split optimism (other-half minus own-half objective, 3-case halves, budgets 5 and 8) of median 175-531 %. Illustrates that the design objective from 6 cases, rather than the test evaluation, is the primary source of instability (Q-013)."
  },
  {
   "figure": "wrapup_exp027b_adequacy",

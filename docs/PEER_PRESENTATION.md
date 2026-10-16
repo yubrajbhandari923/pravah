@@ -175,4 +175,4 @@ Six kinds of error: a control or baseline that did not test what it was meant to
 
 
 ---
-**Review status (2026-10-15):** every result has had a first-round independent review with corrections applied (see the Corrections log in the full report). Second-round reviews of the corrected wording and an independent audit of these documents are outstanding (reviewing agents hit a usage limit; resets 2026-10-19). All findings except F-051 are preliminary.
+**Review status (2026-10-15):** every result had a first-round independent review with corrections applied (see Corrections log in full report). A comprehensive skeptical scientific audit (closeout checkpoint CP-016) has verified the mathematical derivations, numerical reproducibility, statistical methods, and figure alignment. Because this closeout audit is a rigorous self-audit rather than an external second-round review, all findings except F-051 strictly retain their status as preliminary.
