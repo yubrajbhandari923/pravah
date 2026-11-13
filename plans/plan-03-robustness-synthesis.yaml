@@ -1,0 +1,597 @@
+# Scientific intent for PRAVAH stage 3. Read-only by default; not a progress log (see state/).
+# Distilled from the ResearchOS plan (original: git show refs/legacy/heads/main:plans/03-robustness-synthesis.yaml).
+# expected_artifacts are advisory evidence targets, not completion gates.
+plan: pravah-p3-robustness-synthesis
+title: PRAVAH P3 — Model mismatch, robust design, conditional region, and audit
+objective: >-
+  Evaluate robustness to wind and structural mismatch, uncertainty calibration, generalization, optional regional
+  and observational checks, and publish an evidence-backed Quarto synthesis.
+success_criteria: >-
+  E12–E16 and E19–E20 verified using promoted P2 results; E17/E18 either supported by real input and executed, or
+  explicitly documented as not conducted (no fabricated data). Independent scientific audit remains separate from
+  final human sign-off.
+experiments:
+- key: e12-wind-mismatch
+  title: Meteorological uncertainty and source-transport compensation
+  question: >-
+    How do biased winds and unresolved variation affect inferred emissions, field reconstruction and causal forecast?
+  hypothesis: >-
+    Small wind-direction/speed errors can be absorbed by wrong source strengths, yielding deceptively good sensor
+    fits but poor field forecasts; effect depends strongly on sensor placement and duration.
+  method: >-
+    Truth uses independent wind field; inverse/forecast model uses biased speed/direction, timed offset and low-frequency
+    correlated error; include 2x2 source/noise groups; repeated seeds, stratified wind regimes.
+  metrics:
+  - wind_direction_error_deg
+  - source_rmse
+  - field_rmse
+  - forecast_rmse
+  - innovation_autocorrelation
+  - residual_fit
+  planned_runs: 80
+  literature: >-
+    [webster2022] https://doi.org/10.1029/2022JD036469; [mues2018] https://doi.org/10.5194/gmd-11-2067-2018; [mons2017]
+    https://doi.org/10.1016/j.jweia.2017.07.007; [bhardwaj2026] https://arxiv.org/abs/2608.00050; [schlutow2026]
+    https://doi.org/10.5194/gmd-19-6259-2026.
+  steps:
+  - title: Predefine meteorological mismatch generator and oracle branches
+    intent: >-
+      Define true wind vs inverse-assumed wind, including uniform speed bias, angular bias, time shift, temporally
+      correlated errors, and wind regimes (constant vs change direction). Keep truth leakage absent; distinguish
+      errors in transport from noise. Use prescribed speed/angle perturbations with physical units and low-frequency
+      time correlation; avoid ad hoc white-noise wind as sole model. Include an oracle true-wind comparator and
+      fixed placement baselines. Explain source-wind compensation and why data fit is not enough. Read Webster 2022,
+      Mues 2018, Mons 2017.
+  - title: Implement wind perturbation and truth/inverse forcing separation
+    intent: >-
+      Build src/pravah/uncertainty.py with perturbations, regime labels and tests ensuring the forward truth uses
+      original u while inverse and filter see perturbed u. Prevent accidental use of truth meteorology at forecast
+      time except oracle. Add duration and boundary sensitivity controls and seed-consistent correlated errors.
+  - title: Local wind bias and timing-error counterexamples
+    intent: >-
+      Run 32² with k=2/4/8, 2 source patterns and 3 seeds; compare 0, modest and severe wind angle/speed errors
+      and a fixed lag. Show sensor residual RMSE vs held-out field RMSE vs source error; identify source-wind compensations
+      and incorrect confidence. Record absolute units and angle/wind-speed ranges.
+  - title: Large multi-seed meteorological misspecification sweep
+    intent: >-
+      After local pilot and cluster smoke, run bounded 64² multi-seed CPU array; scale wind error × wind diversity
+      × source ambiguity × k using curated combinations rather than combinatorial explosion. Register run IDs, resource
+      usage and failures. Include oracle wind upper-bound comparison.
+    hpc:
+      backend: slurm
+      cluster: <hpc-host>
+      cpus: 16
+      mem: 32G
+      time: 04:00:00
+  - title: Produce wind-mismatch reliability regimes and failure examples
+    intent: >-
+      Report pre-assimilation forecast vs post-update field/source error under specified wind perturbations, singular
+      values and innovation diagnostics; construct honest breakdown-regime heat maps with bootstrap uncertainty;
+      identify if more sensors can or cannot compensate for wind error. Treat negative results as substantive.
+  expected_artifacts:
+  - docs/research/wind-uncertainty-design.md
+  - src/pravah/uncertainty.py
+  - tests/test_wind_mismatch.py
+  - reports/quarto/tables/e12-local.csv
+  - reports/quarto/figures/e12-bias.png
+  - docs/research/hpc/e12-wind-run.md
+  - reports/quarto/chapters/12-wind-uncertainty.qmd
+  - reports/quarto/figures/e12-failure-regimes.png
+  - reports/quarto/tables/e12-final.csv
+- key: e13-nonwind-mismatch
+  title: Background, source-basis mismatch and realistic observation errors
+  question: >-
+    Does the network remain reliable if actual emissions, background or sensors violate the inverse model assumptions?
+  hypothesis: >-
+    Incomplete source bases, unknown background and correlated/bias noise can produce overconfident estimates, even
+    with apparently low residual sensor error.
+  method: >-
+    Inject an omitted source/changed source shape; low-rank drifting background; humidity-like correlated/bias errors
+    and dropout; compare source, field and forecasting metrics. Avoid claiming true Plantower performance without
+    actual calibration data.
+  metrics:
+  - field_rmse
+  - source_bias
+  - coverage
+  - residual_whiteness
+  - false_confidence_rate
+  planned_runs: 45
+  literature: >-
+    [bhardwaj2026] https://arxiv.org/abs/2608.00050; [pennington2024] https://doi.org/10.5194/acp-24-2345-2024;
+    [choi2026] https://doi.org/10.1088/1748-9326/ae2b89; [mons2017] https://doi.org/10.1016/j.jweia.2017.07.007.
+  steps:
+  - title: Define mismatched source/background/sensor model families
+    intent: >-
+      Freeze independent cases: shifted Gaussian source; 1 omitted source group; unknown low-dimensional drifting
+      background; additive sensor bias common-mode & independent, temporal autocorrelation and outage. Explicitly
+      state which are realistic simplifications and which are synthetic stress tests. Include strict distinction
+      between source omission and unknown coefficient estimation. Use Bhardwaj 2026 treatment of background confounding
+      and Pennington 2024 as motivating high-fidelity omissions.
+  - title: Implement misspecification and correlated observation error
+    intent: >-
+      Implement src/pravah/model_mismatch.py and tests proving truth/estimator model difference, preserved positive
+      concentrations under source shifts, covariance validity and missing-data handling without silently filling
+      from truth. Distinguish bias from random noise. Extend filter and residual diagnostics only as required.
+  - title: Local robustness pilot for each error family
+    intent: >-
+      Run 32² cross-objective designs at k=2/8, 2–4 sources and 3 seeds; isolate each mismatch one at a time, then
+      one combined stress case. Plot field/parameter errors, posterior interval coverage and innovation autocorrelation.
+      Do not tune to same test set.
+  - title: Document failure taxonomy and counterexamples
+    intent: >-
+      Explain distinguishable vs unidentifiable mismatches; report both model-fit and truth errors, uncertainty
+      calibration, sensor dropout effect, and which diagnostics warned before failure. Include cases where no algorithm
+      is reliable. Prepare reader-friendly Quarto chapter.
+  expected_artifacts:
+  - docs/research/model-mismatch-design.md
+  - src/pravah/model_mismatch.py
+  - tests/test_model_mismatch.py
+  - reports/quarto/tables/e13-local.csv
+  - reports/quarto/figures/e13-uncertainty.png
+  - reports/quarto/chapters/13-model-mismatch.qmd
+  - reports/quarto/tables/e13-final.csv
+  - reports/quarto/figures/e13-failure-gallery.png
+- key: e14-uncertainty-calibration
+  title: Reliability diagnostics and uncertainty calibration
+  question: Can a method identify when its own reconstructed pollution map is unreliable?
+  hypothesis: >-
+    Nominal posterior variance from a misspecified inverse model will underestimate actual error; innovation tests
+    and held-out calibration can expose some failures but cannot guarantee detection of every mismatch.
+  method: >-
+    Paired held-out truth evaluation of nominal confidence bands, prediction intervals, rank/condition diagnostics,
+    innovation whiteness/NIS; evaluate reliability diagrams, error quantiles and selective risk if abstention is
+    declared.
+  metrics:
+  - interval_coverage
+  - coverage_error
+  - NIS
+  - selective_risk
+  - detection_precision_recall
+  planned_runs: 45
+  literature: >-
+    [bhardwaj2026] https://arxiv.org/abs/2608.00050; [raanes2024] https://doi.org/10.21105/joss.05150; [webster2022]
+    https://doi.org/10.1029/2022JD036469.
+  steps:
+  - title: Preregister reliability tests and calibrated uncertainty endpoints
+    intent: >-
+      Specify nominal 50/90/95% interval coverage at fields/source coefficients; group correlated samples by trajectory;
+      innovation normalized squared tests and residual whitening; conditioning indicator; selective prediction/abstention
+      if desired. Define which metrics require true hidden simulation field and which can be computed with real-world
+      held-out monitoring. Avoid optimizing reliability threshold on test data.
+  - title: Implement uncertainty and early-warning scoring
+    intent: >-
+      Implement deterministic interval coverage, expected calibration error by stratified bins, NIS innovation checks,
+      field spread-skill diagnostics and high-risk warning classification. Unit tests must include known Gaussian
+      coverage simulations and degenerate filters; threshold calibration only on validation, not test.
+  - title: Test diagnostics on baseline and wind/source mismatch
+    intent: >-
+      Use existing registered trajectories and independent seeds; compare nominal and empirical error, test whether
+      narrow credible intervals can coexist with high field RMSE. Include at least one overconfident false negative
+      and show limitations of warning signal. No new atmospheric assumptions introduced.
+  - title: Produce reliability and uncertainty-calibration results
+    intent: >-
+      Aggregate over held-out scenarios; plot error-vs-predicted-uncertainty and coverage diagrams under perfect
+      vs imperfect model and report calibration-specific failure modes. Distinguish statistical confidence interval
+      validity from physical model validation. Prepare Quarto chapter and document negative outcomes.
+  - title: Independent model-uncertainty phase audit
+    intent: >-
+      Review no-peeking wind perturbation branches, proper data splits, interval-calibration assumptions and overfitting
+      of failure thresholds. Freeze mismatch and calibration benchmarks for robust placement comparisons. Require
+      explicit approval to add new physical processes.
+  expected_artifacts:
+  - docs/research/calibration-design.md
+  - src/pravah/calibration.py
+  - tests/test_calibration.py
+  - reports/quarto/tables/e14-local.csv
+  - reports/quarto/chapters/14-reliability.qmd
+  - reports/quarto/figures/e14-reliability.png
+  - reports/quarto/tables/e14-final.csv
+  - docs/research/gates/gate-14-mismatch.md
+- key: e15-robust-placement
+  title: Nominal vs robust sensor-placement objectives
+  question: >-
+    Can placement optimized over uncertain meteorological scenarios outperform nominal designs on unseen conditions?
+  hypothesis: >-
+    Expected-risk/CVaR/worst-case criteria can improve robustness in some regimes at a possible cost to nominal
+    accuracy; no universal winner is assumed.
+  method: >-
+    Compare nominal FIM, uniform, POD-QR, forecast-risk and uncertainty-aware scenario placements: expected loss,
+    worst-case and CVaR variants; choose designs only on training winds and simulate test independently; cap search.
+  metrics:
+  - test_forecast_rmse
+  - worst_case_loss
+  - cvar_loss
+  - source_rmse
+  - design_regret
+  - compute_cost
+  planned_runs: 120
+  literature: >-
+    [choi2026] https://doi.org/10.1088/1748-9326/ae2b89; [mano2022] https://doi.org/10.3390/s22103808; [webster2022]
+    https://doi.org/10.1029/2022JD036469; [krause2008] https://www.jmlr.org/papers/v9/krause08a.html; [bartos2021]
+    https://doi.org/10.1029/2020WR029551.
+  steps:
+  - title: Define scenario distribution and robust design losses
+    intent: >-
+      Specify distribution of speeds, directions and systematic errors, time variability and source shapes. Train
+      on one set of wind scenarios; hold out other seasons/regimes. Define robust expected field-forecast error
+      (primary), optional source info, min-max and CVaR at a declared alpha, and fixed cost/k candidate constraints.
+      Use equal search budgets and consistent filter. Discuss Choi 2026 value of information vs our distinct forecast
+      criterion; Mano 2022 meteorological scenario averaging.
+  - title: Implement uncertainty-aware placement with deterministic scenario reuse
+    intent: >-
+      Implement src/pravah/robust_design.py with scenario sample average approximation for fixed candidate sets;
+      compare expected risk, worst-case and CVaR, with transparent bounded greedy selection. Tests: basic CVaR ordering
+      on toy losses; no use of held-out test wind; same number of sensors and training scenarios across criteria;
+      input shape/risk monotonicity.
+  - title: Test robust placement on a tiny scenario ensemble
+    intent: >-
+      Run 32², k=2/4/8, training wind set 3-5 scenarios, 2 sources and 3 seeds; cross-score each design on both
+      training and held-out scenario distributions. Plot sites, per-scenario outcomes, relative nominal penalty
+      and potential worst-case gain. Profile cost/sweep scalability; do not choose robust hyperparams by test score.
+  - title: Scale robust placement across held-out wind and source regimes on CPU HPC
+    intent: >-
+      After locally verified design and cluster smoke, run 64² independent scenario/seed arrays on 16 CPU cores
+      requested with efficient concurrency; hold out wind regimes and source patterns not used in placement. If
+      evaluation methods include dense large-matrix operations, profile CPU first; only request one GPU via new
+      separately approved task if measured GPU kernel offers speedup while producing matched results. Record actual
+      CPU hours, failed sweeps, frozen configuration.
+    hpc:
+      backend: slurm
+      cluster: <hpc-host>
+      cpus: 16
+      mem: 32G
+      time: 04:00:00
+  - title: Robust-vs-nominal Pareto and tail-risk evaluation
+    intent: >-
+      Plot expected held-out forecast error vs 90th/95th-percentile tail error and nominal loss; show sensor-budget
+      dependence and statistical uncertainty by independent regime/day, not each correlated sample. Confirm whether
+      robust placements help and when they do not. Discuss transport model limitations.
+  - title: Independent robustness, generalization and compute audit
+    intent: >-
+      Verify training-only design, unseen wind scenarios and source patterns, fair equal budgets, risk criterion
+      definitions, statistical uncertainty/negative results, registered HPC provenance. Confirm no hidden use of
+      test truth in robust design.
+  expected_artifacts:
+  - docs/research/robust-design.md
+  - src/pravah/robust_design.py
+  - tests/test_robust_placement.py
+  - reports/quarto/tables/e15-local.csv
+  - reports/quarto/figures/e15-sites.png
+  - docs/research/hpc/e15-robust-run.md
+  - reports/quarto/chapters/15-robust-placement.qmd
+  - reports/quarto/tables/e15-final.csv
+  - reports/quarto/figures/e15-pareto-tail.png
+  - docs/research/gates/gate-15-robust.md
+- key: e16-generalization
+  title: Generalization, sensitivity and ablation consolidation
+  question: >-
+    Which conclusions survive a shift in wind season, source distribution, sensor noise or physical parameter range?
+  hypothesis: >-
+    Placement strategy rankings will be conditional; sensitivity analysis should identify variables driving reversals
+    and regions of indistinguishable performance.
+  method: >-
+    Counterfactual ablative analysis of diffusion, removal, source localization, boundary inflow and sample duration;
+    preregister essential subset; meta-analyze all prior experiments and inspect regime interactions.
+  metrics:
+  - worst_regime_error
+  - ranking_stability
+  - effect_size_CI
+  - method_variance
+  - grid_dependence
+  planned_runs: 60
+  literature: >-
+    [mues2018] https://doi.org/10.5194/gmd-11-2067-2018; [webster2022] https://doi.org/10.1029/2022JD036469; [choi2026]
+    https://doi.org/10.1088/1748-9326/ae2b89; [green2006] https://repository.rice.edu/items/4d4b4f81-1c4b-4362-8513-685eac332c7c.
+  steps:
+  - title: Pre-select structural sensitivity tests without expanding to full atmospheric chemistry
+    intent: >-
+      Choose a bounded small set of sensitivity axes: effective diffusivity, first-order loss, source shape spacing,
+      inflow background and 32² vs 64² resolution. Evaluate held-out wind direction regime, source count, cadence
+      and spatial cost mask; distinguish physical-model mismatch vs measurement noise. Predefine how strategy ranking
+      is judged with uncertainty; do not endlessly expand matrix after observing borderline significance.
+  - title: Implement reusable ablation and consistency runner
+    intent: >-
+      Build src/pravah/experiments/generalization.py with config-driven data generation and evaluation, seeded paired
+      comparisons; tests for valid parameter ranges, preserved physical units, all run IDs and split isolation.
+      Reuse existing models without writing new solvers.
+  - title: Local sensitivity pilot and resolution ablation
+    intent: >-
+      Run 32²/64² tiny subset, compare rankings of uniform vs nominal vs robust placement under changed diffusivity/loss
+      and source spacing. Check grid refinement does not qualitatively change result if dimensionless groups held
+      fixed. Log sensitivity effects and compute projected full-run cost.
+  - title: Run bounded multi-seed generalization matrix on CPU cluster
+    intent: >-
+      After local verification, run only pre-registered sensitivity cells through 16-core CPU array; keep one physical
+      degree-of-freedom change at a time plus one declared interaction; record all successes/failures. Skip unsupported
+      GPU. Register results and resource usage.
+    hpc:
+      backend: slurm
+      cluster: <hpc-host>
+      cpus: 16
+      mem: 32G
+      time: 04:00:00
+  - title: Synthesize regime-dependent rankings and limitations
+    intent: >-
+      Analyze all registered experiment results under the same primary endpoint and seed grouping; generate ranking
+      stability matrix, sensitivity response surfaces and effect-size interval chart. Explicitly flag multiple comparisons,
+      non-significant differences and contradictory findings. Describe what a 2D passive tracer cannot establish
+      about real PM2.5.
+  - title: Scope and conclusions gate before regional demonstration
+    intent: >-
+      Independent scientific review of primary claims, robust-vs-nominal test generalization and limitations; decide
+      whether the analysis is already manuscript-ready and whether optional real-data case adds value rather than
+      changing the scientific question. Freeze methods before case study.
+  expected_artifacts:
+  - docs/research/generalization-ablations.md
+  - src/pravah/experiments/generalization.py
+  - tests/test_generalization.py
+  - reports/quarto/tables/e16-local.csv
+  - docs/research/hpc/e16-generalization-run.md
+  - reports/quarto/chapters/16-generalization.qmd
+  - reports/quarto/tables/e16-final.csv
+  - reports/quarto/figures/e16-regime-ranks.png
+  - docs/research/gates/gate-16-generalization.md
+- key: e17-regional
+  title: Optional real-data-informed Belauri or public regional transport case
+  question: >-
+    Do the methodological comparisons remain qualitatively interpretable with real historical wind sequences and
+    geographically motivated source/candidate masks?
+  hypothesis: >-
+    Regional inputs can expose variability absent from toy synthetic winds, but without collocated and independent
+    pollution observations they do not provide real-world concentration validation.
+  method: >-
+    Use ERA5 (or documented alternative) real hourly wind and carefully specified downscaling/interpolation over
+    a square domain extending upwind; optional population grid/fire/hotspot/proxy source shapes; keep synthetic
+    emissions and known synthetic field truth, evaluate held-out dates and independent wind regimes.
+  metrics:
+  - regional_wind_coverage
+  - geographic_alignment_error
+  - field_rmse
+  - heldout_regime_error
+  - population_weighted_rmse
+  planned_runs: 40
+  literature: >-
+    [era5] https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels; [worldpop] https://hub.worldpop.org/geodata/summary?id=74560;
+    [firms] https://firms.modaps.eosdis.nasa.gov/download/; [mues2018] https://doi.org/10.5194/gmd-11-2067-2018;
+    [pennington2024] https://doi.org/10.5194/acp-24-2345-2024.
+  steps:
+  - title: Audit licensing, provenance and regional meteorological feasibility
+    intent: >-
+      Use only data available under clearly documented public or already authorized terms; do not accept a new license,
+      use credentials or download gated data on the researcher's behalf. If data are inaccessible, record a reproducible
+      not-conducted decision and let downstream reporting proceed. Identify a geographically defensible square region
+      in/around Belauri including upwind sources and border inflow; record bounding box, CRS, temporal window, data
+      license, download instructions and met station availability. Use ERA5 (or ERA5-Land only after explicitly
+      comparing wind products), land cover/population/fire proxies if accessible. Never assume the precipitation-only
+      Belauri Santipur station measures wind. Plan border inflow and 2D effective mixing-height limitations; data/raw
+      remains uncommitted, hashes/manifests committed. CONDITIONAL: If external resources/data are unavailable,
+      write a documented no-data/no-GPU feasibility decision and do not fabricate results. This conditional step
+      must not silently broaden the scope.
+  - title: Create deterministic gridded regional forcing and masks
+    intent: >-
+      Implement src/pravah/data/region.py with ERA5 spatial/temporal interpolation, CRS reprojection, wind u/v components
+      units, quality flags and candidate masks. Optional population layer as weights and FIRMS as sources proxy,
+      NOT observed emissions rate. Unit tests for time zones, misaligned cell centers, invalid winds and edge behavior.
+      Use fixtures to test without access to external credentials. CONDITIONAL: If external resources/data are unavailable,
+      write a documented no-data/no-GPU feasibility decision and do not fabricate results. This conditional step
+      must not silently broaden the scope.
+  - title: Local regional forcing and fixed-sensor comparison pilot
+    intent: >-
+      Generate an illustrative small regional case with actual acquired winds (if available), synthetic source coefficients
+      and true model-generated concentration fields; choose one training period and one held-out period. Compare
+      uniform/source/forecast/robust networks on the same prior and observation budget. Label every plot 'synthetic
+      concentration under observed/reanalysis meteorology' and never call reanalysis observational truth. CONDITIONAL:
+      If external resources/data are unavailable, write a documented no-data/no-GPU feasibility decision and do
+      not fabricate results. This conditional step must not silently broaden the scope.
+  - title: Optional regional multi-period sweep after verified local pilot
+    intent: >-
+      If real meteorological input is unavailable or lacks clear permission, write the required HPC report as NOT
+      CONDUCTED with evidence and reason; submit no job, and let later conditional analyses proceed with that limitation.
+      Otherwise, only after real meteorological input has been acquired and local pilot validated, scale 64² regional
+      synthetic benchmark over multiple held-out wind periods with 16-CPU array. Otherwise produce transparent feasibility
+      report and stop this conditional branch without blocking manuscript synthesis. Never infer real PM2.5 levels
+      from arbitrary tracer scale. CONDITIONAL: If external resources/data are unavailable, write a documented no-data/no-GPU
+      feasibility decision and do not fabricate results. This conditional step must not silently broaden the scope.
+    hpc:
+      backend: slurm
+      cluster: <hpc-host>
+      cpus: 16
+      mem: 32G
+      time: 04:00:00
+  - title: Regional methodological case and representativeness limitations
+    intent: >-
+      Create Quarto case study with coverage/CRS/data provenance, wind time series, snapshot maps and performance
+      comparison using synthetic truth; report known wind resolution and unsupported real pollution validation.
+      If no regional data, publish an explicit nonexecution/no-data account instead of invented plots, with `data_available=false`
+      in table. CONDITIONAL: If external resources/data are unavailable, write a documented no-data/no-GPU feasibility
+      decision and do not fabricate results. This conditional step must not silently broaden the scope.
+  expected_artifacts:
+  - docs/research/regional-data-audit.md
+  - configs/belauri-case.yaml
+  - src/pravah/data/region.py
+  - tests/test_region.py
+  - reports/quarto/tables/e17-local.csv
+  - reports/quarto/figures/e17-regional-winds.png
+  - docs/research/hpc/e17-regional-run.md
+  - reports/quarto/chapters/17-regional-case.qmd
+  - reports/quarto/tables/e17-final.csv
+- key: e18-observation
+  title: Optional independent real monitoring validation and gap assessment
+  question: >-
+    Is any independent surface pollution monitoring dataset sufficiently dense, calibrated and aligned to test PRAVAH
+    without circular reasoning?
+  hypothesis: >-
+    Real monitoring permits limited out-of-sample point forecasting comparisons but cannot validate full field/source
+    maps without independent spatial ground truth.
+  method: >-
+    Audit accessible government/open PM time series near Belauri (if inadequate, use another public urban air-quality
+    benchmark), sensor calibration and completeness; perform held-out site/time test only if reproducibly obtained
+    and scientifically comparable.
+  metrics:
+  - monitor_data_coverage
+  - heldout_station_rmse
+  - temporal_bias
+  - calibration_limitations
+  planned_runs: 10
+  literature: >-
+    [choi2026] https://doi.org/10.1088/1748-9326/ae2b89; [mues2018] https://doi.org/10.5194/gmd-11-2067-2018; [pennington2024]
+    https://doi.org/10.5194/acp-24-2345-2024.
+  steps:
+  - title: Establish real-data validation feasibility and limitations
+    intent: >-
+      Use only publicly reusable data under verified terms, without accepting new licenses or using private credentials;
+      otherwise record not conducted. Audit public Nepal Department of Environment and any accessible regional station
+      PM2.5 records for timestamps, completeness, geography, sensor type, calibration, pollutant comparability,
+      independent validation site count and sufficient meteorology. If no adequate data exist, identify one defensible
+      public multi-site benchmark (e.g., EPA or OpenAQ if verified), or mark observational validation not feasible.
+      Document without assuming data exists. Do not invoke data from a private source without permission. CONDITIONAL:
+      If external resources/data are unavailable, write a documented no-data/no-GPU feasibility decision and do
+      not fabricate results. This conditional step must not silently broaden the scope.
+  - title: Perform only scientifically defensible held-out station test
+    intent: >-
+      Conditional on publicly usable data verified by the prior audit, align units/clock periods, block splits by
+      station and dates, fit only training observations, forecast withheld station/time observations and report
+      calibrated point predictions, bias, uncertainty and baseline errors. If passive tracer cannot directly represent
+      chemistry/species, report proxy mismatch and stop without forcing PM2.5 comparisons. If no suitable data,
+      issue a clear 'not conducted' decision, with reasons, no synthetic substitutions. CONDITIONAL: If external
+      resources/data are unavailable, write a documented no-data/no-GPU feasibility decision and do not fabricate
+      results. This conditional step must not silently broaden the scope.
+  - title: Independent observational evidence and claim boundary review
+    intent: >-
+      Verify every real-world metric comes from genuine independent observations and every data source license/reuse
+      requirement. Separate regional illustration vs real-world validation claims. Record decision whether this
+      contributes to the manuscript. No additional field campaign or sensor hardware work is authorized by this
+      plan. CONDITIONAL: If external resources/data are unavailable, write a documented no-data/no-GPU feasibility
+      decision and do not fabricate results. This conditional step must not silently broaden the scope.
+  expected_artifacts:
+  - docs/research/observational-validation-audit.md
+  - reports/quarto/chapters/18-observations.qmd
+  - reports/quarto/tables/e18-status.csv
+  - docs/research/gates/gate-18-observations.md
+- key: e19-synthesis
+  title: Integrated results, statistical conclusions and Quarto monograph
+  question: >-
+    Can all primary conclusions be transparently traced to preregistered runs, figures, uncertainty estimates and
+    source code?
+  hypothesis: >-
+    A complete evidence inventory and neutral scientific narrative can describe both successful and negative results
+    without post-hoc selection.
+  method: >-
+    Assemble full Quarto report with all experiments (including skipped conditional branches), preserve a separate
+    Research OS curated Scientist Guide; produce concise manuscript outline and figure index. No full LaTeX paper
+    required.
+  metrics:
+  - evidence_trace_coverage
+  - all_experiment_statuses
+  - quarto_render_status
+  - reference_resolution
+  literature: >-
+    [green2006] https://repository.rice.edu/items/4d4b4f81-1c4b-4362-8513-685eac332c7c; [choi2026] https://doi.org/10.1088/1748-9326/ae2b89;
+    [bhardwaj2026] https://arxiv.org/abs/2608.00050; [zhou2022] https://doi.org/10.1021/acsenvironau.1c00051; [raanes2024]
+    https://doi.org/10.21105/joss.05150.
+  steps:
+  - title: Construct frozen evidence inventory and methods audit
+    intent: >-
+      Collect all experiments E00–E18, run and seed IDs, metrics/figures, failure and skipped branches; create evidence
+      matrix from every scientific assertion to specific run artifacts and referenced papers. Audit statistical
+      sample units, split leakage, missed runs and hyperparameter tuning. Distinguish conditional model outcomes
+      and observational claims. Use independent scientific reviewer guidance and verify research doctor. Do not
+      silently drop negative results.
+  - title: Assemble and render complete Quarto research report
+    intent: >-
+      Create reports/quarto/_quarto.yml with ordered index, theory, methods, and 01–18 experiment chapters (each
+      chapter existing or explicit 'not run/conditional'); build reproducible figures/tables from registered metric
+      summaries, bibliography citation keys and data/licensing statement. Include all actual outputs by clear link
+      rather than baking high-volume raw arrays into Git. Render HTML locally using quarto; also write a validation
+      script checking every reported figure/table source. Preserve the Research OS Scientist Guide and coordinate
+      with its opt-in auto-reporting workflow if available; do not overwrite human-owned content or duplicate inconsistent
+      experiment reports. Keep reports/quarto deliverables and check that the Scientist Guide references the same
+      evidence.
+  - title: Write journal-style article scaffold and reference-checked bibliography
+    intent: >-
+      Provide journal-agnostic manuscript-ready conceptual outline in Markdown/Quarto (abstract, introduction, related
+      work, methodology, numerical verification, experimental design, results for each RQ, discussion/limitations,
+      reproducibility and availability). Prepare figure/table shortlist and appendix split, citation audit and a
+      mock peer-review checklist. Do not write LaTeX manuscript; human author will do that. Clearly state possible
+      negative result outcomes and do not claim the work satisfies a particular journal without checking its scope.
+  - title: Write defensible answer to central research question
+    intent: >-
+      Answer each: (1) count/history vs identifiability, (2) source vs footprint/field/forecast optimality, (3)
+      value of sequential updating, (4) reliability under meteorology and structural mismatch, (5) performance of
+      robust placement and conditional transfer. Each answer must cite run IDs, effect sizes/uncertainty intervals
+      and references, plus alternative explanations and limitations. End with precise claims a reviewer could reproduce;
+      do not invent positive results.
+  expected_artifacts:
+  - reports/evidence-matrix.csv
+  - docs/research/manuscript-claims.md
+  - reports/quarto/_quarto.yml
+  - reports/quarto/index.qmd
+  - reports/quarto/chapters/19-conclusions.qmd
+  - scripts/validate_report.py
+  - docs/research/manuscript-outline.md
+  - docs/research/figure-table-index.md
+  - docs/research/reference-audit.md
+  - docs/research/summary-for-journal.md
+- key: e20-audit-release
+  title: Independent replication, final review and research-ready release
+  question: >-
+    Are the data, software, report and claims reproducible by someone who did not develop the algorithms?
+  hypothesis: >-
+    A clean-environment rerun, independent critical review and artifact provenance audit will expose undocumented
+    dependencies and unsupported claims before a journal submission.
+  method: >-
+    Clean pip/uv install, seeded representative reruns, registered artifacts, Quarto HTML build, license/security/README/data
+    availability audit, reproducibility bundle and reviewed outcome with explicit unresolved issues.
+  metrics:
+  - rerun_error
+  - open_issue_count
+  - artifact_manifest_coverage
+  - quarto_build_pass
+  - source_release_readiness
+  literature: >-
+    [raanes2024] https://doi.org/10.21105/joss.05150; [desilva2021] https://doi.org/10.21105/joss.02828; [green2006]
+    https://repository.rice.edu/items/4d4b4f81-1c4b-4362-8513-685eac332c7c.
+  steps:
+  - title: Independent clean-env replication of representative runs
+    intent: >-
+      With a fresh Python environment and only documented dependencies, run a small independent numerical oracle,
+      one source inverse, one placement comparison, one causal forecast and one imperfect-wind scenario from published
+      configs/seeds. Compare outputs against recorded numeric tolerances, inspect git SHA and version provenance.
+      Do not update golden numbers without scientific review. Record unresolved discrepancies, reproducibility status
+      and exact commands.
+  - title: Independent scientific peer-review simulation
+    intent: >-
+      Review full Quarto report as a skeptical reviewer: Does it reproduce established papers fairly? Are FIM and
+      GP/footprint claims mathematically sound? Are tests independent? Is source/time basis identifiable? Is forecasting
+      causal? Do placements share data budgets? Is uncertainty calibrated? Are statistical intervals correct and
+      sample units independent? Are negative results shown? Is real-world modeling qualified? Enumerate major/minor
+      issues and rank severity; do not silently fix scientific assumptions.
+  - title: Address mandatory reviewer issues or document honest blockers
+    intent: >-
+      Fix code/documentation bugs only with frozen tests unchanged, rerun affected results and supersede previous
+      figures with evidence; any change to hypotheses, data splits, metrics, or solver physics needs fresh human
+      scientific approval and a new experiment proposal. Keep a reviewer-response table and add unresolved limitations
+      in report. No fabricated outcomes or fake approvals.
+  - title: Produce methods/reproduction release and journal handoff checklist
+    intent: >-
+      Finalize clean README, pinned environment/lock, user guide, dataset acquisition manifest, runtime budgets
+      and run commands for small local example and optional HPC replay. Build Quarto HTML and audit citations/links/figures;
+      prepare human-readable manuscript handoff with final primary endpoint table, figures and appendix candidates.
+      Run `research doctor --all`, `research guide status`, `research report`; create supported findings only after
+      independent review. DO NOT automatically push, publish, merge or submit anything: prepare promotion candidates
+      for human approval.
+  - title: Final technical readiness audit; author scientific sign-off pending
+    intent: >-
+      Present final evidence index, Quarto result coverage, reproducibility status, reference audit, negative findings,
+      skipped conditional tasks, unresolved blockers and remaining journal-specific formatting. Produce a complete
+      evidence-based readiness report and mark final scientific/author sign-off as PENDING HUMAN REVIEW. The technical
+      reporting task may finish without a human present, but must never claim manuscript approval, submission, publication
+      or field validation. Record open issues and any proposed promotion separately; do not approve scientific claims.
+  expected_artifacts:
+  - docs/research/final-reproducibility-audit.md
+  - docs/research/final-scientific-review.md
+  - docs/research/reviewer-responses.md
+  - docs/research/journal-readiness-checklist.md
+  - docs/research/release-manifest.md
+  - reports/quarto/chapters/20-reproducibility.qmd
+  - docs/research/gates/gate-20-final.md

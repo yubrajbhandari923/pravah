@@ -1,0 +1,18 @@
+small-set brute rows: 65 | n_feasible == C(n_cand,k) in 65
+small n_cand range: 23 25 | min spacing of small designs (m): 1875.0
+full-set min spacing (m): 1250.0 (lattice 625 m, min_sep 1250 m)
+n_cand unique per (scenario, cand_set): 1
+full set, A(aopt design) - A(dopt design): >0: 3 =0: 0 <0: 21 | min -0.0189 max 0.186
+scenarios per prank cell (full set):
+design  aopt  coverage  diversity  dopt  podqr  podqr_num  random  source_near  uniform
+K k                                                                                    
+2 2      4.0       4.0        4.0   4.0    1.0        4.0     4.0          4.0      4.0
+  4      4.0       4.0        4.0   4.0    NaN        2.0     4.0          4.0      4.0
+  8      4.0       4.0        4.0   4.0    NaN        2.0     4.0          4.0      4.0
+4 2      4.0       4.0        4.0   4.0    NaN        4.0     4.0          4.0      4.0
+  4      4.0       4.0        4.0   4.0    NaN        2.0     4.0          4.0      4.0
+  8      4.0       4.0        4.0   4.0    NaN        2.0     4.0          4.0      4.0
+paired prank source_near - dopt: mean -0.167 | dopt>source_near 3 = 21 < 0
+field_rel_err_val == 1 (to 1e-6) in 116 of 185 full-set rows
+podqr_value -inf in 14 of 185 full-set rows; range of finite -177..-4.76
+diversity rows with a sub-noise site: 2 of 48

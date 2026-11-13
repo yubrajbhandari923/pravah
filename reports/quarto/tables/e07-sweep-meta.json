@@ -1,0 +1,70 @@
+{
+ "command": "OMP_NUM_THREADS=1 uv run python scripts/e07_cross_objective.py --sweep --out $PRAVAH_HPC_ROOT/results/e07-sweep-dd2c51c --workers 64",
+ "git_rev": "",
+ "git_dirty": false,
+ "host": "node003",
+ "python": "3.14.0",
+ "numpy": "2.5.4",
+ "slurm_job": "204894",
+ "design_note": "docs/research/cross-objective-design.md",
+ "scale": {
+  "grid": [
+   64,
+   64
+  ],
+  "dt": 30,
+  "scheme": "vanleer",
+  "spinup": 48,
+  "split": null,
+  "Ks": [
+   2,
+   4
+  ],
+  "ks": [
+   4,
+   8,
+   16
+  ],
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "R": 5,
+  "winds": [
+   "veering",
+   "mixed"
+  ],
+  "estimators": [
+   "map"
+  ],
+  "strategies": [
+   "uniform",
+   "coverage",
+   "source_near",
+   "hotspot",
+   "dopt",
+   "diversity",
+   "podqr"
+  ]
+ },
+ "winds": {
+  "veering": [
+   "veering"
+  ],
+  "mixed": [
+   "steady_westerly",
+   "veering",
+   "weak_variable"
+  ]
+ },
+ "workers": 64,
+ "total_wall_s": 43394.53369998932
+}

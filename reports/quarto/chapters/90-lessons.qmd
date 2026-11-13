@@ -1,0 +1,35 @@
+# Lessons and corrections
+
+Every experiment was audited by a separate agent ("gate"), working from the code, tables and run records rather than
+the author's summary. The auditors share the authors' model family, so their independence comes from the task split
+and from re-deriving numbers. This chapter collects what they caught and what was done about it. Superseded results
+stay in Git history and in the journals; they are not deleted.
+
+| # | Problem | Found by | Consequence | Fix | Status |
+|---|---|---|---|---|---|
+| 1 | Source scale 100 µg s⁻¹ gave per-sample SNR ~1e-3: sensors saw no plume | gate-00 B1 (estimate); confirmed by E02 (SNR ~2e-3), E03 (all 648 fits rank-deficient), E04 (practical rank 0/4), E05 (0 in every cell) | No placement or inverse result was interpretable | **A1:** a_ref = 1 g s⁻¹; noise, background, winds, seeds, endpoints unchanged. Peak SNR now 21–32 | Fixed; results at 1 g/s exploratory because the value was chosen after seeing data |
+| 2 | First-order upwind at 64²: effective diffusivity 350–2900 m² s⁻¹ vs K = 50; dt-halving gate fails | gate-00 B3 (risk); B3 study and lead's independent check | 64² runs would have studied numerical, not physical, diffusion | **A2:** dimensionally split VanLeer at dt 30 s; K_eff ≈ 50, order ≈ 2, dt-halving ≤ 0.71 % | Fixed for 64²; ~1 % non-linearity measured and shown negligible for E07 |
+| 3 | FiPy VanLeer as shipped is explicit and, unsplit, anti-diffusive across oblique winds | B3 study | Naive switch would have blown up (×1e8 in 1 h at Courant 5.8) or been anti-diffusive | Courant guard in `simulate`; Lie splitting | Fixed |
+| 4 | E03 `rank_info` reported a finite condition number for rank-deficient matrices | E03 work | Misleading conditioning | cond = ∞ unless rank equals the number of columns | Fixed |
+| 5 | E05 v1: "longer window helps / substitutes for sensors" | gate-05 | Window effect was the "steady" wind drifting ~30° between blocks; mean tables dominated by blow-ups up to 1e23; ties scored as "contradicted" | v2: exactly constant null wind, drifting as its own level, prior-based ridge, medians, seed as unit, DiD contrast | Corrected; v1 labelled superseded |
+| 6 | E06 performance was in-sample and the POD archive encoded the true strengths | gate-06 | Advantages of source-informed designs overstated; "training-only" meant hours, not information | E07: declared knowledge per design, prior-ensemble POD archive, held-out winds, AR(1)/per-site arms, mode-count rule fixed in advance, swap/exhaustive checks | Built into E07 before any computation |
+| 7 | E06 greedy optimality was checked only where spacing never binds | gate-06 | Greedy D exact in only 35/80 binding cases | 1-swap refinement and a binding-block exhaustive check in E07 (greedy + swap exact 146/160 in the sweep) | Fixed |
+| 8 | "D-opt beats random" could be read as "optimisation helps" | gate-07 issue 2 | source_near beats dopt in 115/120 pairs | Credit sentence attached to every statement of the confirmatory result | Wording fixed; exclusion control running |
+| 9 | Confirmatory scope smaller than the protocol's K × N grid | gate-07 issue 1 | 8 cells run vs protocol's N ≥ 8 cells over K ∈ {2, 4, 8}; cells not run are "unresolved" | Verdict stated as "supported in the cells run" | Awaiting user sign-off |
+| 10 | Percentile bootstrap of a median at n = 10 is anti-conservative | gate-07 issue 5 | One cell straddles with distribution-free CI | Distribution-free and mean-bootstrap variants reported (7/8 and 8/8) | Fixed |
+| 11 | A2 quoted the superposition error over 96 h only | gate-07 issue 7 | Full calendar error is ~27× larger (0.73σ max) | Added to the A2 decision; impact on RMSE ≤ 1e-4 | Fixed |
+| 12 | Endpoint agreement presented as a finding | gate-07 issue 8 | It is close to built in (same static estimate, perfect model) | Labelled as structural, not general | Fixed |
+| 13 | Fisher/CRB intervals badly miscalibrated under a wrong noise model | gate-04 | CRB-based uncertainty unsafe under misspecification | Not fixed; noted for E14 (calibration) | Open |
+
+## What these corrections taught us
+
+- **Check the signal-to-noise ratio first.** Three experiments were run before the scale problem was acted on; a
+  one-line estimate in the protocol audit had already predicted it.
+- **A "steady" control must be exactly steady.** The E05 confound came from a realistic-looking jitter in the control.
+- **Means of ill-posed estimates are meaningless.** Use medians, prior-referenced regularisation, and count failures.
+- **Always include a dumb control that knows the same thing.** The locations-only control is what revealed that the
+  E06/E07 gains were mostly knowledge of source locations.
+- **In-sample information is not held-out performance.** Whole-period D on training (and even on test) winds missed the
+  short windows in which a source became invisible.
+- **Amendments are fine if recorded.** Each change above has a decision file or journal entry with its evidence and
+  the results it affects.

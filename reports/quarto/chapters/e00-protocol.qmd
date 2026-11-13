@@ -1,0 +1,40 @@
+# E00 Protocol and evaluation contract
+
+**Question.** Can the endpoints, splits, seeds, held-out winds and success/stop rules be fixed before any data are
+seen, so that later claims cannot drift towards whatever looked good?
+
+**What we did.** Wrote the preregistered protocol (`docs/research/preregistered-protocol.md`), the reproducibility
+contract, a typed experiment configuration (`src/pravah/experiment_config.py`) and a literature map, then had them
+audited independently (`docs/research/gates/gate-00-protocol.md`). The protocol is summarised in the
+[Methods](00-methods.qmd) chapter.
+
+**Result.** No numerical result; E00 produces rules. The single primary endpoint is the held-out one-hour-ahead field
+forecast RMSE; the primary hypothesis is a ≥ 10 % reduction against random placement for N ≥ 8.
+
+## Audit outcome (gate-00)
+
+The audit did **not** clear the protocol and named three blockers needing a human decision:
+
+- **B1 — signal far below noise.** A back-of-envelope plume estimate (not a solver run) gave a centreline anomaly
+  5 km downwind of ~4e-5 to ~9e-4 µg m⁻³ against σ ≈ 0.25 µg m⁻³: per-sample SNR ~1e-3 to 4e-3. E02–E05 later confirmed
+  this empirically.
+- **B2 — protocol unapproved.** It was a draft; nothing downstream was binding.
+- **B3 — numerical gates possibly unachievable** with first-order upwind at 64² (cell Péclet 9–16, numerical diffusion
+  ~234–391 m² s⁻¹ from the spatial term alone against K = 50).
+
+## What changed because of the audit
+
+| Blocker | Resolution |
+|---|---|
+| B1 | Amendment A1: a_ref = 1 g s⁻¹ (`state/decisions/2026-11-12-source-scale.md`), user approved |
+| B2 | Protocol approved 2026-11-12 as an amendable baseline (`state/decisions/2026-11-12-protocol-approval.md`) |
+| B3 | Amendment A2: split VanLeer at dt 30 s for 64² (`state/decisions/2026-11-12-advection-scheme.md`) |
+
+## Limitations
+
+- A1 was chosen after seeing outcome data (an E05 rescaling), so results at 1 g/s from experiments designed before the
+  approval are exploratory.
+- Approval is "not a rigid freeze": infeasible settings may be amended with a decision file. This is a deliberate
+  trade-off and must be watched — each amendment is listed in [Lessons and corrections](90-lessons.qmd).
+- The protocol's known limitations (uniform wind, constant K, known source locations, ideal sensors, synthetic
+  population) bound every later result.

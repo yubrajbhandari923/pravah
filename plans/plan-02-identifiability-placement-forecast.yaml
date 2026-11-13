@@ -1,0 +1,493 @@
+# Scientific intent for PRAVAH stage 2. Read-only by default; not a progress log (see state/).
+# Distilled from the ResearchOS plan (original: git show refs/legacy/heads/main:plans/02-identifiability-placement-forecast.yaml).
+# expected_artifacts are advisory evidence targets, not completion gates.
+plan: pravah-p2-identifiability-placement-forecast
+title: PRAVAH P2 — Information, sensor placement, and causal forecasting
+objective: >-
+  Measure observability and temporal information; implement and compare placement criteria and forecast-oriented
+  causal filtering on fixed, leakage-free synthetic benchmarks.
+success_criteria: >-
+  E04–E11 verified using the promoted P1 baseline, preregistered metrics and real local/HPC run evidence; information,
+  placement, Kalman, and forecast claims reviewed with uncertainty and negative results retained.
+experiments:
+- key: e04-footprints
+  title: Footprints, Fisher information and identifiability
+  question: >-
+    Which source combinations can the proposed sensors actually distinguish, and how do footprints diagnose redundancy?
+  hypothesis: >-
+    The singular spectrum of stacked sensor-time response predicts recoverable source combinations more reliably
+    than simply counting sensors or maximizing geographical coverage.
+  method: >-
+    Reproduce Green D-optimality for small 1D advection-diffusion as a pedagogical comparator; compute transient
+    2D sensor-time Jacobian and Fisher matrix; SVD/column coherence, null modes and confidence ellipses. Check background
+    projection as in Bhardwaj.
+  metrics:
+  - minimum_singular_value
+  - effective_rank
+  - FIM_logdet
+  - footprint_coherence
+  - ellipse_coverage
+  planned_runs: 20
+  literature: >-
+    [green2006] https://repository.rice.edu/items/4d4b4f81-1c4b-4362-8513-685eac332c7c; [schlutow2026] https://doi.org/10.5194/gmd-19-6259-2026;
+    [bhardwaj2026] https://arxiv.org/abs/2608.00050; [bartos2021] https://doi.org/10.1029/2020WR029551.
+  steps:
+  - title: Mathematical source–receptor footprint and FIM derivation
+    intent: >-
+      Develop causal impulse response and time-lagged source-sensor sensitivities for the 2D time-dependent solver.
+      A footprint row is sensitivity to emissions, not a measured pollutant field. Derive Fisher M = G^T R^-1 G
+      plus prior precision when needed; D/A/E criteria, noise correlations and local asymptotic covariance. Discuss
+      Green (2006) Ch 2.2–2.3, Chapter 3 and Schlutow 2026 steady-state vs transient limitations. Include observability
+      rank vs practical conditioning; work through background nuisance projection as Bhardwaj 2026.
+  - title: Implement footprints, FIM, SVD and small Green reproduction
+    intent: >-
+      Implement src/pravah/information.py with stacked Jacobians, confidence ellipse, rank/coherence and noise-aware
+      D-opt/A-opt/E-opt. Analytical 1D Green two-parameter example (not force exact same numerical values unless
+      faithfully reproducing Green 2006 setup). Test finite-difference sensitivities, symmetric PSD FIM, zero information
+      in null direction, FIM additive over independent times, and proper handling of rank deficiency (no blind logdet).
+      Compare transpose/adjoint only if independently validated.
+  - title: Visualize footprints and identifiability counterexamples
+    intent: >-
+      Plot footprint heatmaps for two winds, source–sensor response matrix heatmap, singular spectrum, and 2D confidence
+      ellipses for informative vs redundant designs; test whether two different source strengths can yield similar
+      fit but different true source vector. Record practical rank at pre-registered noise scale, not floating point
+      rank alone.
+  - title: Audit uncertainty and identifiability claims
+    intent: >-
+      Compare FIM local Gaussian approximation and empirical repeated-noise confidence region coverage; distinguish
+      parameter info from field skill. Flag approximations that fail under NNLS boundary constraints or misspecified
+      covariance, including numerical degeneracy.
+  expected_artifacts:
+  - docs/research/footprints-identifiability.md
+  - src/pravah/information.py
+  - tests/test_information.py
+  - reports/quarto/chapters/04-footprints.qmd
+  - reports/quarto/figures/e04-footprints.png
+  - reports/quarto/tables/e04-identifiability.csv
+  - docs/research/gates/gate-04-identifiability.md
+- key: e05-duration
+  title: 'Temporal observability: sensor count versus observation window'
+  question: When does a longer measurement history compensate for fewer sensors?
+  hypothesis: >-
+    Changing wind directions can increase effective rank for constant/low-dimensional source coefficients; repeated
+    redundant snapshots reduce noise without separating otherwise collinear sources.
+  method: >-
+    Ablate 1 instant/6h/24h/7d, wind diversity, 2–8 sources and temporal parameter basis; use identical total measurement
+    count where possible as a fairness control; random-noise paired repeats.
+  metrics:
+  - source_rmse_vs_T
+  - rank_vs_T
+  - field_rmse_vs_T
+  - measurement_budget
+  - wind_diversity
+  planned_runs: 30
+  literature: >-
+    [green2006] https://repository.rice.edu/items/4d4b4f81-1c4b-4362-8513-685eac332c7c; [bhardwaj2026] https://arxiv.org/abs/2608.00050;
+    [bartos2021] https://doi.org/10.1029/2020WR029551.
+  steps:
+  - title: Specify history window, measurement budget and temporal emissions basis
+    intent: >-
+      Freeze source amplitudes constant in a first branch and use low-order piecewise/diurnal basis in a second,
+      holding coefficient dimension explicit. Define snapshots/6h/24h/7d windows, changes in wind direction vs repeated
+      constant winds, matched total sensor-readings budget and separate wall-clock duration comparisons. Avoid claiming
+      additional times always improve rank. Plan tests for temporally correlated observation errors.
+  - title: Implement lagged time-stacked inverse and optional temporal basis
+    intent: >-
+      Extend sensitivity/inverse modules to stack lagged observations over time and represent q_j(t)=sum_l a_{jl}
+      phi_l(t). Test delta-pulse transport delay, time indexing (no look-ahead), matched design matrix dimensions
+      and leakage prevention. Use Green 2006 time-series FIM and Bhardwaj 2026 temporal source fingerprints.
+  - title: Local duration/sensor ablation and wind-diversity counterexample
+    intent: >-
+      Run tiny 32² experiments across k=2/4/8 and T=1/6/24h/7d, two winds (constant vs changing), source complexity
+      2/4, at least 3 seeds. Plot source RMSE vs total measurements, effective rank vs time and field RMSE. Explicitly
+      note variable number of unknowns in basis branch. Report negative outcomes.
+  - title: Freeze temporal inverse experiment interpretation
+    intent: >-
+      Independently assess fair measurement budget, unknown parameter count, wind model, held-out times, noise dependence
+      and claimed sensor savings. Record which durations merit larger replicated experiment.
+  expected_artifacts:
+  - docs/research/time-observability-design.md
+  - src/pravah/temporal_basis.py
+  - tests/test_time_observability.py
+  - reports/quarto/chapters/05-time.qmd
+  - reports/quarto/tables/e05-duration.csv
+  - docs/research/gates/gate-05-duration.md
+- key: e06-placement-algorithms
+  title: Reproduce core placement algorithms and information criteria
+  question: >-
+    Can we reproduce simple uniform, random, greedy information and POD/QR sensor placements under shared candidate
+    constraints?
+  hypothesis: >-
+    On small exhaustive-search testbeds, correct greedy D-opt and POD-QR implementations agree with independent
+    references and improve their own mathematical objectives, without guaranteeing other metrics.
+  method: >-
+    Implement random/uniform/coverage/source-hotspot baselines, greedy FIM (D/A/E optional), footprint diversity
+    and POD/QR. Verify against brute force for tiny candidate sets and PySensors where available.
+  metrics:
+  - criterion_value
+  - design_opt_gap_small
+  - distinct_sensors
+  - sensor_spacing
+  - runtime_seconds
+  planned_runs: 30
+  literature: >-
+    [green2006] https://repository.rice.edu/items/4d4b4f81-1c4b-4362-8513-685eac332c7c; [manohar2018] https://doi.org/10.1109/MCS.2018.2810460;
+    [zhou2022] https://doi.org/10.1021/acsenvironau.1c00051; [mano2022] https://doi.org/10.3390/s22103808; [krause2008]
+    https://www.jmlr.org/papers/v9/krause08a.html; [desilva2021] https://doi.org/10.21105/joss.02828; [karnik2026]
+    https://doi.org/10.21105/joss.09265.
+  steps:
+  - title: Pre-register placement objectives and constraints
+    intent: >-
+      For each candidate network define: A) source D-opt logdet regularized/prior-aware, B) footprint diversity
+      using normalized sensitivity Gram/coherence and explicit noise scaling, C) POD/QR field-basis placement using
+      TRAINING snapshots ONLY, D) uniform/random and source-near/coverage baselines. Define whether baseline source
+      location is known a priori, candidate exclusion mask, minimum spacing, cost budget and tie-breaking. Document
+      theoretical connection to Green 2006, Manohar 2018, Zhou 2022, Mano 2022 and GP mutual information Krause
+      2008. Avoid treating these distinct objectives as equivalent.
+  - title: Implement placement strategies and independent reference checks
+    intent: >-
+      Build src/pravah/placement.py strategies using a common deterministic interface and candidate set. Tiny exhaustive
+      search must confirm greedy objective trends and valid selected sites, without promising global optimality.
+      Reproduce minimal POD/QR via QR column pivoting; compare to pinned PySensors implementation. Include test
+      where two footprint-identical sensors give redundant information. Do not inspect test truth during design.
+  - title: Local 4–16 candidates illustrative placement maps
+    intent: >-
+      On very small domain/candidate set compare all designs at k=2/4/8, compile objective scores vs brute force,
+      plot corresponding footprints, sensor coordinates, runtime. Record whether each criterion meets its own declared
+      goal and note cross-task tradeoffs rather than winner claim.
+  - title: Independent check of design fairness and objective mathematics
+    intent: >-
+      Review candidate equality, budget/cost constraints, training-only learned basis, noise-aware Fisher formula,
+      eigenvalue regularization and greedy tie-break behavior. Document code comparison vs PySensors and licensing.
+  expected_artifacts:
+  - docs/research/placement-objectives.md
+  - src/pravah/placement.py
+  - tests/test_placement.py
+  - reports/quarto/chapters/06-placement-methods.qmd
+  - reports/quarto/figures/e06-designs.png
+  - reports/quarto/tables/e06-criteria.csv
+  - docs/research/gates/gate-06-methods.md
+- key: e07-cross-objective
+  title: 'Cross-objective placement ablation: source vs field vs forecast proxies'
+  question: Which placement objective is best for which held-out inference task?
+  hypothesis: >-
+    There need not be one network that simultaneously minimizes source RMSE, field RMSE and forecast error; criterion
+    mismatch can be large for small budgets.
+  method: >-
+    Freeze inverse solver; compare random/uniform/hotspot, D-opt, footprint-diverse, POD-QR, posterior field-variance
+    proxy; train designs without test truth; score all against the same test truth and noise seeds.
+  metrics:
+  - source_rmse
+  - field_rmse
+  - population_weighted_rmse
+  - FIM_logdet
+  - design_regret
+  - CPU_corehours
+  planned_runs: 100
+  literature: >-
+    [green2006] https://repository.rice.edu/items/4d4b4f81-1c4b-4362-8513-685eac332c7c; [manohar2018] https://doi.org/10.1109/MCS.2018.2810460;
+    [mano2022] https://doi.org/10.3390/s22103808; [choi2026] https://doi.org/10.1088/1748-9326/ae2b89.
+  steps:
+  - title: Define primary design comparison and fairness rules
+    intent: >-
+      Prepare a predeclared matrix: source count 2/4/8, sensors k=2/4/8/16/32, 3 wind histories, fixed/noise-adjusted
+      budget, identical inverse solvers and source priors, shared held-out seeds, training-only objective computation.
+      Compare task-specific performance: source, field, spatial exposure weighting as OPTIONAL secondary, forecast
+      proxy not yet operational causal filter. Record training and evaluation outcome distinctions and no-hindsight
+      placement.
+  - title: Common design evaluator and metric registration
+    intent: >-
+      Implement src/pravah/experiments/cross_objective.py; validate on tiny synthetic truth. Include known-sources/unknown-source-estimated
+      branches, correct nonnegative solver, split integrity; store design site IDs and paired random draws. Add
+      tests checking every design has k distinct admissible locations and evaluation uses no held-out full field
+      during fitting.
+  - title: Complete 32² local cross-objective pilot
+    intent: >-
+      Run one tiny full-matrix pilot locally: k=2/4/8, sources=2/4, 2 seeds, short wind episodes. Produce preliminary
+      rank table, cross-objective error heatmap, CPU/memory profile; confirm per-run outputs and no leakage. Revise
+      scale estimates only with documented scientific approval.
+  - title: Scale cross-objective sweep to 64² and multiple seeds on CPU HPC
+    intent: >-
+      After local pilot verified and HPC smoke passes, run pre-registered 64²/16-CPU parallel array across independently
+      seeded trial groups, with measured wall/cpu per configuration. Track successful/failed run count and no skipped
+      settings; random repeats at least 10 if planned budget permits. Stage captured metrics and figures for reproducible
+      analysis. Do not request GPU for FiPy.
+    hpc:
+      backend: slurm
+      cluster: <hpc-host>
+      cpus: 16
+      mem: 32G
+      time: 04:00:00
+  - title: Final paired cross-objective results with uncertainty intervals
+    intent: >-
+      Aggregate only completed verified runs; paired-compare methods with confidence intervals across independent
+      data-generating scenarios; show design-score vs actual downstream accuracy and Pareto tradeoffs. Plot test-only
+      multi-metric heatmap, sensor-count curves and maps of disagreement, publish clearly labeled negative results.
+      Distinguish within-domain oracle-model results from real atmospheric inference.
+  - title: Independent cross-objective benchmark review
+    intent: >-
+      Audit comparisons for data leakage, paired seeds, selection bias from best-run reporting, nonidentifiable
+      source cases, multiple comparisons and effect-size uncertainty. Confirm methodology includes all unsuccessful
+      runs. Lock the comparison as a scientific baseline for subsequent filters.
+  expected_artifacts:
+  - docs/research/cross-objective-design.md
+  - src/pravah/experiments/cross_objective.py
+  - tests/test_cross_objective.py
+  - reports/quarto/tables/e07-local-pilot.csv
+  - reports/quarto/figures/e07-local-crossobjective.png
+  - docs/research/hpc/e07-crossobjective-run.md
+  - reports/quarto/chapters/07-cross-objective.qmd
+  - reports/quarto/tables/e07-final.csv
+  - reports/quarto/figures/e07-pareto.png
+  - docs/research/gates/gate-07-crossobjective.md
+- key: e08-sufficiency
+  title: Sensor sufficiency, field complexity and measurement cost
+  question: How do k, source complexity, noise, sampling cadence and observation duration interact?
+  hypothesis: >-
+    Sensor sufficiency is conditional on source-basis dimension, transport history and noise; it is not one universal
+    k threshold.
+  method: >-
+    Controlled factorial ablations with k=2/4/8/16/32, source count=2/4/8, varying snapshot/6h/24h/7d, spatial basis
+    complexity and noise, paired fixed seeds. Prefer fractional-factorial if compute high; preregister simplification.
+  metrics:
+  - source_rmse
+  - field_rmse
+  - smallest_singular_value
+  - time_to_information
+  - per_measurement_cost
+  planned_runs: 100
+  literature: >-
+    [zhou2022] https://doi.org/10.1021/acsenvironau.1c00051; [bhardwaj2026] https://arxiv.org/abs/2608.00050; [green2006]
+    https://repository.rice.edu/items/4d4b4f81-1c4b-4362-8513-685eac332c7c.
+  steps:
+  - title: Pre-register factorial sample sizes and question-specific breakpoints
+    intent: >-
+      Specify exact factorial/fractional factorial coverage, how source coefficients grow with duration, matched
+      measurement budget, when optimization recalculates sites vs fixed-in-place sites, noise 0/low/moderate levels
+      and seed groups. Define sufficiency as conditional task-error threshold with range of thresholds (not a universal
+      percent) and confidence intervals. Separate independent degrees of freedom from number of observation rows.
+  - title: Implement bounded, resumable sufficiency sweep and estimator curves
+    intent: >-
+      Implement experiment configuration generator and evaluator of k × T × source count × noise across placement
+      strategies. Add tests for shape and statistical pairing, for no dependence on future field values during design,
+      and source histories generated independently of held-out test selection. Emit machine-readable long-form metric
+      tables.
+  - title: Run small local sufficiency sweep and sensitivity plots
+    intent: >-
+      Use 32² grid, at least k=2/4/8, m=2/4 and 2 durations, two noise levels and 3 seeds. Produce representative
+      curves with intervals, cost/runtime estimates and identify whether the full design has redundant cells to
+      prune before scaling. Record all protocol deviations.
+  - title: Full planned sufficiency factorial on CPU HPC
+    intent: >-
+      After local and compute-node smoke, run planned 64² multi-seed factorial as independent CPU tasks, track actual
+      configuration coverage, logs and metrics under registered run IDs, no silently skipped settings. No GPU for
+      FiPy. If computing cost would exceed pre-registered allocations, stop and report a resource_limit blocker;
+      never escalate allocations or launch extra array elements.
+    hpc:
+      backend: slurm
+      cluster: <hpc-host>
+      cpus: 16
+      mem: 32G
+      time: 04:00:00
+  - title: Make conditional-sufficiency phase diagrams and statistical comparisons
+    intent: >-
+      Derive error-versus-k curves stratified by T, source rank and wind diversity; measure marginal improvement
+      per added sensor and per additional sensor-hour. Show both conditional identifiability and prediction field
+      error, uncertainty intervals, timing and meaningful null findings.
+  expected_artifacts:
+  - docs/research/sensor-sufficiency-design.md
+  - src/pravah/experiments/sufficiency.py
+  - tests/test_sufficiency.py
+  - reports/quarto/tables/e08-local.csv
+  - docs/research/hpc/e08-sufficiency-run.md
+  - reports/quarto/chapters/08-sufficiency.qmd
+  - reports/quarto/figures/e08-phase-diagram.png
+  - reports/quarto/tables/e08-final.csv
+- key: e09-kalman
+  title: Causal sequential filtering of the concentration state
+  question: >-
+    Does a forecast–observe–update filter estimate the field and forecast future pollution better than a current-only
+    batch inverse?
+  hypothesis: >-
+    A correctly specified causal linear Kalman filter reduces post-analysis field error and improves one-step forecast
+    under informative measurements; the benefit varies by sensor location and prior covariance.
+  method: >-
+    Construct linear state operator from small 2D FiPy transport (or verified reduced transition) and compare no
+    update, static NNLS, Kalman filter and offline smoother as oracle diagnostic only. Score prior forecast before
+    assimilating current observations.
+  metrics:
+  - forecast_rmse_prior
+  - analysis_rmse_posterior
+  - innovation_nis
+  - interval_coverage
+  - runtime_seconds
+  planned_runs: 30
+  literature: >-
+    [enkf2009] https://doi.org/10.1016/j.atmosenv.2009.01.014; [sharma2019] https://doi.org/10.1016/j.buildenv.2019.05.026;
+    [cheng2022] https://doi.org/10.1016/j.automatica.2021.110112; [raanes2024] https://doi.org/10.21105/joss.05150;
+    [roy2018] https://doi.org/10.3390/s18061778.
+  steps:
+  - title: Derive state-space transition, covariance and causal scoring
+    intent: >-
+      Write the linear Gaussian state-space model x_(n+1)=A_n x_n+B_n theta+d_n+w_n; y_n=H_S x_n+v_n. Specify covariance
+      Q and R, forecast vs filtered state, update timing, initialized prior and causal data availability. Distinguish
+      hindsight smoother from online filter; derive innovations, Kalman gain, posterior covariance; identify numerical
+      cost of full grid covariance and choose small toy domain or reduced-order model. Include refs to 2009 atmospheric
+      EnKF, Sharma 2019, Cheng 2022 and DAPPER.
+  - title: Implement causal filter and independent reference tests
+    intent: >-
+      Implement src/pravah/assimilation.py causal linear Kalman/reduced state filter and forecast-before-update
+      APIs. For a toy 1D state, compare prediction/update mean/covariance numerically against FilterPy independent
+      reference and hand-computed posterior. Tests must detect future-observation leakage, covariance PSD loss,
+      improper input/observation indexing, absent sensors, R->large no update, Q->0 deterministic limit. Use DAPPER
+      for diagnostic definitions.
+  - title: Run causal replay locally on 16²/32² field
+    intent: >-
+      Choose one registered truth trajectory, several fixed designs and 3 seeds. At every time step (a) forecast
+      field, (b) score predicted field against held-out truth, (c) reveal only chosen sensor observations, (d) update
+      and score analysis, (e) continue. Plot forecast vs analysis RMSE and innovation time traces; compare zero-assimilation
+      and current-only inversion. Do not evaluate smoother forecasts as if online.
+  - title: Check filter calibration, complexity and causality
+    intent: >-
+      Independently verify no future information at forecast issue time, numerical covariance stability and posterior
+      calibration over repeated noise. Explain approximations if reduced state; recommend whether full-grid covariance
+      or reduced-order should be used for larger runs. Gate joint state/source assimilation.
+  expected_artifacts:
+  - docs/research/causal-filter-formulation.md
+  - src/pravah/assimilation.py
+  - tests/test_kalman.py
+  - reports/quarto/chapters/09-kalman.qmd
+  - reports/quarto/figures/e09-time-traces.png
+  - reports/quarto/tables/e09-local.csv
+  - docs/research/gates/gate-09-causal-filter.md
+- key: e10-joint-assimilation
+  title: Joint source-strength and field sequential inference
+  question: >-
+    Can sequential observations update unknown emission strengths and concentration state simultaneously without
+    causing spurious certainty?
+  hypothesis: >-
+    Augmenting the field state with a low-dimensional slowly varying source representation can improve source tracking
+    and field forecasts, but performs poorly when source and background are confounded.
+  method: >-
+    Develop small exact augmented Kalman baseline for Gaussian linear unconstrained source dynamics; extend to constrained/ensemble
+    treatment and compare EnKF against DAPPER for toy cases; do not pretend Gaussian update preserves nonnegative
+    constraints without explicit handling.
+  metrics:
+  - source_trajectory_rmse
+  - forecast_rmse
+  - ensemble_spread
+  - NIS
+  - interval_coverage
+  planned_runs: 40
+  literature: >-
+    [enkf2009] https://doi.org/10.1016/j.atmosenv.2009.01.014; [sharma2019] https://doi.org/10.1016/j.buildenv.2019.05.026;
+    [bhardwaj2026] https://arxiv.org/abs/2608.00050; [raanes2024] https://doi.org/10.21105/joss.05150.
+  steps:
+  - title: Define augmented state, source prior and admissibility
+    intent: >-
+      Explicitly define [x;theta] state and source transition (constant/sluggish random walk vs low-dimensional
+      diurnal coefficients), covariances and cross-correlation. Explain positivity: unconstrained Gaussian filter
+      may allow negative theta; choose one declared, verified handling method (transformed/log coefficient, projected
+      posterior with caveats, or constrained optimization). Predeclare background confounding test and identifiability
+      vs filtering accuracy. Reference 2009 atmospheric state/parameter EnKF and Bhardwaj 2026.
+  - title: Augmented Kalman, optional EnKF and DAPPER toy cross-check
+    intent: >-
+      Implement source-state augmented filter for small linear model; if needed write a minimal EnKF in src/pravah/assimilation_ensemble.py
+      with fixed random streams, inflation, tested covariance sample formulas and ensemble convergence. Cross-check
+      toy outputs vs DAPPER examples; do not import large DAPPER machinery as production dependency. Test nonnegativity
+      handling, source/field distinguishability and operator dimensions; verify parameters do not get updated from
+      withheld future measurements.
+  - title: Local joint-inference comparison against one-shot and field-only
+    intent: >-
+      On 32² with 2/4 unknown sources and 2/4/8 sensors, compare source known oracle, batch NNLS, field-only filter,
+      augmented source-field filter, and optional EnKF with 2–3 ensemble sizes. Use same selected network and observations;
+      show source-strength time traces and field forecast error, innovation and numerical stability. Record cases
+      of drift or nonidentifiability.
+  - title: Freeze sequential source-estimation method and limits
+    intent: >-
+      Assess whether sequential update actually adds information under fixed/variable source assumptions, ensure
+      no recovery claims from incorrect background, diagnose EnKF collapse/inflation artifacts, select ONE estimator
+      as benchmark default while preserving comparisons.
+  expected_artifacts:
+  - docs/research/joint-assimilation-design.md
+  - src/pravah/assimilation_ensemble.py
+  - tests/test_joint_assimilation.py
+  - reports/quarto/chapters/10-joint-assimilation.qmd
+  - reports/quarto/figures/e10-source-traces.png
+  - reports/quarto/tables/e10-local.csv
+  - docs/research/gates/gate-10-joint-filter.md
+- key: e11-forecast-design
+  title: Placement optimized for causal forecasting and sequential reconstruction
+  question: >-
+    Does source/D-opt or POD/QR placement remain optimal when the endpoint is real one-step and multi-horizon forecast
+    skill?
+  hypothesis: >-
+    A placement that is excellent for instantaneous source estimation may not minimize pre-assimilation field forecast
+    risk at different horizons.
+  method: >-
+    Use fixed sequential filter and compare networks selected by source FIM, footprint diversity, POD/QR, posterior
+    covariance and training-only forecast risk; test held-out trajectories at 1-step, 6-hour and 24-hour horizons.
+  metrics:
+  - preanalysis_field_rmse_h1
+  - forecast_rmse_h6
+  - forecast_rmse_h24
+  - analysis_rmse
+  - source_rmse
+  planned_runs: 80
+  literature: >-
+    [choi2026] https://doi.org/10.1088/1748-9326/ae2b89; [cheng2022] https://doi.org/10.1016/j.automatica.2021.110112;
+    [bartos2021] https://doi.org/10.1029/2020WR029551; [raanes2024] https://doi.org/10.21105/joss.05150; [manohar2018]
+    https://doi.org/10.1109/MCS.2018.2810460.
+  steps:
+  - title: Define causal forecast placement objective and multi-horizon scoring
+    intent: >-
+      Choose TRAINING-ONLY forecast-risk selection based on a fixed filter and predetermined prior; cap candidate
+      evaluations; distinguish Bayesian posterior field variance proxy vs actual held-out forecast loss. Define
+      h=1 step, 6h, 24h (units in protocol) and when meteorological forecasts are available. For synthetic perfect
+      wind, label all results idealized. Compare same source D-opt, POD-QR, uniform, footprint, plus posterior-variance
+      and forecast-target designs under equal sensor budget. Predeclare primary test horizon.
+  - title: Build causal evaluation loop across designs and horizons
+    intent: >-
+      Implement src/pravah/experiments/forecast_design.py with strict forecast-before-update event order, wash-in/burn-in,
+      withheld test trajectories and proper attribution of observation budgets. Test time indexing using a deliberately
+      delayed observation; ensure forecast scores cannot use future true winds unless tagged perfect-forcing, and
+      no access to full test truth in design.
+  - title: Small local causal forecast placement pilot
+    intent: >-
+      Run 32² with k=2/4/8, 2 sources, 3 seeds and 2 wind regimes; show posterior analysis vs prior forecast and
+      compare 1-step and 6h error. Verify generated figures include time origin and no future access. Profile cost
+      and test that all strategies share same prior/filter.
+  - title: Full multi-horizon forecast placement comparison on CPU cluster
+    intent: >-
+      Only after local pilot, run verified 64² CPU-only seed/scenario arrays (default 16 requested CPU cores with
+      enough independent array elements to utilize them); compare all pre-registered strategies and h=1 step/6h/24h.
+      Carry source/field/posterior and exposure secondary scores, ensemble spread and CPU-time. Report all failed
+      members and reason.
+    hpc:
+      backend: slurm
+      cluster: <hpc-host>
+      cpus: 16
+      mem: 32G
+      time: 04:00:00
+  - title: Publish forecast accuracy, sensor count and horizon tradeoffs
+    intent: >-
+      Aggregate over held-out trajectories, make a matrix of design objective vs evaluated quantity, forecast horizon
+      loss curves, reliability plots and a source-vs-field tradeoff. Use paired bootstrap by trajectory (not every
+      highly correlated hourly sample as independent). Keep online and retrospective comparisons separate. Write
+      precise null as well as positive findings.
+  - title: Independent replay of selected forecast experiments
+    intent: >-
+      Repeat subset from logged seeds, review forecast issue times and covariances, compare results to prior source-design
+      matrix and clarify scope. Freeze the core filter, forecast horizon and design baselines before introducing
+      model error.
+  expected_artifacts:
+  - docs/research/forecast-placement-design.md
+  - src/pravah/experiments/forecast_design.py
+  - tests/test_forecast_design.py
+  - reports/quarto/tables/e11-local.csv
+  - reports/quarto/figures/e11-causal-traces.png
+  - docs/research/hpc/e11-forecast-run.md
+  - reports/quarto/chapters/11-forecast-placement.qmd
+  - reports/quarto/tables/e11-final.csv
+  - reports/quarto/figures/e11-horizon-curves.png
+  - docs/research/gates/gate-11-forecast.md

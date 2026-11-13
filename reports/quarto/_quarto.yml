@@ -1,0 +1,34 @@
+# PRAVAH research report (Quarto book). Tables and figures are written by scripts/ (eNN_*.py, report_*.py).
+project:
+  type: book
+  output-dir: _build
+book:
+  title: "PRAVAH: sparse low-cost sensor placement under uncertain wind"
+  subtitle: "Plan 1–2 research report (E00–E07), synthetic 2-D benchmark"
+  date: "2026-11-13"
+  chapters:
+    - index.qmd
+    - chapters/00-background.qmd
+    - chapters/00-methods.qmd
+    - part: "Experiments"
+      chapters:
+        - chapters/e00-protocol.qmd
+        - chapters/01-forward.qmd
+        - chapters/02-benchmark.qmd
+        - chapters/03-inverse.qmd
+        - chapters/04-footprints.qmd
+        - chapters/05-time.qmd
+        - chapters/06-placement-methods.qmd
+        - chapters/07-cross-objective.qmd
+    - chapters/90-lessons.qmd
+    - chapters/91-next.qmd
+    - chapters/references.qmd
+bibliography: references.bib
+format:
+  html:
+    theme: cosmo
+    toc: true
+execute:
+  echo: false
+  warning: false
+  freeze: false

@@ -1,0 +1,8 @@
+check,value
+O1_basis_b0_vs_branchA_rel_err,0.0
+O4_constant_dup_rank_change,0.0
+O4_constant_dup_info_ratio_err,0.0
+O4_drifting_dup_rank_change,0.0
+O4_drifting_dup_info_ratio_err,0.0
+O4_changing_dup_rank_change,0.0
+O4_changing_dup_info_ratio_err,0.0

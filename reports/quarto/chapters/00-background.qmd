@@ -1,0 +1,101 @@
+# Background and starting literature
+
+This chapter says what PRAVAH borrows, from whom, and what it does differently. It is a map, not a review: no paper
+listed here has been reproduced by PRAVAH unless a later chapter says so. Bibliographic details were checked against
+OpenAlex/arXiv (see `references.bib`); the descriptions below come from `docs/research/literature-map.md` and
+`docs/research/green-2006-reading-notes.md`.
+
+## Green (2006): the starting point
+
+Green's Rice University master's thesis [@green2006] is the methodological root of PRAVAH.
+
+**What it does.**
+
+- Estimates unknown *parameters* of a dynamical system obtained by spatially discretising a parameterised transport PDE
+  (finite elements), from sensor readings (reading notes, PDF pp. 17–29).
+- Uses weighted least squares; for Gaussian noise with covariance R and sensitivity G = ∂y/∂θ the local Fisher
+  information is M(S) = GᵀR⁻¹G, and readings at independent times add information. With M nonsingular, M⁻¹
+  approximates the estimator covariance (Appendix A, PDF pp. 56–59).
+- Chooses sensor locations in advance with optimal-design criteria: **D-optimality** (maximise log det M, i.e. minimise
+  the volume of the confidence ellipsoid), A-optimality (minimise trace M⁻¹) and E-type criteria; it also formulates a
+  weighted approximate design over discrete candidate locations (PDF pp. 34–46).
+- Illustrates this on a **1-D time-dependent advection–diffusion** problem with two unknowns, diffusivity and
+  advection coefficient. Optimised sensors land near x ≈ 0.025 and 0.975 on [0, 1]; the 95 % confidence-ellipse area is
+  ~1.91e-3 (centre placement), ~4.66e-4 (equal spacing) and ~2.97e-4 (optimised), i.e. ~36 % below equal spacing
+  (PDF p. 54).
+
+**What it does not do.**
+
+- It does not recover a concentration *field* or many unknown *source strengths*; it identifies a handful of transport
+  parameters.
+- It does not treat low-cost sensor noise, correlated errors, held-out meteorology, or forecasting.
+- The boundary-sensor result is specific to that PDE, parameter vector and noise model; it is not a rule for placing
+  pollution sensors.
+- Its asymptotic Fisher confidence regions assume a correctly specified model; under wind or source misspecification
+  their coverage may be poor (PRAVAH gate-04 found exactly this kind of miscalibration when the noise model is wrong).
+
+**How PRAVAH adapts it.** The unknowns become K non-negative source strengths with known footprints; G stacks
+per-source responses over sensors and hours; we use a Bayesian D-criterion log det(I + a_ref² GᵀR⁻¹G) so that singular
+designs remain comparable; and the decisive score is not the confidence ellipse but held-out forecast error. Every 2-D
+source-strength extension is a PRAVAH adaptation, not a reproduction. The thesis PDF is a scan without extractable
+text, so the page pointers above come from the reading notes and should be checked against the original.
+
+## Related work and how each paper is used
+
+**Transport models and footprints.**
+
+- @pennington2024 build and evaluate a CMAQ chemistry-transport framework for Los Angeles with source apportionment.
+  It is a reference point for what a full 3-D chemical model includes that our passive tracer omits (E01, later E13/E17).
+- @schlutow2026 present BLDFM, a fast Eulerian steady-state advection–diffusion solver for concentration and flux
+  footprints. It motivates the footprint view of E04; its code is non-commercially licensed and is not copied.
+
+**Source reconstruction and identifiability.**
+
+- @mons2017 reconstruct urban pollutant release characteristics by data assimilation. It is the closest analogue to
+  the E03 inverse and to the wind-mismatch experiments planned for plan 3.
+- @bhardwaj2026 (arXiv preprint, not peer reviewed) study identifiability-aware source apportionment in city-scale
+  advection–diffusion systems. It shaped the protocol's separation of identifiability from prediction accuracy (E00,
+  E04, E05). We cite it as a preprint only.
+
+**Sensor placement.**
+
+- @manohar2018 introduce data-driven sparse placement by POD modes and QR pivoting; @desilva2021 and @karnik2026
+  provide the PySensors implementation. PRAVAH's `podqr` design follows this, and its QR pivots were checked against
+  PySensors 0.4.3 (E06).
+- @zhou2022 apply POD-based planning to PM2.5 monitoring sites across China, with sensor-count and mode-count
+  ablations (relevant to E06 and E08).
+- @mano2022 solve air-pollution sensor location–allocation with information theory; @krause2008 give near-optimal
+  mutual-information placement for Gaussian processes with submodularity guarantees. Both inform the information
+  criteria in E06/E07 and robust placement (E15). Note that the greedy guarantees need not hold with a binding spacing
+  constraint (gate-06).
+- @choi2025 place low-cost PM2.5 sensors by value of information with multimodal data fusion. It is the closest
+  low-cost-network analogue to PRAVAH's question (E07, E11, E15). (The literature map lists it as 2026; the publisher
+  record gives 2025.)
+- @bartos2021 use observability-based placement for contaminant tracing in river networks: the control-theoretic view
+  behind E04/E05 (observability over time) and E11.
+
+**Sequential estimation (plan 2 E09–E11).**
+
+- @roy2018 combine a kriged Kalman filter with sparsity-enforcing placement.
+- @zheng2009 update the state and parameters of an atmospheric dispersion model online with an ensemble Kalman
+  filter (listed as `enkf2009` in the literature map).
+- @sharma2019 estimate contaminant distributions from sparse sensors with a Perron–Frobenius operator and EnKF.
+- @cheng2022 estimate a 2-D advection–diffusion process with mobile sensors and optimal guidance.
+- @raanes2024 (DAPPER) is the planned reference implementation for data-assimilation cross-checks.
+
+**Meteorological uncertainty (plan 3).**
+
+- @webster2022 treat meteorological uncertainty in Bayesian volcanic-ash inversion with ensemble meteorology: the
+  template for E12 (wind mismatch) and E14 (calibration).
+- @mues2018 simulate meteorology and black carbon in the Kathmandu Valley with WRF/WRF-Chem: context for the optional
+  regional case (E17).
+
+**Not cited.** The literature map also lists a gradient-based mutual-information placement repository (Patel et al.,
+2026, GitHub only); it has no verifiable bibliographic record and is treated as unverified. Data products (ERA5, FIRMS,
+WorldPop) concern the optional regional case and are not used in this report.
+
+## The gap PRAVAH addresses
+
+Placement studies usually score a design on the same information criterion that chose it, or on in-sample
+reconstruction. PRAVAH asks whether a design chosen from **training** winds still helps on **held-out** winds, with
+**noisy** sensors and **several** unknown sources, judged by a **forecast** endpoint fixed before the data were seen.

@@ -1,0 +1,11 @@
+scenario,check,value
+K2_s0,"G,F reproduce hidden truth anomaly on the whole grid (rel err)",4.904348449003149e-06
+K2_s0,G equals sensitivity.scenario_response_matrix (max abs diff),0.0
+K2_s1,"G,F reproduce hidden truth anomaly on the whole grid (rel err)",6.936602018581416e-06
+K2_s2,"G,F reproduce hidden truth anomaly on the whole grid (rel err)",7.408526462988449e-06
+K4_s0,"G,F reproduce hidden truth anomaly on the whole grid (rel err)",4.879995696862911e-06
+K4_s1,"G,F reproduce hidden truth anomaly on the whole grid (rel err)",8.418482055944098e-06
+K4_s2,"G,F reproduce hidden truth anomaly on the whole grid (rel err)",6.8895651005744595e-06
+K8_s0,"G,F reproduce hidden truth anomaly on the whole grid (rel err)",8.670987621244208e-06
+K8_s1,"G,F reproduce hidden truth anomaly on the whole grid (rel err)",3.7505668683005047e-06
+K8_s2,"G,F reproduce hidden truth anomaly on the whole grid (rel err)",5.908164418998345e-06

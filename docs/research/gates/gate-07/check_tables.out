@@ -1,0 +1,99 @@
+rows 6200 design rows 6120 status counts:
+ ok           False  True 
+strategy                 
+coverage         0    360
+diversity        0    360
+dopt             0    360
+hotspot          0    360
+podqr           12    348
+random           0   3600
+source_near      0    360
+uniform          0    360
+
+== 1. confirmatory re-derivation (white arm, dopt vs mean-of-10-random) ==
+   wind  K  k  n  median    lo    hi  mean  mean_lo  mean_hi    min  wins
+  mixed  2  8 10   0.845 0.809 0.897 0.848    0.817    0.878  0.757    10
+  mixed  2 16 10   0.763 0.747 0.789 0.750    0.695    0.788  0.526    10
+  mixed  4  8 10   0.666 0.537 0.781 0.644    0.538    0.736  0.293    10
+  mixed  4 16 10   0.514 0.428 0.576 0.514    0.441    0.595  0.307    10
+veering  2  8 10   0.710 0.352 0.788 0.601    0.446    0.737  0.180    10
+veering  2 16 10   0.700 0.228 0.781 0.499    0.164    0.755 -0.712     8
+veering  4  8 10   0.624 0.534 0.670 0.602    0.531    0.666  0.353    10
+veering  4 16 10   0.424 0.171 0.471 0.332    0.200    0.449 -0.107     9
+max |median diff| vs committed table: 0.0  max |ci_lo diff|: 0.0
+cells with median-CI lo > 0.10: 8 / 8 ; mean-CI lo > 0.10: 8
+pooled winds K=2 k=8: n=20 median 0.802 CI (np.float64(0.7212682361468955), np.float64(0.8445860340145691))
+pooled winds K=2 k=16: n=20 median 0.758 CI (np.float64(0.7003008339218737), np.float64(0.7819041988377131))
+pooled winds K=4 k=8: n=20 median 0.637 CI (np.float64(0.6030980096665328), np.float64(0.6790013941506373))
+pooled winds K=4 k=16: n=20 median 0.438 CI (np.float64(0.4204407824610188), np.float64(0.5151758989180949))
+
+== 2. source_near vs dopt, paired per (arm, scenario, k) ==
+white: n=120 source_near better in 115  median rel. adv 0.410 IQR [0.234, 0.600]  sign p 3e-28
+   by k: {4: '37/40', 8: '39/40', 16: '39/40'}  by wind/K: {'mixed2': '28/30', 'mixed4': '30/30', 'veering2': '28/30', 'veering4': '29/30'}
+   scenarios where source_near wins at all k: 36/40
+ar1: n=120 source_near better in 110  median rel. adv 0.299 IQR [0.140, 0.436]  sign p 1.9e-22
+   by k: {4: '33/40', 8: '38/40', 16: '39/40'}  by wind/K: {'mixed2': '28/30', 'mixed4': '28/30', 'veering2': '28/30', 'veering4': '26/30'}
+   scenarios where source_near wins at all k: 31/40
+persite: n=120 source_near better in 118  median rel. adv 0.466 IQR [0.273, 0.681]  sign p 1.1e-32
+   by k: {4: '40/40', 8: '39/40', 16: '39/40'}  by wind/K: {'mixed2': '30/30', 'mixed4': '30/30', 'veering2': '28/30', 'veering4': '30/30'}
+   scenarios where source_near wins at all k: 39/40
+
+== 3. design-time vs held-out: D_test and window rank deficits (white) ==
+random       median D_test   21.46  frac windows rank<K 0.366  source_rmse 0.709
+dopt         median D_test   25.20  frac windows rank<K 0.176  source_rmse 0.314
+source_near  median D_test   25.47  frac windows rank<K 0.000  source_rmse 0.142
+hotspot      median D_test   24.29  frac windows rank<K 0.180  source_rmse 0.360
+coverage     median D_test   20.27  frac windows rank<K 0.220  source_rmse 0.549
+D_test(source_near) > D_test(dopt) in 35 / 120
+
+== 4. near-source geometry: distance of chosen sites to the nearest true source (white, k=8) ==
+                med_d  n_in_footprint  mean_phi_rel
+strategy                                           
+dopt         1367.464             4.0         0.136
+source_near   891.385             5.5         0.188
+(footprint = emission disc radius 3 sigma = 1200 m; admissible sites are > 400 m = 1 sigma from a source)
+
+== 5. superposition error per scenario (compute table) ==
+           count    mean     std     min     25%     50%     75%     max
+wind    K                                                               
+mixed   2   10.0  0.0306  0.0208  0.0093  0.0167  0.0212  0.0460  0.0654
+        4   10.0  0.0622  0.0462  0.0210  0.0383  0.0524  0.0644  0.1834
+veering 2   10.0  0.0268  0.0180  0.0093  0.0133  0.0186  0.0365  0.0610
+        4   10.0  0.0522  0.0284  0.0154  0.0322  0.0453  0.0642  0.1120
+max linearity_max_abs / sigma(0.25): 0.733
+
+== 6. sensitivity: distribution-free order-statistic 95% CI for the median (n=10: x(2)..x(9), coverage 97.9%) ==
+mixed    K=2 k= 8: x(2) 0.779  x(9) 0.913  -> above
+mixed    K=2 k=16: x(2) 0.745  x(9) 0.795  -> above
+mixed    K=4 k= 8: x(2) 0.443  x(9) 0.820  -> above
+mixed    K=4 k=16: x(2) 0.421  x(9) 0.616  -> above
+veering  K=2 k= 8: x(2) 0.241  x(9) 0.816  -> above
+veering  K=2 k=16: x(2) -0.192  x(9) 0.799  -> straddles/below
+veering  K=4 k= 8: x(2) 0.515  x(9) 0.697  -> above
+veering  K=4 k=16: x(2) 0.143  x(9) 0.501  -> above
+
+== 7. source_near vs dopt, clustered: per source layout (K, seed; shared by both training winds), white ==
+layouts where median advantage > 0: 20/20; median of layout medians 0.408; min 0.032; bootstrap 95% CI of the median over layouts (np.float64(0.2781835727072596), np.float64(0.5591043254415106))
+
+== 8. regret matrix (white): median and 90th percentile over (scenario, k); recomputed from the committed regret table ==
+metric          analysis_rmse  forecast_rmse  popw_rmse  source_rmse
+selector                                                            
+A_train                 0.565          0.704      0.614        0.988
+D_test                  0.309          0.373      0.271        0.527
+D_train                 0.565          0.704      0.614        0.988
+analysis_rmse           0.000          0.000      0.000        0.000
+fieldvar_train          0.565          0.704      0.614        1.003
+forecast_rmse           0.000          0.000      0.000        0.000
+popw_rmse               0.000          0.000      0.000        0.000
+source_rmse             0.000          0.000      0.000        0.000
+metric          analysis_rmse  forecast_rmse  popw_rmse  source_rmse
+selector                                                            
+A_train                 3.732          4.135      3.795        5.644
+D_test                  1.433          1.848      1.712        2.460
+D_train                 3.732          4.135      3.795        5.644
+analysis_rmse           0.000          0.000      0.017        0.066
+fieldvar_train          3.732          4.135      3.795        5.644
+forecast_rmse           0.000          0.000      0.000        0.000
+popw_rmse               0.018          0.000      0.000        0.000
+source_rmse             0.028          0.000      0.000        0.000
+forecast-best == source-best in 116 / 120

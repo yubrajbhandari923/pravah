@@ -1,0 +1,60 @@
+# PRAVAH — current status
+
+**Status recorded:** 2026-11-12 (after amendment A1 reruns of E02–E05, E06, and gate-05/06 audits)
+
+**Working plan:** `plans/plan-02-identifiability-placement-forecast.yaml` (E04–E11).
+Plan-01 (E00–E03) has been executed at smoke scale; plan-03 (E12–E20) is not started.
+
+## Current phase
+
+Plan 2. E04–E06 done at smoke scale (32², local, exploratory), each with an independent audit. E07 64² sweep done and audited; follow-up controls open.
+Amendment A1 (a_ref = 1 g/s, `decisions/2026-11-12-source-scale.md`) was approved by the user and applied on 2026-11-12.
+Protocol and `configs/benchmark-v1.yaml` APPROVED 2026-11-12 as an amendable baseline (`decisions/2026-11-12-protocol-approval.md`). HPC verified (smoke job only).
+
+## Next action
+
+1. **B3 resolved by amendment A2** (`decisions/2026-11-12-advection-scheme.md`): 64² runs use split VanLeer, dt 30 s
+   (K_eff ≈ 50 vs 350–2900 for upwind; gates met). Before the 64² sweep, measure VanLeer's superposition error on benchmark footprints.
+2. **E07 64² sweep done** (job 204894; gate-07 pass with conditions). dopt beats random (≥ 10 %) in 8/8 cells run, but
+   source_near beats dopt in 115/120 pairs: the gain comes from knowing source locations. Open: user sign-off on the
+   confirmatory scope, the 1200 m exclusion control and the per-wind-regime window analysis on cached fields, chapter 07.
+3. **E08 preregistration** from E05 v2 (see `experiments/e05.md`, gate-05 recommendations).
+4. HPC verified 2026-11-12 (smoke job 204775: 175 tests passed on node004; limits 64 CPU, 4 GPU, 2 days in settings.yaml).
+5. E09–E11 (Kalman, joint assimilation, forecast placement) after E07; plan 3 after plan 2.
+
+Known open items: E03 (fixed-sensor static inverse) remains rank deficient for structural reasons (sensor placement, 24 h window).
+
+## Experiments
+
+| Exp | Title | State | Journal |
+|---|---|---|---|
+| e00 | Protocol and evaluation contract | approved 2026-11-12 (amendable baseline); amendments A1, A2 | [e00](experiments/e00.md) |
+| e01 | Forward solver verification | done at 16²–64²; conditionally cleared | [e01](experiments/e01.md) |
+| e02 | Synthetic benchmark | smoke pipeline works; not frozen | [e02](experiments/e02.md) |
+| e03 | Static NNLS inverse | rerun at 1 g/s; still rank-deficient (structural) | [e03](experiments/e03.md) |
+| e04 | Footprints / Fisher information | rerun at 1 g/s, 1 replicate; D-opt design 4/4 practical rank | [e04](experiments/e04.md) |
+| e05 | Temporal observability | smoke, 20 seeds, audited (gate-05) and rerun; exploratory support | [e05](experiments/e05.md) |
+| e06 | Placement algorithms | smoke done, audited (gate-06); 3 conditions before E07 reuse | [e06](experiments/e06.md) |
+| e07 | Cross-objective placement | 64² sweep done, audited (gate-07): confirmatory supported in cells run; source_near beats dopt | [e07](experiments/e07.md) |
+| e08–e20 | see plans | not started | — |
+
+## Verified facts vs questions
+
+Verified (smoke scale, synthetic; audited where a gate file exists):
+- Upwind/backward-Euler FiPy solver converges at first order and conserves mass to ~1e-14 (gate-01).
+- Benchmark generator is deterministic, the leakage guard works, and the frozen manifest matches at a_ref = 1 g/s.
+- At a_ref = 100 µg/s sensors saw no plume (SNR ~1e-3); at 1 g/s peak SNR is 20–30.
+- Source-informed placement (D-opt, source_near) reaches full practical rank where random/coverage designs do not (E04, E06; in-sample).
+- Under an exactly constant wind a longer window adds no rank; wind changes do (E05 v2, exploratory).
+
+Open:
+- VanLeer is ~1 % non-linear (one test); its effect on G-based inference at 64² is unmeasured.
+- Everything at 1 g/s is exploratory (scale chosen after seeing data); confirmatory tests start with E07/E08 designed under the approved protocol.
+- Held-out (forecast / off-sensor) evaluation has not been run anywhere yet.
+
+## Pointers
+
+- [Scientific plans](../plans/) · [Settings](../settings.yaml)
+- [Gate audits](../docs/research/gates/) — the most critical reading of each experiment
+- [Quarto report, tables, figures](../reports/quarto/)
+- [Run records](../reports/runs/) · [Decisions](decisions/) · [History](history/)

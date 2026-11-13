@@ -1,0 +1,45 @@
+
+=== veering seed=0 K=2 (sim 118s); validation hours [ 96 119]
+archive vs bg + G a: max abs diff 3.9e-05 (field max anomaly 2.85) | true a / a_ref: [3.439 4.049]
+[full] n_cand=193 r_eff=2 r_num=27: reproduced 27/27 rows (25 defined)
+per-reading mode amplitude (noise sd), modes 1-6: [2.134 1.85  0.565 0.346 0.154 0.091]
+r_eff (count) = 2 | leading-prefix count = 2 | time-integrated variant (amp*sqrt(T) >= 1) = 5
+dopt k=8: min step margin 0.00178 (rel 0.00014); reversed cand order gives same set: True
+aopt k=8: min step margin 1.87e-06 (rel 1.9e-06); reversed cand order gives same set: True
+practical rank: train 96 h (design data) vs held-out validation 24 h (and /3 for AR(1) rho=.8 info loss):
+            prank_train           prank_val           prank_val_ar1_eff          
+k                     2    4    8         2    4    8                 2    4    8
+design                                                                           
+aopt                2.0  2.0  2.0       2.0  2.0  2.0               1.0  2.0  2.0
+coverage            1.0  1.0  2.0       1.0  1.0  2.0               1.0  1.0  2.0
+diversity           2.0  2.0  2.0       2.0  2.0  2.0               1.0  1.0  2.0
+dopt                2.0  2.0  2.0       2.0  2.0  2.0               2.0  2.0  2.0
+podqr               2.0  NaN  NaN       2.0  NaN  NaN               2.0  NaN  NaN
+podqr_num           2.0  2.0  2.0       2.0  2.0  2.0               2.0  1.0  2.0
+random              0.0  0.0  2.0       0.0  0.0  1.0               0.0  0.0  0.0
+source_near         2.0  2.0  2.0       2.0  2.0  2.0               1.0  2.0  2.0
+uniform             1.0  2.0  2.0       0.0  2.0  2.0               0.0  0.0  1.0
+podqr_num k=2: true strengths [227, 219] vs equal strengths [234, 226]; dopt (strength-independent): [186, 195] [186, 195]
+[small] n_cand=24 r_eff=2 r_num=27: reproduced 27/27 rows (25 defined)
+
+=== steady_westerly seed=0 K=4 (sim 189s); validation hours [ 96 119]
+archive vs bg + G a: max abs diff 2e-05 (field max anomaly 0.738) | true a / a_ref: [0.657 0.509 1.116 0.584]
+[full] n_cand=193 r_eff=0 r_num=3: reproduced 27/27 rows (22 defined)
+per-reading mode amplitude (noise sd), modes 1-6: [0.727 0.004 0.    0.    0.    0.   ]
+r_eff (count) = 0 | leading-prefix count = 0 | time-integrated variant (amp*sqrt(T) >= 1) = 1
+dopt k=8: min step margin 0.0377 (rel 0.0015); reversed cand order gives same set: True
+aopt k=8: min step margin 2.4e-05 (rel 2.4e-05); reversed cand order gives same set: True
+practical rank: train 96 h (design data) vs held-out validation 24 h (and /3 for AR(1) rho=.8 info loss):
+            prank_train           prank_val           prank_val_ar1_eff          
+k                     2    4    8         2    4    8                 2    4    8
+design                                                                           
+aopt                3.0  4.0  4.0       2.0  3.0  4.0               2.0  3.0  4.0
+coverage            2.0  2.0  4.0       1.0  1.0  2.0               1.0  1.0  1.0
+diversity           3.0  4.0  4.0       2.0  3.0  4.0               2.0  2.0  4.0
+dopt                3.0  4.0  4.0       2.0  4.0  4.0               2.0  4.0  4.0
+podqr_num           2.0  NaN  NaN       2.0  NaN  NaN               1.0  NaN  NaN
+random              1.0  1.0  3.0       0.0  0.0  3.0               0.0  0.0  2.0
+source_near         3.0  4.0  4.0       2.0  4.0  4.0               2.0  3.0  3.0
+uniform             2.0  2.0  3.0       1.0  2.0  2.0               1.0  1.0  2.0
+podqr_num k=2: true strengths [232, 229] vs equal strengths [232, 229]; dopt (strength-independent): [166, 117] [166, 117]
+[small] n_cand=25 r_eff=0 r_num=3: reproduced 27/27 rows (22 defined)

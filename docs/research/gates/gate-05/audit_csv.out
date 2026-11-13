@@ -1,0 +1,194 @@
+rows 10080 seeds 20
+
+== sigma_prereg range by wind            min       max
+wind                    
+changing  0.25  0.267045
+constant  0.25  0.259547
+
+== rel error quantiles (branch A) by noise
+              count          mean  ...           99%           max
+noise_scale                        ...                            
+0.1          3360.0  2.548646e+19  ...  3.107891e+17  1.842149e+22
+1.0          3360.0  2.548646e+20  ...  3.107891e+18  1.842149e+23
+
+[2 rows x 12 columns]
+1.0 frac rel>1 0.468 >10 0.113 >1e3 0.075 share of mean from top 1% 1.0
+0.1 frac rel>1 0.131 >10 0.085 >1e3 0.06 share of mean from top 1% 1.0
+
+== rel error vs practical rank at noise (A): median by prank/K
+                              count       median  <lambda_0>           max
+noise_scale K prank_at_noise                                              
+0.1         2 0                 317  2114.158312    0.813880  1.842149e+22
+              1                 750     0.454751    0.013333  2.068613e+00
+              2                 613     0.051535    0.000000  4.094819e-01
+            4 0                 129    64.458001    0.992248  1.020414e+08
+              1                 481     0.881676    0.091476  4.183752e+00
+              2                 463     0.737702    0.000000  9.877266e-01
+              3                 364     0.292537    0.000000  9.324952e-01
+              4                 243     0.055338    0.000000  6.835110e-01
+1.0         2 0                 735     2.684236    0.844898  1.842149e+23
+              1                 727     0.629075    0.246217  7.248698e+00
+              2                 218     0.218540    0.000000  8.179918e-01
+            4 0                 323     5.224792    0.869969  1.020414e+09
+              1                 661     0.996766    0.484115  7.629075e+00
+              2                 477     0.777147    0.310273  7.054665e+00
+              3                 177     0.528423    0.135593  3.501218e+00
+              4                  42     0.169594    0.000000  8.677864e-01
+
+== blow-up vs top whitened s*a_ref (A, noise 1)
+            count        median           max
+snrbin                                       
+(-400, -6]    164  6.783785e+08  1.842149e+23
+(-6, -2]      139  1.744460e+03  1.532007e+05
+(-2, 0]       755  1.908706e+00  2.043282e+02
+(0, 1]       2296  7.379980e-01  7.629075e+00
+(1, 2]          6  6.243512e-01  1.407564e+00
+cells with s_max*a_ref/sigma < 1e-6 (no signal at all): 0.049
+
+== reading_hours(167,W,m=1): {1: [167], 6: [162], 24: [144], 168: [0]}
+reading_hours(167,168,2): [0, 167] (167,24,4): [144, 152, 159, 167]
+
+== Claim 1: per (K,N), seed-mean practical rank & median rel err vs W at FIXED m=4 (W>=6) and m=1
+m=1
+              prank                   med_rel                  
+W              1     6     24    168     1     6     24    168
+wind     K N                                                  
+changing 2 2  0.10  0.10  0.25  0.20    2.63  2.74  2.99  5.66
+           4  0.20  0.20  0.50  0.35    1.94  1.76  1.19  1.35
+           8  0.55  0.55  0.75  0.75    0.96  1.03  0.72  1.21
+         4 2  0.30  0.30  0.55  0.50    1.11  1.00  1.43  2.38
+           4  0.85  0.85  0.90  1.00    1.31  1.19  1.08  1.40
+           8  1.10  1.10  1.55  1.60    1.57  1.16  1.17  0.98
+constant 2 2  0.30  0.30  0.30  0.20    3.20  2.87  3.18  6.24
+           4  0.50  0.50  0.50  0.35    1.00  1.32  1.19  1.34
+           8  0.75  0.75  0.75  0.75    0.69  0.69  0.72  1.21
+         4 2  0.55  0.55  0.55  0.50    1.30  1.58  1.23  2.43
+           4  0.95  0.95  0.90  1.00    1.03  0.95  1.02  1.01
+           8  1.65  1.65  1.65  1.55    1.08  1.07  1.10  0.98
+m=4
+              prank             med_rel            
+W              6     24    168     6     24    168
+wind     K N                                      
+changing 2 2  0.40  0.60  0.65    1.65  1.04  1.37
+           4  0.50  0.90  0.85    1.12  0.76  0.79
+           8  1.00  1.20  1.35    0.59  0.43  0.39
+         4 2  0.75  0.90  0.95    0.94  0.96  0.99
+           4  1.25  1.55  1.80    0.96  0.95  0.93
+           8  1.90  2.25  2.40    1.00  0.75  0.77
+constant 2 2  0.35  0.35  0.40    1.80  1.49  2.15
+           4  0.65  0.65  0.75    0.88  0.76  0.63
+           8  1.00  1.00  1.15    0.57  0.52  0.50
+         4 2  0.75  0.75  0.65    1.09  1.20  1.16
+           4  1.30  1.30  1.55    0.85  0.88  0.98
+           8  2.00  2.00  2.20    0.79  0.81  0.84
+m=4 per-seed: frac prank decreases 6->24: 0.008  24->168: 0.038  frac increases 24->168: 0.133  frac equal 24->168: 0.829
+m=4 per-seed: frac rel error WORSE 24->168: 0.542  6->24: 0.412
+readings available per W: {1: array([1]), 6: array([1, 2, 4]), 24: array([ 1,  2,  4,  8, 16]), 168: array([ 1,  2,  4,  8, 16])}
+
+== Claim 2 (K=4): compare designs per seed (noise 1), pooled winds
+N=4 m=16 W=168 B=64: mean prank 2.10, median rel 0.72; vs N=8 snapshot: wins 24 losses 3 ties 13; rel better 33/40
+N=4 m=2 W=168 B=8: mean prank 1.50, median rel 1.03; vs N=8 snapshot: wins 11 losses 7 ties 22; rel better 27/40
+N=4 m=2 W=24 B=8: mean prank 1.30, median rel 1.03; vs N=8 snapshot: wins 8 losses 10 ties 22; rel better 25/40
+N=4 m=1 W=168 B=4: mean prank 1.00, median rel 1.06; vs N=8 snapshot: wins 8 losses 19 ties 13; rel better 22/40
+N=8 m=1 W=1 B=8: mean prank 1.38, median rel 1.26; vs N=8 snapshot: wins 0 losses 0 ties 40; rel better 0/40
+N=4 m=1 W=1 B=4: mean prank 0.90, median rel 1.15; vs N=8 snapshot: wins 0 losses 15 ties 25; rel better 16/40
+N=8 m=2 W=168 B=16: mean prank 2.00, median rel 0.96; vs N=8 snapshot: wins 19 losses 0 ties 21; rel better 37/40
+
+== Claim 3 matched budget: median rel err and mean prank by (B, W, N, m), pooled winds, noise 1 and 0.1
+noise 1.0
+         prank                                                 med_rel                                                
+N            8     2     4           8     2     8     2     4       8     2     4           8     2     8     2     4
+m           1     4     2     4     2     8     4     16    8       1     4     2     4     2     8     4     16    8 
+K B  W                                                                                                                
+2 8  1    0.65   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN    0.74   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN
+     6    0.65  0.38  0.42   NaN   NaN   NaN   NaN   NaN   NaN    0.82  1.73  1.23   NaN   NaN   NaN   NaN   NaN   NaN
+     24   0.75  0.48  0.60   NaN   NaN   NaN   NaN   NaN   NaN    0.72  1.14  0.95   NaN   NaN   NaN   NaN   NaN   NaN
+     168  0.75  0.52  0.60   NaN   NaN   NaN   NaN   NaN   NaN    1.21  1.54  1.17   NaN   NaN   NaN   NaN   NaN   NaN
+  16 6     NaN   NaN   NaN  0.57  0.80   NaN   NaN   NaN   NaN     NaN   NaN   NaN  1.03  0.63   NaN   NaN   NaN   NaN
+     24    NaN   NaN   NaN  0.78  0.98  0.62   NaN   NaN   NaN     NaN   NaN   NaN  0.76  0.50  1.12   NaN   NaN   NaN
+     168   NaN   NaN   NaN  0.80  1.08  0.60   NaN   NaN   NaN     NaN   NaN   NaN  0.64  0.61  1.36   NaN   NaN   NaN
+  32 6     NaN   NaN   NaN   NaN   NaN   NaN  1.00   NaN   NaN     NaN   NaN   NaN   NaN   NaN   NaN  0.58   NaN   NaN
+     24    NaN   NaN   NaN   NaN   NaN   NaN  1.10  0.62  0.88     NaN   NaN   NaN   NaN   NaN   NaN  0.48  0.96  0.56
+     168   NaN   NaN   NaN   NaN   NaN   NaN  1.25  0.68  0.92     NaN   NaN   NaN   NaN   NaN   NaN  0.48  0.99  0.50
+4 8  1    1.38   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN    1.26   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN
+     6    1.38  0.75  1.12   NaN   NaN   NaN   NaN   NaN   NaN    1.08  1.00  1.08   NaN   NaN   NaN   NaN   NaN   NaN
+     24   1.60  0.82  1.30   NaN   NaN   NaN   NaN   NaN   NaN    1.13  1.03  1.03   NaN   NaN   NaN   NaN   NaN   NaN
+     168  1.58  0.80  1.50   NaN   NaN   NaN   NaN   NaN   NaN    0.98  1.04  1.03   NaN   NaN   NaN   NaN   NaN   NaN
+  16 6     NaN   NaN   NaN  1.27  1.68   NaN   NaN   NaN   NaN     NaN   NaN   NaN  0.96  0.99   NaN   NaN   NaN   NaN
+     24    NaN   NaN   NaN  1.42  1.85  1.00   NaN   NaN   NaN     NaN   NaN   NaN  0.93  0.96  0.96   NaN   NaN   NaN
+     168   NaN   NaN   NaN  1.68  2.00  0.92   NaN   NaN   NaN     NaN   NaN   NaN  0.95  0.96  1.03   NaN   NaN   NaN
+  32 6     NaN   NaN   NaN   NaN   NaN   NaN  1.95   NaN   NaN     NaN   NaN   NaN   NaN   NaN   NaN  0.87   NaN   NaN
+     24    NaN   NaN   NaN   NaN   NaN   NaN  2.12  1.05  1.65     NaN   NaN   NaN   NaN   NaN   NaN  0.81  0.94  0.83
+     168   NaN   NaN   NaN   NaN   NaN   NaN  2.30  1.23  1.90     NaN   NaN   NaN   NaN   NaN   NaN  0.82  0.97  0.71
+noise 0.1
+         prank                                                 med_rel                                                
+N            8     2     4           8     2     8     2     4       8     2     4           8     2     8     2     4
+m           1     4     2     4     2     8     4     16    8       1     4     2     4     2     8     4     16    8 
+K B  W                                                                                                                
+2 8  1    1.50   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN    0.19   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN
+     6    1.50  0.75  1.15   NaN   NaN   NaN   NaN   NaN   NaN    0.23  0.85  0.37   NaN   NaN   NaN   NaN   NaN   NaN
+     24   1.40  0.85  1.25   NaN   NaN   NaN   NaN   NaN   NaN    0.29  0.77  0.22   NaN   NaN   NaN   NaN   NaN   NaN
+     168  1.32  0.90  1.25   NaN   NaN   NaN   NaN   NaN   NaN    0.25  0.75  0.24   NaN   NaN   NaN   NaN   NaN   NaN
+  16 6     NaN   NaN   NaN  1.18  1.50   NaN   NaN   NaN   NaN     NaN   NaN   NaN  0.35  0.19   NaN   NaN   NaN   NaN
+     24    NaN   NaN   NaN  1.25  1.55  0.90   NaN   NaN   NaN     NaN   NaN   NaN  0.21  0.09  0.77   NaN   NaN   NaN
+     168   NaN   NaN   NaN  1.32  1.55  0.98   NaN   NaN   NaN     NaN   NaN   NaN  0.18  0.14  0.59   NaN   NaN   NaN
+  32 6     NaN   NaN   NaN   NaN   NaN   NaN  1.55   NaN   NaN     NaN   NaN   NaN   NaN   NaN   NaN  0.14   NaN   NaN
+     24    NaN   NaN   NaN   NaN   NaN   NaN  1.58  0.90  1.30     NaN   NaN   NaN   NaN   NaN   NaN  0.10  0.77  0.21
+     168   NaN   NaN   NaN   NaN   NaN   NaN  1.60  0.98  1.40     NaN   NaN   NaN   NaN   NaN   NaN  0.10  0.57  0.19
+4 8  1    2.55   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN    0.59   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN
+     6    2.55  1.00  1.88   NaN   NaN   NaN   NaN   NaN   NaN    0.53  0.91  0.73   NaN   NaN   NaN   NaN   NaN   NaN
+     24   2.55  1.38  2.20   NaN   NaN   NaN   NaN   NaN   NaN    0.40  0.89  0.58   NaN   NaN   NaN   NaN   NaN   NaN
+     168  2.35  1.58  2.33   NaN   NaN   NaN   NaN   NaN   NaN    0.47  0.77  0.58   NaN   NaN   NaN   NaN   NaN   NaN
+  16 6     NaN   NaN   NaN  1.95  2.62   NaN   NaN   NaN   NaN     NaN   NaN   NaN  0.73  0.52   NaN   NaN   NaN   NaN
+     24    NaN   NaN   NaN  2.28  2.90  1.40   NaN   NaN   NaN     NaN   NaN   NaN  0.56  0.28  0.89   NaN   NaN   NaN
+     168   NaN   NaN   NaN  2.48  2.88  1.68   NaN   NaN   NaN     NaN   NaN   NaN  0.47  0.28  0.76   NaN   NaN   NaN
+  32 6     NaN   NaN   NaN   NaN   NaN   NaN  2.72   NaN   NaN     NaN   NaN   NaN   NaN   NaN   NaN  0.47   NaN   NaN
+     24    NaN   NaN   NaN   NaN   NaN   NaN  2.92  1.40  2.38     NaN   NaN   NaN   NaN   NaN   NaN  0.28  0.87  0.56
+     168   NaN   NaN   NaN   NaN   NaN   NaN  3.00  1.70  2.58     NaN   NaN   NaN   NaN   NaN   NaN  0.22  0.76  0.46
+K=2 W=24 B=16: N=8 vs N=2: rel better 31/40, sign p=0.00068
+K=2 W=24 B=16: N=8 vs N=4: rel better 24/40, sign p=0.27
+K=2 W=168 B=16: N=8 vs N=2: rel better 29/40, sign p=0.0064
+K=2 W=168 B=16: N=8 vs N=4: rel better 22/40, sign p=0.64
+K=4 W=24 B=16: N=8 vs N=2: rel better 27/40, sign p=0.038
+K=4 W=24 B=16: N=8 vs N=4: rel better 19/40, sign p=0.87
+K=4 W=168 B=16: N=8 vs N=2: rel better 27/40, sign p=0.038
+K=4 W=168 B=16: N=8 vs N=4: rel better 21/40, sign p=0.87
+
+== wind: seed-level paired difference changing-constant, averaged over (N,m,W) cells
+A 1.0 K 2 mean diff 0.018 pos/neg/0 8 10 2 sign p 0.8145
+A 1.0 K 4 mean diff 0.093 pos/neg/0 10 10 0 sign p 1.0
+   by W mean diff: {1: -0.267, 6: -0.186, 24: 0.178, 168: 0.142}  cell-level frac pairs tied: 0.662
+A 0.1 K 2 mean diff 0.179 pos/neg/0 10 6 4 sign p 0.4545
+A 0.1 K 4 mean diff 0.327 pos/neg/0 13 7 0 sign p 0.2632
+   by W mean diff: {1: 0.075, 6: 0.089, 24: 0.39, 168: 0.25}  cell-level frac pairs tied: 0.639
+B 1.0 K 2 mean diff 0.06 pos/neg/0 9 10 1 sign p 1.0
+   by W mean diff: {1: -0.217, 6: -0.25, 24: 0.2, 168: 0.16}  cell-level frac pairs tied: 0.631
+B 0.1 K 2 mean diff 0.282 pos/neg/0 11 9 0 sign p 0.8238
+   by W mean diff: {1: 0.133, 6: 0.144, 24: 0.41, 168: 0.267}  cell-level frac pairs tied: 0.686
+
+== rank <= min(rows,p) violations: 0
+
+== Branch B: median rel(const comp) by W, noise; and float rank/p
+                          rank_p  prank  med_relc
+noise_scale wind     W                           
+0.1         changing 1     0.436  1.183     0.606
+                     6     0.653  2.094     0.558
+                     24    0.753  2.923     0.499
+                     168   0.741  2.643     0.505
+            constant 1     0.444  1.050     0.641
+                     6     0.631  1.950     0.583
+                     24    0.706  2.513     0.550
+                     168   0.714  2.377     0.540
+1.0         changing 1     0.436  0.400     1.010
+                     6     0.653  0.694     1.393
+                     24    0.753  1.743     0.822
+                     168   0.741  1.493     0.753
+            constant 1     0.444  0.617     0.843
+                     6     0.631  0.944     1.246
+                     24    0.706  1.543     0.846
+                     168   0.714  1.333     0.782
+B const / A error, median by noise: {0.1: 1.166, 1.0: 1.0} frac B better: {0.1: 0.229, 1.0: 0.512}
+B rank at W=168, N=8, m=16: {'count': 40.0, 'mean': 5.62, 'std': 0.95, 'min': 3.0, '25%': 6.0, '50%': 6.0, '75%': 6.0, 'max': 6.0}
+
+== N=8,W=168,m=16 scenarios with prank 0: 1 of 80
+== N=2 cells with snr<1e-6 by wind: {'changing': 0.084, 'constant': 0.146}

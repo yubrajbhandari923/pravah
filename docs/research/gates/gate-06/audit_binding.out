@@ -1,0 +1,4 @@
+feasible 4-subsets 1987 of 12650 (spacing binds)
+dopt: cases 80, exact 35, median gap 0.0455, max gap 3.89, max rel gap 0.198
+aopt: cases 80, exact 16, median gap 0.00223, max gap 0.00776, max rel gap 0.00779
+podqr_num: cases 80, exact 40, median gap 0.0103, max gap 2.54

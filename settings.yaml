@@ -1,0 +1,153 @@
+# Project-specific research configuration.
+# Operating philosophy lives in AGENTS.md.
+# Paths and environment facts must be verified before use.
+
+version: 1
+
+project:
+  name: pravah
+  repository_root: .
+  scientific_plan: plans/       # plan-01 (E00–E03), plan-02 (E04–E11), plan-03 (E12–E20)
+  progress_index: state/STATUS.md
+  mission: >-
+    To what extent can sparse, low-cost sensor networks reliably reconstruct
+    pollution fields and population exposure under uncertain meteorology and
+    incomplete knowledge of emissions, and how should sensors be placed to
+    maximize that reliability? Current scope: synthetic 2-D depth-averaged
+    passive tracer (FiPy finite volume) on a rectangular domain. Not validated
+    ambient PM2.5; no real-exposure claims.
+
+paths:
+  shared_code: src/                       # package: src/pravah
+  shared_scripts: scripts/                # eNN_*.py experiment drivers
+  shared_tests: tests/
+  configs: configs/                       # benchmark-v1.yaml (DRAFT, not frozen)
+  experiment_code: experiments/           # Experiment-only code, on experiment branches.
+  research_docs: docs/research/           # Protocol, derivations, gate audits, literature notes.
+  papers: docs/papers/                    # PDFs are local only (git-ignored).
+  small_results: reports/
+  run_manifests: reports/runs/            # legacy-runs.jsonl indexes the 24 ResearchOS-era runs.
+  experiments_state: state/experiments/
+  decisions: state/decisions/
+  history: state/history/
+  local_bundles: .local_research/bundles/  # Git-ignored source snapshots.
+  quarto:
+    preferred_root: docs/report/
+    existing_project: reports/quarto/     # Book project; scripts write tables/ and figures/ here.
+    policy: >-
+      Keep reproducible scientific reports and figures in Quarto. Render from
+      small saved metrics, tables and figures. Never train models or run lengthy
+      experiments or transformations as an implicit QMD render side effect.
+
+# Local execution. Everything so far (E00–E05) ran locally at smoke scale.
+local:
+  python:
+    package_manager: uv
+    dependency_manifest: pyproject.toml   # pytest picks up src/ and scripts/ from here.
+    run: uv run python scripts/<script>.py
+    test: uv run pytest -q
+  metrics_env: >-
+    Scripts append metrics to $RESEARCH_RUN_DIR/metrics.jsonl when that variable
+    is set (optional); point it at a directory under reports/runs/.
+
+# HPC verified 2026-11-12: SSH (BatchMode) works, workspace below exists, uv env builds, smoke job ran.
+# The repo is public: the real host and workspace path live in the untracked settings.local.yaml; <...> are placeholders.
+# Project root on the cluster = <hpc-workspace-parent>/pravah, exported as PRAVAH_HPC_ROOT for jobs.
+hpc:
+  ssh_host_hint: <hpc-host>
+  scheduler: slurm                        # Slurm 21.08; sinfo/sbatch need a login shell (`ssh host "bash -lc '...'"`).
+  partition: defq                         # nodes: 96-128 CPUs, 0.5-1 TB RAM, A5000/A6000 GPUs (shared lab cluster)
+  uv_binary: ~/.local/bin/uv              # not on PATH in non-login shells
+  project_env: envs/main                  # UV_PROJECT_ENVIRONMENT, built with `uv sync --frozen` from a snapshot
+  job_script: scripts/hpc/run.sbatch      # generic wrapper; run from code/snapshots/<rev>/
+  job_naming: neutral short names (pv-<tag>); no project-specific wording in job or script names (user preference)
+  datasets: {}                            # Synthetic only so far.
+  reference_sources: {}
+  workspace:
+    parent: <hpc-workspace-parent>
+    project_directory: null               # null -> project.name
+    create_if_missing: true
+    layout:
+      code_snapshots: code/snapshots/
+      results: results/
+      checkpoints: checkpoints/
+      runs: runs/
+      logs: logs/
+      cache: cache/
+      tmp: tmp/
+      envs: envs/
+  python:
+    package_manager: uv
+    base_environment: .venv
+    dependency_manifest: pyproject.toml
+    lockfile: uv.lock
+    uv_cache: cache/uv
+    python_download_cache: cache/python
+    cache_directories:
+      xdg: cache/xdg
+      matplotlib: cache/matplotlib
+      pycache: cache/pycache
+    temp_directory: tmp/
+    experiment_environments: envs/
+  # Limits granted by the user on 2026-11-12 (work is CPU-only so far; GPUs unused unless a method needs them).
+  limits:
+    max_concurrent_cpus: 64                # one 64-CPU job at a time (user, 2026-11-12)
+    max_memory_per_job: 128G              # FiPy workers need <1 GB each at 64^2; 128G leaves headroom for 64 workers
+    gpus: 4
+    max_walltime: 2-00:00:00
+    parallelism: ONE job reserving many CPUs/GPUs, parallel inside it (process pool, OMP_NUM_THREADS=1); no job arrays or many small jobs (user, 2026-11-12)
+    before_hpc: verified local pilot, then one tiny cluster smoke job
+
+engineering:
+  primary_branch: main
+  worktree_root: .worktrees/              # Local, Git-ignored.
+  experiment_branch_pattern: experiment/{experiment}-{topic}
+  shared_module_root: src/
+  lead_is_sole_main_writer: true
+  legacy_refs: >-
+    The full ResearchOS-era Git history (old main, exp/*, promote/* and per-run
+    code snapshots) is kept under refs/legacy/ in this repository. Inspect with
+    `git for-each-ref refs/legacy`; nothing needs to be checked out.
+  policies: >-
+    Each implementing subagent uses its own branch/worktree; read-only reviews
+    can operate without one. Keep experiment-specific scripts, test fixtures,
+    configs and scratch files under experiments/<experiment>/ on experiment
+    branches. Do NOT merge whole experiment branches into main. The lead
+    selectively extracts well-tested reusable code into src/, shared scripts
+    into scripts/, and appropriate tests into tests/ on main. When a component
+    becomes useful in two experiments, refactor to core and update branches to
+    consume it. Do not delete experiment history or overwrite unmerged changes.
+  snapshots: >-
+    Compute on the exact code revision used for the run (a Git commit or
+    checksummed snapshot from the experiment worktree), not an unrelated main
+    checkout. Record uncommitted code explicitly if necessary.
+
+agents:
+  lead: Claude Code session launched from main
+  delegation: agent_decides
+  main_state_writer: lead_only
+  handoff_fields: [purpose, worktree, branch, commit, modified_files, tests, evidence, scientific_impact, unresolved]
+  concurrency: Avoid overlapping writes. Assign unique branches and files to parallel subagents.
+  discretion: >-
+    Resolve engineering problems autonomously; ask about significant changes
+    to the scientific claim, requested destructive operations outside generated
+    outputs, or unavailable credentials. No automatic gating, retry loop,
+    task dependency engine, or promotion infrastructure.
+
+records:
+  current_status: state/STATUS.md
+  experiment_journals: state/experiments/
+  format: 'Markdown for reasoning; JSON for run provenance and metrics; YAML for configuration and plan; Quarto for reports.'
+  keep_short: >-
+    STATUS.md is an index with experiment statuses, current HPC runs, important
+    uncertainty and the next useful action. Experiment journals have summaries
+    and evidence links; older details move to state/history/ on demand.
+  run_minimum: [experiment, run_key, slurm_job_id, code_snapshot, environment, config, source_manifest, command, seeds, outputs, status]
+  reporting: >-
+    At each milestone, record findings, bugs and the fix's scientific impact.
+    Link to actual metrics and artifacts, never fill in placeholder results.
+    Avoid treating expected_artifacts as required existence-based pass checks.
+  monitoring: >-
+    An active Claude session may periodically reconcile Slurm jobs. A later
+    session must recover from manifests, Git and actual scheduler state.
+    Remote control and scheduling are optional and require real connectivity.

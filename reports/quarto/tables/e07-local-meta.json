@@ -1,0 +1,60 @@
+{
+ "command": "OMP_NUM_THREADS=1 uv run python scripts/e07_cross_objective.py --pilot --workers 12",
+ "git_rev": "e3f7de05a4ec2ea4d08a93f506536f3508a9df8d",
+ "git_dirty": false,
+ "scale": {
+  "grid": [
+   32,
+   32
+  ],
+  "spinup": 12,
+  "split": [
+   [
+    1,
+    4
+   ],
+   [
+    5,
+    5
+   ],
+   [
+    6,
+    11
+   ]
+  ],
+  "Ks": [
+   2,
+   4
+  ],
+  "ks": [
+   2,
+   4,
+   8
+  ],
+  "seeds": [
+   0,
+   1,
+   2
+  ],
+  "R": 5
+ },
+ "winds": {
+  "constant": [
+   "constant_westerly"
+  ],
+  "veering": [
+   "veering"
+  ],
+  "mixed": [
+   "steady_westerly",
+   "veering",
+   "weak_variable"
+  ]
+ },
+ "workers": 12,
+ "total_wall_s": 538.8428883552551,
+ "host": "RAD-88300596",
+ "python": "3.14.9",
+ "numpy": "2.5.4",
+ "design_note": "docs/research/cross-objective-design.md"
+}

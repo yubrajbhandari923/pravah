@@ -1,0 +1,39 @@
+# Next steps
+
+Sources: `state/STATUS.md`, `state/experiments/e05.md` and `e07.md`, plans 2 and 3. Nothing in this chapter is a result.
+
+## Immediately (E07 close-out, no new simulations)
+
+1. **User sign-off on the confirmatory scope**: accept the 8 cells run (K ∈ {2, 4}, k ∈ {8, 16}, 10 seeds) as the
+   confirmatory population, or report "supported in run cells, unresolved overall".
+2. **1200 m exclusion control** across all 40 scenarios (running on cached fields).
+3. **Rank-deficient window fraction per test wind regime** for every design and scenario (running).
+
+## Plan 2, remaining experiments
+
+| Exp | Question (plan 2) | Planned design (from journals) |
+|---|---|---|
+| **E08** Sensor sufficiency | How do k, source complexity, noise, sampling cadence and observation duration interact? | Preregistered from E05 v2: factor = number of distinct wind directions (constant control), W ∈ {24 h, 7 d}, N ∈ {2, 4, 8} plus an optimised arm, seed as unit with paired bootstrap, difference-in-differences primary contrast with a minimum meaningful effect, practical-rank thresholds 1σ and 3σ, equal-reading comparisons only, held-out forecast/off-sensor evaluation, AR(1) arm |
+| **E09** Causal filtering | Does a forecast–observe–update filter estimate and forecast the field better than a current-only batch inverse? | Kalman filter on the concentration state; calibration endpoints (coverage, CRPS) deferred here from E07 |
+| **E10** Joint assimilation | Can sequential observations update emission strengths and state together without spurious certainty? | Augmented-state Kalman, optional EnKF, DAPPER toy cross-check |
+| **E11** Forecast placement | Does source/D-opt or POD/QR placement remain optimal when the endpoint is one-step and multi-horizon forecast skill? | Causal evaluation loop across designs and horizons; uses E07's finding that training-wind D-opt does not transfer |
+
+## Plan 3 (E12–E20), not started
+
+Meteorological mismatch and source–transport compensation (E12); background, source-basis and realistic observation
+errors (E13); reliability diagnostics and uncertainty calibration (E14); nominal vs robust placement (E15, which
+inherits E07's hypothesis that designs tuned to training winds fail on unseen directions); generalisation and
+sensitivity consolidation (E16); optional regional transport case (E17) and real monitoring validation (E18); synthesis
+(E19) and independent replication (E20).
+
+## Open decisions and known gaps
+
+- Confirmatory scope of E07 (above).
+- Whether to make `source_near` (or a wind-robust variant) the reference design going forward; this is outcome-driven
+  and must be preregistered for E11/E15, not adopted retroactively.
+- E03 remains rank-deficient for structural reasons; a configuration where the "identifiable recovery" half of its
+  hypothesis can be tested has not been run.
+- E04's spectrum-vs-coverage hypothesis has not been tested across seeds; the 1e-8 rank rule is applied on different
+  scales in two code paths (gate-04).
+- Study-boundary behaviour of both advection schemes has no independent check.
+- No held-out forecast evaluation outside E07; no wind error or model mismatch anywhere yet.

@@ -1,0 +1,38 @@
+{
+ "command": "python3 scripts/e04_footprints.py",
+ "seed_replicate": 2,
+ "winds": [
+  "steady_westerly",
+  "veering"
+ ],
+ "noise": {
+  "prereg": 0.2525348025148353,
+  "info_scale": 0.025771170455782214
+ },
+ "A_REF": 1000000.0,
+ "hours": 24,
+ "truth_ids": [
+  "TRUTH-a526b56b1328",
+  "TRUTH-302786b8ed3e"
+ ],
+ "sites": {
+  "informative": [
+   220,
+   196,
+   76,
+   67
+  ],
+  "redundant": [
+   220,
+   188,
+   222,
+   218
+  ],
+  "coverage": [
+   30,
+   225,
+   17,
+   238
+  ]
+ }
+}

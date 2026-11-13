@@ -1,0 +1,101 @@
+# Executive summary {.unnumbered}
+
+::: {.callout-important}
+## Scope
+Everything in this report is a **synthetic** study: a 2-D, depth-averaged passive tracer simulated with FiPy on a
+10 km × 10 km square, with known truth. It is **not** PM2.5, not validated against observations, and makes **no
+real-world exposure or deployment claim**. Most results are exploratory; one test (E07) is confirmatory, and only for
+the cells that were run.
+:::
+
+## The question
+
+How few **low-cost, noisy sensors** do we need, and **where** should they go, to reconstruct and forecast a pollution
+field when the **wind and the emissions are uncertain**? Plan 2 (`plans/plan-02-identifiability-placement-forecast.yaml`)
+breaks this into: which source combinations a network can actually distinguish (identifiability), whether a longer
+history can replace sensors, which placement rule is best for which task, and finally sequential forecasting (E08–E11).
+
+## Where we started: Green (2006)
+
+Our methodological starting point is Kary Green's Rice master's thesis on optimal sensor placement for parameter
+identification [@green2006]. Green linearises sensor readings around the parameters of a semi-discretised PDE, forms
+the **Fisher information matrix** M = GᵀR⁻¹G, and chooses sensor locations that maximise log det M
+(**D-optimal design**). His worked example is a **1-D advection–diffusion** problem with **two** unknown parameters
+(diffusivity and advection coefficient); the optimised design shrinks the 95 % confidence-ellipse area by about 36 %
+relative to equal spacing (reading notes, `docs/research/green-2006-reading-notes.md`).
+
+PRAVAH keeps the Fisher/D-optimal machinery but changes almost everything around it:
+
+| | Green (2006) | PRAVAH |
+|---|---|---|
+| Space | 1-D | 2-D, 64 × 64 grid (32² for pilots) |
+| Unknowns | 2 transport parameters | K = 2–8 source strengths (plus, later, the field) |
+| Sensors | ideal, few | low-cost, noise σ = 5 % of median concentration; AR(1) and per-site arms |
+| Wind | known, fixed | time-varying; **test winds held out** from design |
+| Endpoint | parameter confidence ellipse | **held-out one-hour-ahead field forecast RMSE** (protocol primary) |
+| Truth | analytic | synthetic simulator with known truth, independent audits |
+
+## The testbed
+
+A FiPy finite-volume solver of ∂c/∂t + u·∇c = ∇·(K∇c) − λ(c − c_bg) + S, with K = 50 m² s⁻¹,
+λ = 1/12 h, Gaussian area sources (σ = 400 m), background 5 µg m⁻³, hourly-piecewise wind, a 60-day calendar split
+into train (days 1–30), validation (31–42) and test (43–60) with **held-out test wind regimes**. Sensors sit on a
+16 × 16 candidate lattice with 1.25 km minimum spacing. Every experiment received an independent audit ("gate").
+
+## Results at a glance
+
+Evidence labels: **verified** = engineering check passed an independent gate; **exploratory** = smoke scale and/or
+settings chosen after seeing data; **confirmatory (cells run)** = preregistered test, supported only in the cells run.
+
+| Exp | Question | What we did | What we found | Evidence |
+|---|---|---|---|---|
+| [E00](chapters/e00-protocol.qmd) | Can we fix endpoints and rules before data? | Preregistered protocol, evaluation contract; audit | Audit found 3 blockers: signal 1000× below noise (B1), no approval (B2), upwind numerics (B3). All resolved: amendment A1, user approval, amendment A2 | approved baseline, amendable |
+| [E01](chapters/01-forward.qmd) | Does the solver solve the PDE? | Convergence, mass, dt-halving oracles 16²–64² | Upwind converges at ~1st order, mass to ~1e-14, but at 64² its numerical diffusivity is 350–2900 m² s⁻¹ vs K = 50. Split VanLeer at dt 30 s gives K_eff ≈ 50 (A2) | verified (conditionally cleared) |
+| [E02](chapters/02-benchmark.qmd) | Is the benchmark sound and leak-free? | Generator, splits, 65 validity/leakage checks | Checks pass; at 100 µg/s the plume was invisible (SNR ~2e-3); at 1 g/s peak SNR is 21–32 | verified (smoke) |
+| [E03](chapters/03-inverse.qmd) | Can fixed sensors recover source strengths? | NNLS inverse, 648 fits, 24 h window | Rank-deficient in **all 648** fits, at both scales: a structural failure of fixed, non-optimised sensors | exploratory (negative) |
+| [E04](chapters/04-footprints.qmd) | Which source combinations can a network distinguish? | Footprints, Fisher information, SVD | At 1 g/s a D-optimal 4-sensor design has practical rank 4/4; coverage 1–2, redundant 2. One replicate | exploratory |
+| [E05](chapters/05-time.qmd) | Can a longer window replace sensors? | Window × sensors × wind ablation, 20 seeds | Elapsed time alone adds **nothing** (constant wind); **wind change** adds rank (+0.37, 16/17 seeds). v1 claims were overstated and withdrawn | exploratory |
+| [E06](chapters/06-placement-methods.qmd) | Can we reproduce standard placement algorithms? | uniform/random/coverage/source-near/D/A/diversity/POD-QR | Implementations check out (QR = PySensors). Source-informed designs reach full rank; most of that is **knowing source locations** | verified methods; results in-sample |
+| [E07](chapters/07-cross-objective.qmd) | Which placement is best for which held-out task? | 32² pilot + 64² sweep (40 scenarios, held-out winds) | D-opt beats random on held-out forecast RMSE by a median 42–84 % per cell (8/8 cells). But **sensors next to known sources beat D-opt** in 115/120 pairs | **confirmatory in cells run**; source-near result exploratory |
+
+## Key figures
+
+![E07 64² sweep (confirmatory): relative reduction in held-out forecast RMSE of the D-optimal network versus random networks, per cell. Dotted line = preregistered 10 % threshold.](figures/report-e07-confirmatory.png){#fig-summary-confirm}
+
+![E07 64² sweep: left, regret when a network chosen by one criterion is scored on another; right, forecast-RMSE reduction against random by strategy and budget. `source_near` (green) is the top line throughout.](figures/e07-sweep-crossobjective.png){#fig-summary-sweep}
+
+## What we learned, in plain language
+
+1. **Scale matters before cleverness.** At the originally declared emission rate, sensors could not see the plumes at
+   all; no placement rule can fix that (E00–E05, amendment A1).
+2. **Numerics matter.** The first-order scheme smeared plumes with 7–60× the physical diffusivity at 64²; switching to a
+   split VanLeer scheme was necessary before any 64² result could mean anything (A2).
+3. **Time helps only when the wind changes.** Repeated readings under the same wind reduce noise but do not separate
+   sources; a change in wind direction does (E05, exploratory).
+4. **Optimised placement beats random**, confirmed in the 8 cells run (E07).
+5. **But the gain comes from knowing where the sources are**, not from D-optimisation: simply placing sensors next to
+   the known sources did better still, and D-optimal networks tuned to training winds failed when an unseen
+   (southerly) wind blew in the test period (E07, exploratory).
+
+## Honest limitations
+
+- Synthetic, perfect-model world: known source locations, known wind, constant sources, ideal sensors, uniform wind.
+- Smoke scale (32²) for E02–E06; only E07 ran at 64² and only for K ∈ {2, 4}, k ∈ {4, 8, 16}, 10 seeds.
+- The source scale (1 g/s) was chosen after seeing data, so E02–E06 at that scale are exploratory.
+- The E07 mechanism rests on one unseen wind direction; the "source-near" advantage may partly reflect sensors sitting
+  inside the 1200 m emission disc (checked in 2 scenarios only; sweep-wide control running).
+- No sequential filter, no wind error, no model mismatch yet: that is E09–E15.
+
+## What's next
+
+E07 follow-up controls (1200 m exclusion, per-wind-regime window analysis) are running on cached fields; then E08
+(sensor sufficiency, preregistered from E05), E09–E10 (Kalman filtering and joint source–field assimilation), E11
+(placement for forecasting), and plan 3 (wind and model mismatch, robust placement, calibration). See
+[Next steps](chapters/91-next.qmd).
+
+## How to read this report
+
+Chapters [Background](chapters/00-background.qmd) and [Methods](chapters/00-methods.qmd) set the stage; one chapter per
+experiment follows; [Lessons and corrections](chapters/90-lessons.qmd) collects what the independent audits caught.
+Every number is read from versioned tables under `reports/quarto/tables/`, figures under `figures/`, the experiment
+journals in `state/experiments/`, or the audits in `docs/research/gates/`.

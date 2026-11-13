@@ -1,0 +1,10 @@
+scenario,truth_id,schema_version,config_hash,git_sha,replicate,truth_seed,noise_seed,n_sources,split,days,n_hours,wind_regimes,fitting_allowed,evaluation_allowed
+separated2,TRUTH-31d2662fa14d,1,ac3db6150354,fe1cf2b54d,0,1000,2000,2,train,1-4,96,steady_westerly|veering,True,False
+separated2,TRUTH-31d2662fa14d,1,ac3db6150354,fe1cf2b54d,0,1000,2000,2,validation,5-5,24,steady_westerly,True,False
+separated2,TRUTH-31d2662fa14d,1,ac3db6150354,fe1cf2b54d,0,1000,2000,2,test,6-8,72,steady_southerly|stagnation_then_front,False,True
+collinear2,TRUTH-44e780feac05,1,ec4f2f1be7b8,fe1cf2b54d,1,1001,2001,2,train,1-4,96,steady_westerly|steady_westerly,True,False
+collinear2,TRUTH-44e780feac05,1,ec4f2f1be7b8,fe1cf2b54d,1,1001,2001,2,validation,5-5,24,steady_westerly,True,False
+collinear2,TRUTH-44e780feac05,1,ec4f2f1be7b8,fe1cf2b54d,1,1001,2001,2,test,6-8,72,steady_southerly|stagnation_then_front,False,True
+changing4,TRUTH-2058de57d7ee,1,ac3db6150354,fe1cf2b54d,2,1002,2002,4,train,1-4,96,steady_westerly|veering,True,False
+changing4,TRUTH-2058de57d7ee,1,ac3db6150354,fe1cf2b54d,2,1002,2002,4,validation,5-5,24,steady_westerly,True,False
+changing4,TRUTH-2058de57d7ee,1,ac3db6150354,fe1cf2b54d,2,1002,2002,4,test,6-8,72,steady_southerly|stagnation_then_front,False,True

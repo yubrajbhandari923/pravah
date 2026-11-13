@@ -1,0 +1,29 @@
+{
+ "command": "uv run python scripts/e06_placement.py",
+ "git_rev": "c4564d2b5938df13764c350f21be834cfedf42a4",
+ "winds": [
+  "steady_westerly",
+  "veering"
+ ],
+ "seeds": [
+  0,
+  1
+ ],
+ "K": [
+  2,
+  4
+ ],
+ "budgets": [
+  2,
+  4,
+  8
+ ],
+ "G_hours": 96,
+ "a_ref": 1000000.0,
+ "total_runtime_s": 850.7736575603485,
+ "grid": [
+  32,
+  32
+ ],
+ "spinup_h": 12
+}

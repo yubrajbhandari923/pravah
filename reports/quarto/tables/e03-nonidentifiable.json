@@ -1,0 +1,11 @@
+{
+ "rank": 2,
+ "K": 4,
+ "n_rows": 2,
+ "alt_min_coef": 328390.1046728596,
+ "alt_vs_true_rel": 30759.53659109819,
+ "alt_data_misfit_rel": 1.5549458131067969e-15,
+ "alt_field_diff_rel": 25817.087003135293,
+ "nnls_noiseless_source_rel": 0.8128683796798937,
+ "nnls_noiseless_misfit_rel": 6.513306345624983e-17
+}

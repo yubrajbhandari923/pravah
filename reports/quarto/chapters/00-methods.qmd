@@ -1,0 +1,119 @@
+# Methods
+
+Sources: `docs/research/preregistered-protocol.md` (approved baseline, 2026-11-12), `docs/research/pde-and-discretization.md`,
+`docs/research/cross-objective-design.md`, the decision files in `state/decisions/`, and `configs/benchmark-v1.yaml`.
+
+## Protocol in one page
+
+The protocol (E00) fixes, before any test-period computation, the model, noise, factors, calendar split, held-out
+winds, one primary endpoint and the success/stop rules. The user approved it on 2026-11-12 as an **amendable
+baseline**: if a setting proves numerically infeasible it is amended with a decision file, never silently changed;
+changes to the primary endpoint or confirmatory claim go to the user. Confirmatory claims start with experiments
+designed after approval (E07 onward); E02–E06 are exploratory.
+
+| Item | Setting |
+|---|---|
+| Domain | 10 km × 10 km, 64 × 64 cells (32² and 128² for convergence checks / pilots) |
+| Physics | K = 50 m² s⁻¹; λ = 1/(12 h); mixing depth H = 500 m; uniform, hourly-piecewise wind 0.5–5 m s⁻¹ |
+| Boundaries | inflow: c = c_bg; outflow: zero diffusive gradient; 48 h spin-up from c_bg |
+| Sources | K ∈ {2, 4, 8} Gaussian area sources (σ = 400 m, truncated at 3σ = 1200 m), known locations, unknown non-negative strengths a_k ~ LogUniform(0.5, 5)·a_ref, **a_ref = 1 g s⁻¹ (A1)** |
+| Background | uniform 5 µg m⁻³ (known in the base case) |
+| Sensors | 16 × 16 interior candidate lattice, 1.25 km minimum spacing, budget N (k) ∈ {2, 4, 8, 16, 32} |
+| Noise | white σ = 0.05 × median training truth at candidates (≈ 0.25 µg m⁻³); AR(1) ρ = 0.8 and per-site variants |
+| Calendar | 60 days hourly: train 1–30, validation 31–42, test 43–60 (single use) |
+| Winds | training: steady westerly, veering, weak/variable; **held-out test**: steady southerly, stagnation then front, diurnal rotation |
+| Seeds | truth 1000+s, noise 2000+s, placement 3000+s, bootstrap 4000 |
+
+**Primary endpoint.** Held-out, pre-assimilation, one-hour-ahead field-forecast RMSE over all grid cells and test issue
+times (first 6 h excluded), against the noise-free truth. **Primary hypothesis:** an optimised network of N ≥ 8
+sensors reduces this RMSE relative to random placement by at least 10 %; *supported* if the 95 % paired-bootstrap CI
+is above 10 % in ≥ 70 % of N ≥ 8 cells, *contradicted* if below in ≥ 70 %, otherwise *unresolved* (including cells
+not run). Secondary endpoints: source RMSE, post-analysis field RMSE, calibration, synthetic population-weighted error.
+
+## Forward model and numerics
+
+The PDE is
+
+$$\frac{\partial c}{\partial t} + \mathbf u(t)\cdot\nabla c = \nabla\cdot(K\nabla c) - \lambda\,(c - c_{bg}) + S(x,y,t),\qquad S = \frac{1}{H}\sum_k a_k\,\phi_k(x,y),$$
+
+solved with FiPy finite volumes. Diffusion and removal are implicit (backward Euler).
+
+- **Original scheme (protocol §3):** implicit first-order upwind advection, dt = 300 s. Verified at first order with
+  mass conserved to ~1e-14 (E01), and kept for all 32² smoke work.
+- **Amendment A2 (2026-11-12):** at 64² upwind's effective diffusivity is 350–2900 m² s⁻¹ against the physical 50, and it
+  fails the dt-halving gate at every dt. FiPy's VanLeer term is explicit and, unsplit, anti-diffusive across oblique
+  winds (missing cross term). PRAVAH therefore applies VanLeer **dimensionally split** (x advection, then y advection with
+  diffusion, removal and source) at **dt = 30 s**. Result: K_eff 49.7–50.9, order ≈ 2, dt-halving change 0.54–0.71 %
+  (gate ≤ 1 %), mass to 1e-15, no negative values; cost ≈ 17× upwind. The limiter makes the scheme ~1 % non-linear,
+  so per-source responses carry a small superposition error (see E07 for its measured impact). Evidence:
+  `docs/research/gates/b3-advection-scheme.md`, `state/decisions/2026-11-12-advection-scheme.md`.
+
+## Benchmark
+
+`pravah.benchmarks` generates truth, sensor readings and split manifests deterministically from seeds, with a
+**leakage guard**: placement and tuning code cannot read test-period data, evaluation cannot read non-test data, and
+inference views never contain truth fields (E02: 65 checks). Truth and sensor noise are shared across designs, so all
+comparisons are paired.
+
+## Linear source–receptor operator
+
+Because the PDE is linear in the sources (exactly for upwind, to ~1 % for split VanLeer), readings are
+
+$$y = c_{bg} + G\,a + \varepsilon,$$
+
+where column k of G is the response at the chosen sensors and hours to a unit source k, built from the same solver,
+winds and spin-up as the truth (a **perfect model**). Rows stack sensors × hours of the estimator window.
+
+## Estimators
+
+- **NNLS** (E03): weighted non-negative least squares on whitened G, optionally with a fixed ridge and a background
+  nuisance.
+- **MAP / ridge** (E05, E07 primary): â = argmin ‖(y − c_bg − Ga)/σ‖² + ‖a/a_ref‖², a Gaussian prior with sd a_ref,
+  over a window ending at the issue time (24 h in E07). E07's secondary NNLS was within ~0.05 of MAP in the pilot.
+- **Forecast** (E07): ĉ(t+1) = c_bg + Σ_k â_k(t) F_k(t+1) with F_k the full-grid unit response under the known wind. This
+  is a static-inverse forecast, not a filter (that is E09).
+
+## Fisher information and practical rank
+
+With whitened responses A = a_ref·G/σ the Bayesian D-criterion is log det(I + AᵀA) (Green's D-optimality plus a prior,
+so singular designs are comparable); A-criterion trace((I + AᵀA)⁻¹). Floating-point rank uses relative tolerance 1e-8.
+Because floating-point rank says nothing about noise, we use **practical rank** = the number of singular values s of
+G/σ with s·a_ref ≥ 1, i.e. the number of source combinations that a reference-sized change moves by at least one noise
+σ. This threshold was not preregistered and is lenient: gate-05 noted that practical rank ≥ 1 still allows ~100 %
+error per mode.
+
+## Placement strategies
+
+All strategies share the candidate set, budget k and 1250 m spacing rule, and see **training hours only**. What each
+design is allowed to know is declared (gate-06 condition 1):
+
+| Strategy | Knows | Rule |
+|---|---|---|
+| random (10 networks) | nothing | seeded permutation |
+| uniform | nothing | regular layout |
+| coverage | nothing | farthest-point sampling |
+| source_near | source locations | nearest feasible sites, round robin — the **locations-only control** |
+| hotspot | locations + strength prior | top-k by prior-mean training anomaly |
+| dopt / aopt | locations + prior + σ | greedy Bayesian D / A, then 1-swap |
+| fieldvar | same | greedy posterior field-variance proxy, then 1-swap |
+| diversity | locations + σ | low footprint coherence |
+| podqr | locations + strength prior + σ | POD of a prior-ensemble archive + QR pivots, noise-aware mode count fixed in advance |
+
+## Evaluation contract
+
+- Designs use training data only; estimators use observations up to the issue time only; truth is read only by the
+  scorer.
+- Test-period values are computed once per frozen configuration; a re-run after a change is an amendment.
+- Failures (undefined designs, non-identifiable cases, all-zero estimates) are counted, never dropped.
+- Each run records command, git revision, seeds, configuration, environment and job ID (`reports/runs/runs.jsonl`).
+- Every experiment gets an independent audit by a separate agent (`docs/research/gates/`). The auditors are the same
+  model family as the authors, so independence is by task and re-derivation, not by a different reviewer.
+
+## Amendments
+
+| | What changed | Why | Effect |
+|---|---|---|---|
+| **A1** (2026-11-12, user approved) | a_ref 100 µg s⁻¹ → **1 g s⁻¹** | At 100 µg/s per-sample SNR was ~1e-3: no sensor saw a plume (gate-00 B1; confirmed by E02–E05) | All E02–E05 numbers at 100 µg/s superseded for interpretation; the new value was chosen after seeing data, so E02–E06 at 1 g/s are exploratory |
+| **A2** (2026-11-12, lead, user may override) | 64² runs: split VanLeer, dt 30 s (was upwind, dt 300 s) | Upwind's numerical diffusivity at 64² was 7–60× physical and failed dt-halving (gate-00 B3) | E07 sweep onward; numerical gates unchanged; small superposition error recorded per scenario |
+
+The protocol approval itself (B2) is recorded in `state/decisions/2026-11-12-protocol-approval.md`.

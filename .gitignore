@@ -1,0 +1,35 @@
+# Local experiment checkouts and staging
+.worktrees/
+.local_research/
+.venv/
+.env
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# Local generated output and private caches
+.cache/
+.quarto/
+_site/
+**/.DS_Store
+
+# Volumes and model weights (stored on HPC writable workspace)
+*.nii
+*.nii.gz
+*.npy
+*.npz
+*.zarr/
+*.pt
+*.pth
+*.ckpt
+*.h5
+
+# Quarto build output
+reports/quarto/_build/
+.claude/worktrees/
+
+# Local-only identifiers (cluster host, workspace paths)
+settings.local.yaml

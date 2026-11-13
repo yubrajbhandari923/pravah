@@ -1,0 +1,26 @@
+
+=== veering:2:7: a/a_ref = [0.755 3.971], sigma = 0.2500, n_issue = 425, peak test anomaly = 13.44
+(b) floor: forecast RMSE with TRUE strengths = 0.00015; max|truth - linear| all hours 0.0166 (hour 1294), test hours 0.0166
+dopt         sites 235 19 173 203 50 233 81 205: committed 0.16772 | (a) re-implemented 0.16772 | (d) linear truth 0.16772 | (c) site residual rms 0.001 sd, max 0.038 sd | (e) windows rank<K 0.176, their share of SE 0.975
+source_near  sites 158 20 156 22 189 18 125 52: committed 0.02512 | (a) re-implemented 0.02512 | (d) linear truth 0.02512 | (c) site residual rms 0.001 sd, max 0.022 sd | (e) windows rank<K 0.000, their share of SE 0.000
+(f) dopt: design rebuilt from training-only G3 (rest NaN) identical to committed: True
+(f) source_near: design rebuilt from training-only G3 (rest NaN) identical to committed: True
+(g) fraction of 24 h windows with practical rank < K, train hours vs test issue times; distance (m) of sites to each source
+    dopt         train 0.000  test 0.176  (n nets 1); nearest site per source [456, 885]
+    source_near  train 0.000  test 0.000  (n nets 1); nearest site per source [456, 600]
+    random       train 0.260  test 0.297  (n nets 10); nearest site per source [552, 1960]
+(h) k=8, candidates > 1200 m from every source (183 of 195): dopt 0.2025, source_near 0.0430
+(h) k=16, candidates > 1200 m from every source (183 of 195): dopt 0.2012, source_near 0.0364
+
+=== mixed:4:9: a/a_ref = [1.676 0.553 4.341 3.876], sigma = 0.2513, n_issue = 425, peak test anomaly = 20.51
+(b) floor: forecast RMSE with TRUE strengths = 0.00207; max|truth - linear| all hours 0.1834 (hour 984), test hours 0.1120
+dopt         sites 121 57 46 153 90 78 26 185: committed 0.04697 | (a) re-implemented 0.04697 | (d) linear truth 0.04688 | (c) site residual rms 0.009 sd, max 0.150 sd | (e) windows rank<K 0.176, their share of SE 0.371
+source_near  sites 30 153 26 90 62 121 24 88: committed 0.03519 | (a) re-implemented 0.03519 | (d) linear truth 0.03509 | (c) site residual rms 0.010 sd, max 0.150 sd | (e) windows rank<K 0.000, their share of SE 0.000
+(f) dopt: design rebuilt from training-only G3 (rest NaN) identical to committed: True
+(f) source_near: design rebuilt from training-only G3 (rest NaN) identical to committed: True
+(g) fraction of 24 h windows with practical rank < K, train hours vs test issue times; distance (m) of sites to each source
+    dopt         train 0.000  test 0.176  (n nets 1); nearest site per source [590, 643, 456, 456]
+    source_near  train 0.000  test 0.000  (n nets 1); nearest site per source [501, 643, 456, 456]
+    random       train 0.374  test 0.306  (n nets 10); nearest site per source [1737, 2511, 1686, 1215]
+(h) k=8, candidates > 1200 m from every source (160 of 192): dopt 0.2285, source_near 0.1153
+(h) k=16, candidates > 1200 m from every source (160 of 192): dopt 0.2088, source_near 0.0625
