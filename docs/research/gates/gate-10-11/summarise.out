@@ -1,0 +1,403 @@
+E10 reproduction: max |f1_map_full - table| = 0.0  max |f1_map24 - table| = 0.0
+
+E10: (competitor - kf_qsel)/competitor, 1 h forecast RMSE (>0 = filter better); and wsel vs map_full
+variant  k      design      kf            vs  n    med     lo     hi  w  l  n_cl  cl_med  cl_min  cl_w  cl_p
+  const  4        dopt kf_qsel       f1_wsel 12  0.078  0.000  0.250  9  1     6   0.101  -0.167     5 0.219
+  const  4        dopt kf_qsel      f1_ewsel 12  0.026  0.000  0.450  6  1     6   0.132  -0.205     4 0.688
+  const  4        dopt kf_qsel     f1_anysel 12  0.147  0.000  0.477  9  1     6   0.198  -0.132     5 0.219
+  const  4        dopt kf_qsel f1_oracle_map 12  0.000 -0.116  0.000  0  5     6  -0.031  -0.557     0 0.031
+  const  4        dopt f1_wsel      map_full 12 -0.087 -0.333  0.000  1  9     6  -0.145  -3.012     0 0.031
+  const  4 source_near kf_qsel       f1_wsel 12  0.010 -0.264  0.107  6  3     6   0.032  -0.577     3 1.000
+  const  4 source_near kf_qsel      f1_ewsel 12  0.000 -0.082  0.042  4  4     6   0.004  -0.442     3 1.000
+  const  4 source_near kf_qsel     f1_anysel 12  0.016 -0.082  0.129  6  3     6   0.072  -0.461     4 0.688
+  const  4 source_near kf_qsel f1_oracle_map 12  0.000 -0.490  0.000  1  5     6  -0.018  -0.719     1 0.219
+  const  4 source_near f1_wsel      map_full 12 -0.086 -0.148  0.000  0  9     6  -0.079  -0.327     0 0.031
+  const  8        dopt kf_qsel       f1_wsel 12  0.116  0.000  0.704  8  2     6   0.246   0.024     6 0.031
+  const  8        dopt kf_qsel      f1_ewsel 12  0.000 -0.021  0.133  5  3     6   0.028  -0.257     3 1.000
+  const  8        dopt kf_qsel     f1_anysel 12  0.108  0.000  0.654  9  1     6   0.285   0.024     6 0.031
+  const  8        dopt kf_qsel f1_oracle_map 12  0.000 -0.252  0.000  0  5     6  -0.102  -1.047     0 0.031
+  const  8        dopt f1_wsel      map_full 12 -0.138 -2.382 -0.009  0 10     6  -0.758  -6.078     0 0.031
+  const  8 source_near kf_qsel       f1_wsel 12  0.022  0.000  0.081  6  2     6   0.018  -0.480     3 1.000
+  const  8 source_near kf_qsel      f1_ewsel 12  0.035  0.000  0.121  7  2     6   0.016  -0.336     4 0.688
+  const  8 source_near kf_qsel     f1_anysel 12  0.067  0.000  0.159  8  1     6   0.056  -0.381     4 0.688
+  const  8 source_near kf_qsel f1_oracle_map 12 -0.042 -0.099  0.000  1  7     6  -0.054  -0.489     1 0.219
+  const  8 source_near f1_wsel      map_full 12 -0.022 -0.169  0.000  1  6     6  -0.075  -0.177     1 0.219
+diurnal  4        dopt kf_qsel       f1_wsel 12  0.262  0.067  0.450 11  1     6   0.264   0.040     6 0.031
+diurnal  4        dopt kf_qsel      f1_ewsel 12  0.234  0.047  0.435 10  2     6   0.252   0.019     6 0.031
+diurnal  4        dopt kf_qsel     f1_anysel 12  0.247  0.067  0.449 11  1     6   0.264   0.040     6 0.031
+diurnal  4        dopt kf_qsel f1_oracle_map 12  0.069 -0.065  0.404  9  3     6   0.112  -0.096     4 0.688
+diurnal  4        dopt f1_wsel      map_full 12  0.009 -0.013  0.114  7  5     6   0.040  -0.019     4 0.688
+diurnal  4 source_near kf_qsel       f1_wsel 12  0.231  0.046  0.543 11  0     6   0.295   0.006     6 0.031
+diurnal  4 source_near kf_qsel      f1_ewsel 12  0.211  0.019  0.546 10  1     6   0.280  -0.000     5 0.219
+diurnal  4 source_near kf_qsel     f1_anysel 12  0.201  0.027  0.543 11  1     6   0.274   0.005     6 0.031
+diurnal  4 source_near kf_qsel f1_oracle_map 12  0.175 -0.057  0.507  8  4     6   0.203  -0.196     4 0.688
+diurnal  4 source_near f1_wsel      map_full 12  0.103  0.013  0.269 10  1     6   0.126  -0.006     5 0.219
+diurnal  8        dopt kf_qsel       f1_wsel 12  0.366  0.091  0.490 12  0     6   0.365   0.051     6 0.031
+diurnal  8        dopt kf_qsel      f1_ewsel 12  0.345  0.075  0.439 11  1     6   0.353   0.032     6 0.031
+diurnal  8        dopt kf_qsel     f1_anysel 12  0.342  0.091  0.425 12  0     6   0.353   0.051     6 0.031
+diurnal  8        dopt kf_qsel f1_oracle_map 12  0.320 -0.082  0.411  9  3     6   0.324  -0.149     4 0.688
+diurnal  8        dopt f1_wsel      map_full 12  0.025 -0.009  0.147  9  3     6   0.049  -0.010     5 0.219
+diurnal  8 source_near kf_qsel       f1_wsel 12  0.420  0.051  0.585 11  0     6   0.453   0.003     6 0.031
+diurnal  8 source_near kf_qsel      f1_ewsel 12  0.421  0.041  0.589 10  2     6   0.454  -0.008     5 0.219
+diurnal  8 source_near kf_qsel     f1_anysel 12  0.418  0.051  0.585 10  2     6   0.453  -0.008     5 0.219
+diurnal  8 source_near kf_qsel f1_oracle_map 12  0.370 -0.058  0.577  9  3     6   0.364  -0.219     5 0.219
+diurnal  8 source_near f1_wsel      map_full 12  0.099  0.000  0.288  9  2     6   0.128  -0.003     5 0.219
+  logrw  4        dopt kf_qsel       f1_wsel 12  0.314  0.052  0.480 11  1     6   0.264   0.010     6 0.031
+  logrw  4        dopt kf_qsel      f1_ewsel 12  0.265 -0.014  0.408  9  3     6   0.224  -0.042     5 0.219
+  logrw  4        dopt kf_qsel     f1_anysel 12  0.260  0.030  0.461 11  1     6   0.228  -0.032     5 0.219
+  logrw  4        dopt kf_qsel f1_oracle_map 12  0.176 -0.120  0.404  8  4     6   0.118  -0.163     4 0.688
+  logrw  4        dopt f1_wsel      map_full 12  0.213  0.038  0.269 11  1     6   0.155   0.027     6 0.031
+  logrw  4 source_near kf_qsel       f1_wsel 12  0.269  0.111  0.473 12  0     6   0.267   0.048     6 0.031
+  logrw  4 source_near kf_qsel      f1_ewsel 12  0.283  0.126  0.427 11  1     6   0.275  -0.013     5 0.219
+  logrw  4 source_near kf_qsel     f1_anysel 12  0.287  0.111  0.446 12  0     6   0.277   0.048     6 0.031
+  logrw  4 source_near kf_qsel f1_oracle_map 12  0.172 -0.178  0.395  8  4     6   0.152  -0.327     4 0.688
+  logrw  4 source_near f1_wsel      map_full 12  0.230  0.056  0.485 11  0     6   0.218   0.030     6 0.031
+  logrw  8        dopt kf_qsel       f1_wsel 12  0.298  0.017  0.489 11  1     6   0.294   0.016     6 0.031
+  logrw  8        dopt kf_qsel      f1_ewsel 12  0.269  0.071  0.401 10  2     6   0.282  -0.032     5 0.219
+  logrw  8        dopt kf_qsel     f1_anysel 12  0.288  0.252  0.468 10  2     6   0.292  -0.017     5 0.219
+  logrw  8        dopt kf_qsel f1_oracle_map 12  0.154 -0.163  0.373  9  3     6   0.135  -0.167     4 0.688
+  logrw  8        dopt f1_wsel      map_full 12  0.244  0.045  0.323 11  1     6   0.246   0.027     6 0.031
+  logrw  8 source_near kf_qsel       f1_wsel 12  0.321  0.054  0.418 12  0     6   0.300   0.030     6 0.031
+  logrw  8 source_near kf_qsel      f1_ewsel 12  0.335  0.190  0.445 11  1     6   0.323  -0.006     5 0.219
+  logrw  8 source_near kf_qsel     f1_anysel 12  0.335  0.190  0.436 12  0     6   0.336   0.030     6 0.031
+  logrw  8 source_near kf_qsel f1_oracle_map 12  0.000 -0.139  0.390  6  6     6  -0.010  -0.212     3 1.000
+  logrw  8 source_near f1_wsel      map_full 12  0.227  0.010  0.507 10  0     6   0.216   0.000     5 0.219
+
+E10 picks of validation-selected MAP window (dopt/source_near, diurnal+logrw):
+map6        70
+ew0.8       55
+map_full    43
+map24       35
+map72       30
+ew0.95      23
+ew0.9       14
+map12        8
+ew0.995      6
+ew0.98       4
+
+E10 diurnal, kf_qsel vs map_full (committed paired table):
+ k      design           metric  median_rel_reduction    ci_lo    ci_hi  wins  losses
+ 4        dopt forecast_rmse_h1               0.24330  0.05504  0.51630    10       0
+ 4 source_near forecast_rmse_h1               0.38520  0.05768  0.60330    10       0
+ 8        dopt forecast_rmse_h1               0.43600  0.08372  0.57270    11       0
+ 8 source_near forecast_rmse_h1               0.55010  0.09694  0.65890    10       0
+ 4        dopt forecast_rmse_h6              -0.11870 -0.20350 -0.07463     0      10
+ 4 source_near forecast_rmse_h6              -0.15010 -0.18280 -0.05116     0      10
+ 8        dopt forecast_rmse_h6              -0.13440 -0.20830 -0.07864     0      11
+ 8 source_near forecast_rmse_h6              -0.12800 -0.14730 -0.09490     0      10
+ 4        dopt      source_rmse              -0.04320 -0.30660  0.13170     3       7
+ 4 source_near      source_rmse               0.00000 -0.14800  0.20550     5       5
+ 8        dopt      source_rmse              -0.03465 -0.13580  0.14230     3       8
+ 8 source_near      source_rmse               0.00000 -0.07161  0.36640     5       5
+
+Diurnal: RMS(a(t-d) - a(t)) / RMS(a(t) - mean a) = 2 sin(pi d / 24); break-even at d = 4 h: {0: 0.0, 1: 0.261, 2: 0.518, 3: 0.765, 4: 1.0, 5: 1.218, 6: 1.414, 7: 1.587, 8: 1.732, 9: 1.848, 10: 1.932, 11: 1.983, 12: 2.0}
+
+E11 reproduction (dopt, source_near, fc_* under both estimators): sites identical True max |f1 - table| = 0.0 rows 432
+
+E11 prior ablation: (comparator - design)/comparator (>0 favours the robust design)
+estimator  k   metric                design          vs  n    med     lo     hi  w  l  n_cl  cl_med  cl_min  cl_w  cl_p
+    map24  2       f1            fc_w24_rob        dopt 12  0.098 -0.069  0.402  8  3     6   0.155  -0.073     4 0.688
+    map24  2       f1            fc_w24_rob source_near 12 -0.063 -0.262  0.000  2  6     6  -0.071  -0.780     1 0.219
+    map24  2       f1 fc_w24_rob:all8_indep        dopt 12  0.098 -0.069  0.402  8  3     6   0.155  -0.073     4 0.688
+    map24  2       f1 fc_w24_rob:all8_indep source_near 12 -0.063 -0.262  0.000  2  6     6  -0.071  -0.780     1 0.219
+    map24  2       f1        fc_w24_rob:noN        dopt 12  0.060 -0.069  0.333  9  3     6   0.035  -0.073     4 0.688
+    map24  2       f1        fc_w24_rob:noN source_near 12  0.000 -0.262  0.000  2  4     6   0.000  -1.727     1 0.219
+    map24  2       f1       fc_w24_rob:noNE        dopt 12  0.108 -0.479  0.402  8  3     6   0.155  -1.999     4 0.688
+    map24  2       f1       fc_w24_rob:noNE source_near 12 -0.063 -0.230  0.000  0  6     6  -0.071  -0.780     0 0.031
+    map24  2       f1        fc_w24_rob:noS        dopt 12  0.011 -0.179  0.402  7  5     6   0.123  -0.185     4 0.688
+    map24  2       f1        fc_w24_rob:noS source_near 12 -0.353 -0.786  0.292  4  6     6  -0.355  -0.855     2 0.688
+    map24  2       f1       fc_w24_rob:noSN        dopt 12 -0.056 -0.185  0.349  6  6     6  -0.070  -0.868     3 1.000
+    map24  2       f1       fc_w24_rob:noSN source_near 12 -0.002 -0.776  0.000  2  6     6  -0.004  -2.337     1 0.219
+    map24  2 f1_south            fc_w24_rob        dopt 12  0.181  0.000  0.259  9  2     6   0.210  -1.361     5 0.219
+    map24  2 f1_south            fc_w24_rob source_near 12  0.000 -0.312  0.074  4  4     6   0.000  -0.434     2 0.688
+    map24  2 f1_south fc_w24_rob:all8_indep        dopt 12  0.181  0.000  0.259  9  2     6   0.210  -1.361     5 0.219
+    map24  2 f1_south fc_w24_rob:all8_indep source_near 12  0.000 -0.312  0.074  4  4     6   0.000  -0.434     2 0.688
+    map24  2 f1_south        fc_w24_rob:noN        dopt 12  0.230  0.054  0.404 10  2     6   0.287  -1.361     5 0.219
+    map24  2 f1_south        fc_w24_rob:noN source_near 12  0.000  0.000  0.187  5  1     6   0.010   0.000     3 1.000
+    map24  2 f1_south       fc_w24_rob:noNE        dopt 12  0.087 -0.463  0.198  7  4     6   0.175  -1.361     4 0.688
+    map24  2 f1_south       fc_w24_rob:noNE source_near 12  0.000 -0.312  0.000  2  4     6   0.000  -0.434     1 0.219
+    map24  2 f1_south        fc_w24_rob:noS        dopt 12  0.113 -0.221  0.198  8  4     6   0.098  -0.373     4 0.688
+    map24  2 f1_south        fc_w24_rob:noS source_near 12  0.026 -0.312  0.304  6  4     6   0.027  -1.762     3 1.000
+    map24  2 f1_south       fc_w24_rob:noSN        dopt 12  0.162 -0.952  0.355  8  4     6   0.098  -3.547     4 0.688
+    map24  2 f1_south       fc_w24_rob:noSN source_near 12  0.000 -0.909  0.120  3  5     6  -0.020  -0.933     1 0.219
+    map24  4       f1            fc_w24_rob        dopt 12  0.231 -0.067  0.594  9  3     6   0.261  -0.068     4 0.688
+    map24  4       f1            fc_w24_rob source_near 12 -0.045 -0.385  0.000  2  8     6  -0.045  -0.704     1 0.219
+    map24  4       f1 fc_w24_rob:all8_indep        dopt 12  0.231 -0.067  0.594  9  3     6   0.261  -0.068     4 0.688
+    map24  4       f1 fc_w24_rob:all8_indep source_near 12 -0.045 -0.385  0.000  2  8     6  -0.045  -0.704     1 0.219
+    map24  4       f1        fc_w24_rob:noN        dopt 12  0.231 -0.067  0.594  9  3     6   0.261  -0.068     4 0.688
+    map24  4       f1        fc_w24_rob:noN source_near 12 -0.061 -0.385  0.000  2  8     6  -0.060  -0.704     1 0.219
+    map24  4       f1       fc_w24_rob:noNE        dopt 12  0.189 -0.067  0.594  9  3     6   0.239  -0.068     4 0.688
+    map24  4       f1       fc_w24_rob:noNE source_near 12 -0.045 -0.385  0.021  4  8     6  -0.045  -0.897     2 0.688
+    map24  4       f1        fc_w24_rob:noS        dopt 12  0.299  0.065  0.578 10  0     6   0.350  -0.000     5 0.219
+    map24  4       f1        fc_w24_rob:noS source_near 12  0.006 -0.027  0.084  6  4     6   0.007  -0.704     3 1.000
+    map24  4       f1       fc_w24_rob:noSN        dopt 12  0.242 -0.067  0.578  9  3     6   0.277  -0.068     4 0.688
+    map24  4       f1       fc_w24_rob:noSN source_near 12 -0.061 -0.097  0.000  2  8     6  -0.060  -0.384     1 0.219
+    map24  4 f1_south            fc_w24_rob        dopt 12  0.325 -0.024  0.707  9  3     6   0.341  -0.088     4 0.688
+    map24  4 f1_south            fc_w24_rob source_near 12 -0.083 -0.195  0.000  2  8     6  -0.085  -1.608     1 0.219
+    map24  4 f1_south fc_w24_rob:all8_indep        dopt 12  0.325 -0.024  0.707  9  3     6   0.341  -0.088     4 0.688
+    map24  4 f1_south fc_w24_rob:all8_indep source_near 12 -0.083 -0.195  0.000  2  8     6  -0.085  -1.608     1 0.219
+    map24  4 f1_south        fc_w24_rob:noN        dopt 12  0.360 -0.024  0.707  9  3     6   0.341  -0.088     4 0.688
+    map24  4 f1_south        fc_w24_rob:noN source_near 12 -0.010 -0.154  0.163  4  6     6  -0.014  -1.608     2 0.688
+    map24  4 f1_south       fc_w24_rob:noNE        dopt 12  0.162 -0.024  0.707  8  4     6   0.242  -0.114     4 0.688
+    map24  4 f1_south       fc_w24_rob:noNE source_near 12 -0.170 -0.319 -0.019  2 10     6  -0.166  -1.667     1 0.219
+    map24  4 f1_south        fc_w24_rob:noS        dopt 12  0.360  0.000  0.656  9  1     6   0.329  -0.088     5 0.219
+    map24  4 f1_south        fc_w24_rob:noS source_near 12 -0.032 -0.127  0.100  4  6     6  -0.034  -1.608     2 0.688
+    map24  4 f1_south       fc_w24_rob:noSN        dopt 12  0.476  0.108  0.656 10  2     6   0.421  -0.029     5 0.219
+    map24  4 f1_south       fc_w24_rob:noSN source_near 12 -0.010 -0.154  0.100  4  6     6  -0.014  -0.241     2 0.688
+    map24  8       f1            fc_w24_rob        dopt 12  0.367  0.074  0.576 12  0     6   0.359   0.069     6 0.031
+    map24  8       f1            fc_w24_rob source_near 12 -0.015 -0.043  0.026  4  8     6  -0.018  -0.066     2 0.688
+    map24  8       f1 fc_w24_rob:all8_indep        dopt 12  0.367  0.074  0.576 12  0     6   0.359   0.069     6 0.031
+    map24  8       f1 fc_w24_rob:all8_indep source_near 12 -0.015 -0.043  0.026  4  8     6  -0.018  -0.066     2 0.688
+    map24  8       f1        fc_w24_rob:noN        dopt 12  0.298  0.054  0.576 12  0     6   0.307   0.016     6 0.031
+    map24  8       f1        fc_w24_rob:noN source_near 12 -0.063 -0.142 -0.015  2 10     6  -0.064  -0.158     1 0.219
+    map24  8       f1       fc_w24_rob:noNE        dopt 12  0.367  0.194  0.528 12  0     6   0.369   0.026     6 0.031
+    map24  8       f1       fc_w24_rob:noNE source_near 12  0.015 -0.054  0.071  6  6     6   0.012  -0.171     3 1.000
+    map24  8       f1        fc_w24_rob:noS        dopt 12  0.215  0.029  0.576 11  1     6   0.338  -0.011     5 0.219
+    map24  8       f1        fc_w24_rob:noS source_near 12 -0.042 -0.116  0.033  4  8     6  -0.053  -0.516     2 0.688
+    map24  8       f1       fc_w24_rob:noSN        dopt 12  0.255  0.071  0.576 10  2     6   0.320  -0.033     5 0.219
+    map24  8       f1       fc_w24_rob:noSN source_near 12 -0.035 -0.090  0.012  4  8     6  -0.040  -0.477     2 0.688
+    map24  8 f1_south            fc_w24_rob        dopt 12  0.416  0.219  0.645 12  0     6   0.459   0.164     6 0.031
+    map24  8 f1_south            fc_w24_rob source_near 12  0.052 -0.044  0.146  9  3     6   0.056  -0.583     5 0.219
+    map24  8 f1_south fc_w24_rob:all8_indep        dopt 12  0.416  0.219  0.645 12  0     6   0.459   0.164     6 0.031
+    map24  8 f1_south fc_w24_rob:all8_indep source_near 12  0.052 -0.044  0.146  9  3     6   0.056  -0.583     5 0.219
+    map24  8 f1_south        fc_w24_rob:noN        dopt 12  0.423  0.240  0.630 12  0     6   0.431   0.141     6 0.031
+    map24  8 f1_south        fc_w24_rob:noN source_near 12  0.030 -0.084  0.146  6  6     6   0.043  -0.274     4 0.688
+    map24  8 f1_south       fc_w24_rob:noNE        dopt 12  0.416  0.156  0.680 12  0     6   0.451   0.017     6 0.031
+    map24  8 f1_south       fc_w24_rob:noNE source_near 12  0.031  0.010  0.115 10  2     6   0.044  -0.583     5 0.219
+    map24  8 f1_south        fc_w24_rob:noS        dopt 12  0.236  0.057  0.613 10  2     6   0.375  -0.048     5 0.219
+    map24  8 f1_south        fc_w24_rob:noS source_near 12 -0.045 -0.268  0.021  4  8     6  -0.032  -1.284     2 0.688
+    map24  8 f1_south       fc_w24_rob:noSN        dopt 12  0.306  0.160  0.668 10  2     6   0.380  -0.150     5 0.219
+    map24  8 f1_south       fc_w24_rob:noSN source_near 12 -0.086 -0.183  0.106  4  8     6  -0.083  -0.962     2 0.688
+ map_grow  2       f1            fc_w24_rob        dopt 12 -0.368 -1.354 -0.041  1 10     6  -0.386  -2.236     1 0.219
+ map_grow  2       f1            fc_w24_rob source_near 12  0.000 -0.117  0.198  3  5     6   0.000  -2.737     2 0.688
+ map_grow  2       f1 fc_w24_rob:all8_indep        dopt 12 -0.368 -1.354 -0.041  1 10     6  -0.386  -2.236     1 0.219
+ map_grow  2       f1 fc_w24_rob:all8_indep source_near 12  0.000 -0.117  0.198  3  5     6   0.000  -2.737     2 0.688
+ map_grow  2       f1        fc_w24_rob:noN        dopt 12 -0.096 -0.769  0.023  4  8     6  -0.232  -2.236     2 0.688
+ map_grow  2       f1        fc_w24_rob:noN source_near 12  0.000 -0.112  0.314  3  3     6   0.000  -0.181     1 0.219
+ map_grow  2       f1       fc_w24_rob:noNE        dopt 12 -0.712 -3.795 -0.084  1 10     6  -0.991  -8.088     1 0.219
+ map_grow  2       f1       fc_w24_rob:noNE source_near 12  0.000 -0.295  0.000  1  5     6   0.000  -2.737     1 0.219
+ map_grow  2       f1        fc_w24_rob:noS        dopt 12 -0.694 -1.927 -0.084  1 11     6  -0.926  -1.809     0 0.031
+ map_grow  2       f1        fc_w24_rob:noS source_near 12 -0.014 -1.191  0.075  4  6     6  -0.133  -2.737     2 0.688
+ map_grow  2       f1       fc_w24_rob:noSN        dopt 12 -0.201 -1.002  0.023  4  8     6  -0.143  -1.941     1 0.219
+ map_grow  2       f1       fc_w24_rob:noSN source_near 12  0.000 -1.051  0.459  4  4     6   0.000  -1.156     2 0.688
+ map_grow  2 f1_south            fc_w24_rob        dopt 12 -0.508 -1.812 -0.189  1 10     6  -0.452  -2.908     1 0.219
+ map_grow  2 f1_south            fc_w24_rob source_near 12  0.000 -0.030  0.217  5  3     6   0.000  -0.674     2 0.688
+ map_grow  2 f1_south fc_w24_rob:all8_indep        dopt 12 -0.508 -1.812 -0.189  1 10     6  -0.452  -2.908     1 0.219
+ map_grow  2 f1_south fc_w24_rob:all8_indep source_near 12  0.000 -0.030  0.217  5  3     6   0.000  -0.674     2 0.688
+ map_grow  2 f1_south        fc_w24_rob:noN        dopt 12 -0.314 -0.609 -0.103  2 10     6  -0.357  -2.908     2 0.688
+ map_grow  2 f1_south        fc_w24_rob:noN source_near 12  0.060  0.000  0.356  6  0     6   0.071   0.000     3 1.000
+ map_grow  2 f1_south       fc_w24_rob:noNE        dopt 12 -0.727 -2.153 -0.225  1 10     6  -0.892  -3.352     1 0.219
+ map_grow  2 f1_south       fc_w24_rob:noNE source_near 12  0.000 -0.030  0.024  3  3     6   0.000  -0.674     1 0.219
+ map_grow  2 f1_south        fc_w24_rob:noS        dopt 12 -1.197 -2.939 -0.225  1 11     6  -1.398  -2.938     0 0.031
+ map_grow  2 f1_south        fc_w24_rob:noS source_near 12 -0.015 -1.317  0.134  4  6     6  -0.337  -1.343     2 0.688
+ map_grow  2 f1_south       fc_w24_rob:noSN        dopt 12 -0.371 -2.749 -0.103  2 10     6  -0.600  -3.563     1 0.219
+ map_grow  2 f1_south       fc_w24_rob:noSN source_near 12  0.000 -0.169  0.369  4  4     6   0.000  -1.690     2 0.688
+ map_grow  4       f1            fc_w24_rob        dopt 12 -0.152 -0.274 -0.020  2 10     6  -0.127  -0.532     1 0.219
+ map_grow  4       f1            fc_w24_rob source_near 12 -0.094 -0.174  0.000  2  8     6  -0.060  -0.483     0 0.031
+ map_grow  4       f1 fc_w24_rob:all8_indep        dopt 12 -0.152 -0.274 -0.020  2 10     6  -0.127  -0.532     1 0.219
+ map_grow  4       f1 fc_w24_rob:all8_indep source_near 12 -0.094 -0.174  0.000  2  8     6  -0.060  -0.483     0 0.031
+ map_grow  4       f1        fc_w24_rob:noN        dopt 12 -0.170 -0.297 -0.047  1 11     6  -0.166  -0.532     0 0.031
+ map_grow  4       f1        fc_w24_rob:noN source_near 12 -0.115 -0.359  0.000  1  9     6  -0.141  -0.483     0 0.031
+ map_grow  4       f1       fc_w24_rob:noNE        dopt 12 -0.055 -0.273  0.012  4  8     6  -0.061  -0.532     2 0.688
+ map_grow  4       f1       fc_w24_rob:noNE source_near 12 -0.094 -0.174  0.109  4  8     6  -0.060  -0.332     1 0.219
+ map_grow  4       f1        fc_w24_rob:noS        dopt 12 -0.175 -0.344  0.000  2  8     6  -0.211  -0.460     1 0.219
+ map_grow  4       f1        fc_w24_rob:noS source_near 12 -0.049 -0.399  0.045  3  7     6  -0.056  -0.483     2 0.688
+ map_grow  4       f1       fc_w24_rob:noSN        dopt 12 -0.152 -0.230 -0.047  1 11     6  -0.148  -0.460     0 0.031
+ map_grow  4       f1       fc_w24_rob:noSN source_near 12 -0.083 -0.205  0.000  1  9     6  -0.115  -0.251     0 0.031
+ map_grow  4 f1_south            fc_w24_rob        dopt 12 -0.608 -0.935 -0.143  0 12     6  -0.715  -0.918     0 0.031
+ map_grow  4 f1_south            fc_w24_rob source_near 12 -0.196 -0.453  0.000  2  8     6  -0.217  -0.617     1 0.219
+ map_grow  4 f1_south fc_w24_rob:all8_indep        dopt 12 -0.608 -0.935 -0.143  0 12     6  -0.715  -0.918     0 0.031
+ map_grow  4 f1_south fc_w24_rob:all8_indep source_near 12 -0.196 -0.453  0.000  2  8     6  -0.217  -0.617     1 0.219
+ map_grow  4 f1_south        fc_w24_rob:noN        dopt 12 -0.677 -0.935 -0.318  0 12     6  -0.715  -0.918     0 0.031
+ map_grow  4 f1_south        fc_w24_rob:noN source_near 12 -0.246 -0.588  0.000  2  8     6  -0.316  -0.617     1 0.219
+ map_grow  4 f1_south       fc_w24_rob:noNE        dopt 12 -0.244 -0.681 -0.019  2 10     6  -0.244  -0.918     0 0.031
+ map_grow  4 f1_south       fc_w24_rob:noNE source_near 12 -0.075 -0.285  0.262  5  7     6  -0.085  -0.436     3 1.000
+ map_grow  4 f1_south        fc_w24_rob:noS        dopt 12 -0.586 -0.928  0.000  1  9     6  -0.679  -0.891     0 0.031
+ map_grow  4 f1_south        fc_w24_rob:noS source_near 12 -0.072 -0.338  0.041  3  7     6  -0.090  -0.695     2 0.688
+ map_grow  4 f1_south       fc_w24_rob:noSN        dopt 12 -0.667 -0.935 -0.318  0 12     6  -0.647  -0.891     0 0.031
+ map_grow  4 f1_south       fc_w24_rob:noSN source_near 12 -0.205 -0.588  0.000  2  8     6  -0.301  -0.617     1 0.219
+ map_grow  8       f1            fc_w24_rob        dopt 12 -0.063 -0.182  0.051  5  7     6  -0.027  -0.358     3 1.000
+ map_grow  8       f1            fc_w24_rob source_near 12 -0.008 -0.079  0.143  6  6     6   0.009  -0.146     3 1.000
+ map_grow  8       f1 fc_w24_rob:all8_indep        dopt 12 -0.063 -0.182  0.051  5  7     6  -0.027  -0.358     3 1.000
+ map_grow  8       f1 fc_w24_rob:all8_indep source_near 12 -0.008 -0.079  0.143  6  6     6   0.009  -0.146     3 1.000
+ map_grow  8       f1        fc_w24_rob:noN        dopt 12 -0.044 -0.360  0.022  5  7     6   0.001  -0.554     3 1.000
+ map_grow  8       f1        fc_w24_rob:noN source_near 12 -0.013 -0.213  0.110  5  7     6  -0.027  -0.346     3 1.000
+ map_grow  8       f1       fc_w24_rob:noNE        dopt 12 -0.046 -0.182  0.051  5  7     6  -0.027  -0.454     3 1.000
+ map_grow  8       f1       fc_w24_rob:noNE source_near 12 -0.040 -0.071  0.147  5  7     6  -0.020  -0.227     2 0.688
+ map_grow  8       f1        fc_w24_rob:noS        dopt 12 -0.024 -0.360  0.048  6  6     6  -0.033  -0.545     3 1.000
+ map_grow  8       f1        fc_w24_rob:noS source_near 12  0.048 -0.213  0.103  7  5     6   0.034  -0.338     3 1.000
+ map_grow  8       f1       fc_w24_rob:noSN        dopt 12  0.003 -0.210  0.019  6  6     6  -0.036  -0.553     3 1.000
+ map_grow  8       f1       fc_w24_rob:noSN source_near 12  0.063 -0.069  0.115  9  3     6   0.066  -0.345     4 0.688
+ map_grow  8 f1_south            fc_w24_rob        dopt 12 -0.238 -0.464  0.077  3  9     6  -0.134  -0.506     1 0.219
+ map_grow  8 f1_south            fc_w24_rob source_near 12  0.030 -0.098  0.243  8  4     6   0.058  -0.283     4 0.688
+ map_grow  8 f1_south fc_w24_rob:all8_indep        dopt 12 -0.238 -0.464  0.077  3  9     6  -0.134  -0.506     1 0.219
+ map_grow  8 f1_south fc_w24_rob:all8_indep source_near 12  0.030 -0.098  0.243  8  4     6   0.058  -0.283     4 0.688
+ map_grow  8 f1_south        fc_w24_rob:noN        dopt 12 -0.221 -0.489  0.070  4  8     6  -0.162  -1.064     2 0.688
+ map_grow  8 f1_south        fc_w24_rob:noN source_near 12  0.101 -0.156  0.169  7  5     6   0.014  -0.743     5 0.219
+ map_grow  8 f1_south       fc_w24_rob:noNE        dopt 12 -0.059 -0.421  0.035  5  7     6  -0.119  -0.506     2 0.688
+ map_grow  8 f1_south       fc_w24_rob:noNE source_near 12  0.057 -0.131  0.450  8  4     6   0.023  -0.283     3 1.000
+ map_grow  8 f1_south        fc_w24_rob:noS        dopt 12 -0.149 -0.432  0.021  3  9     6  -0.185  -1.008     2 0.688
+ map_grow  8 f1_south        fc_w24_rob:noS source_near 12  0.048 -0.211  0.247  6  6     6   0.038  -0.716     4 0.688
+ map_grow  8 f1_south       fc_w24_rob:noSN        dopt 12 -0.130 -0.503  0.048  4  8     6  -0.137  -1.022     2 0.688
+ map_grow  8 f1_south       fc_w24_rob:noSN source_near 12  0.090 -0.171  0.161  9  3     6   0.078  -0.733     4 0.688
+estimator  k metric                 design          vs  n    med     lo     hi  w  l  n_cl  cl_med  cl_min  cl_w  cl_p
+    map24  2     f1            fc_grow_rob        dopt 12  0.000 -0.080  0.000  2  3     6   0.000  -2.085     2 0.688
+    map24  2     f1            fc_grow_rob source_near 12 -0.099 -0.559 -0.009  2 10     6  -0.319  -1.073     0 0.031
+    map24  2     f1 fc_grow_rob:all8_indep        dopt 12  0.000 -0.080  0.000  2  3     6   0.000  -2.085     2 0.688
+    map24  2     f1 fc_grow_rob:all8_indep source_near 12 -0.099 -0.559 -0.009  2 10     6  -0.319  -1.073     0 0.031
+    map24  2     f1        fc_grow_rob:noN        dopt 12  0.000 -0.080  0.000  2  3     6   0.000  -2.110     2 0.688
+    map24  2     f1        fc_grow_rob:noN source_near 12 -0.099 -0.904 -0.009  2 10     6  -0.405  -1.073     0 0.031
+    map24  2     f1       fc_grow_rob:noNE        dopt 12  0.000 -0.080  0.000  1  3     6   0.000  -2.110     1 0.219
+    map24  2     f1       fc_grow_rob:noNE source_near 12 -0.099 -1.817 -0.009  2 10     6  -0.537  -2.212     0 0.031
+    map24  2     f1        fc_grow_rob:noS        dopt 12  0.000 -2.038  0.000  1  4     6   0.000  -2.085     1 0.219
+    map24  2     f1        fc_grow_rob:noS source_near 12 -0.099 -2.172 -0.009  2 10     6  -0.537  -3.976     0 0.031
+    map24  2     f1       fc_grow_rob:noSN        dopt 12  0.000 -2.038  0.000  1  4     6   0.000  -2.085     1 0.219
+    map24  2     f1       fc_grow_rob:noSN source_near 12 -0.099 -2.172 -0.009  2 10     6  -0.537  -3.976     0 0.031
+    map24  4     f1            fc_grow_rob        dopt 12  0.000 -0.000  0.111  3  3     6  -0.000  -0.731     3 1.000
+    map24  4     f1            fc_grow_rob source_near 12 -0.873 -1.702  0.016  4  8     6  -1.159  -1.810     2 0.688
+    map24  4     f1 fc_grow_rob:all8_indep        dopt 12  0.000 -0.000  0.111  3  3     6  -0.000  -0.731     3 1.000
+    map24  4     f1 fc_grow_rob:all8_indep source_near 12 -0.873 -1.702  0.016  4  8     6  -1.159  -1.810     2 0.688
+    map24  4     f1        fc_grow_rob:noN        dopt 12  0.000 -0.000  0.000  2  3     6  -0.000  -0.731     2 0.688
+    map24  4     f1        fc_grow_rob:noN source_near 12 -0.873 -1.702  0.016  4  8     6  -1.159  -2.737     2 0.688
+    map24  4     f1       fc_grow_rob:noNE        dopt 12  0.000 -0.000  0.111  3  3     6  -0.000  -0.731     3 1.000
+    map24  4     f1       fc_grow_rob:noNE source_near 12 -0.873 -1.702  0.016  4  8     6  -1.159  -1.810     2 0.688
+    map24  4     f1        fc_grow_rob:noS        dopt 12  0.000 -0.000  0.000  2  2     6  -0.000  -0.731     2 0.688
+    map24  4     f1        fc_grow_rob:noS source_near 12 -0.873 -1.702  0.016  4  8     6  -1.159  -2.737     2 0.688
+    map24  4     f1       fc_grow_rob:noSN        dopt 12  0.000  0.000  0.111  4  1     6   0.000  -0.731     3 1.000
+    map24  4     f1       fc_grow_rob:noSN source_near 12 -0.752 -1.189  0.016  4  8     6  -0.803  -2.737     2 0.688
+    map24  8     f1            fc_grow_rob        dopt 12  0.094 -0.007  0.293  9  3     6   0.125  -0.024     5 0.219
+    map24  8     f1            fc_grow_rob source_near 12 -0.360 -0.848 -0.022  2 10     6  -0.454  -1.788     1 0.219
+    map24  8     f1 fc_grow_rob:all8_indep        dopt 12  0.119 -0.007  0.293  9  3     6   0.126  -0.024     5 0.219
+    map24  8     f1 fc_grow_rob:all8_indep source_near 12 -0.352 -0.848 -0.022  2 10     6  -0.439  -1.788     1 0.219
+    map24  8     f1        fc_grow_rob:noN        dopt 12  0.119 -0.002  0.222  9  3     6   0.133  -0.013     5 0.219
+    map24  8     f1        fc_grow_rob:noN source_near 12 -0.352 -0.848 -0.032  2 10     6  -0.414  -2.106     1 0.219
+    map24  8     f1       fc_grow_rob:noNE        dopt 12  0.119 -0.001  0.293  9  3     6   0.140   0.002     6 0.031
+    map24  8     f1       fc_grow_rob:noNE source_near 12 -0.352 -0.848 -0.037  2 10     6  -0.414  -1.788     1 0.219
+    map24  8     f1        fc_grow_rob:noS        dopt 12  0.048 -0.001  0.222  9  3     6   0.027  -0.024     5 0.219
+    map24  8     f1        fc_grow_rob:noS source_near 12 -0.551 -0.907 -0.032  2 10     6  -0.605  -0.993     1 0.219
+    map24  8     f1       fc_grow_rob:noSN        dopt 12  0.054 -0.000  0.158  9  2     6   0.066  -0.013     5 0.219
+    map24  8     f1       fc_grow_rob:noSN source_near 12 -0.556 -1.228 -0.022  2 10     6  -0.519  -2.267     1 0.219
+ map_grow  2     f1            fc_grow_rob        dopt 12  0.000 -0.083  0.000  2  3     6   0.000  -0.558     1 0.219
+ map_grow  2     f1            fc_grow_rob source_near 12  0.317  0.078  0.617 10  2     6   0.344  -0.023     5 0.219
+ map_grow  2     f1 fc_grow_rob:all8_indep        dopt 12  0.000 -0.083  0.000  2  3     6   0.000  -0.558     1 0.219
+ map_grow  2     f1 fc_grow_rob:all8_indep source_near 12  0.317  0.078  0.617 10  2     6   0.344  -0.023     5 0.219
+ map_grow  2     f1        fc_grow_rob:noN        dopt 12  0.000 -0.853  0.000  2  3     6   0.000  -0.943     1 0.219
+ map_grow  2     f1        fc_grow_rob:noN source_near 12  0.317  0.078  0.555 10  2     6   0.344  -0.023     5 0.219
+ map_grow  2     f1       fc_grow_rob:noNE        dopt 12  0.000  0.000  0.000  2  2     6   0.000  -0.943     1 0.219
+ map_grow  2     f1       fc_grow_rob:noNE source_near 12  0.317  0.078  0.717 10  2     6   0.344  -0.023     5 0.219
+ map_grow  2     f1        fc_grow_rob:noS        dopt 12  0.000  0.000  0.321  3  2     6   0.000  -0.558     2 0.688
+ map_grow  2     f1        fc_grow_rob:noS source_near 12  0.317  0.078  0.717 10  2     6   0.344  -0.023     5 0.219
+ map_grow  2     f1       fc_grow_rob:noSN        dopt 12  0.000  0.000  0.321  3  2     6   0.000  -0.558     2 0.688
+ map_grow  2     f1       fc_grow_rob:noSN source_near 12  0.317  0.078  0.717 10  2     6   0.344  -0.023     5 0.219
+ map_grow  4     f1            fc_grow_rob        dopt 12  0.000 -0.049  0.019  3  3     6   0.000  -0.221     3 1.000
+ map_grow  4     f1            fc_grow_rob source_near 12  0.078 -0.054  0.146  7  5     6   0.052  -0.332     4 0.688
+ map_grow  4     f1 fc_grow_rob:all8_indep        dopt 12  0.000 -0.049  0.019  3  3     6   0.000  -0.221     3 1.000
+ map_grow  4     f1 fc_grow_rob:all8_indep source_near 12  0.078 -0.054  0.146  7  5     6   0.052  -0.332     4 0.688
+ map_grow  4     f1        fc_grow_rob:noN        dopt 12 -0.000 -0.049  0.000  2  3     6  -0.000  -0.221     2 0.688
+ map_grow  4     f1        fc_grow_rob:noN source_near 12  0.038 -0.139  0.146  6  6     6  -0.004  -0.332     3 1.000
+ map_grow  4     f1       fc_grow_rob:noNE        dopt 12 -0.000 -0.049  0.019  3  3     6  -0.000  -0.221     2 0.688
+ map_grow  4     f1       fc_grow_rob:noNE source_near 12  0.078 -0.054  0.146  7  5     6   0.052  -0.332     4 0.688
+ map_grow  4     f1        fc_grow_rob:noS        dopt 12 -0.000 -0.000  0.000  2  2     6  -0.000  -0.202     2 0.688
+ map_grow  4     f1        fc_grow_rob:noS source_near 12  0.038 -0.054  0.146  6  6     6   0.032  -0.332     3 1.000
+ map_grow  4     f1       fc_grow_rob:noSN        dopt 12  0.000 -0.000  0.007  3  2     6  -0.000  -0.202     2 0.688
+ map_grow  4     f1       fc_grow_rob:noSN source_near 12  0.065 -0.139  0.146  7  5     6  -0.004  -0.332     3 1.000
+ map_grow  8     f1            fc_grow_rob        dopt 12  0.031 -0.154  0.117  7  5     6   0.042  -0.226     4 0.688
+ map_grow  8     f1            fc_grow_rob source_near 12  0.095 -0.033  0.171  9  3     6   0.062  -0.062     4 0.688
+ map_grow  8     f1 fc_grow_rob:all8_indep        dopt 12  0.031 -0.154  0.117  7  5     6   0.042  -0.226     4 0.688
+ map_grow  8     f1 fc_grow_rob:all8_indep source_near 12  0.080 -0.033  0.171  9  3     6   0.062  -0.062     4 0.688
+ map_grow  8     f1        fc_grow_rob:noN        dopt 12  0.026 -0.160  0.067  8  4     6   0.042  -0.266     4 0.688
+ map_grow  8     f1        fc_grow_rob:noN source_near 12  0.063 -0.092  0.158  8  4     6   0.002  -0.096     3 1.000
+ map_grow  8     f1       fc_grow_rob:noNE        dopt 12  0.020 -0.154  0.109  8  4     6   0.040  -0.226     4 0.688
+ map_grow  8     f1       fc_grow_rob:noNE source_near 12  0.080 -0.033  0.143  9  3     6   0.061  -0.062     4 0.688
+ map_grow  8     f1        fc_grow_rob:noS        dopt 12  0.028 -0.154  0.107  7  5     6   0.021  -0.182     3 1.000
+ map_grow  8     f1        fc_grow_rob:noS source_near 12  0.103 -0.033  0.171  9  3     6   0.089  -0.087     5 0.219
+ map_grow  8     f1       fc_grow_rob:noSN        dopt 12 -0.008 -0.126  0.109  5  6     6   0.038  -0.185     4 0.688
+ map_grow  8     f1       fc_grow_rob:noSN source_near 12  0.051 -0.073  0.128  8  4     6   0.005  -0.027     3 1.000
+
+fc_w24_rob: fraction of (scenario, k) with the same sites as the original 8-direction design
+prior
+all8_indep    1.00
+noN           0.28
+noNE          0.39
+noS           0.22
+noSN          0.00
+orig8         1.00
+
+E11 realised / predicted 1 h RMSE (non-random designs): N(0, I)-prior prediction vs bias-aware with true a
+estimator            map24  map_grow
+ratio_prior count  216.000   216.000
+            mean     1.128     0.965
+            std      0.440     0.156
+            min      0.538     0.402
+            10%      0.836     0.799
+            50%      0.975     0.969
+            90%      1.864     1.165
+            max      2.854     1.416
+ratio_true  count  216.000   216.000
+            mean     0.964     0.967
+            std      0.054     0.145
+            min      0.826     0.400
+            10%      0.900     0.805
+            50%      0.966     0.969
+            90%      1.022     1.162
+            max      1.148     1.341
+
+Scenario dependence (veering vs mixed, same K/seed):
+ K  seed  test_winds_identical
+ 2     0                  True
+ 2     1                  True
+ 2     2                  True
+ 4     0                  True
+ 4     1                  True
+ 4     2                  True
+
+k = 2 brute force vs greedy+swap:
+   wind  K  seed   objective  greedy_swap     brute  n_feasible  same_set      gap
+  mixed  4     0     fc_grow    -0.000727 -0.000727       17847      True 0.000000
+  mixed  4     0      fc_w24    -0.009062 -0.009062       17847      True 0.000000
+  mixed  4     0 fc_grow_rob    -0.001080 -0.000790       17847     False 0.000290
+  mixed  4     0  fc_w24_rob    -0.015254 -0.015254       17847      True 0.000000
+  mixed  4     1     fc_grow    -0.001911 -0.001911       17470      True 0.000000
+  mixed  4     1      fc_w24    -0.006471 -0.006471       17470      True 0.000000
+  mixed  4     1 fc_grow_rob    -0.000786 -0.000786       17470      True 0.000000
+  mixed  4     1  fc_w24_rob    -0.014185 -0.013962       17470     False 0.000224
+veering  4     0     fc_grow    -0.001627 -0.001272       17847     False 0.000355
+veering  4     0      fc_w24    -0.007293 -0.007293       17847      True 0.000000
+veering  4     0 fc_grow_rob    -0.001334 -0.001287       17847     False 0.000047
+veering  4     0  fc_w24_rob    -0.015255 -0.015255       17847      True 0.000000
+veering  4     2     fc_grow    -0.001783 -0.001783       17664      True 0.000000
+veering  4     2      fc_w24    -0.008488 -0.008488       17664      True 0.000000
+veering  4     2 fc_grow_rob    -0.002227 -0.001599       17664     False 0.000628
+veering  4     2  fc_w24_rob    -0.015190 -0.014949       17664     False 0.000240
+veering  4     1     fc_grow    -0.001442 -0.001442       17470      True 0.000000
+veering  4     1      fc_w24    -0.005299 -0.005299       17470      True 0.000000
+veering  4     1 fc_grow_rob    -0.000944 -0.000944       17470      True 0.000000
+veering  4     1  fc_w24_rob    -0.014185 -0.013961       17470     False 0.000224
+veering  2     0     fc_grow    -0.000045 -0.000045       17849      True 0.000000
+veering  2     0      fc_w24    -0.000143 -0.000143       17849      True 0.000000
+veering  2     0 fc_grow_rob    -0.000061 -0.000061       17849      True 0.000000
+veering  2     0  fc_w24_rob    -0.001898 -0.001898       17849      True 0.000000
+  mixed  2     0     fc_grow    -0.000052 -0.000052       17849      True 0.000000
+  mixed  2     0      fc_w24    -0.000235 -0.000235       17849      True 0.000000
+  mixed  2     0 fc_grow_rob    -0.000073 -0.000073       17849      True 0.000000
+  mixed  2     0  fc_w24_rob    -0.001898 -0.001898       17849      True 0.000000
+  mixed  2     2     fc_grow    -0.000065 -0.000065       18029      True 0.000000
+  mixed  2     2      fc_w24    -0.000376 -0.000376       18029      True 0.000000
+  mixed  2     2 fc_grow_rob    -0.000154 -0.000154       18029      True 0.000000
+  mixed  2     2  fc_w24_rob    -0.001033 -0.001033       18029      True 0.000000
+veering  2     1     fc_grow    -0.000050 -0.000050       18221      True 0.000000
+veering  2     1      fc_w24    -0.000205 -0.000205       18221      True 0.000000
+veering  2     1 fc_grow_rob    -0.000046 -0.000046       18221      True 0.000000
+veering  2     1  fc_w24_rob    -0.001897 -0.001897       18221      True 0.000000
+veering  2     2     fc_grow    -0.000048 -0.000048       18029      True 0.000000
+veering  2     2      fc_w24    -0.000191 -0.000191       18029      True 0.000000
+veering  2     2 fc_grow_rob    -0.000123 -0.000123       18029      True 0.000000
+veering  2     2  fc_w24_rob    -0.001033 -0.001033       18029      True 0.000000
+  mixed  4     2     fc_grow    -0.001494 -0.001494       17664      True 0.000000
+  mixed  4     2      fc_w24    -0.016605 -0.015997       17664     False 0.000608
+  mixed  4     2 fc_grow_rob    -0.002037 -0.000914       17664     False 0.001123
+  mixed  4     2  fc_w24_rob    -0.015222 -0.014968       17664     False 0.000254
+  mixed  2     1     fc_grow    -0.000062 -0.000062       18221      True 0.000000
+  mixed  2     1      fc_w24    -0.000252 -0.000252       18221      True 0.000000
+  mixed  2     1 fc_grow_rob    -0.000044 -0.000044       18221      True 0.000000
+  mixed  2     1  fc_w24_rob    -0.001884 -0.001884       18221      True 0.000000

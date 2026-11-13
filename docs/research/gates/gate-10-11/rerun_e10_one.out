@@ -1,0 +1,7 @@
+  mixed:2:2 k=4 random 251s
+  mixed:2:2 k=4 dopt 352s
+  mixed:2:2 k=4 source_near 455s
+  mixed:2:2 k=8 random 557s
+  mixed:2:2 k=8 dopt 679s
+  mixed:2:2 k=8 source_near 781s
+rows compared 396 of 396; max abs diff per metric: {'forecast_rmse_h1': 0.0, 'forecast_rmse_h6': 0.0, 'source_rmse': 0.0, 'neg_frac': 0.0, 'analysis_rmse': 0.0, 'src_cov95': 0.0, 'src_nees_k': 0.0, 'cov50_active': 0.0, 'cov80_active': 0.0, 'cov95_active': 0.0, 'crps': 0.0, 'nis_test': 0.0, 'innov_lag1': 0.0}

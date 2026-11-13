@@ -21,8 +21,8 @@ Protocol and `configs/benchmark-v1.yaml` APPROVED 2026-11-12 as an amendable bas
 3. **E08 running:** design committed, 32² pilot done, 64² sweep is job 205039 (~19 h; see `experiments/e08.md`). Then the
    1200 m exclusion rerun on cached fields, the report, and a gate-08 audit.
 4. HPC verified 2026-11-12 (smoke job 204775: 175 tests passed on node004; limits 64 CPU, 4 GPU, 2 days in settings.yaml).
-5. E09 done and audited. E10 and E11 32² pilots done (see journals). Next: joint gate-10/11 audit; E11 64² run after E08
-   (one job); E08 report and exclusion rerun. Plan 3 (E12–E20) after that.
+5. E09 done and audited. E10 and E11 32² pilots done (see journals). Gate-10/11 done (pass w/ conditions; E10 diurnal gain is 1 h only; ~40 % of E11's gain was in-sample).
+   Next: E11 64² prep per gate conditions, run after E08 (one job); E08 report and exclusion rerun. Plan 3 (E12–E20) after that.
 
 Known open items: E03 (fixed-sensor static inverse) remains rank deficient for structural reasons (sensor placement, 24 h window).
 
@@ -41,7 +41,7 @@ Known open items: E03 (fixed-sensor static inverse) remains rank deficient for s
 | e08 | Sensor sufficiency | design committed; pilot done; 64² sweep running (job 205039) | [e08](experiments/e08.md) |
 | e09 | Causal Kalman filter | 32² replay + gate-09 (pass w/ conditions): all-past-data MAP ≫ 24 h MAP; placement ordering flips | [e09](experiments/e09.md) |
 | e10 | Joint source–field assimilation | 32² pilot: q=0 best for constant sources; random-walk filter wins and is calibrated for time-varying ones | [e10](experiments/e10.md) |
-| e11 | Forecast placement | 32² pilot: no design best under both memories; wind-robust 24 h objective fixes dopt's map24 failure | [e11](experiments/e11.md) |
+| e11 | Forecast placement | 32² pilot + gate-10/11: wind-robust 24 h objective beats dopt under map24 at k=8 (+0.22–0.26 out of sample); worse under map_grow | [e11](experiments/e11.md) |
 | e12–e20 | see plans (plan 3) | not started | — |
 
 ## Verified facts vs questions
