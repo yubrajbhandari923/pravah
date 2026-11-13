@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>10&nbsp; E07 Cross-objective placement on held-out winds – PRAVAH: sparse low-cost sensor placement under uncertain wind</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/90-lessons.html" rel="next">
+<link href="../chapters/06-placement-methods.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-17329ef5f9a609701b0437e64bf71ff1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/e00-protocol.html">Experiments</a></li><li class="breadcrumb-item"><a href="../chapters/07-cross-objective.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">E07 Cross-objective placement on held-out winds</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">PRAVAH: sparse low-cost sensor placement under uncertain wind</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Executive summary</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/00-background.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Background and starting literature</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/00-methods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Methods</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Experiments</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/e00-protocol.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">E00 Protocol and evaluation contract</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01-forward.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">E01 Forward-solver verification (local 16²/32²/64²)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/02-benchmark.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">E02 Tiny local benchmark: three hand-placed examples</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/03-inverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">E03 Static source-strength inverse (known wind)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/04-footprints.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">E04 Footprints, Fisher information and identifiability</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/05-time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">E05 Temporal observability: sensor count versus observation window</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/06-placement-methods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">E06 Placement algorithms and their own objectives</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/07-cross-objective.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">E07 Cross-objective placement on held-out winds</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/90-lessons.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/91-next.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Next steps</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#what-we-did" id="toc-what-we-did" class="nav-link active" data-scroll-target="#what-we-did"><span class="header-section-number">10.1</span> What we did</a></li>
+  <li><a href="#pilot-32²-exploratory" id="toc-pilot-32²-exploratory" class="nav-link" data-scroll-target="#pilot-32²-exploratory"><span class="header-section-number">10.2</span> Pilot (32², exploratory)</a></li>
+  <li><a href="#sweep-confirmatory-result" id="toc-sweep-confirmatory-result" class="nav-link" data-scroll-target="#sweep-confirmatory-result"><span class="header-section-number">10.3</span> 64² sweep: confirmatory result</a></li>
+  <li><a href="#sweep-exploratory-results" id="toc-sweep-exploratory-results" class="nav-link" data-scroll-target="#sweep-exploratory-results"><span class="header-section-number">10.4</span> 64² sweep: exploratory results</a>
+  <ul class="collapse">
+  <li><a href="#sensors-next-to-the-sources-beat-d-optimisation" id="toc-sensors-next-to-the-sources-beat-d-optimisation" class="nav-link" data-scroll-target="#sensors-next-to-the-sources-beat-d-optimisation"><span class="header-section-number">10.4.1</span> Sensors next to the sources beat D-optimisation</a></li>
+  <li><a href="#mechanism-per-window-rank-loss-under-an-unseen-wind" id="toc-mechanism-per-window-rank-loss-under-an-unseen-wind" class="nav-link" data-scroll-target="#mechanism-per-window-rank-loss-under-an-unseen-wind"><span class="header-section-number">10.4.2</span> Mechanism: per-window rank loss under an unseen wind</a></li>
+  <li><a href="#endpoint-agreement-is-close-to-built-in" id="toc-endpoint-agreement-is-close-to-built-in" class="nav-link" data-scroll-target="#endpoint-agreement-is-close-to-built-in"><span class="header-section-number">10.4.3</span> Endpoint agreement is close to built in</a></li>
+  <li><a href="#other-checks" id="toc-other-checks" class="nav-link" data-scroll-target="#other-checks"><span class="header-section-number">10.4.4</span> Other checks</a></li>
+  </ul></li>
+  <li><a href="#audit-outcome-gate-07-pass-with-conditions" id="toc-audit-outcome-gate-07-pass-with-conditions" class="nav-link" data-scroll-target="#audit-outcome-gate-07-pass-with-conditions"><span class="header-section-number">10.5</span> Audit outcome (gate-07): pass with conditions</a></li>
+  <li><a href="#what-changed-because-of-the-audit" id="toc-what-changed-because-of-the-audit" class="nav-link" data-scroll-target="#what-changed-because-of-the-audit"><span class="header-section-number">10.6</span> What changed because of the audit</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">10.7</span> Limitations</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/e00-protocol.html">Experiments</a></li><li class="breadcrumb-item"><a href="../chapters/07-cross-objective.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">E07 Cross-objective placement on held-out winds</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">E07 Cross-objective placement on held-out winds</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Simulated passive tracer only; nothing here is evidence about ambient PM2.5, real sources or deployment.</p>
+<p><strong>Question (plan 2).</strong> Which placement objective is best for which held-out inference task (forecast, analysis field, source strengths, population-weighted field)? The plan’s hypothesis was that no single network wins on all of them. <strong>Confirmatory test (protocol §12):</strong> does the D-optimal network (<code>dopt</code>) reduce held-out one-step forecast RMSE by ≥ 10 % relative to random networks, for k ≥ 8?</p>
+<p><strong>Evidence label.</strong> 32² pilot: exploratory. 64² sweep, dopt vs random: <strong>confirmatory, supported in the cells run</strong> (scope pending user sign-off). Everything else in the sweep (source_near vs dopt, mechanism, endpoint agreement): exploratory.</p>
+<p><strong>Evidence.</strong> Design note <code>docs/research/cross-objective-design.md</code> (committed in 3e7d4d2 before any E07 computation; deviations in its §12); tables <code>tables/e07-local-*</code> and <code>tables/e07-sweep-*</code>; audit <code>docs/research/gates/gate-07-cross-objective.md</code> (with check scripts); journal <code>state/experiments/e07.md</code>. Report-only summaries below are produced from the committed sweep tables by <code>scripts/report_e07.py</code>.</p>
+<section id="what-we-did" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="what-we-did"><span class="header-section-number">10.1</span> What we did</h2>
+<ul>
+<li><strong>Designs</strong> (see <a href="../chapters/00-methods.html">Methods</a>): random (10 networks), uniform, coverage, source_near (locations-only control), hotspot, dopt (greedy Bayesian D + 1-swap), diversity and podqr in the sweep; the pilot also had aopt and fieldvar. Each design declares what it knows and sees <strong>training hours only</strong> (gate-06 condition 1); the POD archive comes from a prior ensemble of strengths, not the truth.</li>
+<li><strong>Training winds:</strong> <code>veering</code>, or <code>mixed</code> (steady westerly, veering, weak/variable); the pilot also had an exactly <code>constant</code> westerly. <strong>Test winds are always held out:</strong> steady southerly, stagnation then front, diurnal rotation.</li>
+<li><strong>Estimator and score:</strong> MAP over a 24 h window ending at each issue time, then a one-hour forecast with the known wind, scored against the noise-free truth over 425 test issue times (64²). Noise arms: white (primary), AR(1) ρ = 0.8, per-site σ. R = 5 paired noise draws per arm.</li>
+<li><strong>32² local pilot:</strong> upwind, dt 300 s, shortened 4/1/6-day calendar, K ∈ {2, 4}, k ∈ {2, 4, 8}, seeds 0–2; 18/18 scenarios (commit e3f7de0).</li>
+<li><strong>64² HPC sweep:</strong> split VanLeer, dt 30 s (A2), protocol calendar, K ∈ {2, 4}, k ∈ {4, 8, 16}, seeds 0–9, 2 training winds: 40/40 scenarios, Slurm job 204894, code dd2c51c, ~12 h on 64 CPUs. This is a <strong>user-requested scope cut</strong> (design-note deviation 6, decided before any 64² run): K = 8, k = 32 and seeds 10–19 were not run.</li>
+</ul>
+</section>
+<section id="pilot-32²-exploratory" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="pilot-32²-exploratory"><span class="header-section-number">10.2</span> Pilot (32², exploratory)</h2>
+<div id="fig-e07-pilot" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-e07-pilot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figures/e07-local-crossobjective.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-e07-pilot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.1: 32² pilot: regret heatmap (selector × held-out metric) and forecast-RMSE reduction against random by strategy and budget.
+</figcaption>
+</figure>
+</div>
+<ul>
+<li>Optimised designs beat random by a median 0.6–0.9 forecast-RMSE reduction, except at K = 4, k = 2. Uniform layouts are worse than random.</li>
+<li>The locations-only <code>source_near</code> beat <code>dopt</code> in 44 of 54 (scenario, k) pairs, by 27–48 % at k ≥ 4.</li>
+<li>The network best on forecast was also best on field, source and population-weighted error (median cross-endpoint regret 0).</li>
+<li>Choosing the network by training-wind D gives a median forecast regret of 0.51; choosing by D on the test winds, 0.006.</li>
+<li>AR(1) and per-site arms gave the same ordering; NNLS was within ~0.05 of MAP. <code>podqr</code> was undefined in 36 of 162 cases. Where spacing binds, greedy was exact in 29/36 blocks, greedy + swap in 34/36.</li>
+</ul>
+<p>Lead decisions before the sweep: <code>dopt</code> stays the confirmatory network (re-designating <code>source_near</code> after seeing the pilot would have been outcome-driven); A2 numerics; no wind-robust arm (that is E15’s question).</p>
+</section>
+<section id="sweep-confirmatory-result" class="level2" data-number="10.3">
+<h2 data-number="10.3" class="anchored" data-anchor-id="sweep-confirmatory-result"><span class="header-section-number">10.3</span> 64² sweep: confirmatory result</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>training wind</th>
+<th>K</th>
+<th>k</th>
+<th>n</th>
+<th>median reduction</th>
+<th>95% bootstrap CI</th>
+<th>distribution-free CI</th>
+<th>mean [CI]</th>
+<th>dopt wins/losses</th>
+<th>verdict (bootstrap / distribution-free)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>mixed</td>
+<td>2</td>
+<td>8</td>
+<td>10</td>
+<td>0.84</td>
+<td>0.81–0.90</td>
+<td>0.78–0.91</td>
+<td>0.85 [0.82–0.88]</td>
+<td>10/0</td>
+<td>above / above</td>
+</tr>
+<tr class="even">
+<td>mixed</td>
+<td>2</td>
+<td>16</td>
+<td>10</td>
+<td>0.76</td>
+<td>0.75–0.79</td>
+<td>0.74–0.80</td>
+<td>0.75 [0.69–0.79]</td>
+<td>10/0</td>
+<td>above / above</td>
+</tr>
+<tr class="odd">
+<td>mixed</td>
+<td>4</td>
+<td>8</td>
+<td>10</td>
+<td>0.67</td>
+<td>0.54–0.78</td>
+<td>0.44–0.82</td>
+<td>0.64 [0.54–0.74]</td>
+<td>10/0</td>
+<td>above / above</td>
+</tr>
+<tr class="even">
+<td>mixed</td>
+<td>4</td>
+<td>16</td>
+<td>10</td>
+<td>0.51</td>
+<td>0.43–0.58</td>
+<td>0.42–0.62</td>
+<td>0.51 [0.44–0.60]</td>
+<td>10/0</td>
+<td>above / above</td>
+</tr>
+<tr class="odd">
+<td>veering</td>
+<td>2</td>
+<td>8</td>
+<td>10</td>
+<td>0.71</td>
+<td>0.35–0.79</td>
+<td>0.24–0.82</td>
+<td>0.60 [0.45–0.74]</td>
+<td>10/0</td>
+<td>above / above</td>
+</tr>
+<tr class="even">
+<td>veering</td>
+<td>2</td>
+<td>16</td>
+<td>10</td>
+<td>0.70</td>
+<td>0.23–0.78</td>
+<td>-0.19–0.80</td>
+<td>0.50 [0.16–0.75]</td>
+<td>8/2</td>
+<td>above / straddles</td>
+</tr>
+<tr class="odd">
+<td>veering</td>
+<td>4</td>
+<td>8</td>
+<td>10</td>
+<td>0.62</td>
+<td>0.53–0.67</td>
+<td>0.51–0.70</td>
+<td>0.60 [0.53–0.67]</td>
+<td>10/0</td>
+<td>above / above</td>
+</tr>
+<tr class="even">
+<td>veering</td>
+<td>4</td>
+<td>16</td>
+<td>10</td>
+<td>0.42</td>
+<td>0.17–0.47</td>
+<td>0.14–0.50</td>
+<td>0.33 [0.20–0.45]</td>
+<td>9/1</td>
+<td>above / above</td>
+</tr>
+</tbody>
+</table>
+<p>Cells with bootstrap CI above 10 %: 8/8; distribution-free: 7/8; mean bootstrap: 8/8.</p>
+<div id="fig-e07-confirm" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-e07-confirm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figures/report-e07-confirmatory.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-e07-confirm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.2: Relative reduction in held-out forecast RMSE, dopt vs the mean of 10 random networks, per cell (median and 95 % percentile bootstrap CI over 10 seeds; red tick = distribution-free lower bound). Dotted line = 10 % threshold.
+</figcaption>
+</figure>
+</div>
+<p><strong>Verdict.</strong> In the 64² synthetic sweep (K ∈ {2, 4}, k ∈ {8, 16}, training winds veering or mixed, 10 seeds per cell, white noise, MAP with a 24 h window), the D-optimal network reduced held-out one-step forecast RMSE relative to the mean of 10 random networks by a median of <strong>42–84 % per cell</strong>. The 95 % bootstrap CI lay above 10 % in <strong>8/8 cells</strong>, so the preregistered hypothesis is <strong>supported in the cells run</strong>. With distribution-free intervals it is supported in 7/8 (veering K = 2, k = 16 straddles because dopt lost to random in 2 of 10 seeds); with a bootstrap of the mean, 8/8. K = 8 and k = 32 were <strong>not run</strong>; by the protocol’s own rule those cells are unresolved, so at protocol level the verdict is “supported in the run cells, unresolved overall” unless the user confirms the reduced cell set as the confirmatory population (gate-07 issue 1, open). <strong>A locations-only control placing sensors next to the known sources did better still, so the gain over random is attributable to knowing source locations, not to D-optimisation.</strong></p>
+</section>
+<section id="sweep-exploratory-results" class="level2" data-number="10.4">
+<h2 data-number="10.4" class="anchored" data-anchor-id="sweep-exploratory-results"><span class="header-section-number">10.4</span> 64² sweep: exploratory results</h2>
+<div id="fig-e07-sweep" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-e07-sweep-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figures/e07-sweep-crossobjective.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-e07-sweep-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.3: 64² sweep: regret heatmap and forecast-RMSE reduction against random by strategy (median over 20 scenarios per K). The legend lists aopt/fieldvar, which were not run in the sweep; the A/fieldvar selector rows rank the strategies that were run by those criteria.
+</figcaption>
+</figure>
+</div>
+<section id="sensors-next-to-the-sources-beat-d-optimisation" class="level3" data-number="10.4.1">
+<h3 data-number="10.4.1" class="anchored" data-anchor-id="sensors-next-to-the-sources-beat-d-optimisation"><span class="header-section-number">10.4.1</span> Sensors next to the sources beat D-optimisation</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>noise arm</th>
+<th>paired (scenario, k)</th>
+<th>source_near better</th>
+<th>median (dopt − source_near)/dopt</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>white</td>
+<td>120</td>
+<td>115</td>
+<td>0.41</td>
+</tr>
+<tr class="even">
+<td>ar1</td>
+<td>120</td>
+<td>110</td>
+<td>0.30</td>
+</tr>
+<tr class="odd">
+<td>persite</td>
+<td>120</td>
+<td>118</td>
+<td>0.47</td>
+</tr>
+</tbody>
+</table>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>k</th>
+<th>dopt: scenarios with ≥ 1 rank-deficient 24 h test window</th>
+<th>source_near: same</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>4</td>
+<td>32/40</td>
+<td>20/40</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>30/40</td>
+<td>7/40</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>26/40</td>
+<td>6/40</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>source_near</code> beats <code>dopt</code> in 115/120 paired (scenario, k) comparisons with white noise (110 with AR(1), 118 with per-site σ), in all 20 source layouts, by a median relative margin of ≈ 0.4 (gate-07: IQR 0.23–0.60; bootstrap CI over layouts 0.28–0.56). At scenario level source_near is better at every k in 36/40 (white), 31/40 (AR(1)), 39/40 (per-site). Pairs share layouts and test winds, so pooled-pair p-values are not quoted. This contrast was not preregistered.</li>
+</ul>
+</section>
+<section id="mechanism-per-window-rank-loss-under-an-unseen-wind" class="level3" data-number="10.4.2">
+<h3 data-number="10.4.2" class="anchored" data-anchor-id="mechanism-per-window-rank-loss-under-an-unseen-wind"><span class="header-section-number">10.4.2</span> Mechanism: per-window rank loss under an unseen wind</h3>
+<p>Field checks on two scenarios (gate-07, <code>veering:2:7</code> and <code>mixed:4:9</code>):</p>
+<ul>
+<li>dopt networks have no rank-deficient 24 h windows during training but 17.6 % in the test period; all 75 deficient windows fall in the held-out <strong>steady southerly</strong> blocks — a direction never seen in training. source_near has none.</li>
+<li>Those windows carry 97.5 % (veering:2:7) and 37 % (mixed:4:9) of dopt’s squared forecast error.</li>
+<li>Sweep-wide (table above), dopt has at least one deficient test window in 30/40 scenarios at k = 8 against 7/40 for source_near.</li>
+<li>Whole-period information criteria miss this: D on the test winds favours source_near in only 35/120 cases, and selecting by D_test still costs a median forecast regret of 0.37.</li>
+</ul>
+<p>Reading (inference): designs tuned to the training winds do not transfer to an unseen wind direction, while sensors at the sources stay informative whatever the wind. The evidence rests on <strong>one</strong> unseen direction, and the window analysis covers 2 scenarios in detail.</p>
+</section>
+<section id="endpoint-agreement-is-close-to-built-in" class="level3" data-number="10.4.3">
+<h3 data-number="10.4.3" class="anchored" data-anchor-id="endpoint-agreement-is-close-to-built-in"><span class="header-section-number">10.4.3</span> Endpoint agreement is close to built in</h3>
+<p>The network best on forecast is also best on source, analysis and population-weighted error (forecast-best equals source-best in 116/120; median off-diagonal regret 0). But all four endpoints are functions of the same static estimate under a perfect model and constant sources, so agreement is expected; it is weak evidence about the plan’s “no single network wins” hypothesis and must not be stated as a general finding.</p>
+</section>
+<section id="other-checks" class="level3" data-number="10.4.4">
+<h3 data-number="10.4.4" class="anchored" data-anchor-id="other-checks"><span class="header-section-number">10.4.4</span> Other checks</h3>
+<ul>
+<li><strong>Leakage:</strong> designs rebuilt with every non-training hour set to NaN give the committed sites; forecast scores were reproduced to 5 digits by an independent implementation.</li>
+<li><strong>VanLeer superposition (A2):</strong> the max superposition error over the full calendar is a median 0.038 µg m⁻³ and 0.183 at worst (0.73σ at a single cell-hour), ~27× the 96 h figure quoted in A2; re-scoring on a perfectly linear truth changed RMSE by ≤ 1e-4 and kept the ordering.</li>
+<li><strong>Greedy optimality:</strong> greedy + swap is exact in 146/160 block checks (greedy alone 91/160); hotspot has higher D_train than dopt in 10/120 cases. This does not affect the comparison (source_near never has the highest D_train).</li>
+<li><strong>podqr</strong> was undefined in 1 (k = 8) and 3 (k = 16) of 40 scenarios per arm — fewer than the design note predicted.</li>
+</ul>
+</section>
+</section>
+<section id="audit-outcome-gate-07-pass-with-conditions" class="level2" data-number="10.5">
+<h2 data-number="10.5" class="anchored" data-anchor-id="audit-outcome-gate-07-pass-with-conditions"><span class="header-section-number">10.5</span> Audit outcome (gate-07): pass with conditions</h2>
+<p>Numbers reproducible, no leakage, confirmatory rule implemented faithfully. Conditions concern what the results may be said to show:</p>
+<ol type="1">
+<li><strong>Scope:</strong> state the verdict as “supported in the 8 cells run”; the user must confirm the reduced cell set (open).</li>
+<li><strong>Credit:</strong> every statement of the confirmatory result carries the source_near caveat.</li>
+<li><strong>Mechanism:</strong> per-window rank loss under one unseen wind direction; make it sweep-wide from cached fields.</li>
+<li><strong>Artefact risk:</strong> source_near’s sites (456–643 m from source centres) sit inside the 1200 m truncated emission disc (σ = 400 m), where they see local emission under any wind. With every site within 1200 m excluded, source_near still won in the two scenarios checked (k = 8: 0.043 vs 0.203 and 0.115 vs 0.229).</li>
+<li><strong>Statistics:</strong> percentile bootstrap of a median at n = 10 is anti-conservative; report the distribution-free and mean variants (done above).</li>
+</ol>
+</section>
+<section id="what-changed-because-of-the-audit" class="level2" data-number="10.6">
+<h2 data-number="10.6" class="anchored" data-anchor-id="what-changed-because-of-the-audit"><span class="header-section-number">10.6</span> What changed because of the audit</h2>
+<p>The confirmatory table now carries the distribution-free and mean-bootstrap variants; the verdict wording is the gate’s; the A2 decision file was updated with the full-calendar superposition error; the source_near contrast is labelled exploratory and pooled p-values were dropped.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Follow-up controls running — this chapter may change
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Two follow-up analyses on the cached 64² fields are <strong>in progress</strong> at the time of writing: (1) the 1200 m exclusion control across all 40 scenarios, and (2) the fraction of rank-deficient windows per test wind regime for every design and scenario. <strong>[PLACEHOLDER: results to be inserted when the runs finish; until then the exclusion result rests on 2 scenarios and the mechanism on one unseen wind direction.]</strong></p>
+</div>
+</div>
+</section>
+<section id="limitations" class="level2" data-number="10.7">
+<h2 data-number="10.7" class="anchored" data-anchor-id="limitations"><span class="header-section-number">10.7</span> Limitations</h2>
+<ul>
+<li>Perfect model: known wind, known source locations, constant sources, known background; the estimator uses the truth’s solver.</li>
+<li>Sensors may sit inside the 400 m-σ area-source footprint; point sources were not studied.</li>
+<li>One unseen wind direction (southerly) drives the mechanism; a 24 h estimator window only.</li>
+<li>10 seeds per cell; cells are not independent (two training-wind arms share layouts, test winds and noise seeds).</li>
+<li>σ ≈ 0.25 ≈ 0.05·c_bg is effectively a fixed instrument noise, and near-source SNR is ~50–80, which is why the per-site arm changes little.</li>
+<li>The forecast is from a static inverse, not a filter; calibration endpoints are deferred to E09.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapters/06-placement-methods.html" class="pagination-link" aria-label="E06 Placement algorithms and their own objectives">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">E06 Placement algorithms and their own objectives</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../chapters/90-lessons.html" class="pagination-link" aria-label="Lessons and corrections">
+        <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

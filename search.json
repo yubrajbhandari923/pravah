@@ -1,0 +1,916 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
+    "section": "",
+    "text": "Executive summary",
+    "crumbs": [
+      "Executive summary"
+    ]
+  },
+  {
+    "objectID": "index.html#the-question",
+    "href": "index.html#the-question",
+    "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
+    "section": "The question",
+    "text": "The question\nHow few low-cost, noisy sensors do we need, and where should they go, to reconstruct and forecast a pollution field when the wind and the emissions are uncertain? Plan 2 (plans/plan-02-identifiability-placement-forecast.yaml) breaks this into: which source combinations a network can actually distinguish (identifiability), whether a longer history can replace sensors, which placement rule is best for which task, and finally sequential forecasting (E08–E11).",
+    "crumbs": [
+      "Executive summary"
+    ]
+  },
+  {
+    "objectID": "index.html#where-we-started-green-2006",
+    "href": "index.html#where-we-started-green-2006",
+    "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
+    "section": "Where we started: Green (2006)",
+    "text": "Where we started: Green (2006)\nOur methodological starting point is Kary Green’s Rice master’s thesis on optimal sensor placement for parameter identification (Green 2006). Green linearises sensor readings around the parameters of a semi-discretised PDE, forms the Fisher information matrix M = GᵀR⁻¹G, and chooses sensor locations that maximise log det M (D-optimal design). His worked example is a 1-D advection–diffusion problem with two unknown parameters (diffusivity and advection coefficient); the optimised design shrinks the 95 % confidence-ellipse area by about 36 % relative to equal spacing (reading notes, docs/research/green-2006-reading-notes.md).\nPRAVAH keeps the Fisher/D-optimal machinery but changes almost everything around it:\n\n\n\n\n\n\n\n\n\nGreen (2006)\nPRAVAH\n\n\n\n\nSpace\n1-D\n2-D, 64 × 64 grid (32² for pilots)\n\n\nUnknowns\n2 transport parameters\nK = 2–8 source strengths (plus, later, the field)\n\n\nSensors\nideal, few\nlow-cost, noise σ = 5 % of median concentration; AR(1) and per-site arms\n\n\nWind\nknown, fixed\ntime-varying; test winds held out from design\n\n\nEndpoint\nparameter confidence ellipse\nheld-out one-hour-ahead field forecast RMSE (protocol primary)\n\n\nTruth\nanalytic\nsynthetic simulator with known truth, independent audits",
+    "crumbs": [
+      "Executive summary"
+    ]
+  },
+  {
+    "objectID": "index.html#the-testbed",
+    "href": "index.html#the-testbed",
+    "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
+    "section": "The testbed",
+    "text": "The testbed\nA FiPy finite-volume solver of ∂c/∂t + u·∇c = ∇·(K∇c) − λ(c − c_bg) + S, with K = 50 m² s⁻¹, λ = 1/12 h, Gaussian area sources (σ = 400 m), background 5 µg m⁻³, hourly-piecewise wind, a 60-day calendar split into train (days 1–30), validation (31–42) and test (43–60) with held-out test wind regimes. Sensors sit on a 16 × 16 candidate lattice with 1.25 km minimum spacing. Every experiment received an independent audit (“gate”).",
+    "crumbs": [
+      "Executive summary"
+    ]
+  },
+  {
+    "objectID": "index.html#results-at-a-glance",
+    "href": "index.html#results-at-a-glance",
+    "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
+    "section": "Results at a glance",
+    "text": "Results at a glance\nEvidence labels: verified = engineering check passed an independent gate; exploratory = smoke scale and/or settings chosen after seeing data; confirmatory (cells run) = preregistered test, supported only in the cells run.\n\n\n\nExp\nQuestion\nWhat we did\nWhat we found\nEvidence\n\n\n\n\nE00\nCan we fix endpoints and rules before data?\nPreregistered protocol, evaluation contract; audit\nAudit found 3 blockers: signal 1000× below noise (B1), no approval (B2), upwind numerics (B3). All resolved: amendment A1, user approval, amendment A2\napproved baseline, amendable\n\n\nE01\nDoes the solver solve the PDE?\nConvergence, mass, dt-halving oracles 16²–64²\nUpwind converges at ~1st order, mass to ~1e-14, but at 64² its numerical diffusivity is 350–2900 m² s⁻¹ vs K = 50. Split VanLeer at dt 30 s gives K_eff ≈ 50 (A2)\nverified (conditionally cleared)\n\n\nE02\nIs the benchmark sound and leak-free?\nGenerator, splits, 65 validity/leakage checks\nChecks pass; at 100 µg/s the plume was invisible (SNR ~2e-3); at 1 g/s peak SNR is 21–32\nverified (smoke)\n\n\nE03\nCan fixed sensors recover source strengths?\nNNLS inverse, 648 fits, 24 h window\nRank-deficient in all 648 fits, at both scales: a structural failure of fixed, non-optimised sensors\nexploratory (negative)\n\n\nE04\nWhich source combinations can a network distinguish?\nFootprints, Fisher information, SVD\nAt 1 g/s a D-optimal 4-sensor design has practical rank 4/4; coverage 1–2, redundant 2. One replicate\nexploratory\n\n\nE05\nCan a longer window replace sensors?\nWindow × sensors × wind ablation, 20 seeds\nElapsed time alone adds nothing (constant wind); wind change adds rank (+0.37, 16/17 seeds). v1 claims were overstated and withdrawn\nexploratory\n\n\nE06\nCan we reproduce standard placement algorithms?\nuniform/random/coverage/source-near/D/A/diversity/POD-QR\nImplementations check out (QR = PySensors). Source-informed designs reach full rank; most of that is knowing source locations\nverified methods; results in-sample\n\n\nE07\nWhich placement is best for which held-out task?\n32² pilot + 64² sweep (40 scenarios, held-out winds)\nD-opt beats random on held-out forecast RMSE by a median 42–84 % per cell (8/8 cells). But sensors next to known sources beat D-opt in 115/120 pairs\nconfirmatory in cells run; source-near result exploratory",
+    "crumbs": [
+      "Executive summary"
+    ]
+  },
+  {
+    "objectID": "index.html#key-figures",
+    "href": "index.html#key-figures",
+    "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
+    "section": "Key figures",
+    "text": "Key figures\n\n\n\n\n\n\nFigure 1: E07 64² sweep (confirmatory): relative reduction in held-out forecast RMSE of the D-optimal network versus random networks, per cell. Dotted line = preregistered 10 % threshold.\n\n\n\n\n\n\n\n\n\nFigure 2: E07 64² sweep: left, regret when a network chosen by one criterion is scored on another; right, forecast-RMSE reduction against random by strategy and budget. source_near (green) is the top line throughout.",
+    "crumbs": [
+      "Executive summary"
+    ]
+  },
+  {
+    "objectID": "index.html#what-we-learned-in-plain-language",
+    "href": "index.html#what-we-learned-in-plain-language",
+    "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
+    "section": "What we learned, in plain language",
+    "text": "What we learned, in plain language\n\nScale matters before cleverness. At the originally declared emission rate, sensors could not see the plumes at all; no placement rule can fix that (E00–E05, amendment A1).\nNumerics matter. The first-order scheme smeared plumes with 7–60× the physical diffusivity at 64²; switching to a split VanLeer scheme was necessary before any 64² result could mean anything (A2).\nTime helps only when the wind changes. Repeated readings under the same wind reduce noise but do not separate sources; a change in wind direction does (E05, exploratory).\nOptimised placement beats random, confirmed in the 8 cells run (E07).\nBut the gain comes from knowing where the sources are, not from D-optimisation: simply placing sensors next to the known sources did better still, and D-optimal networks tuned to training winds failed when an unseen (southerly) wind blew in the test period (E07, exploratory).",
+    "crumbs": [
+      "Executive summary"
+    ]
+  },
+  {
+    "objectID": "index.html#honest-limitations",
+    "href": "index.html#honest-limitations",
+    "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
+    "section": "Honest limitations",
+    "text": "Honest limitations\n\nSynthetic, perfect-model world: known source locations, known wind, constant sources, ideal sensors, uniform wind.\nSmoke scale (32²) for E02–E06; only E07 ran at 64² and only for K ∈ {2, 4}, k ∈ {4, 8, 16}, 10 seeds.\nThe source scale (1 g/s) was chosen after seeing data, so E02–E06 at that scale are exploratory.\nThe E07 mechanism rests on one unseen wind direction; the “source-near” advantage may partly reflect sensors sitting inside the 1200 m emission disc (checked in 2 scenarios only; sweep-wide control running).\nNo sequential filter, no wind error, no model mismatch yet: that is E09–E15.",
+    "crumbs": [
+      "Executive summary"
+    ]
+  },
+  {
+    "objectID": "index.html#whats-next",
+    "href": "index.html#whats-next",
+    "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
+    "section": "What’s next",
+    "text": "What’s next\nE07 follow-up controls (1200 m exclusion, per-wind-regime window analysis) are running on cached fields; then E08 (sensor sufficiency, preregistered from E05), E09–E10 (Kalman filtering and joint source–field assimilation), E11 (placement for forecasting), and plan 3 (wind and model mismatch, robust placement, calibration). See Next steps.",
+    "crumbs": [
+      "Executive summary"
+    ]
+  },
+  {
+    "objectID": "index.html#how-to-read-this-report",
+    "href": "index.html#how-to-read-this-report",
+    "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
+    "section": "How to read this report",
+    "text": "How to read this report\nChapters Background and Methods set the stage; one chapter per experiment follows; Lessons and corrections collects what the independent audits caught. Every number is read from versioned tables under reports/quarto/tables/, figures under figures/, the experiment journals in state/experiments/, or the audits in docs/research/gates/.\n\n\n\n\nGreen, Kary. 2006. “Optimal Sensor Placement for Parameter Identification.” Master’s thesis, Rice University. https://repository.rice.edu/items/4d4b4f81-1c4b-4362-8513-685eac332c7c.",
+    "crumbs": [
+      "Executive summary"
+    ]
+  },
+  {
+    "objectID": "chapters/00-background.html",
+    "href": "chapters/00-background.html",
+    "title": "1  Background and starting literature",
+    "section": "",
+    "text": "1.1 Green (2006): the starting point\nThis chapter says what PRAVAH borrows, from whom, and what it does differently. It is a map, not a review: no paper listed here has been reproduced by PRAVAH unless a later chapter says so. Bibliographic details were checked against OpenAlex/arXiv (see references.bib); the descriptions below come from docs/research/literature-map.md and docs/research/green-2006-reading-notes.md.\nGreen’s Rice University master’s thesis (Green 2006) is the methodological root of PRAVAH.\nWhat it does.\nWhat it does not do.\nHow PRAVAH adapts it. The unknowns become K non-negative source strengths with known footprints; G stacks per-source responses over sensors and hours; we use a Bayesian D-criterion log det(I + a_ref² GᵀR⁻¹G) so that singular designs remain comparable; and the decisive score is not the confidence ellipse but held-out forecast error. Every 2-D source-strength extension is a PRAVAH adaptation, not a reproduction. The thesis PDF is a scan without extractable text, so the page pointers above come from the reading notes and should be checked against the original.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Background and starting literature</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/00-background.html#green-2006-the-starting-point",
+    "href": "chapters/00-background.html#green-2006-the-starting-point",
+    "title": "1  Background and starting literature",
+    "section": "",
+    "text": "Estimates unknown parameters of a dynamical system obtained by spatially discretising a parameterised transport PDE (finite elements), from sensor readings (reading notes, PDF pp. 17–29).\nUses weighted least squares; for Gaussian noise with covariance R and sensitivity G = ∂y/∂θ the local Fisher information is M(S) = GᵀR⁻¹G, and readings at independent times add information. With M nonsingular, M⁻¹ approximates the estimator covariance (Appendix A, PDF pp. 56–59).\nChooses sensor locations in advance with optimal-design criteria: D-optimality (maximise log det M, i.e. minimise the volume of the confidence ellipsoid), A-optimality (minimise trace M⁻¹) and E-type criteria; it also formulates a weighted approximate design over discrete candidate locations (PDF pp. 34–46).\nIllustrates this on a 1-D time-dependent advection–diffusion problem with two unknowns, diffusivity and advection coefficient. Optimised sensors land near x ≈ 0.025 and 0.975 on [0, 1]; the 95 % confidence-ellipse area is ~1.91e-3 (centre placement), ~4.66e-4 (equal spacing) and ~2.97e-4 (optimised), i.e. ~36 % below equal spacing (PDF p. 54).\n\n\n\nIt does not recover a concentration field or many unknown source strengths; it identifies a handful of transport parameters.\nIt does not treat low-cost sensor noise, correlated errors, held-out meteorology, or forecasting.\nThe boundary-sensor result is specific to that PDE, parameter vector and noise model; it is not a rule for placing pollution sensors.\nIts asymptotic Fisher confidence regions assume a correctly specified model; under wind or source misspecification their coverage may be poor (PRAVAH gate-04 found exactly this kind of miscalibration when the noise model is wrong).",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Background and starting literature</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/00-background.html#related-work-and-how-each-paper-is-used",
+    "href": "chapters/00-background.html#related-work-and-how-each-paper-is-used",
+    "title": "1  Background and starting literature",
+    "section": "1.2 Related work and how each paper is used",
+    "text": "1.2 Related work and how each paper is used\nTransport models and footprints.\n\nPennington et al. (2024) build and evaluate a CMAQ chemistry-transport framework for Los Angeles with source apportionment. It is a reference point for what a full 3-D chemical model includes that our passive tracer omits (E01, later E13/E17).\nSchlutow et al. (2026) present BLDFM, a fast Eulerian steady-state advection–diffusion solver for concentration and flux footprints. It motivates the footprint view of E04; its code is non-commercially licensed and is not copied.\n\nSource reconstruction and identifiability.\n\nMons et al. (2017) reconstruct urban pollutant release characteristics by data assimilation. It is the closest analogue to the E03 inverse and to the wind-mismatch experiments planned for plan 3.\nBhardwaj and Subramanian (2026) (arXiv preprint, not peer reviewed) study identifiability-aware source apportionment in city-scale advection–diffusion systems. It shaped the protocol’s separation of identifiability from prediction accuracy (E00, E04, E05). We cite it as a preprint only.\n\nSensor placement.\n\nManohar et al. (2018) introduce data-driven sparse placement by POD modes and QR pivoting; Silva et al. (2021) and Karnik et al. (2026) provide the PySensors implementation. PRAVAH’s podqr design follows this, and its QR pivots were checked against PySensors 0.4.3 (E06).\nZhou et al. (2022) apply POD-based planning to PM2.5 monitoring sites across China, with sensor-count and mode-count ablations (relevant to E06 and E08).\nMano et al. (2022) solve air-pollution sensor location–allocation with information theory; Krause et al. (2008) give near-optimal mutual-information placement for Gaussian processes with submodularity guarantees. Both inform the information criteria in E06/E07 and robust placement (E15). Note that the greedy guarantees need not hold with a binding spacing constraint (gate-06).\nChoi and Hummel (2025) place low-cost PM2.5 sensors by value of information with multimodal data fusion. It is the closest low-cost-network analogue to PRAVAH’s question (E07, E11, E15). (The literature map lists it as 2026; the publisher record gives 2025.)\nBartos and Kerkez (2021) use observability-based placement for contaminant tracing in river networks: the control-theoretic view behind E04/E05 (observability over time) and E11.\n\nSequential estimation (plan 2 E09–E11).\n\nRoy et al. (2018) combine a kriged Kalman filter with sparsity-enforcing placement.\nZheng et al. (2009) update the state and parameters of an atmospheric dispersion model online with an ensemble Kalman filter (listed as enkf2009 in the literature map).\nSharma et al. (2019) estimate contaminant distributions from sparse sensors with a Perron–Frobenius operator and EnKF.\nCheng and Paley (2022) estimate a 2-D advection–diffusion process with mobile sensors and optimal guidance.\nRaanes et al. (2024) (DAPPER) is the planned reference implementation for data-assimilation cross-checks.\n\nMeteorological uncertainty (plan 3).\n\nWebster and Thomson (2022) treat meteorological uncertainty in Bayesian volcanic-ash inversion with ensemble meteorology: the template for E12 (wind mismatch) and E14 (calibration).\nMues et al. (2018) simulate meteorology and black carbon in the Kathmandu Valley with WRF/WRF-Chem: context for the optional regional case (E17).\n\nNot cited. The literature map also lists a gradient-based mutual-information placement repository (Patel et al., 2026, GitHub only); it has no verifiable bibliographic record and is treated as unverified. Data products (ERA5, FIRMS, WorldPop) concern the optional regional case and are not used in this report.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Background and starting literature</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/00-background.html#the-gap-pravah-addresses",
+    "href": "chapters/00-background.html#the-gap-pravah-addresses",
+    "title": "1  Background and starting literature",
+    "section": "1.3 The gap PRAVAH addresses",
+    "text": "1.3 The gap PRAVAH addresses\nPlacement studies usually score a design on the same information criterion that chose it, or on in-sample reconstruction. PRAVAH asks whether a design chosen from training winds still helps on held-out winds, with noisy sensors and several unknown sources, judged by a forecast endpoint fixed before the data were seen.\n\n\n\n\nBartos, Matthew, and Branko Kerkez. 2021. “Observability-Based Sensor Placement Improves Contaminant Tracing in River Networks.” Water Resources Research, ahead of print. https://doi.org/10.1029/2020WR029551.\n\n\nBhardwaj, Ankit, and Lakshminarayanan Subramanian. 2026. Identifiability-Aware Source Apportionment in City-Scale Advection-Diffusion Systems. https://arxiv.org/abs/2608.00050.\n\n\nCheng, Sheng, and Derek A. Paley. 2022. “Optimal Guidance and Estimation of a 2D Diffusion–Advection Process by a Team of Mobile Sensors.” Automatica, ahead of print. https://doi.org/10.1016/j.automatica.2021.110112.\n\n\nChoi, Byeongseong, and Michelle A. Hummel. 2025. “Optimal Sensor Placement in Low-Cost PM2.5 Sensor Networks Using Value of Information and Multimodal Data Fusion.” Environmental Research Letters, ahead of print. https://doi.org/10.1088/1748-9326/ae2b89.\n\n\nGreen, Kary. 2006. “Optimal Sensor Placement for Parameter Identification.” Master’s thesis, Rice University. https://repository.rice.edu/items/4d4b4f81-1c4b-4362-8513-685eac332c7c.\n\n\nKarnik, Niharika, Yash Bhangale, Mohammad G. Abdo, et al. 2026. “PySensors 2.0: A Python Package for Sparse Sensor Placement.” Journal of Open Source Software, ahead of print. https://doi.org/10.21105/joss.09265.\n\n\nKrause, Andreas, Ajit Pratap Singh, and Carlos Guestrin. 2008. “Near-Optimal Sensor Placements in Gaussian Processes: Theory, Efficient Algorithms and Empirical Studies.” Journal of Machine Learning Research 9. https://www.jmlr.org/papers/v9/krause08a.html.\n\n\nMano, Ziv, Shai Kendler, and Barak Fishbain. 2022. “Information Theory Solution Approach to the Air Pollution Sensor Location–Allocation Problem.” Sensors, ahead of print. https://doi.org/10.3390/s22103808.\n\n\nManohar, Krithika, Bingni W. Brunton, J. Nathan Kutz, and Steven L. Brunton. 2018. “Data-Driven Sparse Sensor Placement for Reconstruction: Demonstrating the Benefits of Exploiting Known Patterns.” IEEE Control Systems, ahead of print. https://doi.org/10.1109/MCS.2018.2810460.\n\n\nMons, Vincent, Luca Margheri, Jean-Camille Chassaing, and Pierre Sagaut. 2017. “Data Assimilation-Based Reconstruction of Urban Pollutant Release Characteristics.” Journal of Wind Engineering and Industrial Aerodynamics, ahead of print. https://doi.org/10.1016/j.jweia.2017.07.007.\n\n\nMues, Andrea, Axel Lauer, Aurelia Lupaşcu, Maheswar Rupakheti, Friderike Kuik, and M. G. Lawrence. 2018. “WRF and WRF-Chem V3.5.1 Simulations of Meteorology and Black Carbon Concentrations in the Kathmandu Valley.” Geoscientific Model Development 11: 2067. https://doi.org/10.5194/gmd-11-2067-2018.\n\n\nPennington, Elyse A., Yuan Wang, Benjamin C. Schulze, et al. 2024. “An Updated Modeling Framework to Simulate Los Angeles Air Quality – Part 1: Model Development, Evaluation, and Source Apportionment.” Atmospheric Chemistry and Physics 24: 2345. https://doi.org/10.5194/acp-24-2345-2024.\n\n\nRaanes, Patrick Nima, Yumeng Chen, and Colin Grudzien. 2024. “DAPPER: Data Assimilation with Python: A Package for Experimental Research.” Journal of Open Source Software, ahead of print. https://doi.org/10.21105/joss.05150.\n\n\nRoy, Venkat, Andrea Simonetto, and Geert J. T. Leus. 2018. “Spatio-Temporal Field Estimation Using Kriged Kalman Filter (KKF) with Sparsity-Enforcing Sensor Placement.” Sensors, ahead of print. https://doi.org/10.3390/s18061778.\n\n\nSchlutow, Mark, Ray Chew, and Mathias Goeckede. 2026. “The Boundary Layer Dispersion and Footprint Model: A Fast Numerical Solver of the Eulerian Steady-State Advection-Diffusion Equation.” Geoscientific Model Development 19: 6259. https://doi.org/10.5194/gmd-19-6259-2026.\n\n\nSharma, Himanshu, Umesh Vaidya, and Baskar Ganapathysubramanian. 2019. “Estimating Contaminant Distribution from Finite Sensor Data: Perron Frobenious Operator and Ensemble Kalman Filtering.” Building and Environment, ahead of print. https://doi.org/10.1016/j.buildenv.2019.05.026.\n\n\nSilva, Brian M. de, Krithika Manohar, Emily Clark, Bingni W. Brunton, J. Nathan Kutz, and Steven L. Brunton. 2021. “PySensors: A Python Package for Sparse Sensor Placement.” Journal of Open Source Software, ahead of print. https://doi.org/10.21105/joss.02828.\n\n\nWebster, Helen, and David J. Thomson. 2022. “Using Ensemble Meteorological Data Sets to Treat Meteorological Uncertainties in a Bayesian Volcanic Ash Inverse Modeling System: A Case Study, Grímsvötn 2011.” Journal of Geophysical Research: Atmospheres, ahead of print. https://doi.org/10.1029/2022JD036469.\n\n\nZheng, Dongqin, J. K. C. Leung, and B. Y. Lee. 2009. “Online Update of Model State and Parameters of a Monte Carlo Atmospheric Dispersion Model by Using Ensemble Kalman Filter.” Atmospheric Environment, ahead of print. https://doi.org/10.1016/j.atmosenv.2009.01.014.\n\n\nZhou, Chenhong, Meng Chun Gao, Jianjun Li, et al. 2022. “Optimal Planning of Air Quality-Monitoring Sites for Better Depiction of PM2.5 Pollution Across China.” ACS Environmental Au, ahead of print. https://doi.org/10.1021/acsenvironau.1c00051.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Background and starting literature</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/00-methods.html",
+    "href": "chapters/00-methods.html",
+    "title": "2  Methods",
+    "section": "",
+    "text": "2.1 Protocol in one page\nSources: docs/research/preregistered-protocol.md (approved baseline, 2026-11-12), docs/research/pde-and-discretization.md, docs/research/cross-objective-design.md, the decision files in state/decisions/, and configs/benchmark-v1.yaml.\nThe protocol (E00) fixes, before any test-period computation, the model, noise, factors, calendar split, held-out winds, one primary endpoint and the success/stop rules. The user approved it on 2026-11-12 as an amendable baseline: if a setting proves numerically infeasible it is amended with a decision file, never silently changed; changes to the primary endpoint or confirmatory claim go to the user. Confirmatory claims start with experiments designed after approval (E07 onward); E02–E06 are exploratory.\nPrimary endpoint. Held-out, pre-assimilation, one-hour-ahead field-forecast RMSE over all grid cells and test issue times (first 6 h excluded), against the noise-free truth. Primary hypothesis: an optimised network of N ≥ 8 sensors reduces this RMSE relative to random placement by at least 10 %; supported if the 95 % paired-bootstrap CI is above 10 % in ≥ 70 % of N ≥ 8 cells, contradicted if below in ≥ 70 %, otherwise unresolved (including cells not run). Secondary endpoints: source RMSE, post-analysis field RMSE, calibration, synthetic population-weighted error.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Methods</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/00-methods.html#protocol-in-one-page",
+    "href": "chapters/00-methods.html#protocol-in-one-page",
+    "title": "2  Methods",
+    "section": "",
+    "text": "Item\nSetting\n\n\n\n\nDomain\n10 km × 10 km, 64 × 64 cells (32² and 128² for convergence checks / pilots)\n\n\nPhysics\nK = 50 m² s⁻¹; λ = 1/(12 h); mixing depth H = 500 m; uniform, hourly-piecewise wind 0.5–5 m s⁻¹\n\n\nBoundaries\ninflow: c = c_bg; outflow: zero diffusive gradient; 48 h spin-up from c_bg\n\n\nSources\nK ∈ {2, 4, 8} Gaussian area sources (σ = 400 m, truncated at 3σ = 1200 m), known locations, unknown non-negative strengths a_k ~ LogUniform(0.5, 5)·a_ref, a_ref = 1 g s⁻¹ (A1)\n\n\nBackground\nuniform 5 µg m⁻³ (known in the base case)\n\n\nSensors\n16 × 16 interior candidate lattice, 1.25 km minimum spacing, budget N (k) ∈ {2, 4, 8, 16, 32}\n\n\nNoise\nwhite σ = 0.05 × median training truth at candidates (≈ 0.25 µg m⁻³); AR(1) ρ = 0.8 and per-site variants\n\n\nCalendar\n60 days hourly: train 1–30, validation 31–42, test 43–60 (single use)\n\n\nWinds\ntraining: steady westerly, veering, weak/variable; held-out test: steady southerly, stagnation then front, diurnal rotation\n\n\nSeeds\ntruth 1000+s, noise 2000+s, placement 3000+s, bootstrap 4000",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Methods</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/00-methods.html#forward-model-and-numerics",
+    "href": "chapters/00-methods.html#forward-model-and-numerics",
+    "title": "2  Methods",
+    "section": "2.2 Forward model and numerics",
+    "text": "2.2 Forward model and numerics\nThe PDE is\n\\[\\frac{\\partial c}{\\partial t} + \\mathbf u(t)\\cdot\\nabla c = \\nabla\\cdot(K\\nabla c) - \\lambda\\,(c - c_{bg}) + S(x,y,t),\\qquad S = \\frac{1}{H}\\sum_k a_k\\,\\phi_k(x,y),\\]\nsolved with FiPy finite volumes. Diffusion and removal are implicit (backward Euler).\n\nOriginal scheme (protocol §3): implicit first-order upwind advection, dt = 300 s. Verified at first order with mass conserved to ~1e-14 (E01), and kept for all 32² smoke work.\nAmendment A2 (2026-11-12): at 64² upwind’s effective diffusivity is 350–2900 m² s⁻¹ against the physical 50, and it fails the dt-halving gate at every dt. FiPy’s VanLeer term is explicit and, unsplit, anti-diffusive across oblique winds (missing cross term). PRAVAH therefore applies VanLeer dimensionally split (x advection, then y advection with diffusion, removal and source) at dt = 30 s. Result: K_eff 49.7–50.9, order ≈ 2, dt-halving change 0.54–0.71 % (gate ≤ 1 %), mass to 1e-15, no negative values; cost ≈ 17× upwind. The limiter makes the scheme ~1 % non-linear, so per-source responses carry a small superposition error (see E07 for its measured impact). Evidence: docs/research/gates/b3-advection-scheme.md, state/decisions/2026-11-12-advection-scheme.md.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Methods</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/00-methods.html#benchmark",
+    "href": "chapters/00-methods.html#benchmark",
+    "title": "2  Methods",
+    "section": "2.3 Benchmark",
+    "text": "2.3 Benchmark\npravah.benchmarks generates truth, sensor readings and split manifests deterministically from seeds, with a leakage guard: placement and tuning code cannot read test-period data, evaluation cannot read non-test data, and inference views never contain truth fields (E02: 65 checks). Truth and sensor noise are shared across designs, so all comparisons are paired.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Methods</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/00-methods.html#linear-sourcereceptor-operator",
+    "href": "chapters/00-methods.html#linear-sourcereceptor-operator",
+    "title": "2  Methods",
+    "section": "2.4 Linear source–receptor operator",
+    "text": "2.4 Linear source–receptor operator\nBecause the PDE is linear in the sources (exactly for upwind, to ~1 % for split VanLeer), readings are\n\\[y = c_{bg} + G\\,a + \\varepsilon,\\]\nwhere column k of G is the response at the chosen sensors and hours to a unit source k, built from the same solver, winds and spin-up as the truth (a perfect model). Rows stack sensors × hours of the estimator window.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Methods</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/00-methods.html#estimators",
+    "href": "chapters/00-methods.html#estimators",
+    "title": "2  Methods",
+    "section": "2.5 Estimators",
+    "text": "2.5 Estimators\n\nNNLS (E03): weighted non-negative least squares on whitened G, optionally with a fixed ridge and a background nuisance.\nMAP / ridge (E05, E07 primary): â = argmin ‖(y − c_bg − Ga)/σ‖² + ‖a/a_ref‖², a Gaussian prior with sd a_ref, over a window ending at the issue time (24 h in E07). E07’s secondary NNLS was within ~0.05 of MAP in the pilot.\nForecast (E07): ĉ(t+1) = c_bg + Σ_k â_k(t) F_k(t+1) with F_k the full-grid unit response under the known wind. This is a static-inverse forecast, not a filter (that is E09).",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Methods</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/00-methods.html#fisher-information-and-practical-rank",
+    "href": "chapters/00-methods.html#fisher-information-and-practical-rank",
+    "title": "2  Methods",
+    "section": "2.6 Fisher information and practical rank",
+    "text": "2.6 Fisher information and practical rank\nWith whitened responses A = a_ref·G/σ the Bayesian D-criterion is log det(I + AᵀA) (Green’s D-optimality plus a prior, so singular designs are comparable); A-criterion trace((I + AᵀA)⁻¹). Floating-point rank uses relative tolerance 1e-8. Because floating-point rank says nothing about noise, we use practical rank = the number of singular values s of G/σ with s·a_ref ≥ 1, i.e. the number of source combinations that a reference-sized change moves by at least one noise σ. This threshold was not preregistered and is lenient: gate-05 noted that practical rank ≥ 1 still allows ~100 % error per mode.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Methods</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/00-methods.html#placement-strategies",
+    "href": "chapters/00-methods.html#placement-strategies",
+    "title": "2  Methods",
+    "section": "2.7 Placement strategies",
+    "text": "2.7 Placement strategies\nAll strategies share the candidate set, budget k and 1250 m spacing rule, and see training hours only. What each design is allowed to know is declared (gate-06 condition 1):\n\n\n\n\n\n\n\n\nStrategy\nKnows\nRule\n\n\n\n\nrandom (10 networks)\nnothing\nseeded permutation\n\n\nuniform\nnothing\nregular layout\n\n\ncoverage\nnothing\nfarthest-point sampling\n\n\nsource_near\nsource locations\nnearest feasible sites, round robin — the locations-only control\n\n\nhotspot\nlocations + strength prior\ntop-k by prior-mean training anomaly\n\n\ndopt / aopt\nlocations + prior + σ\ngreedy Bayesian D / A, then 1-swap\n\n\nfieldvar\nsame\ngreedy posterior field-variance proxy, then 1-swap\n\n\ndiversity\nlocations + σ\nlow footprint coherence\n\n\npodqr\nlocations + strength prior + σ\nPOD of a prior-ensemble archive + QR pivots, noise-aware mode count fixed in advance",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Methods</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/00-methods.html#evaluation-contract",
+    "href": "chapters/00-methods.html#evaluation-contract",
+    "title": "2  Methods",
+    "section": "2.8 Evaluation contract",
+    "text": "2.8 Evaluation contract\n\nDesigns use training data only; estimators use observations up to the issue time only; truth is read only by the scorer.\nTest-period values are computed once per frozen configuration; a re-run after a change is an amendment.\nFailures (undefined designs, non-identifiable cases, all-zero estimates) are counted, never dropped.\nEach run records command, git revision, seeds, configuration, environment and job ID (reports/runs/runs.jsonl).\nEvery experiment gets an independent audit by a separate agent (docs/research/gates/). The auditors are the same model family as the authors, so independence is by task and re-derivation, not by a different reviewer.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Methods</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/00-methods.html#amendments",
+    "href": "chapters/00-methods.html#amendments",
+    "title": "2  Methods",
+    "section": "2.9 Amendments",
+    "text": "2.9 Amendments\n\n\n\n\n\n\n\n\n\n\nWhat changed\nWhy\nEffect\n\n\n\n\nA1 (2026-11-12, user approved)\na_ref 100 µg s⁻¹ → 1 g s⁻¹\nAt 100 µg/s per-sample SNR was ~1e-3: no sensor saw a plume (gate-00 B1; confirmed by E02–E05)\nAll E02–E05 numbers at 100 µg/s superseded for interpretation; the new value was chosen after seeing data, so E02–E06 at 1 g/s are exploratory\n\n\nA2 (2026-11-12, lead, user may override)\n64² runs: split VanLeer, dt 30 s (was upwind, dt 300 s)\nUpwind’s numerical diffusivity at 64² was 7–60× physical and failed dt-halving (gate-00 B3)\nE07 sweep onward; numerical gates unchanged; small superposition error recorded per scenario\n\n\n\nThe protocol approval itself (B2) is recorded in state/decisions/2026-11-12-protocol-approval.md.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Methods</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/e00-protocol.html",
+    "href": "chapters/e00-protocol.html",
+    "title": "3  E00 Protocol and evaluation contract",
+    "section": "",
+    "text": "3.1 Audit outcome (gate-00)\nQuestion. Can the endpoints, splits, seeds, held-out winds and success/stop rules be fixed before any data are seen, so that later claims cannot drift towards whatever looked good?\nWhat we did. Wrote the preregistered protocol (docs/research/preregistered-protocol.md), the reproducibility contract, a typed experiment configuration (src/pravah/experiment_config.py) and a literature map, then had them audited independently (docs/research/gates/gate-00-protocol.md). The protocol is summarised in the Methods chapter.\nResult. No numerical result; E00 produces rules. The single primary endpoint is the held-out one-hour-ahead field forecast RMSE; the primary hypothesis is a ≥ 10 % reduction against random placement for N ≥ 8.\nThe audit did not clear the protocol and named three blockers needing a human decision:",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>E00 Protocol and evaluation contract</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/e00-protocol.html#audit-outcome-gate-00",
+    "href": "chapters/e00-protocol.html#audit-outcome-gate-00",
+    "title": "3  E00 Protocol and evaluation contract",
+    "section": "",
+    "text": "B1 — signal far below noise. A back-of-envelope plume estimate (not a solver run) gave a centreline anomaly 5 km downwind of ~4e-5 to ~9e-4 µg m⁻³ against σ ≈ 0.25 µg m⁻³: per-sample SNR ~1e-3 to 4e-3. E02–E05 later confirmed this empirically.\nB2 — protocol unapproved. It was a draft; nothing downstream was binding.\nB3 — numerical gates possibly unachievable with first-order upwind at 64² (cell Péclet 9–16, numerical diffusion ~234–391 m² s⁻¹ from the spatial term alone against K = 50).",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>E00 Protocol and evaluation contract</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/e00-protocol.html#what-changed-because-of-the-audit",
+    "href": "chapters/e00-protocol.html#what-changed-because-of-the-audit",
+    "title": "3  E00 Protocol and evaluation contract",
+    "section": "3.2 What changed because of the audit",
+    "text": "3.2 What changed because of the audit\n\n\n\n\n\n\n\nBlocker\nResolution\n\n\n\n\nB1\nAmendment A1: a_ref = 1 g s⁻¹ (state/decisions/2026-11-12-source-scale.md), user approved\n\n\nB2\nProtocol approved 2026-11-12 as an amendable baseline (state/decisions/2026-11-12-protocol-approval.md)\n\n\nB3\nAmendment A2: split VanLeer at dt 30 s for 64² (state/decisions/2026-11-12-advection-scheme.md)",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>E00 Protocol and evaluation contract</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/e00-protocol.html#limitations",
+    "href": "chapters/e00-protocol.html#limitations",
+    "title": "3  E00 Protocol and evaluation contract",
+    "section": "3.3 Limitations",
+    "text": "3.3 Limitations\n\nA1 was chosen after seeing outcome data (an E05 rescaling), so results at 1 g/s from experiments designed before the approval are exploratory.\nApproval is “not a rigid freeze”: infeasible settings may be amended with a decision file. This is a deliberate trade-off and must be watched — each amendment is listed in Lessons and corrections.\nThe protocol’s known limitations (uniform wind, constant K, known source locations, ideal sensors, synthetic population) bound every later result.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>E00 Protocol and evaluation contract</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-forward.html",
+    "href": "chapters/01-forward.html",
+    "title": "4  E01 Forward-solver verification (local 16²/32²/64²)",
+    "section": "",
+    "text": "4.1 Grid convergence at constant Courant number\nQuestion. Does the FiPy solver solve the declared PDE accurately, conserve mass, and stay positive? Evidence label: verified (conditionally cleared by gate-01) for the closed-box/periodic oracles; superseded for 64² production runs by amendment A2 (section at the end).\nSimulated passive tracer only; nothing here is evidence about ambient PM2.5. All numbers below are read from tables/e01-verification.csv, written by scripts/e01_verification.py (one registered run) and rendered to markdown by tables/make_e01_md.py. References are the closed-form oracles of tests/test_forward_oracles.py; tolerances come from docs/research/pde-and-discretization.md §5 (order p = 1, margin 0.2, discrete-exact 1e-8), not from solver output.\nFinest-pair rule (order ≥ p − 0.2 = 0.8): 3 of 3 oracles pass.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>E01 Forward-solver verification (local 16²/32²/64²)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-forward.html#grid-convergence-at-constant-courant-number",
+    "href": "chapters/01-forward.html#grid-convergence-at-constant-courant-number",
+    "title": "4  E01 Forward-solver verification (local 16²/32²/64²)",
+    "section": "",
+    "text": "case\nn\ndt\nrel_l2\npeak_ratio\nmin_over_max\nmass_rel_err\n\n\n\n\ndiffusion_n16\n16\n120\n0.00659\n1.01\n0.223\n1.65e-15\n\n\ndiffusion_n32\n32\n60\n0.0021\n1\n0.223\n6.58e-14\n\n\ndiffusion_n64\n64\n30\n0.000758\n1\n0.224\n1.84e-13\n\n\nadvect_K20_n16\n16\n120\n0.0493\n0.939\n0.0953\n1.65e-16\n\n\nadvect_K20_n32\n32\n60\n0.0259\n0.966\n0.0853\n9.93e-16\n\n\nadvect_K20_n64\n64\n30\n0.0132\n0.983\n0.0792\n2.98e-15\n\n\nadvect_K200_n16\n16\n120\n0.0477\n0.941\n0.102\n8.27e-16\n\n\nadvect_K200_n32\n32\n60\n0.0252\n0.967\n0.0919\n1.65e-15\n\n\nadvect_K200_n64\n64\n30\n0.0129\n0.983\n0.0856\n2.32e-15\n\n\n\n\n\n\ncase\nobserved_order\nfloor\npasses\n\n\n\n\ndiffusion_16_32\n1.65\n0.8\nTrue\n\n\ndiffusion_32_64\n1.47\n0.8\nTrue\n\n\nadvect_K20_16_32\n0.928\n0.8\nTrue\n\n\nadvect_K20_32_64\n0.969\n0.8\nTrue\n\n\nadvect_K200_16_32\n0.924\n0.8\nTrue\n\n\nadvect_K200_32_64\n0.967\n0.8\nTrue",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>E01 Forward-solver verification (local 16²/32²/64²)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-forward.html#time-step-refinement-32²-fixed",
+    "href": "chapters/01-forward.html#time-step-refinement-32²-fixed",
+    "title": "4  E01 Forward-solver verification (local 16²/32²/64²)",
+    "section": "4.2 Time-step refinement (32² fixed)",
+    "text": "4.2 Time-step refinement (32² fixed)\n\n\n\ncase\ndt\ncourant\nrel_l2\npeak_ratio\n\n\n\n\ndiffusion_dt120\n120\n0\n0.00303\n1\n\n\ndiffusion_dt60\n60\n0\n0.0021\n1\n\n\ndiffusion_dt30\n30\n0\n0.00164\n1\n\n\ndiffusion_dt15\n15\n0\n0.00141\n1\n\n\nadvect_K20_dt120\n120\n0.768\n0.0321\n0.959\n\n\nadvect_K20_dt60\n60\n0.384\n0.0259\n0.966\n\n\nadvect_K20_dt30\n30\n0.192\n0.0227\n0.97\n\n\nadvect_K20_dt15\n15\n0.096\n0.0211\n0.972\n\n\n\nError falls with dt but plateaus at the spatial error; halving dt does not halve the total error because the fixed-grid error (numerical diffusion, central-diffusion truncation) is not removed by it.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>E01 Forward-solver verification (local 16²/32²/64²)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-forward.html#advection-dominated-sensitivity-32²-k-20-m²-s¹",
+    "href": "chapters/01-forward.html#advection-dominated-sensitivity-32²-k-20-m²-s¹",
+    "title": "4  E01 Forward-solver verification (local 16²/32²/64²)",
+    "section": "4.3 Advection-dominated sensitivity (32², K = 20 m² s⁻¹)",
+    "text": "4.3 Advection-dominated sensitivity (32², K = 20 m² s⁻¹)\n\n\n\ncase\nU\ncourant\npeclet\nrel_l2\npeak_ratio\nmin_over_max\n\n\n\n\nU1\n1\n0.192\n15.6\n0.0245\n0.973\n9.81e-05\n\n\nU2\n2\n0.384\n31.2\n0.0543\n0.939\n0.000138\n\n\nU4\n4\n0.768\n62.5\n0.124\n0.865\n0.000297\n\n\nU8\n8\n1.54\n125\n0.275\n0.726\n0.00102\n\n\n\nPeak ratio below 1 is numerical diffusion (peak smeared). min_over_max is the domain minimum over the maximum: it is positive in every row, so no negative overshoot was observed for first-order upwind with backward Euler, as predicted by the M-matrix argument (doc §5.5). This does not carry over to a higher-order scheme.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>E01 Forward-solver verification (local 16²/32²/64²)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-forward.html#mass-budget-closed-box-prescribed-forcing-32²",
+    "href": "chapters/01-forward.html#mass-budget-closed-box-prescribed-forcing-32²",
+    "title": "4  E01 Forward-solver verification (local 16²/32²/64²)",
+    "section": "4.4 Mass budget (closed box, prescribed forcing, 32²)",
+    "text": "4.4 Mass budget (closed box, prescribed forcing, 32²)\n\n\n\ncase\ngroup\nfinal_mass_g\nmax_rel_mass_err\n\n\n\n\nnoflux_theta10\nmass\n4.41e+05\n1.99e-14\n\n\n\nMaximum relative difference from the discrete-exact mass recurrence over the run; the preregistered tolerance is 1e-8.\n\n\n\nConvergence, mass budget, pulse profile and wind sensitivity",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>E01 Forward-solver verification (local 16²/32²/64²)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-forward.html#audit-outcome-gate-01",
+    "href": "chapters/01-forward.html#audit-outcome-gate-01",
+    "title": "4  E01 Forward-solver verification (local 16²/32²/64²)",
+    "section": "4.5 Audit outcome (gate-01)",
+    "text": "4.5 Audit outcome (gate-01)\nGate-01 conditionally cleared the solver for the three convergence oracles and three discrete-exact oracles on the closed-box/periodic verification set (36 tests re-run, all pass). It did not clear the study boundary conditions, the literal protocol §3 gates, or any physical claim, and it flagged that upwind numerical diffusion grows strongly with Courant/Péclet number (relative L2 error 0.025 → 0.27 for U = 1 → 8 m s⁻¹ at 32²).",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>E01 Forward-solver verification (local 16²/32²/64²)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-forward.html#amendment-a2-split-vanleer-for-64²",
+    "href": "chapters/01-forward.html#amendment-a2-split-vanleer-for-64²",
+    "title": "4  E01 Forward-solver verification (local 16²/32²/64²)",
+    "section": "4.6 Amendment A2: split VanLeer for 64²",
+    "text": "4.6 Amendment A2: split VanLeer for 64²\nThe gate-00 risk B3 materialised. At 64² upwind’s effective diffusivity is 350–2900 m² s⁻¹ against the physical K = 50 m² s⁻¹, and it fails the dt-halving gate at every dt tried (docs/research/gates/b3-advection-scheme.md). FiPy’s only higher-order convection term, VanLeerConvectionTerm, is explicit (unstable for Courant &gt; 1) and, unsplit, misses the cross term so that it is anti-diffusive along oblique winds (fitted K_eff,along = −16.3 m² s⁻¹ for a 3 m s⁻¹ diagonal wind at 64², dt 30 s). PRAVAH applies it dimensionally split at dt = 30 s:\n\n\n\n\n\n\n\n\nWind (64², puff σ₀ = 1 km, 1 h)\nupwind dt 300 s: K_eff (rel. L2)\nsplit VanLeer dt 30 s: K_eff (rel. L2)\n\n\n\n\n3 m s⁻¹ along x\n1371 (0.70)\n50.9 / 49.6 (0.0033)\n\n\n5 m s⁻¹ along x\n2933 (0.78)\n49.9 / 49.7 (0.0014)\n\n\n3 m s⁻¹ diagonal\n1407 / 208 (0.72)\n50.7 / 50.7 (0.0047)\n\n\n\n(Values along / across the wind, from the B3 note.) Split VanLeer converges at order ≈ 2, changes by 0.54–0.71 % on dt-halving (gate ≤ 1 %), conserves mass to 1e-15 and stays non-negative; it costs about 17× upwind (7.8 s per simulated hour at 64², serial). The lead reproduced K_eff independently (diagonal wind: upwind dt 300 s 1545 / 235, upwind dt 30 s 351 / 216, VanLeer dt 30 s 50.1 / 50.1). The limiter makes the scheme slightly non-linear (superposition error ~1 % in a two-blob test). Upwind remains the default and is bit-identical to the earlier code, so the 32² results in E02–E06 and the E07 pilot are unchanged.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>E01 Forward-solver verification (local 16²/32²/64²)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-forward.html#limitations",
+    "href": "chapters/01-forward.html#limitations",
+    "title": "4  E01 Forward-solver verification (local 16²/32²/64²)",
+    "section": "4.7 Limitations",
+    "text": "4.7 Limitations\n\nOnly the three convergence oracles, one mass case and uniform wind are covered; the study boundary mass budget is diagnostic only (doc §3), and the wind-reversal face-switch test (gate item 3) is not covered here.\nOracle (ii) uses the revised regime (doc §5.3); that revision was made after an earlier regime failed and has not been independently reviewed.\nSingle deterministic run, no seeds involved; the figure’s pulse snapshot is a 1-D cut, not a full 2-D snapshot.\nFindings from this chapter stay preliminary until an independent review.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>E01 Forward-solver verification (local 16²/32²/64²)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-benchmark.html",
+    "href": "chapters/02-benchmark.html",
+    "title": "5  E02 Tiny local benchmark: three hand-placed examples",
+    "section": "",
+    "text": "5.1 Examples\nQuestion. Can we generate reproducible synthetic truth, sensors and splits without leakage, and do sensors see the plumes? Evidence label: verified engineering at smoke scale; benchmark not frozen as a scientific benchmark. Current status: rerun at a_ref = 1 g s⁻¹ (amendment A1); the 65 checks still pass and peak plume SNR is 21–32.\nSimulated passive tracer only; nothing here is evidence about ambient PM2.5. Every number below is generated from tables/e02-checks.csv and tables/e02-splits.csv, written by scripts/e02_examples.py (one registered run). Scale is a smoke scale (32² grid, 12 h spin-up, 8-day calendar), not the preregistered 64² / 60-day design. Sources are placed by hand (the random draw is overridden); each example uses its own replicate seed because truth_id does not encode the fixed placement.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>E02 Tiny local benchmark: three hand-placed examples</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-benchmark.html#examples",
+    "href": "chapters/02-benchmark.html#examples",
+    "title": "5  E02 Tiny local benchmark: three hand-placed examples",
+    "section": "",
+    "text": "Rows: well-separated 2-source, collinear 2-source (along the steady wind), 4-source with veering wind. Columns: true emission density, true plume anomaly with candidate sensors and wind arrow, candidate-site time series, wind components.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>E02 Tiny local benchmark: three hand-placed examples</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-benchmark.html#split-and-manifest-versioning",
+    "href": "chapters/02-benchmark.html#split-and-manifest-versioning",
+    "title": "5  E02 Tiny local benchmark: three hand-placed examples",
+    "section": "5.2 Split and manifest versioning",
+    "text": "5.2 Split and manifest versioning\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nscenario\ntruth_id\nschema_version\nconfig_hash\ngit_sha\ntruth_seed\nnoise_seed\nsplit\ndays\nn_hours\nwind_regimes\nfitting_allowed\nevaluation_allowed\n\n\n\n\nseparated2\nTRUTH-31d2662fa14d\n1\nac3db6150354\nfe1cf2b54d\n1000\n2000\ntrain\n1-4\n96\nsteady_westerly\nveering\nTrue\n\n\nseparated2\nTRUTH-31d2662fa14d\n1\nac3db6150354\nfe1cf2b54d\n1000\n2000\nvalidation\n5-5\n24\nsteady_westerly\nTrue\nFalse\n\n\nseparated2\nTRUTH-31d2662fa14d\n1\nac3db6150354\nfe1cf2b54d\n1000\n2000\ntest\n6-8\n72\nsteady_southerly\nstagnation_then_front\nFalse\n\n\ncollinear2\nTRUTH-44e780feac05\n1\nec4f2f1be7b8\nfe1cf2b54d\n1001\n2001\ntrain\n1-4\n96\nsteady_westerly\nsteady_westerly\nTrue\n\n\ncollinear2\nTRUTH-44e780feac05\n1\nec4f2f1be7b8\nfe1cf2b54d\n1001\n2001\nvalidation\n5-5\n24\nsteady_westerly\nTrue\nFalse\n\n\ncollinear2\nTRUTH-44e780feac05\n1\nec4f2f1be7b8\nfe1cf2b54d\n1001\n2001\ntest\n6-8\n72\nsteady_southerly\nstagnation_then_front\nFalse\n\n\nchanging4\nTRUTH-2058de57d7ee\n1\nac3db6150354\nfe1cf2b54d\n1002\n2002\ntrain\n1-4\n96\nsteady_westerly\nveering\nTrue\n\n\nchanging4\nTRUTH-2058de57d7ee\n1\nac3db6150354\nfe1cf2b54d\n1002\n2002\nvalidation\n5-5\n24\nsteady_westerly\nTrue\nFalse\n\n\nchanging4\nTRUTH-2058de57d7ee\n1\nac3db6150354\nfe1cf2b54d\n1002\n2002\ntest\n6-8\n72\nsteady_southerly\nstagnation_then_front\nFalse",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>E02 Tiny local benchmark: three hand-placed examples</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-benchmark.html#validity-checks-passfail",
+    "href": "chapters/02-benchmark.html#validity-checks-passfail",
+    "title": "5  E02 Tiny local benchmark: three hand-placed examples",
+    "section": "5.3 Validity checks (pass/fail)",
+    "text": "5.3 Validity checks (pass/fail)\n56 of 56 gated checks passed.\n\n\n\n\n\n\n\n\n\nscenario\ncheck\nvalue\npassed\n\n\n\n\nseparated2\nsource rate integral matches sum(a) (rel err)\n0.00e+00\nTrue\n\n\nseparated2\nanomaly never negative (min, ug m^-3)\n0.00e+00\nTrue\n\n\nseparated2\nmass-budget outflow fraction in [0,1] (residual)\n0.922\nTrue\n\n\nseparated2\ntrain placement allowed\nok\nTrue\n\n\nseparated2\nvalidation tuning allowed\nok\nTrue\n\n\nseparated2\ntest evaluation allowed\nok\nTrue\n\n\nseparated2\ntest placement refused\nok\nTrue\n\n\nseparated2\ntest tuning refused\nok\nTrue\n\n\nseparated2\nvalidation evaluation refused\nok\nTrue\n\n\nseparated2\nheld-out wind in fitting refused\nok\nTrue\n\n\nseparated2\ninadmissible site refused\nok\nTrue\n\n\nseparated2\ntoo-close sites refused\nok\nTrue\n\n\nseparated2\ntrain/val/test hours disjoint\nok\nTrue\n\n\nseparated2\ntrain winds exclude held-out regimes\nok\nTrue\n\n\nseparated2\nview arrays read-only\nok\nTrue\n\n\nseparated2\nview exposes no truth/strength fields\nok\nTrue\n\n\nseparated2\nidentical truth and shared-site noise across two designs\nTrue\nTrue\n\n\ncollinear2\nsource rate integral matches sum(a) (rel err)\n1.86e-16\nTrue\n\n\ncollinear2\nanomaly never negative (min, ug m^-3)\n0.00e+00\nTrue\n\n\ncollinear2\nmass-budget outflow fraction in [0,1] (residual)\n0.892\nTrue\n\n\ncollinear2\ntrain placement allowed\nok\nTrue\n\n\ncollinear2\nvalidation tuning allowed\nok\nTrue\n\n\ncollinear2\ntest evaluation allowed\nok\nTrue\n\n\ncollinear2\ntest placement refused\nok\nTrue\n\n\ncollinear2\ntest tuning refused\nok\nTrue\n\n\ncollinear2\nvalidation evaluation refused\nok\nTrue\n\n\ncollinear2\nheld-out wind in fitting refused\nok\nTrue\n\n\ncollinear2\ninadmissible site refused\nok\nTrue\n\n\ncollinear2\ntoo-close sites refused\nok\nTrue\n\n\ncollinear2\ntrain/val/test hours disjoint\nok\nTrue\n\n\ncollinear2\ntrain winds exclude held-out regimes\nok\nTrue\n\n\ncollinear2\nview arrays read-only\nok\nTrue\n\n\ncollinear2\nview exposes no truth/strength fields\nok\nTrue\n\n\ncollinear2\nidentical truth and shared-site noise across two designs\nTrue\nTrue\n\n\nchanging4\nsource rate integral matches sum(a) (rel err)\n0.00e+00\nTrue\n\n\nchanging4\nanomaly never negative (min, ug m^-3)\n0.00e+00\nTrue\n\n\nchanging4\nmass-budget outflow fraction in [0,1] (residual)\n0.919\nTrue\n\n\nchanging4\ntrain placement allowed\nok\nTrue\n\n\nchanging4\nvalidation tuning allowed\nok\nTrue\n\n\nchanging4\ntest evaluation allowed\nok\nTrue\n\n\nchanging4\ntest placement refused\nok\nTrue\n\n\nchanging4\ntest tuning refused\nok\nTrue\n\n\nchanging4\nvalidation evaluation refused\nok\nTrue\n\n\nchanging4\nheld-out wind in fitting refused\nok\nTrue\n\n\nchanging4\ninadmissible site refused\nok\nTrue\n\n\nchanging4\ntoo-close sites refused\nok\nTrue\n\n\nchanging4\ntrain/val/test hours disjoint\nok\nTrue\n\n\nchanging4\ntrain winds exclude held-out regimes\nok\nTrue\n\n\nchanging4\nview arrays read-only\nok\nTrue\n\n\nchanging4\nview exposes no truth/strength fields\nok\nTrue\n\n\nchanging4\nidentical truth and shared-site noise across two designs\nTrue\nTrue\n\n\nall\nconfig JSON round-trip keeps hash\nok\nTrue\n\n\nall\ntruth_id stable under reload\nok\nTrue\n\n\nall\ntruth_id changes when physics config changes\nok\nTrue\n\n\nall\nschema_version recorded\nok\nTrue\n\n\nall\nthree distinct truth_ids\n3\nTrue\n\n\n\nThe checks cover source-rate/unit consistency, a mass-budget residual, positivity, leakage refusals (test data for placement/tuning, non-test data for evaluation, held-out wind in fitting, inadmissible or too-close sites), read-only inference views without truth fields, and identical truth and shared-site noise across two different sensor designs. The mass budget is a residual: the outflow is inferred as emitted − removed − stored change, with removal from an hourly trapezoid, so it checks plausibility (0 ≤ outflow ≤ emitted), not closure.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>E02 Tiny local benchmark: three hand-placed examples</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-benchmark.html#signal-against-noise",
+    "href": "chapters/02-benchmark.html#signal-against-noise",
+    "title": "5  E02 Tiny local benchmark: three hand-placed examples",
+    "section": "5.4 Signal against noise",
+    "text": "5.4 Signal against noise\n\n\n\n\n\n\n\n\nscenario\ncheck\nvalue\n\n\n\n\nseparated2\npeak plume anomaly over background (ug m^-3)\n5.32e+00\n\n\nseparated2\ninstrument noise sigma (ug m^-3)\n0.250\n\n\nseparated2\nSNR = peak anomaly / noise sigma (NEGATIVE RESULT if &lt;&lt; 1)\n2.13e+01\n\n\ncollinear2\npeak plume anomaly over background (ug m^-3)\n6.47e+00\n\n\ncollinear2\ninstrument noise sigma (ug m^-3)\n0.250\n\n\ncollinear2\nSNR = peak anomaly / noise sigma (NEGATIVE RESULT if &lt;&lt; 1)\n2.59e+01\n\n\nchanging4\npeak plume anomaly over background (ug m^-3)\n8.14e+00\n\n\nchanging4\ninstrument noise sigma (ug m^-3)\n0.255\n\n\nchanging4\nSNR = peak anomaly / noise sigma (NEGATIVE RESULT if &lt;&lt; 1)\n3.19e+01\n\n\n\nAt the originally preregistered reference rate (a_ref = 100 µg s⁻¹) the plume anomaly was about 10⁻³ of the instrument noise, and sensor readings carried no visible plume (negative result, kept in Git history at revision a36b476^). Following amendment A1 (state/decisions/2026-11-12-source-scale.md, a_ref = 1 g s⁻¹, everything else unchanged) the peak plume anomaly in these examples is the multiple of σ shown above. The noise σ barely changes because it is set at 5% of the median training concentration, which is dominated by the 5 µg m⁻³ background. The new scale was chosen after seeing the old results, so analyses that use it are exploratory until the protocol is frozen.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>E02 Tiny local benchmark: three hand-placed examples</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-benchmark.html#audit-outcome-gate-02",
+    "href": "chapters/02-benchmark.html#audit-outcome-gate-02",
+    "title": "5  E02 Tiny local benchmark: three hand-placed examples",
+    "section": "5.5 Audit outcome (gate-02)",
+    "text": "5.5 Audit outcome (gate-02)\nGate-02 conditionally cleared the smoke-scale pipeline as engineering (41 benchmark tests re-run; operator, truth vs forcing and leakage refusals checked) and did not clear freezing benchmark-v1 as a scientific benchmark. Its first decision for the human was the SNR problem (B1): at the preregistered scale the peak anomaly was ~1e-3 of σ, so “until decided, no E03 or placement result is interpretable”. That decision became amendment A1. Other open items (separate tuning/evaluation seeds, mismatch magnitudes, windowing, version constants in the hashed config) were partly absorbed by the protocol approval; the spin-up wind choice remains an unreviewed decision (E02 journal).",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>E02 Tiny local benchmark: three hand-placed examples</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-benchmark.html#limitations",
+    "href": "chapters/02-benchmark.html#limitations",
+    "title": "5  E02 Tiny local benchmark: three hand-placed examples",
+    "section": "5.6 Limitations",
+    "text": "5.6 Limitations\n\nPerfect-model truth only; no imperfect-wind or mismatched-model variants; single replicate per example.\nSmall grid and short calendar; held-out wind regimes appear only in the test days.\nCollinearity ambiguity is set up geometrically but not quantified here (no response matrix or inverse); that belongs to the static-inverse experiment.\nMass check is a residual, not an independent closure; positivity is exactly zero minimum anomaly by construction of the anomaly solve.\nGenerator workaround from the truth-generator implementation (solving the anomaly with zero background) is inherited.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>E02 Tiny local benchmark: three hand-placed examples</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-inverse.html",
+    "href": "chapters/03-inverse.html",
+    "title": "6  E03 Static source-strength inverse (known wind)",
+    "section": "",
+    "text": "6.1 Design\nQuestion. With fixed (non-optimised) sensors, known wind and a perfect model, can a weighted non-negative inverse recover source strengths? Evidence label: exploratory; a negative result. Current status: rerun at a_ref = 1 g s⁻¹ (A1); the tables below are from that rerun (commit 04bbd28).\nHeadline. The weighted sensitivity matrix is rank-deficient (tolerance 1e-8) in all 648 fits, at both the old and the new source scale. Rank does not depend on scale, so the cause is structural: ≤ 8 fixed sensors and a 24 h window cannot separate the sources. For K = 2, two of three seeds put every sensor outside the plumes. The lever is sensor placement (E06/E07) and wind change (E05), not the estimator.\nSimulated passive tracer only; nothing here is evidence about ambient PM2.5. Every number below is generated from tables/e03-inversion.csv, tables/e03-estimates.csv, tables/e03-validity.csv and tables/e03-nonidentifiable.json, written by scripts/e03_inversion.py (one registered run) and rendered by tables/make_e03_md.py.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>E03 Static source-strength inverse (known wind)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-inverse.html#design",
+    "href": "chapters/03-inverse.html#design",
+    "title": "6  E03 Static source-strength inverse (known wind)",
+    "section": "",
+    "text": "Perfect model: the response matrix is built from the same transient solver, winds and spin-up as the hidden truth, so this measures the inverse problem only, not model mismatch. Source locations and shapes are known; the unknowns are the source strengths (nonnegative) and, in one arm, a constant background.\nSmoke scale (32² grid, 12 h spin-up, one 24 h window of hourly readings), not the preregistered 64² / 60-day design. Three replicate seeds per cell; each seed has its own truth and its own noise stream.\nSources K ∈ {2, 4, 8}, sensors ∈ {2, 4, 8} chosen by a fixed deterministic rule from the admissible candidate sites (not optimised).\nNoise levels. Three data-relative levels set σ₀ to a fixed fraction r of the rms noise-free anomaly at the chosen sensors, with per-site σ varying by a factor up to 9 (heteroscedastic, so weighting is not a no-op). A fourth level is the preregistered homoscedastic noise (5% of the median background-dominated truth), read through the leak-checked inference view; there weighting and no weighting are mathematically identical.\nEstimators: unweighted NNLS, noise-weighted NNLS, noise-weighted ridge NNLS (one fixed relative ridge, chosen before any run, not tuned); each with the background known (subtracted) or estimated as a sign-free nuisance coefficient.\nScores: source relative RMSE (‖â − a‖/‖a‖), field RMSE over the whole grid and window against the noise-free truth anomaly (compared with the RMSE of the all-zero estimate), measurement fit (rms of residual over true σ; about 1 when the model and noise are consistent), and identifiability diagnostics (rank and conditioning of the weighted sensitivity matrix at relative tolerance 1e-8, and the fraction of sources whose local Cramér–Rao standard deviation is at most half the true strength). The CRB is an unconstrained local approximation. No pass/fail threshold on error was preregistered for this experiment, so none is applied; outcomes are described, not graded.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>E03 Static source-strength inverse (known wind)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-inverse.html#validity-checks-on-the-operator",
+    "href": "chapters/03-inverse.html#validity-checks-on-the-operator",
+    "title": "6  E03 Static source-strength inverse (known wind)",
+    "section": "6.2 Validity checks on the operator",
+    "text": "6.2 Validity checks on the operator\n\n\n\n\n\n\n\n\nscenario\ncheck\nvalue\n\n\n\n\nK2_s0\nG,F reproduce hidden truth anomaly on the whole grid (rel err)\n4.9e-06\n\n\nK2_s0\nG equals sensitivity.scenario_response_matrix (max abs diff)\n0\n\n\nK2_s1\nG,F reproduce hidden truth anomaly on the whole grid (rel err)\n6.9e-06\n\n\nK2_s2\nG,F reproduce hidden truth anomaly on the whole grid (rel err)\n7.4e-06\n\n\nK4_s0\nG,F reproduce hidden truth anomaly on the whole grid (rel err)\n4.9e-06\n\n\nK4_s1\nG,F reproduce hidden truth anomaly on the whole grid (rel err)\n8.4e-06\n\n\nK4_s2\nG,F reproduce hidden truth anomaly on the whole grid (rel err)\n6.9e-06\n\n\nK8_s0\nG,F reproduce hidden truth anomaly on the whole grid (rel err)\n8.7e-06\n\n\nK8_s1\nG,F reproduce hidden truth anomaly on the whole grid (rel err)\n3.8e-06\n\n\nK8_s2\nG,F reproduce hidden truth anomaly on the whole grid (rel err)\n5.9e-06",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>E03 Static source-strength inverse (known wind)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-inverse.html#main-results-weighted-nnls-background-known-mean-min-max-over-three-seeds",
+    "href": "chapters/03-inverse.html#main-results-weighted-nnls-background-known-mean-min-max-over-three-seeds",
+    "title": "6  E03 Static source-strength inverse (known wind)",
+    "section": "6.3 Main results (weighted NNLS, background known; mean [min, max] over three seeds)",
+    "text": "6.3 Main results (weighted NNLS, background known; mean [min, max] over three seeds)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nK\nsensors\nnoise level\nSNR (rms signal / sigma0)\nrank of weighted G\nsource relative RMSE\nfield RMSE / zero-estimate RMSE\nmeasurement fit (rms of residual / sigma)\nCRB fraction\noutcome (3 seeds)\n\n\n\n\n2\n2\nr=0.01\n0.71\n1 [1, 1]\n0.99 [0.96, 1]\n0.94 [0.83, 1]\n0.93 [0.81, 1]\n0\n3 non_identifiable\n\n\n2\n2\nr=0.1\n0.071\n1 [1, 1]\n3.6e+03 [1, 1.1e+04]\n3.6e+03 [1, 1.1e+04]\n0.91 [0.81, 1]\n0\n3 non_identifiable\n\n\n2\n2\nr=1\n0.0071\n1 [1, 1]\n7.3e+25 [1, 2.2e+26]\n1e+26 [1, 3e+26]\n1 [0.95, 1.1]\n0\n3 non_identifiable\n\n\n2\n2\nprereg\n0.0064\n1 [1, 1]\n4.9e+04 [1, 1.5e+05]\n4.9e+04 [1, 1.5e+05]\n1.1 [1.1, 1.1]\n0\n3 non_identifiable\n\n\n2\n4\nr=0.01\n0.5\n1 [1, 1]\n2.3e+24 [1.3e+02, 7e+24]\n3.2e+24 [1.3e+02, 9.5e+24]\n0.99 [0.94, 1]\n0\n3 non_identifiable\n\n\n2\n4\nr=0.1\n0.05\n1 [1, 1]\n1 [1, 1]\n1 [1, 1]\n0.96 [0.91, 1]\n0\n3 non_identifiable\n\n\n2\n4\nr=1\n0.005\n1 [1, 1]\n3.4e+26 [1, 1e+27]\n4.7e+26 [1, 1.4e+27]\n0.96 [0.91, 1]\n0\n3 non_identifiable\n\n\n2\n4\nprereg\n0.0045\n1 [1, 1]\n4.9e+04 [1, 1.5e+05]\n4.9e+04 [1, 1.5e+05]\n1 [1, 1.1]\n0\n3 non_identifiable\n\n\n2\n8\nr=0.01\n27\n1 [1, 1]\n5.6e+23 [2.2e+07, 1.7e+24]\n7.7e+23 [2.2e+07, 2.3e+24]\n1 [1, 1.1]\n0\n3 non_identifiable\n\n\n2\n8\nr=0.1\n2.7\n1 [1, 1]\n7.1e+13 [0.96, 2.1e+14]\n6.6e+13 [0.83, 2e+14]\n0.98 [0.97, 1]\n0\n3 non_identifiable\n\n\n2\n8\nr=1\n0.27\n1 [1, 1]\n2.3e+26 [1, 7e+26]\n3.2e+26 [1, 9.6e+26]\n0.96 [0.9, 1]\n0\n3 non_identifiable\n\n\n2\n8\nprereg\n0.24\n1 [1, 1]\n1.1e+17 [1, 3.2e+17]\n9.1e+16 [1, 2.7e+17]\n1 [1, 1]\n0\n3 non_identifiable\n\n\n4\n2\nr=0.01\n32\n1.7 [1, 2]\n2.7e+18 [0.19, 8.2e+18]\n2.1e+18 [0.19, 6.2e+18]\n0.99 [0.93, 1.1]\n0\n3 non_identifiable\n\n\n4\n2\nr=0.1\n3.2\n1.7 [1, 2]\n8.9e+18 [0.19, 2.7e+19]\n6.8e+18 [0.19, 2e+19]\n1 [0.97, 1.1]\n0\n3 non_identifiable\n\n\n4\n2\nr=1\n0.32\n1.7 [1, 2]\n0.73 [0.2, 1]\n0.73 [0.2, 1]\n1.1 [0.97, 1.2]\n0\n3 non_identifiable\n\n\n4\n2\nprereg\n0.68\n1.7 [1, 2]\n5.2e+19 [0.22, 1.5e+20]\n3.9e+19 [0.22, 1.2e+20]\n0.99 [0.92, 1.1]\n0\n3 non_identifiable\n\n\n4\n4\nr=0.01\n38\n1.7 [1, 2]\n5.2e+24 [6.7e+12, 1.6e+25]\n3.1e+24 [6.9e+12, 9.2e+24]\n0.99 [0.93, 1]\n0\n3 non_identifiable\n\n\n4\n4\nr=0.1\n3.8\n1.7 [1, 2]\n2.5e+18 [22, 7.6e+18]\n1.9e+18 [22, 5.8e+18]\n0.94 [0.83, 0.99]\n0\n3 non_identifiable\n\n\n4\n4\nr=1\n0.38\n1.7 [1, 2]\n6.2e+14 [0.92, 1.9e+15]\n6.4e+14 [0.79, 1.9e+15]\n1 [0.97, 1]\n0\n3 non_identifiable\n\n\n4\n4\nprereg\n0.59\n1.7 [1, 2]\n4.3e+19 [0.22, 1.3e+20]\n3.3e+19 [0.22, 9.8e+19]\n0.99 [0.92, 1.1]\n0\n3 non_identifiable\n\n\n4\n8\nr=0.01\n39\n2 [1, 3]\n2.7e+18 [1.5e+05, 8.2e+18]\n2.1e+18 [1.4e+05, 6.2e+18]\n1 [0.95, 1]\n0\n3 non_identifiable\n\n\n4\n8\nr=0.1\n3.9\n2 [1, 3]\n4.8e+18 [0.13, 1.4e+19]\n3.6e+18 [0.12, 1.1e+19]\n0.99 [0.94, 1]\n0\n3 non_identifiable\n\n\n4\n8\nr=1\n0.39\n2 [1, 3]\n2.4e+19 [0.25, 7.1e+19]\n1.6e+19 [0.24, 4.7e+19]\n0.97 [0.92, 1]\n0\n3 non_identifiable\n\n\n4\n8\nprereg\n0.55\n2 [1, 3]\n4.3e+19 [0.17, 1.3e+20]\n3.3e+19 [0.16, 9.8e+19]\n0.99 [0.94, 1]\n0\n3 non_identifiable\n\n\n8\n2\nr=0.01\n40\n1.7 [1, 2]\n1.5e+08 [24, 4.5e+08]\n1.5e+08 [27, 4.4e+08]\n0.99 [0.92, 1]\n0\n3 non_identifiable\n\n\n8\n2\nr=0.1\n4\n1.7 [1, 2]\n1.5e+08 [0.93, 4.5e+08]\n1.4e+08 [0.83, 4.3e+08]\n0.9 [0.86, 0.92]\n0\n3 non_identifiable\n\n\n8\n2\nr=1\n0.4\n1.7 [1, 2]\n3.2e+02 [0.95, 9.6e+02]\n2.7e+02 [0.82, 8.2e+02]\n1 [1, 1.1]\n0\n3 non_identifiable\n\n\n8\n2\nprereg\n1.3\n1.7 [1, 2]\n1.3e+08 [0.82, 3.9e+08]\n1.3e+08 [0.87, 3.8e+08]\n1 [0.91, 1.1]\n0\n3 non_identifiable\n\n\n8\n4\nr=0.01\n32\n2.3 [1, 3]\n4.3e+25 [1.3, 1.3e+26]\n1.6e+25 [1, 4.9e+25]\n0.99 [0.95, 1.1]\n0\n3 non_identifiable\n\n\n8\n4\nr=0.1\n3.2\n2.3 [1, 3]\n4.6e+25 [7.9, 1.4e+26]\n1.8e+25 [8.7, 5.3e+25]\n0.98 [0.93, 1]\n0\n3 non_identifiable\n\n\n8\n4\nr=1\n0.32\n2.3 [1, 3]\n5.3e+25 [0.9, 1.6e+26]\n2e+25 [0.89, 6.1e+25]\n0.98 [0.85, 1.1]\n0\n3 non_identifiable\n\n\n8\n4\nprereg\n1.1\n2.3 [1, 3]\n3.1e+25 [0.89, 9.3e+25]\n1.2e+25 [0.88, 3.5e+25]\n0.99 [0.97, 1]\n0\n3 non_identifiable\n\n\n8\n8\nr=0.01\n59\n3.3 [3, 4]\n1.2e+23 [1.3e+17, 2.4e+23]\n4.3e+22 [5.7e+16, 9.2e+22]\n1 [0.96, 1.1]\n0\n3 non_identifiable\n\n\n8\n8\nr=0.1\n5.9\n3.3 [3, 4]\n2e+23 [1e+17, 4.5e+23]\n7.4e+22 [4.6e+16, 1.7e+23]\n1 [0.97, 1]\n0\n3 non_identifiable\n\n\n8\n8\nr=1\n0.59\n3.3 [3, 4]\n2e+18 [1.3e+08, 5.8e+18]\n5.6e+17 [1.2e+08, 1.5e+18]\n0.98 [0.97, 1]\n0\n3 non_identifiable\n\n\n8\n8\nprereg\n1.9\n3.3 [3, 4]\n4.3e+23 [0.67, 1.3e+24]\n1.5e+23 [0.52, 4.4e+23]\n1 [0.99, 1.1]\n0\n3 non_identifiable\n\n\n\nAt noise level r=0.01 (mean SNR 30), 0 of 27 weighted known-background fits are full rank with a non-zero estimate.\nAt noise level r=0.1 (mean SNR 3), 0 of 27 weighted known-background fits are full rank with a non-zero estimate.\nAt noise level r=1 (mean SNR 0.3), 0 of 27 weighted known-background fits are full rank with a non-zero estimate.\nAt noise level prereg (mean SNR 0.71), 0 of 27 weighted known-background fits are full rank with a non-zero estimate.\nOver all 648 fits, 648 are non-identifiable at relative tolerance 1e-8 and 0 return an all-zero estimate.\nRank of the weighted sensitivity matrix (fits per K x sensors, deficit = K - rank): K=2, n=2: mean deficit 1; K=2, n=4: mean deficit 1; K=2, n=8: mean deficit 1; K=4, n=2: mean deficit 2.3; K=4, n=4: mean deficit 2.3; K=4, n=8: mean deficit 2; K=8, n=2: mean deficit 6.3; K=8, n=4: mean deficit 5.7; K=8, n=8: mean deficit 4.7.\nThe largest relative error seen is 1.1e+27; values far above 1 are noise amplified along a near-null direction, not recovery.\n\n\n\nEstimated against true source strengths for weighted NNLS with known background, one panel per sensor count, colour by noise level. Triangles are zero estimates plotted on a floor.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>E03 Static source-strength inverse (known wind)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-inverse.html#estimator-and-background-comparison",
+    "href": "chapters/03-inverse.html#estimator-and-background-comparison",
+    "title": "6  E03 Static source-strength inverse (known wind)",
+    "section": "6.4 Estimator and background comparison",
+    "text": "6.4 Estimator and background comparison\nPaired on identical data, restricted to cells where both fits are full rank with a non-zero estimate; a negative change is an improvement.\n\n\n\n\n\n\n\n\n\n\nnoise level\ncomparison (method minus baseline)\npaired cells (full rank, non-zero)\nmedian change in source relative RMSE\ncells where method is better\n\n\n\n\nr=0.01\nunweighted vs weighted (bg known)\n0\nn/a\nn/a\n\n\nr=0.01\nridge vs weighted (bg known)\n0\nn/a\nn/a\n\n\nr=0.01\nbg estimated vs known (weighted)\n0\nn/a\nn/a\n\n\nr=0.1\nunweighted vs weighted (bg known)\n0\nn/a\nn/a\n\n\nr=0.1\nridge vs weighted (bg known)\n0\nn/a\nn/a\n\n\nr=0.1\nbg estimated vs known (weighted)\n0\nn/a\nn/a\n\n\nr=1\nunweighted vs weighted (bg known)\n0\nn/a\nn/a\n\n\nr=1\nridge vs weighted (bg known)\n0\nn/a\nn/a\n\n\nr=1\nbg estimated vs known (weighted)\n0\nn/a\nn/a\n\n\nprereg\nunweighted vs weighted (bg known)\n0\nn/a\nn/a\n\n\nprereg\nridge vs weighted (bg known)\n0\nn/a\nn/a\n\n\nprereg\nbg estimated vs known (weighted)\n0\nn/a\nn/a",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>E03 Static source-strength inverse (known wind)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-inverse.html#failures-characterised",
+    "href": "chapters/03-inverse.html#failures-characterised",
+    "title": "6  E03 Static source-strength inverse (known wind)",
+    "section": "6.5 Failures, characterised",
+    "text": "6.5 Failures, characterised\n\n\n\nnoise level\nnon_identifiable\nrows\n\n\n\n\nr=0.01\n162\n162\n\n\nr=0.1\n162\n162\n\n\nr=1\n162\n162\n\n\nprereg\n162\n162\n\n\n\nNon-identifiable means the rank of the weighted sensitivity matrix is below the number of sources, so the data cannot determine the strengths; the estimate is then one member of a family and its error says nothing about the method. An all-zero estimate means the nonnegativity constraint set every strength to zero, which the protocol counts as a failure. Neither is tuned away.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>E03 Static source-strength inverse (known wind)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-inverse.html#intentionally-non-identifiable-case",
+    "href": "chapters/03-inverse.html#intentionally-non-identifiable-case",
+    "title": "6  E03 Static source-strength inverse (known wind)",
+    "section": "6.6 Intentionally non-identifiable case",
+    "text": "6.6 Intentionally non-identifiable case\nFour sources, two sensors, a single snapshot hour, noiseless. A nonnegative alternative strength vector is constructed along a null direction of the sensitivity matrix.\n\n\n\nquantity\nvalue\n\n\n\n\nrank of snapshot sensitivity\n2\n\n\nsources K\n4\n\n\nobservations\n2\n\n\nalternative: smallest coefficient (ug/s)\n3.3e+05\n\n\nalternative vs truth, relative distance\n3.1e+04\n\n\nalternative: relative data misfit\n1.6e-15\n\n\nalternative: relative field difference at that hour\n2.6e+04\n\n\nnoiseless NNLS: source relative error\n0.81\n\n\nnoiseless NNLS: relative data misfit\n6.5e-17\n\n\n\nThe alternative reproduces the readings to round-off while differing from the truth, and the whole-field difference shows that a non-identifiable source set does not give a determined field either.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>E03 Static source-strength inverse (known wind)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-inverse.html#limitations",
+    "href": "chapters/03-inverse.html#limitations",
+    "title": "6  E03 Static source-strength inverse (known wind)",
+    "section": "6.7 Limitations",
+    "text": "6.7 Limitations\n\nSmoke scale and perfect model only: no wind, diffusivity, removal or location error, single noise realisation per cell, three seeds, deterministic non-optimised sensor sites. No claim about generality or about the preregistered 64² design.\nThe tables use the amended source scale a_ref = 1 g s⁻¹ (A1), chosen after seeing data, so they are exploratory. The data-relative noise levels are chosen so the signal is visible; they are not the preregistered noise, which is reported separately. (Earlier text here describing the preregistered 100 µg s⁻¹ scale is superseded.)\nThe estimate is scored in-window on the analysis field, not as a held-out forecast, so it is not the primary endpoint.\nRank decisions depend on the 1e-8 relative tolerance; badly conditioned but nominally full-rank cells are not identifiable in practice, which the conditioning column shows.\nThe ridge strength is a single fixed value; no validation-based selection was run.\nSources whose plume barely reaches any chosen sensor give near-zero columns of the sensitivity matrix; unregularised NNLS can then assign them enormous strengths for negligible change in the readings. Errors many orders above 1 are this numerical effect, reported as observed and not clipped. The fixed, non-optimised sensor rule and 24 h window may be a main cause; sensor placement is a later experiment and was not varied here.\nThe run budget for this experiment was used up, so no redesign (different window, tolerance or sensor rule) was run after seeing these results.\nFindings from these runs stay preliminary.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>E03 Static source-strength inverse (known wind)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-inverse.html#audit-outcome-gate-03",
+    "href": "chapters/03-inverse.html#audit-outcome-gate-03",
+    "title": "6  E03 Static source-strength inverse (known wind)",
+    "section": "6.8 Audit outcome (gate-03)",
+    "text": "6.8 Audit outcome (gate-03)\nGate-03 found the code engineering-sound (23 tests pass) but did not clear the baseline for fair placement comparisons: no fit is full rank, so the estimator has no demonstrated recovery regime. It recommended a regime where rank = K is achievable (longer window, optimised sensors or larger source scale), a noise-referenced rank criterion, and validation-only ridge tuning. What changed: the source scale (A1), the noise-referenced practical rank used from E04 on, a prior-referenced ridge (MAP) in E05/E07, and optimised placement (E06/E07). The “identifiable recovery” half of the E03 hypothesis remains untested in this configuration.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>E03 Static source-strength inverse (known wind)</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-footprints.html",
+    "href": "chapters/04-footprints.html",
+    "title": "7  E04 Footprints, Fisher information and identifiability",
+    "section": "",
+    "text": "7.1 Design\nQuestion. Which source combinations can a sensor network actually distinguish, and does the singular spectrum of the stacked response predict this better than sensor count or coverage? Evidence label: exploratory (one scenario layout, one replicate). Current status: rerun at a_ref = 1 g s⁻¹ (A1, commit 04bbd28).\nHeadline. At the preregistered σ (0.253 µg m⁻³) the greedy D-optimal (“informative”) 4-sensor design reaches practical rank 4/4 under both winds; the coverage design 1 (westerly) or 2 (veering); the redundant design 2. Moving the source vector along the weakest mode changes the data by less than 1σ in 9 of 12 cases, all for non-informative designs. At the old 100 µg s⁻¹ scale the practical rank was 0/4 for every design (superseded).\nSimulated passive tracer only; nothing here is evidence about ambient PM2.5. Every number below is generated by scripts/e04_footprints.py (one registered run) into tables/e04-identifiability.csv, tables/e04-identifiability.md and tables/e04-results.md; the figure is figures/e04-footprints.png. Settings are in tables/e04-meta.json.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>E04 Footprints, Fisher information and identifiability</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-footprints.html#design",
+    "href": "chapters/04-footprints.html#design",
+    "title": "7  E04 Footprints, Fisher information and identifiability",
+    "section": "",
+    "text": "Smoke scale (32² grid, 12 h spin-up, 24 h window), perfect model, known source locations (four sources), two training wind regimes (steady westerly, veering). G is built from the truth’s own solver; no estimator sees the truth strengths except the counterexample below, where they define the “true vector”.\nThree 4-sensor designs, chosen from G and the admissible sites only: informative (greedy Bayesian D-optimal, prior sd equal to the reference rate), redundant (the four admissible sites nearest the first informative site that respect the minimum separation) and coverage (farthest-point spreading). Designs are chosen under the first wind and evaluated under both.\nPractical rank: the number of singular values s of G/σ with s·A_ref ≥ 1, i.e. the modes in which a reference-sized source change moves the data by at least one noise σ. This is our operationalisation of “rank at the preregistered noise scale”; it is not a preregistered threshold. Floating-point rank (relative tolerance 1e-8) is reported beside it.\nNoise scales: the preregistered σ, and an extra non-preregistered “information scale” σ (0.1 × rms reference signal over admissible sites). It was added when, at the old 100 µg s⁻¹ scale, no mode was above noise; it is a rescaling, not a realistic instrument.\nCounterexample: the true strength vector is moved along the weakest right singular vector of G/σ (nonnegativity kept, step at most half of ‖a‖). If the data change is below one σ, the two vectors fit equally well yet differ.\nEllipses are local 95% ellipses of the posterior covariance (Fisher plus a prior of sd A_ref), because the unregularised Fisher matrix is singular in several cases.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>E04 Footprints, Fisher information and identifiability</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-footprints.html#results",
+    "href": "chapters/04-footprints.html#results",
+    "title": "7  E04 Footprints, Fisher information and identifiability",
+    "section": "7.2 Results",
+    "text": "7.2 Results\nAt the preregistered noise sigma = 0.253 ug m^-3 the practical rank is [1, 2, 4] (values across the 6 wind/design cases) of K = 4 sources, although the floating-point rank (tol 1e-08) is [3, 4]. At the non-preregistered information scale sigma = 0.0258 ug m^-3 the practical rank is [2, 3, 4]. In 9 of 12 wind/design/noise cases a source vector moved by a median 0.5 of ||a|| along the weakest mode changes the data by less than one noise sigma (rms); the smallest and largest such data changes are 1.15e-10 and 14.1 sigma.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nwind\ndesign\nnoise\nsigma_ug_m3\nfloat_rank\npractical_rank\ns_min_scaled\ncoherence\nellipse_area_over_prior\ncx_rel_source_diff\ncx_data_diff_sigma\ncx_similar_fit_diff_source\n\n\n\n\nsteady_westerly\ninformative\nprereg\n0.253\n4\n4\n8.27\n0.476\n0.00865\n0.5\n1.43\nFalse\n\n\nsteady_westerly\ninformative\ninfo_scale\n0.0258\n4\n4\n81\n0.476\n9.11e-05\n0.5\n14.1\nFalse\n\n\nsteady_westerly\nredundant\nprereg\n0.253\n3\n2\n6.63e-10\n1\n0.15\n0.5\n1.15e-10\nTrue\n\n\nsteady_westerly\nredundant\ninfo_scale\n0.0258\n3\n2\n6.5e-09\n1\n0.0156\n0.5\n1.13e-09\nTrue\n\n\nsteady_westerly\ncoverage\nprereg\n0.253\n4\n1\n5.36e-05\n1\n0.247\n0.5\n9.3e-06\nTrue\n\n\nsteady_westerly\ncoverage\ninfo_scale\n0.0258\n4\n2\n0.000525\n1\n0.0233\n0.5\n9.11e-05\nTrue\n\n\nveering\ninformative\nprereg\n0.253\n4\n4\n5.32\n0.207\n0.0237\n0.5\n0.924\nTrue\n\n\nveering\ninformative\ninfo_scale\n0.0258\n4\n4\n52.2\n0.207\n0.000253\n0.5\n9.05\nFalse\n\n\nveering\nredundant\nprereg\n0.253\n3\n2\n5.72e-09\n1\n0.241\n0.5\n9.93e-10\nTrue\n\n\nveering\nredundant\ninfo_scale\n0.0258\n3\n2\n5.6e-08\n1\n0.0254\n0.5\n9.73e-09\nTrue\n\n\nveering\ncoverage\nprereg\n0.253\n4\n2\n0.1\n0.903\n0.3\n0.5\n0.0174\nTrue\n\n\nveering\ncoverage\ninfo_scale\n0.0258\n4\n3\n0.985\n0.903\n0.00679\n0.5\n0.171\nTrue\n\n\n\n\n\n\nTop: footprints for two winds and the response matrix of the informative design. Bottom: singular spectra scaled to noise units, 95% ellipses (informative vs redundant), and the counterexample data change.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>E04 Footprints, Fisher information and identifiability</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-footprints.html#audit-outcome-gate-04",
+    "href": "chapters/04-footprints.html#audit-outcome-gate-04",
+    "title": "7  E04 Footprints, Fisher information and identifiability",
+    "section": "7.3 Audit outcome (gate-04)",
+    "text": "7.3 Audit outcome (gate-04)\nGate-04 partly cleared E04. The Fisher/CRB machinery is correct in the linear-Gaussian interior case and conservative under the NNLS constraint, but badly miscalibrated when the noise model is wrong, and it cannot be evaluated for designs whose Fisher matrix is singular. The hypothesis (spectrum beats count or coverage) remained unresolved: one replicate, at the time at a scale where nothing was above noise. It also noted that the 1e-8 rank rule is applied to singular values in one place and eigenvalues in another. What changed: A1 rescaled the problem, the Bayesian (prior-regularised) D-criterion is used so singular designs stay comparable, and the paired-seed comparison moved to E06/E07.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>E04 Footprints, Fisher information and identifiability</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-footprints.html#limitations",
+    "href": "chapters/04-footprints.html#limitations",
+    "title": "7  E04 Footprints, Fisher information and identifiability",
+    "section": "7.4 Limitations",
+    "text": "7.4 Limitations\nOne scenario layout, one replicate, smoke scale, perfect model, local linear (Fisher) analysis, an ad hoc practical-rank threshold and a rescaled noise level. This does not yet test the hypothesis (spectrum versus sensor count or coverage) across seeds; that comparison remains unresolved here.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>E04 Footprints, Fisher information and identifiability</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/05-time.html",
+    "href": "chapters/05-time.html",
+    "title": "8  E05 Temporal observability: sensor count versus observation window",
+    "section": "",
+    "text": "8.1 Design (what was actually run)\nQuestion. When does a longer measurement history compensate for fewer sensors? Hypothesis (plan 2): changing wind directions raise the effective rank for constant sources, while repeated readings under the same transport only reduce noise. Evidence label: exploratory (v2, rerun after the gate-05 audit, commit c04a3a4).\nHeadline (v2).\nSimulated passive tracer only; nothing here is evidence about ambient PM2.5 or real exposure. Numbers are computed by scripts/e05_report.py from tables/e05-duration.csv, written by scripts/e05_duration.py (run records in reports/runs/runs.jsonl). Chapter generated at revision 770a6a7. Everything here is exploratory: the source scale (amendment A1, a_ref = 1e+06 µg s⁻¹, state/decisions/2026-11-12-source-scale.md), the constant-wind control and the analysis contrasts were chosen after seeing earlier E05 results and the independent audit (docs/research/gates/gate-05-duration.md).",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>E05 Temporal observability: sensor count versus observation window</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/05-time.html#design-what-was-actually-run",
+    "href": "chapters/05-time.html#design-what-was-actually-run",
+    "title": "8  E05 Temporal observability: sensor count versus observation window",
+    "section": "",
+    "text": "32² grid, 12 h spin-up, perfect model, known source locations and winds, ideal white sensors, 20 seeds (each seed changes sources, strengths, random nested sensor sites and noise draws; noise draws are identical across winds).\nSensors N ∈ {2, 4, 8} (random, nested, never optimised); sources K ∈ {2, 4}; window W ∈ {1, 6, 24, 168} h ending at the issue hour; readings per sensor m ∈ {1, 2, 4, 8, 16} spread over W (m = 1 is the reading at the issue hour; m &gt; W is not run).\nWinds: constant = exactly 3 m s⁻¹ from 270° (null control); drifting = the benchmark’s steady westerly, whose direction is re-drawn N(270°, 10°) every 48 h; changing = veering 270° → 315° during the first 12 h of each 48 h block. Drifting and changing share speed factors.\nUnknowns: Branch A p = K constant amplitudes; Branch B p = 3K diurnal coefficients (K = 2) while the true source is constant.\nNoise: preregistered σ (= 0.25 µg m⁻³ median) and a non-preregistered 0.1× level.\nEstimator: unconstrained MAP / ridge least squares with prior sd a_ref per coefficient (no positivity). Practical rank = number of singular values s of G/σ with s·a_ref ≥ 1 (a mode a reference-sized change moves by ≥ 1σ; lenient, see audit finding 7).",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>E05 Temporal observability: sensor count versus observation window</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/05-time.html#validation-checks",
+    "href": "chapters/05-time.html#validation-checks",
+    "title": "8  E05 Temporal observability: sensor count versus observation window",
+    "section": "8.2 Validation checks",
+    "text": "8.2 Validation checks\n\n\n\ncheck\nvalue\nbranch\n\n\n\n\nO4_constant_dup_rank_change\n0\nA\n\n\nO4_constant_dup_info_ratio_err\n0\nA\n\n\nO4_drifting_dup_rank_change\n0\nA\n\n\nO4_drifting_dup_info_ratio_err\n0\nA\n\n\nO4_changing_dup_rank_change\n0\nA\n\n\nO4_changing_dup_info_ratio_err\n0\nA\n\n\nO1_basis_b0_vs_branchA_rel_err\n0\nB\n\n\nO4_constant_dup_rank_change\n0\nB\n\n\nO4_constant_dup_info_ratio_err\n0\nB\n\n\nO4_drifting_dup_rank_change\n0\nB\n\n\nO4_drifting_dup_info_ratio_err\n0\nB\n\n\nO4_changing_dup_rank_change\n0\nB\n\n\nO4_changing_dup_info_ratio_err\n0\nB",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>E05 Temporal observability: sensor count versus observation window</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/05-time.html#results-branch-a-preregistered-σ",
+    "href": "chapters/05-time.html#results-branch-a-preregistered-σ",
+    "title": "8  E05 Temporal observability: sensor count versus observation window",
+    "section": "8.3 Results (Branch A, preregistered σ)",
+    "text": "8.3 Results (Branch A, preregistered σ)\n\n8.3.1 Window length at fixed readings per sensor (m = 4)\n\n\n\nwind\nK\nN\nW\nmean_prank\nfrac_full\nmedian_rel_err\n\n\n\n\nconstant\n2\n2\n6\n0.2\n0\n0.999\n\n\nconstant\n2\n2\n24\n0.2\n0\n0.989\n\n\nconstant\n2\n2\n168\n0.2\n0\n1\n\n\nconstant\n2\n4\n6\n0.55\n0.05\n0.827\n\n\nconstant\n2\n4\n24\n0.55\n0.05\n0.802\n\n\nconstant\n2\n4\n168\n0.55\n0.05\n0.844\n\n\nconstant\n2\n8\n6\n0.9\n0.2\n0.566\n\n\nconstant\n2\n8\n24\n0.9\n0.2\n0.554\n\n\nconstant\n2\n8\n168\n0.9\n0.2\n0.579\n\n\nconstant\n4\n2\n6\n0.45\n0\n0.992\n\n\nconstant\n4\n2\n24\n0.45\n0\n0.988\n\n\nconstant\n4\n2\n168\n0.45\n0\n0.991\n\n\nconstant\n4\n4\n6\n1.25\n0\n0.836\n\n\nconstant\n4\n4\n24\n1.25\n0\n0.839\n\n\nconstant\n4\n4\n168\n1.25\n0\n0.835\n\n\nconstant\n4\n8\n6\n1.85\n0\n0.693\n\n\nconstant\n4\n8\n24\n1.85\n0\n0.673\n\n\nconstant\n4\n8\n168\n1.85\n0\n0.661\n\n\ndrifting\n2\n2\n6\n0.35\n0.05\n0.994\n\n\ndrifting\n2\n2\n24\n0.35\n0.05\n0.994\n\n\ndrifting\n2\n2\n168\n0.4\n0.05\n0.975\n\n\ndrifting\n2\n4\n6\n0.65\n0.1\n0.488\n\n\ndrifting\n2\n4\n24\n0.65\n0.1\n0.542\n\n\ndrifting\n2\n4\n168\n0.75\n0.15\n0.579\n\n\ndrifting\n2\n8\n6\n1\n0.3\n0.423\n\n\ndrifting\n2\n8\n24\n1\n0.3\n0.416\n\n\ndrifting\n2\n8\n168\n1.15\n0.25\n0.394\n\n\ndrifting\n4\n2\n6\n0.75\n0\n0.978\n\n\ndrifting\n4\n2\n24\n0.75\n0\n0.973\n\n\ndrifting\n4\n2\n168\n0.65\n0\n0.966\n\n\ndrifting\n4\n4\n6\n1.3\n0\n0.778\n\n\ndrifting\n4\n4\n24\n1.3\n0\n0.764\n\n\ndrifting\n4\n4\n168\n1.55\n0\n0.775\n\n\ndrifting\n4\n8\n6\n2\n0\n0.706\n\n\ndrifting\n4\n8\n24\n2\n0\n0.678\n\n\ndrifting\n4\n8\n168\n2.2\n0.05\n0.519\n\n\nchanging\n2\n2\n6\n0.4\n0\n0.98\n\n\nchanging\n2\n2\n24\n0.6\n0.1\n0.906\n\n\nchanging\n2\n2\n168\n0.65\n0.1\n0.875\n\n\nchanging\n2\n4\n6\n0.5\n0\n0.895\n\n\nchanging\n2\n4\n24\n0.9\n0.15\n0.544\n\n\nchanging\n2\n4\n168\n0.85\n0.15\n0.56\n\n\nchanging\n2\n8\n6\n1\n0.15\n0.519\n\n\nchanging\n2\n8\n24\n1.2\n0.35\n0.383\n\n\nchanging\n2\n8\n168\n1.35\n0.4\n0.386\n\n\nchanging\n4\n2\n6\n0.75\n0\n0.866\n\n\nchanging\n4\n2\n24\n0.9\n0\n0.847\n\n\nchanging\n4\n2\n168\n0.95\n0\n0.822\n\n\nchanging\n4\n4\n6\n1.25\n0\n0.783\n\n\nchanging\n4\n4\n24\n1.55\n0\n0.766\n\n\nchanging\n4\n4\n168\n1.8\n0.05\n0.623\n\n\nchanging\n4\n8\n6\n1.9\n0.05\n0.696\n\n\nchanging\n4\n8\n24\n2.25\n0.1\n0.556\n\n\nchanging\n4\n8\n168\n2.4\n0.1\n0.542\n\n\n\n\n\n\nPractical rank and median source error versus window\n\n\n\n\n8.3.2 Does elapsed time help, or only new wind directions?\nPer seed: gain in practical rank from W = 6 h to 168 h (m = 4, averaged over K and N), and the difference between each varying wind and the constant control. 95 % CI: bootstrap over seeds; sign test over seeds.\n\n\n\n\n\n\n\n\n\n\n\n\ncontrast\nmean\nci_lo\nci_hi\nseeds_pos\nseeds_neg\nsign_p\n\n\n\n\nwindow gain under constant\n0\n0\n0\n0\n0\n1\n\n\nwindow gain under drifting\n0.108\n0.0333\n0.192\n9\n1\n0.0215\n\n\nwindow gain under changing\n0.367\n0.242\n0.492\n16\n1\n0.000275\n\n\ndrifting minus constant (DiD)\n0.108\n0.0417\n0.192\n9\n1\n0.0215\n\n\nchanging minus constant (DiD)\n0.367\n0.242\n0.492\n16\n1\n0.000275\n\n\n\nUnder the exactly constant wind the mean window gain is 0 (CI 0 to 0).\n\n\n\nWindow gain per seed by wind\n\n\n\n\n8.3.3 Fewer sensors over a longer window, at equal readings (N = 4, m = 2, W = 168 h vs N = 8 snapshot)\n\n\n\n\n\n\n\n\n\n\n\n\nwind\nK\nprank_N4_m2_W168\nprank_N8_snapshot\nseeds_pos\nseeds_neg\nsign_p\n\n\n\n\nconstant\n2\n0.4\n0.65\n1\n5\n0.219\n\n\nconstant\n4\n1.1\n1.55\n1\n9\n0.0215\n\n\ndrifting\n2\n0.7\n0.75\n2\n3\n1\n\n\ndrifting\n4\n1.4\n1.65\n2\n6\n0.289\n\n\nchanging\n2\n0.5\n0.55\n3\n4\n1\n\n\nchanging\n4\n1.6\n1.1\n9\n1\n0.0215\n\n\n\n\n\n8.3.4 Matched reading budget at W = 168 h, constant wind\n\n\n\nK\nB\nN\nm\nmean_prank\nmedian_rel_err\n\n\n\n\n2\n8\n2\n4\n0.2\n1\n\n\n2\n8\n4\n2\n0.4\n0.928\n\n\n2\n8\n8\n1\n0.65\n0.755\n\n\n2\n16\n2\n8\n0.3\n0.998\n\n\n2\n16\n4\n4\n0.55\n0.844\n\n\n2\n16\n8\n2\n0.75\n0.666\n\n\n2\n32\n2\n16\n0.35\n0.99\n\n\n2\n32\n4\n8\n0.55\n0.797\n\n\n2\n32\n8\n4\n0.9\n0.579\n\n\n4\n8\n2\n4\n0.45\n0.991\n\n\n4\n8\n4\n2\n1.1\n0.855\n\n\n4\n8\n8\n1\n1.55\n0.752\n\n\n4\n16\n2\n8\n0.5\n0.991\n\n\n4\n16\n4\n4\n1.25\n0.835\n\n\n4\n16\n8\n2\n1.75\n0.722\n\n\n4\n32\n2\n16\n0.6\n0.989\n\n\n4\n32\n4\n8\n1.25\n0.819\n\n\n4\n32\n8\n4\n1.85\n0.661\n\n\n\nPaired by seed:\n\n\n\nK\nB\ncomparison\nmean_diff\nseeds_pos\nseeds_neg\nsign_p\n\n\n\n\n2\n16\nN=8 vs N=4\n0.2\n6\n2\n0.289\n\n\n2\n16\nN=8 vs N=2\n0.45\n9\n1\n0.0215\n\n\n2\n16\nN=4 vs N=2\n0.25\n4\n0\n0.125\n\n\n2\n32\nN=8 vs N=4\n0.35\n7\n0\n0.0156\n\n\n2\n32\nN=8 vs N=2\n0.55\n11\n1\n0.00635\n\n\n2\n32\nN=4 vs N=2\n0.2\n4\n1\n0.375\n\n\n4\n16\nN=8 vs N=4\n0.5\n10\n1\n0.0117\n\n\n4\n16\nN=8 vs N=2\n1.25\n18\n0\n7.63e-06\n\n\n4\n16\nN=4 vs N=2\n0.75\n14\n0\n0.000122\n\n\n4\n32\nN=8 vs N=4\n0.6\n11\n0\n0.000977\n\n\n4\n32\nN=8 vs N=2\n1.25\n18\n0\n7.63e-06\n\n\n4\n32\nN=4 vs N=2\n0.65\n13\n0\n0.000244\n\n\n\n\n\n8.3.5 Basis branch B (p = 3K, true source constant)\n\n\n\nnoise_scale\nwind\np\nmean_prank\nmedian_rel_err_const\n\n\n\n\n0.1\nchanging\n6\n2.54\n9.98e+05\n\n\n0.1\nconstant\n6\n1.91\n1.09e+06\n\n\n0.1\ndrifting\n6\n2.24\n1.08e+06\n\n\n1\nchanging\n6\n1.3\n1.32e+06\n\n\n1\nconstant\n6\n0.956\n1.42e+06\n\n\n1\ndrifting\n6\n1.28\n1.31e+06\n\n\n\nPaired median ratio of B’s constant-component error to A’s error, same cell and noise draws:\n\n\n\nnoise_scale\nmedian ratio B/A\n\n\n\n\n0.1\n1.06\n\n\n1\n1",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>E05 Temporal observability: sensor count versus observation window</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/05-time.html#interpretation-kept-separate-from-the-observations",
+    "href": "chapters/05-time.html#interpretation-kept-separate-from-the-observations",
+    "title": "8  E05 Temporal observability: sensor count versus observation window",
+    "section": "8.4 Interpretation (kept separate from the observations)",
+    "text": "8.4 Interpretation (kept separate from the observations)\nThe hypothesis is that changing wind directions raise effective rank for constant sources, while repeated readings under the same transport only reduce noise. Read the window-gain table first: the constant-wind row isolates elapsed time, and the difference-in-differences rows isolate wind change. A gain under constant wind would contradict the second half of the hypothesis; a positive DiD supports the first. The equal-readings and matched-budget tables address the sensor-savings question without letting reading count stand in for window length. Practical rank ≥ 1 still allows roughly 100 % error per mode, so the median error columns matter as much as the rank columns.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>E05 Temporal observability: sensor count versus observation window</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/05-time.html#audit-outcome-gate-05",
+    "href": "chapters/05-time.html#audit-outcome-gate-05",
+    "title": "8  E05 Temporal observability: sensor count versus observation window",
+    "section": "8.5 Audit outcome (gate-05)",
+    "text": "8.5 Audit outcome (gate-05)\nGate-05: the computation is valid and reproduces bit-for-bit, the look-ahead guard and seed pairing are correct, but the v1 chapter was not cleared for interpretation (see the warning box). What changed in v2: an exactly constant wind as a null control, the drifting wind as a separate level, a prior-based ridge (sd a_ref) to stop blow-ups, medians instead of means, a fixed m = 4, seed as the unit with bootstrap and sign tests, and an equal-readings comparison. The audit judged the hypothesis unresolved with a positive exploratory signal for “wind change, not elapsed time, adds rank”; v2 strengthens that signal but stays exploratory because the contrasts were chosen after the audit.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>E05 Temporal observability: sensor count versus observation window</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/05-time.html#limitations",
+    "href": "chapters/05-time.html#limitations",
+    "title": "8  E05 Temporal observability: sensor count versus observation window",
+    "section": "8.6 Limitations",
+    "text": "8.6 Limitations\nRandom, not optimised, sites; synthetic perfect model; 32² grid; one random-site draw per seed; white noise only (no AR(1) arm); no held-out forecast or off-sensor field evaluation (the earlier in-sample field score was retired); the veering regime turns only during the first 12 h of each block; Branch B is K = 2 only. These results motivate, and do not replace, a preregistered E08.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>E05 Temporal observability: sensor count versus observation window</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/06-placement-methods.html",
+    "href": "chapters/06-placement-methods.html",
+    "title": "9  E06 Placement algorithms and their own objectives",
+    "section": "",
+    "text": "9.1 What was run\nSimulated passive tracer only; nothing here is evidence about ambient PM2.5. Every number below is generated by scripts/e06_placement.py into tables/e06-criteria.csv (one row per scenario × candidate set × design × budget) and the tables/e06-*.md fragments computed from it; settings and the code revision are in tables/e06-meta.json; the figure is figures/e06-designs.png. Objective definitions: docs/research/placement-objectives.md. Independently reviewed by gate-06 (docs/research/gates/gate-06-methods.md); see the audit section at the end.\nQuestion. Can we reproduce simple uniform, random, greedy information and POD/QR placements under shared candidate constraints? Evidence label: verified as a methods/reproduction step; all performance numbers are in-sample and exploratory.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>E06 Placement algorithms and their own objectives</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/06-placement-methods.html#what-was-run",
+    "href": "chapters/06-placement-methods.html#what-was-run",
+    "title": "9  E06 Placement algorithms and their own objectives",
+    "section": "",
+    "text": "Smoke scale (32² grid, 12 h spin-up, 4 training days), perfect model, ideal white sensors. Winds: steady westerly and veering (training regime). Two seeds × K ∈ {2, 4} sources from the benchmark draw. Budgets k ∈ {2, 4, 8}.\nScale: a_ref from amendment A1 (1 g/s), σ = each scenario’s preregistered noise sd.\nDesign inputs (training split only): sensitivities G over all 96 training hours (known source locations, the truth’s solver and winds); POD snapshots = noise-free field at all sites over the 96 training hours. Validation-split fields are used only to score field reconstruction; the test split is not read.\nTwo candidate sets: full = all admissible lattice sites (the 1250 m minimum spacing binds); small = admissible sites on every third lattice node (≤ 25 candidates, 1875 m apart, spacing never binds), where exhaustive search over all feasible k-subsets gives the gap of each greedy design to the optimum of its own objective.\nDesigns: uniform, random, coverage, source_near (baselines); dopt and aopt (greedy Bayesian D/A, prior sd a_ref); diversity (footprint coherence with an SNR ≥ 1 eligibility rule); podqr (POD/QR with the noise-aware mode count r_eff); podqr_num (exploratory, noise-unaware: numerical mode count).\nPractical rank: number of singular values s of G_S/σ with s·a_ref ≥ 1, over the 96 h training window.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>E06 Placement algorithms and their own objectives</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/06-placement-methods.html#results",
+    "href": "chapters/06-placement-methods.html#results",
+    "title": "9  E06 Placement algorithms and their own objectives",
+    "section": "9.2 Results",
+    "text": "9.2 Results\n8 scenarios, 370 design rows, total wall time 14.2 min (simulation 10.1 min). Preregistered sigma across scenarios: [0.25, 0.2502, 0.2512, 0.2515, 0.253] ug m^-3; a_ref = 1e+06 ug s^-1. Above-noise POD modes of the training snapshots r_eff = [0, 1, 2] (numerical rank r_num = [2, 3, 27, 28, 29]), so noise-aware POD/QR was defined in 2 of 48 design cases. On the small candidate set the greedy/QR designs reached the exhaustive optimum of their own objective in 69 of 87 evaluable cases; the largest absolute gap was 0.433 and the largest relative gap 0.0288. Practical rank at the preregistered sigma (full set) ranged 0-4 of 4 for K = 4 and 0-2 of 2 for K = 2, over all designs and budgets.\n\n9.2.1 Does each greedy design reach the optimum of its own objective? (small candidate set)\nGap = exhaustive optimum − design value (for coherence: design − optimum; smaller coherence is better). exact counts cases with gap ≤ 1e-9. Coherence gaps are absolute only.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ndesign\nown_criterion\nk\ncases\nevaluable\nexact\nmedian_gap\nmax_gap\nmax_rel_gap\nmax_brute_s\nmax_feasible_subsets\n\n\n\n\naopt\naopt\n2\n8\n8\n7\n0\n0.0237\n0.0249\n0.00485\n300\n\n\naopt\naopt\n4\n8\n8\n7\n0\n0.00559\n0.00563\n0.181\n1.26e+04\n\n\naopt\naopt\n8\n8\n8\n7\n0\n5.94e-05\n5.96e-05\n17.7\n1.08e+06\n\n\ndiversity\ncoherence\n2\n8\n8\n2\n0.00305\n0.193\nnan\n0.00345\n153\n\n\ndiversity\ncoherence\n4\n8\n8\n4\n0.0686\n0.31\nnan\n0.0718\n3.06e+03\n\n\ndiversity\ncoherence\n8\n8\n6\n5\n0\n0.0541\nnan\n1.38\n4.38e+04\n\n\ndopt\ndopt\n2\n8\n8\n8\n0\n0\n0\n0.00389\n300\n\n\ndopt\ndopt\n4\n8\n8\n8\n0\n0\n0\n0.171\n1.26e+04\n\n\ndopt\ndopt\n8\n8\n8\n8\n0\n0\n0\n13.4\n1.08e+06\n\n\npodqr\npodqr_value\n2\n1\n1\n1\n0\n0\n0\n0.0953\n276\n\n\npodqr_num\npodqr_value\n2\n8\n8\n8\n0\n0\n0\n0.237\n300\n\n\npodqr_num\npodqr_value\n4\n4\n4\n2\n0.0421\n0.433\n0.0288\n0.273\n1.26e+04\n\n\npodqr_num\npodqr_value\n8\n4\n4\n2\n0.0433\n0.173\n0.00592\n11.1\n1.08e+06\n\n\n\n\n\n9.2.2 Does each design attain the best value of its own objective among all designs? (full candidate set)\n\n\n\ndesign\ncriterion\nlarger_is_better\ncases\nattains_best\n\n\n\n\ndopt\ndopt\nTrue\n24\n24\n\n\naopt\naopt\nTrue\n24\n3\n\n\ndiversity\ncoherence\nFalse\n24\n17\n\n\npodqr\npodqr_value\nTrue\n1\n1\n\n\npodqr_num\npodqr_value\nTrue\n16\n16\n\n\n\n\n\n9.2.3 Undefined designs and the number of POD modes\n\n\n\ncand_set\ndesign\nk\nundefined_cases\n\n\n\n\nfull\npodqr\n2\n7\n\n\nfull\npodqr\n4\n8\n\n\nfull\npodqr\n8\n8\n\n\nfull\npodqr_num\n4\n4\n\n\nfull\npodqr_num\n8\n4\n\n\nsmall\npodqr\n2\n7\n\n\nsmall\npodqr\n4\n8\n\n\nsmall\npodqr\n8\n8\n\n\nsmall\npodqr_num\n4\n4\n\n\nsmall\npodqr_num\n8\n4\n\n\n\n\n\n\nwind\nseed\nK\ncand_set\nr_eff\nr_num\n\n\n\n\nsteady_westerly\n0\n2\nfull\n1\n2\n\n\nsteady_westerly\n0\n2\nsmall\n1\n2\n\n\nsteady_westerly\n0\n4\nfull\n0\n3\n\n\nsteady_westerly\n0\n4\nsmall\n0\n3\n\n\nsteady_westerly\n1\n2\nfull\n0\n3\n\n\nsteady_westerly\n1\n2\nsmall\n0\n3\n\n\nsteady_westerly\n1\n4\nfull\n0\n3\n\n\nsteady_westerly\n1\n4\nsmall\n0\n3\n\n\nveering\n0\n2\nfull\n2\n27\n\n\nveering\n0\n2\nsmall\n2\n27\n\n\nveering\n0\n4\nfull\n0\n28\n\n\nveering\n0\n4\nsmall\n0\n28\n\n\nveering\n1\n2\nfull\n1\n29\n\n\nveering\n1\n2\nsmall\n0\n29\n\n\nveering\n1\n4\nfull\n0\n29\n\n\nveering\n1\n4\nsmall\n0\n29\n\n\n\n\n\n9.2.4 Cross-criterion values (median over the 8 scenarios, full candidate set)\nfield_rel_err_val: relative error of reconstructing the validation-day field at all sites from noise-free readings at the design sites with min(k, r_eff) training POD modes (1 = no better than the training mean).\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nk\ndesign\ndopt\naopt\neopt\ncoherence\npodqr_value\nfield_rel_err_val\nmean_dist_to_source_m\nmin_spacing_m\n\n\n\n\n2\nuniform\n4.76\n0.293\n1.75e-06\n0.541\n-11.9\n1\n2.18e+03\n4.38e+03\n\n\n2\nrandom\n0.506\n0.135\n0\n0.842\n-37.4\n1\n3.77e+03\n2.06e+03\n\n\n2\ncoverage\n3.73\n0.263\n1.84e-12\n0.00113\n-inf\n1\n4.12e+03\n1.15e+04\n\n\n2\nsource_near\n11.3\n0.859\n1.78\n0.117\n-12.2\n1\n531\n6.01e+03\n\n\n2\ndopt\n13.3\n0.978\n3.88\n0.031\n-11.3\n1\n721\n5.17e+03\n\n\n2\naopt\n12.3\n0.963\n2.65\n0.161\n-10.6\n1\n1.2e+03\n4.5e+03\n\n\n2\ndiversity\n10.8\n0.861\n1.65\n0.000208\n-11.8\n1\n1.16e+03\n5.54e+03\n\n\n2\npodqr_num\n8.39\n0.694\n0.618\n0.486\n-5.99\n1\n2.27e+03\n3.15e+03\n\n\n4\nuniform\n7.12\n0.538\n5.92e-06\n0.967\n-28.9\n1\n2.5e+03\n4.38e+03\n\n\n4\nrandom\n3.85\n0.46\n4.24e-10\n0.981\n-39.8\n1\n2.99e+03\n1.88e+03\n\n\n4\ncoverage\n5.19\n0.497\n0.0351\n0.998\n-57\n1\n3.94e+03\n8.12e+03\n\n\n4\nsource_near\n16\n0.993\n4.5\n0.794\n-21.8\n1\n608\n1.32e+03\n\n\n4\ndopt\n17.9\n0.997\n5.67\n0.847\n-18.9\n1\n1.02e+03\n1.32e+03\n\n\n4\naopt\n15.8\n0.995\n4.9\n0.887\n-16.6\n1\n1.21e+03\n1.32e+03\n\n\n4\ndiversity\n12.3\n0.981\n3.1\n0.377\n-19.5\n1\n1.72e+03\n2.58e+03\n\n\n8\nuniform\n9.41\n0.698\n0.196\n1\n-30.5\n1\n2.87e+03\n2.5e+03\n\n\n8\nrandom\n10.6\n0.758\n0.072\n0.99\n-33.5\n1\n2.76e+03\n1.32e+03\n\n\n8\ncoverage\n10.6\n0.802\n0.544\n1\n-50.8\n1\n3.71e+03\n3.75e+03\n\n\n8\nsource_near\n17.2\n0.997\n5.28\n0.996\n-30.5\n1\n881\n1.25e+03\n\n\n8\ndopt\n19\n0.998\n5.89\n0.996\n-23.1\n1\n1.68e+03\n1.25e+03\n\n\n8\naopt\n16.5\n0.997\n5.37\n0.993\n-23.4\n1\n1.54e+03\n1.25e+03\n\n\n8\ndiversity\n16.4\n0.995\n4.65\n0.809\n-23.3\n1\n1.89e+03\n1.25e+03\n\n\n2\npodqr\n9.43\n0.991\n4.46\n0.0121\n-5.52\n0.409\n1.87e+03\n5.04e+03\n\n\n4\npodqr_num\n11.1\n0.915\n1.87\n0.856\n-12.5\n0.789\n2e+03\n1.75e+03\n\n\n8\npodqr_num\n14.6\n0.987\n3.68\n0.957\n-21.3\n0.755\n2.25e+03\n1.25e+03\n\n\n\n\n\n9.2.5 Practical rank at the preregistered σ (mean [min–max] over the scenarios where the design is defined: 4 per K, podqr 1, podqr_num 2)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nK\nk\nuniform\nrandom\ncoverage\nsource_near\ndopt\naopt\ndiversity\npodqr\npodqr_num\n\n\n\n\n2\n2\n0.75 [0-1]\n0.5 [0-1]\n0.25 [0-1]\n2 [2-2]\n2 [2-2]\n2 [2-2]\n2 [2-2]\n2 [2-2]\n1.8 [1-2]\n\n\n2\n4\n1.5 [1-2]\n0.75 [0-2]\n0.75 [0-1]\n2 [2-2]\n2 [2-2]\n2 [2-2]\n2 [2-2]\nundefined\n2 [2-2]\n\n\n2\n8\n1.5 [1-2]\n1.5 [1-2]\n1.5 [1-2]\n2 [2-2]\n2 [2-2]\n2 [2-2]\n2 [2-2]\nundefined\n2 [2-2]\n\n\n4\n2\n1.8 [1-3]\n0.5 [0-1]\n1.8 [1-3]\n2.5 [2-3]\n3.5 [3-4]\n3.8 [3-4]\n2.8 [2-3]\nundefined\n2 [1-4]\n\n\n4\n4\n2.2 [1-4]\n2.2 [1-3]\n2.2 [1-3]\n4 [4-4]\n4 [4-4]\n4 [4-4]\n3.5 [3-4]\nundefined\n3.5 [3-4]\n\n\n4\n8\n2.8 [2-4]\n3.2 [3-4]\n3.2 [2-4]\n4 [4-4]\n4 [4-4]\n4 [4-4]\n4 [4-4]\nundefined\n4 [4-4]\n\n\n\n\n\n9.2.6 Design runtime (seconds, full candidate set; excludes simulation)\n\n\n\ndesign\nmedian\nmax\n\n\n\n\nuniform\n0.000524\n0.169\n\n\nrandom\n0.000174\n0.000488\n\n\ncoverage\n0.00459\n0.0172\n\n\nsource_near\n0.000189\n0.000759\n\n\ndopt\n0.0163\n0.0387\n\n\naopt\n0.0241\n0.0432\n\n\ndiversity\n0.012\n0.0229\n\n\npodqr_num\n0.00294\n0.0108\n\n\npodqr\n0.000997\n0.000997\n\n\n\n\n\n\nDesigns for seed 0, K = 4, full candidate set, for both winds. Grey: log10 single-site SNR (largest singular value of a_ref·G_i/σ); orange: k = 4; blue rings: k = 8; red stars: sources.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>E06 Placement algorithms and their own objectives</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/06-placement-methods.html#interpretation",
+    "href": "chapters/06-placement-methods.html#interpretation",
+    "title": "9  E06 Placement algorithms and their own objectives",
+    "section": "9.3 Interpretation",
+    "text": "9.3 Interpretation\nRead against the tables above (qualitative statements only; the numbers are in the generated fragments):\n\nOwn goals. Greedy D-opt matched the exhaustive optimum of its objective on the small set and had the largest D value of all designs on the full set in every case. Greedy A-opt was close to its exhaustive optimum on the small set but on the full set D-opt designs usually had an equal or slightly larger A value, which is possible because A is not submodular and greedy A has no guarantee. Footprint diversity often missed the minimum coherence by a noticeable margin: its lexicographic greedy rule is a heuristic for that goal. Unconstrained QR pivots matched scipy and PySensors (tests); on the small set the exploratory noise-unaware variant reached the optimum of the log-det objective in some cases and not others.\nPOD/QR at this noise level. At the preregistered σ the time-varying part of the 4-day training field has at most a couple of above-noise modes (often none), so the noise-aware POD/QR design is undefined for almost every budget. This is a property of the smoke calendar (two to four piecewise-steady wind blocks, constant sources), not of POD/QR in general; the same reason makes the field-reconstruction score uninformative (equal to the training-mean baseline) for almost every design. The exploratory noise-unaware variant places sensors that serve a basis made partly of sub-noise structure.\nCross-criterion trade-offs. Source-informed designs (D, A, diversity, source_near) reached full practical rank at small budgets far more often than the uniform, random and coverage baselines, which use no source information. This is in-sample (scored on the same 96 training hours the designs optimise) and mostly reflects knowing the source locations: the locations-only source_near design ties D-opt in 21 of 24 cases (gate-06). It agrees with E04 at a_ref = 1 g/s, where the greedy D-opt design also reached 4/4; practical rank was 0 everywhere only at the old 100 µg/s scale. The D/A designs are not low-coherence designs, and the low-coherence designs give up D value: the objectives pick different networks. Nothing here says which network is better for source, field or forecast error; that is E07’s question.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>E06 Placement algorithms and their own objectives</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/06-placement-methods.html#audit-outcome-gate-06",
+    "href": "chapters/06-placement-methods.html#audit-outcome-gate-06",
+    "title": "9  E06 Placement algorithms and their own objectives",
+    "section": "9.4 Audit outcome (gate-06)",
+    "text": "9.4 Audit outcome (gate-06)\nGate-06 cleared E06 as a methods/reproduction step: every strategy sees the same candidates, budget and spacing; the Bayesian D/A/E formulas and scaling are right; tie-breaking is deterministic; QR pivots match PySensors 0.4.3; the committed CSV reproduces bit-for-bit (108/108 rows on two re-run scenarios). It set three conditions before E07:\n\nDeclare what each design knows. “Training-only” meant training hours, not training information: sources are constant, so the noise-free POD archive contains the true strengths. The source-informed designs also know the true source locations; the locations-only source_near ties D-opt in 21 of 24 cases, so most of the advantage is knowing where the sources are.\nScore on held-out hours, with an AR(1) noise arm and per-site σ (in-sample practical rank flatters designs; in one spot case A-opt and diversity dropped from 4 to 3 on held-out hours).\nFix the POD mode-count rule in advance and check greedy optimality where spacing binds: on a synthetic 5 × 5 lattice with binding spacing greedy D was exact in only 35/80 cases (max relative gap 19.8 %), whereas the small candidate set used above never binds.\n\nAll three were built into the E07 design note before any E07 computation.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>E06 Placement algorithms and their own objectives</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/06-placement-methods.html#limitations",
+    "href": "chapters/06-placement-methods.html#limitations",
+    "title": "9  E06 Placement algorithms and their own objectives",
+    "section": "9.5 Limitations",
+    "text": "9.5 Limitations\nSmoke scale, 8 scenarios, a 96 h design window that is also the POD training window, a perfect model and noise-free POD archives. The small candidate set never makes the spacing rule bind, so the exhaustive gaps say nothing about greedy behaviour under binding spacing. The POD results are dominated by the short, piecewise-steady training calendar (few above-noise modes) and should not be read as a property of POD/QR in general. No design was evaluated on a held-out inference task; that is E07.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>E06 Placement algorithms and their own objectives</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/07-cross-objective.html",
+    "href": "chapters/07-cross-objective.html",
+    "title": "10  E07 Cross-objective placement on held-out winds",
+    "section": "",
+    "text": "10.1 What we did\nSimulated passive tracer only; nothing here is evidence about ambient PM2.5, real sources or deployment.\nQuestion (plan 2). Which placement objective is best for which held-out inference task (forecast, analysis field, source strengths, population-weighted field)? The plan’s hypothesis was that no single network wins on all of them. Confirmatory test (protocol §12): does the D-optimal network (dopt) reduce held-out one-step forecast RMSE by ≥ 10 % relative to random networks, for k ≥ 8?\nEvidence label. 32² pilot: exploratory. 64² sweep, dopt vs random: confirmatory, supported in the cells run (scope pending user sign-off). Everything else in the sweep (source_near vs dopt, mechanism, endpoint agreement): exploratory.\nEvidence. Design note docs/research/cross-objective-design.md (committed in 3e7d4d2 before any E07 computation; deviations in its §12); tables tables/e07-local-* and tables/e07-sweep-*; audit docs/research/gates/gate-07-cross-objective.md (with check scripts); journal state/experiments/e07.md. Report-only summaries below are produced from the committed sweep tables by scripts/report_e07.py.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>E07 Cross-objective placement on held-out winds</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/07-cross-objective.html#what-we-did",
+    "href": "chapters/07-cross-objective.html#what-we-did",
+    "title": "10  E07 Cross-objective placement on held-out winds",
+    "section": "",
+    "text": "Designs (see Methods): random (10 networks), uniform, coverage, source_near (locations-only control), hotspot, dopt (greedy Bayesian D + 1-swap), diversity and podqr in the sweep; the pilot also had aopt and fieldvar. Each design declares what it knows and sees training hours only (gate-06 condition 1); the POD archive comes from a prior ensemble of strengths, not the truth.\nTraining winds: veering, or mixed (steady westerly, veering, weak/variable); the pilot also had an exactly constant westerly. Test winds are always held out: steady southerly, stagnation then front, diurnal rotation.\nEstimator and score: MAP over a 24 h window ending at each issue time, then a one-hour forecast with the known wind, scored against the noise-free truth over 425 test issue times (64²). Noise arms: white (primary), AR(1) ρ = 0.8, per-site σ. R = 5 paired noise draws per arm.\n32² local pilot: upwind, dt 300 s, shortened 4/1/6-day calendar, K ∈ {2, 4}, k ∈ {2, 4, 8}, seeds 0–2; 18/18 scenarios (commit e3f7de0).\n64² HPC sweep: split VanLeer, dt 30 s (A2), protocol calendar, K ∈ {2, 4}, k ∈ {4, 8, 16}, seeds 0–9, 2 training winds: 40/40 scenarios, Slurm job 204894, code dd2c51c, ~12 h on 64 CPUs. This is a user-requested scope cut (design-note deviation 6, decided before any 64² run): K = 8, k = 32 and seeds 10–19 were not run.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>E07 Cross-objective placement on held-out winds</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/07-cross-objective.html#pilot-32²-exploratory",
+    "href": "chapters/07-cross-objective.html#pilot-32²-exploratory",
+    "title": "10  E07 Cross-objective placement on held-out winds",
+    "section": "10.2 Pilot (32², exploratory)",
+    "text": "10.2 Pilot (32², exploratory)\n\n\n\n\n\n\nFigure 10.1: 32² pilot: regret heatmap (selector × held-out metric) and forecast-RMSE reduction against random by strategy and budget.\n\n\n\n\nOptimised designs beat random by a median 0.6–0.9 forecast-RMSE reduction, except at K = 4, k = 2. Uniform layouts are worse than random.\nThe locations-only source_near beat dopt in 44 of 54 (scenario, k) pairs, by 27–48 % at k ≥ 4.\nThe network best on forecast was also best on field, source and population-weighted error (median cross-endpoint regret 0).\nChoosing the network by training-wind D gives a median forecast regret of 0.51; choosing by D on the test winds, 0.006.\nAR(1) and per-site arms gave the same ordering; NNLS was within ~0.05 of MAP. podqr was undefined in 36 of 162 cases. Where spacing binds, greedy was exact in 29/36 blocks, greedy + swap in 34/36.\n\nLead decisions before the sweep: dopt stays the confirmatory network (re-designating source_near after seeing the pilot would have been outcome-driven); A2 numerics; no wind-robust arm (that is E15’s question).",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>E07 Cross-objective placement on held-out winds</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/07-cross-objective.html#sweep-confirmatory-result",
+    "href": "chapters/07-cross-objective.html#sweep-confirmatory-result",
+    "title": "10  E07 Cross-objective placement on held-out winds",
+    "section": "10.3 64² sweep: confirmatory result",
+    "text": "10.3 64² sweep: confirmatory result\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ntraining wind\nK\nk\nn\nmedian reduction\n95% bootstrap CI\ndistribution-free CI\nmean [CI]\ndopt wins/losses\nverdict (bootstrap / distribution-free)\n\n\n\n\nmixed\n2\n8\n10\n0.84\n0.81–0.90\n0.78–0.91\n0.85 [0.82–0.88]\n10/0\nabove / above\n\n\nmixed\n2\n16\n10\n0.76\n0.75–0.79\n0.74–0.80\n0.75 [0.69–0.79]\n10/0\nabove / above\n\n\nmixed\n4\n8\n10\n0.67\n0.54–0.78\n0.44–0.82\n0.64 [0.54–0.74]\n10/0\nabove / above\n\n\nmixed\n4\n16\n10\n0.51\n0.43–0.58\n0.42–0.62\n0.51 [0.44–0.60]\n10/0\nabove / above\n\n\nveering\n2\n8\n10\n0.71\n0.35–0.79\n0.24–0.82\n0.60 [0.45–0.74]\n10/0\nabove / above\n\n\nveering\n2\n16\n10\n0.70\n0.23–0.78\n-0.19–0.80\n0.50 [0.16–0.75]\n8/2\nabove / straddles\n\n\nveering\n4\n8\n10\n0.62\n0.53–0.67\n0.51–0.70\n0.60 [0.53–0.67]\n10/0\nabove / above\n\n\nveering\n4\n16\n10\n0.42\n0.17–0.47\n0.14–0.50\n0.33 [0.20–0.45]\n9/1\nabove / above\n\n\n\nCells with bootstrap CI above 10 %: 8/8; distribution-free: 7/8; mean bootstrap: 8/8.\n\n\n\n\n\n\nFigure 10.2: Relative reduction in held-out forecast RMSE, dopt vs the mean of 10 random networks, per cell (median and 95 % percentile bootstrap CI over 10 seeds; red tick = distribution-free lower bound). Dotted line = 10 % threshold.\n\n\n\nVerdict. In the 64² synthetic sweep (K ∈ {2, 4}, k ∈ {8, 16}, training winds veering or mixed, 10 seeds per cell, white noise, MAP with a 24 h window), the D-optimal network reduced held-out one-step forecast RMSE relative to the mean of 10 random networks by a median of 42–84 % per cell. The 95 % bootstrap CI lay above 10 % in 8/8 cells, so the preregistered hypothesis is supported in the cells run. With distribution-free intervals it is supported in 7/8 (veering K = 2, k = 16 straddles because dopt lost to random in 2 of 10 seeds); with a bootstrap of the mean, 8/8. K = 8 and k = 32 were not run; by the protocol’s own rule those cells are unresolved, so at protocol level the verdict is “supported in the run cells, unresolved overall” unless the user confirms the reduced cell set as the confirmatory population (gate-07 issue 1, open). A locations-only control placing sensors next to the known sources did better still, so the gain over random is attributable to knowing source locations, not to D-optimisation.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>E07 Cross-objective placement on held-out winds</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/07-cross-objective.html#sweep-exploratory-results",
+    "href": "chapters/07-cross-objective.html#sweep-exploratory-results",
+    "title": "10  E07 Cross-objective placement on held-out winds",
+    "section": "10.4 64² sweep: exploratory results",
+    "text": "10.4 64² sweep: exploratory results\n\n\n\n\n\n\nFigure 10.3: 64² sweep: regret heatmap and forecast-RMSE reduction against random by strategy (median over 20 scenarios per K). The legend lists aopt/fieldvar, which were not run in the sweep; the A/fieldvar selector rows rank the strategies that were run by those criteria.\n\n\n\n\n10.4.1 Sensors next to the sources beat D-optimisation\n\n\n\n\n\n\n\n\n\nnoise arm\npaired (scenario, k)\nsource_near better\nmedian (dopt − source_near)/dopt\n\n\n\n\nwhite\n120\n115\n0.41\n\n\nar1\n120\n110\n0.30\n\n\npersite\n120\n118\n0.47\n\n\n\n\n\n\n\n\n\n\n\nk\ndopt: scenarios with ≥ 1 rank-deficient 24 h test window\nsource_near: same\n\n\n\n\n4\n32/40\n20/40\n\n\n8\n30/40\n7/40\n\n\n16\n26/40\n6/40\n\n\n\n\nsource_near beats dopt in 115/120 paired (scenario, k) comparisons with white noise (110 with AR(1), 118 with per-site σ), in all 20 source layouts, by a median relative margin of ≈ 0.4 (gate-07: IQR 0.23–0.60; bootstrap CI over layouts 0.28–0.56). At scenario level source_near is better at every k in 36/40 (white), 31/40 (AR(1)), 39/40 (per-site). Pairs share layouts and test winds, so pooled-pair p-values are not quoted. This contrast was not preregistered.\n\n\n\n10.4.2 Mechanism: per-window rank loss under an unseen wind\nField checks on two scenarios (gate-07, veering:2:7 and mixed:4:9):\n\ndopt networks have no rank-deficient 24 h windows during training but 17.6 % in the test period; all 75 deficient windows fall in the held-out steady southerly blocks — a direction never seen in training. source_near has none.\nThose windows carry 97.5 % (veering:2:7) and 37 % (mixed:4:9) of dopt’s squared forecast error.\nSweep-wide (table above), dopt has at least one deficient test window in 30/40 scenarios at k = 8 against 7/40 for source_near.\nWhole-period information criteria miss this: D on the test winds favours source_near in only 35/120 cases, and selecting by D_test still costs a median forecast regret of 0.37.\n\nReading (inference): designs tuned to the training winds do not transfer to an unseen wind direction, while sensors at the sources stay informative whatever the wind. The evidence rests on one unseen direction, and the window analysis covers 2 scenarios in detail.\n\n\n10.4.3 Endpoint agreement is close to built in\nThe network best on forecast is also best on source, analysis and population-weighted error (forecast-best equals source-best in 116/120; median off-diagonal regret 0). But all four endpoints are functions of the same static estimate under a perfect model and constant sources, so agreement is expected; it is weak evidence about the plan’s “no single network wins” hypothesis and must not be stated as a general finding.\n\n\n10.4.4 Other checks\n\nLeakage: designs rebuilt with every non-training hour set to NaN give the committed sites; forecast scores were reproduced to 5 digits by an independent implementation.\nVanLeer superposition (A2): the max superposition error over the full calendar is a median 0.038 µg m⁻³ and 0.183 at worst (0.73σ at a single cell-hour), ~27× the 96 h figure quoted in A2; re-scoring on a perfectly linear truth changed RMSE by ≤ 1e-4 and kept the ordering.\nGreedy optimality: greedy + swap is exact in 146/160 block checks (greedy alone 91/160); hotspot has higher D_train than dopt in 10/120 cases. This does not affect the comparison (source_near never has the highest D_train).\npodqr was undefined in 1 (k = 8) and 3 (k = 16) of 40 scenarios per arm — fewer than the design note predicted.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>E07 Cross-objective placement on held-out winds</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/07-cross-objective.html#audit-outcome-gate-07-pass-with-conditions",
+    "href": "chapters/07-cross-objective.html#audit-outcome-gate-07-pass-with-conditions",
+    "title": "10  E07 Cross-objective placement on held-out winds",
+    "section": "10.5 Audit outcome (gate-07): pass with conditions",
+    "text": "10.5 Audit outcome (gate-07): pass with conditions\nNumbers reproducible, no leakage, confirmatory rule implemented faithfully. Conditions concern what the results may be said to show:\n\nScope: state the verdict as “supported in the 8 cells run”; the user must confirm the reduced cell set (open).\nCredit: every statement of the confirmatory result carries the source_near caveat.\nMechanism: per-window rank loss under one unseen wind direction; make it sweep-wide from cached fields.\nArtefact risk: source_near’s sites (456–643 m from source centres) sit inside the 1200 m truncated emission disc (σ = 400 m), where they see local emission under any wind. With every site within 1200 m excluded, source_near still won in the two scenarios checked (k = 8: 0.043 vs 0.203 and 0.115 vs 0.229).\nStatistics: percentile bootstrap of a median at n = 10 is anti-conservative; report the distribution-free and mean variants (done above).",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>E07 Cross-objective placement on held-out winds</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/07-cross-objective.html#what-changed-because-of-the-audit",
+    "href": "chapters/07-cross-objective.html#what-changed-because-of-the-audit",
+    "title": "10  E07 Cross-objective placement on held-out winds",
+    "section": "10.6 What changed because of the audit",
+    "text": "10.6 What changed because of the audit\nThe confirmatory table now carries the distribution-free and mean-bootstrap variants; the verdict wording is the gate’s; the A2 decision file was updated with the full-calendar superposition error; the source_near contrast is labelled exploratory and pooled p-values were dropped.\n\n\n\n\n\n\nNoteFollow-up controls running — this chapter may change\n\n\n\nTwo follow-up analyses on the cached 64² fields are in progress at the time of writing: (1) the 1200 m exclusion control across all 40 scenarios, and (2) the fraction of rank-deficient windows per test wind regime for every design and scenario. [PLACEHOLDER: results to be inserted when the runs finish; until then the exclusion result rests on 2 scenarios and the mechanism on one unseen wind direction.]",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>E07 Cross-objective placement on held-out winds</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/07-cross-objective.html#limitations",
+    "href": "chapters/07-cross-objective.html#limitations",
+    "title": "10  E07 Cross-objective placement on held-out winds",
+    "section": "10.7 Limitations",
+    "text": "10.7 Limitations\n\nPerfect model: known wind, known source locations, constant sources, known background; the estimator uses the truth’s solver.\nSensors may sit inside the 400 m-σ area-source footprint; point sources were not studied.\nOne unseen wind direction (southerly) drives the mechanism; a 24 h estimator window only.\n10 seeds per cell; cells are not independent (two training-wind arms share layouts, test winds and noise seeds).\nσ ≈ 0.25 ≈ 0.05·c_bg is effectively a fixed instrument noise, and near-source SNR is ~50–80, which is why the per-site arm changes little.\nThe forecast is from a static inverse, not a filter; calibration endpoints are deferred to E09.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>E07 Cross-objective placement on held-out winds</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/90-lessons.html",
+    "href": "chapters/90-lessons.html",
+    "title": "11  Lessons and corrections",
+    "section": "",
+    "text": "11.1 What these corrections taught us\nEvery experiment was audited by a separate agent (“gate”), working from the code, tables and run records rather than the author’s summary. The auditors share the authors’ model family, so their independence comes from the task split and from re-deriving numbers. This chapter collects what they caught and what was done about it. Superseded results stay in Git history and in the journals; they are not deleted.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Lessons and corrections</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/90-lessons.html#what-these-corrections-taught-us",
+    "href": "chapters/90-lessons.html#what-these-corrections-taught-us",
+    "title": "11  Lessons and corrections",
+    "section": "",
+    "text": "Check the signal-to-noise ratio first. Three experiments were run before the scale problem was acted on; a one-line estimate in the protocol audit had already predicted it.\nA “steady” control must be exactly steady. The E05 confound came from a realistic-looking jitter in the control.\nMeans of ill-posed estimates are meaningless. Use medians, prior-referenced regularisation, and count failures.\nAlways include a dumb control that knows the same thing. The locations-only control is what revealed that the E06/E07 gains were mostly knowledge of source locations.\nIn-sample information is not held-out performance. Whole-period D on training (and even on test) winds missed the short windows in which a source became invisible.\nAmendments are fine if recorded. Each change above has a decision file or journal entry with its evidence and the results it affects.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Lessons and corrections</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/91-next.html",
+    "href": "chapters/91-next.html",
+    "title": "12  Next steps",
+    "section": "",
+    "text": "12.1 Immediately (E07 close-out, no new simulations)\nSources: state/STATUS.md, state/experiments/e05.md and e07.md, plans 2 and 3. Nothing in this chapter is a result.",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Next steps</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/91-next.html#immediately-e07-close-out-no-new-simulations",
+    "href": "chapters/91-next.html#immediately-e07-close-out-no-new-simulations",
+    "title": "12  Next steps",
+    "section": "",
+    "text": "User sign-off on the confirmatory scope: accept the 8 cells run (K ∈ {2, 4}, k ∈ {8, 16}, 10 seeds) as the confirmatory population, or report “supported in run cells, unresolved overall”.\n1200 m exclusion control across all 40 scenarios (running on cached fields).\nRank-deficient window fraction per test wind regime for every design and scenario (running).",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Next steps</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/91-next.html#plan-2-remaining-experiments",
+    "href": "chapters/91-next.html#plan-2-remaining-experiments",
+    "title": "12  Next steps",
+    "section": "12.2 Plan 2, remaining experiments",
+    "text": "12.2 Plan 2, remaining experiments\n\n\n\n\n\n\n\n\nExp\nQuestion (plan 2)\nPlanned design (from journals)\n\n\n\n\nE08 Sensor sufficiency\nHow do k, source complexity, noise, sampling cadence and observation duration interact?\nPreregistered from E05 v2: factor = number of distinct wind directions (constant control), W ∈ {24 h, 7 d}, N ∈ {2, 4, 8} plus an optimised arm, seed as unit with paired bootstrap, difference-in-differences primary contrast with a minimum meaningful effect, practical-rank thresholds 1σ and 3σ, equal-reading comparisons only, held-out forecast/off-sensor evaluation, AR(1) arm\n\n\nE09 Causal filtering\nDoes a forecast–observe–update filter estimate and forecast the field better than a current-only batch inverse?\nKalman filter on the concentration state; calibration endpoints (coverage, CRPS) deferred here from E07\n\n\nE10 Joint assimilation\nCan sequential observations update emission strengths and state together without spurious certainty?\nAugmented-state Kalman, optional EnKF, DAPPER toy cross-check\n\n\nE11 Forecast placement\nDoes source/D-opt or POD/QR placement remain optimal when the endpoint is one-step and multi-horizon forecast skill?\nCausal evaluation loop across designs and horizons; uses E07’s finding that training-wind D-opt does not transfer",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Next steps</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/91-next.html#plan-3-e12e20-not-started",
+    "href": "chapters/91-next.html#plan-3-e12e20-not-started",
+    "title": "12  Next steps",
+    "section": "12.3 Plan 3 (E12–E20), not started",
+    "text": "12.3 Plan 3 (E12–E20), not started\nMeteorological mismatch and source–transport compensation (E12); background, source-basis and realistic observation errors (E13); reliability diagnostics and uncertainty calibration (E14); nominal vs robust placement (E15, which inherits E07’s hypothesis that designs tuned to training winds fail on unseen directions); generalisation and sensitivity consolidation (E16); optional regional transport case (E17) and real monitoring validation (E18); synthesis (E19) and independent replication (E20).",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Next steps</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/91-next.html#open-decisions-and-known-gaps",
+    "href": "chapters/91-next.html#open-decisions-and-known-gaps",
+    "title": "12  Next steps",
+    "section": "12.4 Open decisions and known gaps",
+    "text": "12.4 Open decisions and known gaps\n\nConfirmatory scope of E07 (above).\nWhether to make source_near (or a wind-robust variant) the reference design going forward; this is outcome-driven and must be preregistered for E11/E15, not adopted retroactively.\nE03 remains rank-deficient for structural reasons; a configuration where the “identifiable recovery” half of its hypothesis can be tested has not been run.\nE04’s spectrum-vs-coverage hypothesis has not been tested across seeds; the 1e-8 rank rule is applied on different scales in two code paths (gate-04).\nStudy-boundary behaviour of both advection schemes has no independent check.\nNo held-out forecast evaluation outside E07; no wind error or model mismatch anywhere yet.",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Next steps</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/references.html",
+    "href": "chapters/references.html",
+    "title": "References",
+    "section": "",
+    "text": "Bartos, Matthew, and Branko Kerkez. 2021. “Observability-Based\nSensor Placement Improves Contaminant Tracing in River Networks.”\nWater Resources Research, ahead of print. https://doi.org/10.1029/2020WR029551.\n\n\nBhardwaj, Ankit, and Lakshminarayanan Subramanian. 2026.\nIdentifiability-Aware Source Apportionment in City-Scale\nAdvection-Diffusion Systems. https://arxiv.org/abs/2608.00050.\n\n\nCheng, Sheng, and Derek A. Paley. 2022. “Optimal Guidance and\nEstimation of a 2D Diffusion–Advection Process by a Team of\nMobile Sensors.” Automatica, ahead of print. https://doi.org/10.1016/j.automatica.2021.110112.\n\n\nChoi, Byeongseong, and Michelle A. Hummel. 2025. “Optimal Sensor\nPlacement in Low-Cost PM2.5 Sensor Networks Using Value of\nInformation and Multimodal Data Fusion.” Environmental\nResearch Letters, ahead of print. https://doi.org/10.1088/1748-9326/ae2b89.\n\n\nGreen, Kary. 2006. “Optimal Sensor Placement for Parameter\nIdentification.” Master’s thesis, Rice University. https://repository.rice.edu/items/4d4b4f81-1c4b-4362-8513-685eac332c7c.\n\n\nKarnik, Niharika, Yash Bhangale, Mohammad G. Abdo, et al. 2026.\n“PySensors 2.0: A Python Package for\nSparse Sensor Placement.” Journal of Open Source\nSoftware, ahead of print. https://doi.org/10.21105/joss.09265.\n\n\nKrause, Andreas, Ajit Pratap Singh, and Carlos Guestrin. 2008.\n“Near-Optimal Sensor Placements in Gaussian\nProcesses: Theory, Efficient Algorithms and Empirical Studies.”\nJournal of Machine Learning Research 9. https://www.jmlr.org/papers/v9/krause08a.html.\n\n\nMano, Ziv, Shai Kendler, and Barak Fishbain. 2022. “Information\nTheory Solution Approach to the Air Pollution Sensor Location–Allocation\nProblem.” Sensors, ahead of print. https://doi.org/10.3390/s22103808.\n\n\nManohar, Krithika, Bingni W. Brunton, J. Nathan Kutz, and Steven L.\nBrunton. 2018. “Data-Driven Sparse Sensor Placement for\nReconstruction: Demonstrating the Benefits of Exploiting Known\nPatterns.” IEEE Control Systems, ahead of print. https://doi.org/10.1109/MCS.2018.2810460.\n\n\nMons, Vincent, Luca Margheri, Jean-Camille Chassaing, and Pierre Sagaut.\n2017. “Data Assimilation-Based Reconstruction of Urban Pollutant\nRelease Characteristics.” Journal of Wind Engineering and\nIndustrial Aerodynamics, ahead of print. https://doi.org/10.1016/j.jweia.2017.07.007.\n\n\nMues, Andrea, Axel Lauer, Aurelia Lupaşcu, Maheswar Rupakheti, Friderike\nKuik, and M. G. Lawrence. 2018. “WRF and\nWRF-Chem V3.5.1 Simulations of Meteorology and Black Carbon\nConcentrations in the Kathmandu Valley.”\nGeoscientific Model Development 11: 2067. https://doi.org/10.5194/gmd-11-2067-2018.\n\n\nPennington, Elyse A., Yuan Wang, Benjamin C. Schulze, et al. 2024.\n“An Updated Modeling Framework to Simulate Los\nAngeles Air Quality – Part 1: Model Development, Evaluation, and\nSource Apportionment.” Atmospheric Chemistry and Physics\n24: 2345. https://doi.org/10.5194/acp-24-2345-2024.\n\n\nRaanes, Patrick Nima, Yumeng Chen, and Colin Grudzien. 2024.\n“DAPPER: Data Assimilation with Python:\nA Package for Experimental Research.” Journal of Open Source\nSoftware, ahead of print. https://doi.org/10.21105/joss.05150.\n\n\nRoy, Venkat, Andrea Simonetto, and Geert J. T. Leus. 2018.\n“Spatio-Temporal Field Estimation Using Kriged Kalman\nFilter (KKF) with Sparsity-Enforcing Sensor\nPlacement.” Sensors, ahead of print. https://doi.org/10.3390/s18061778.\n\n\nSchlutow, Mark, Ray Chew, and Mathias Goeckede. 2026. “The\nBoundary Layer Dispersion and Footprint Model: A Fast Numerical Solver\nof the Eulerian Steady-State Advection-Diffusion\nEquation.” Geoscientific Model Development 19: 6259. https://doi.org/10.5194/gmd-19-6259-2026.\n\n\nSharma, Himanshu, Umesh Vaidya, and Baskar Ganapathysubramanian. 2019.\n“Estimating Contaminant Distribution from Finite Sensor Data:\nPerron Frobenious Operator and Ensemble\nKalman Filtering.” Building and\nEnvironment, ahead of print. https://doi.org/10.1016/j.buildenv.2019.05.026.\n\n\nSilva, Brian M. de, Krithika Manohar, Emily Clark, Bingni W. Brunton, J.\nNathan Kutz, and Steven L. Brunton. 2021. “PySensors:\nA Python Package for Sparse Sensor Placement.”\nJournal of Open Source Software, ahead of print. https://doi.org/10.21105/joss.02828.\n\n\nWebster, Helen, and David J. Thomson. 2022. “Using Ensemble\nMeteorological Data Sets to Treat Meteorological Uncertainties in a\nBayesian Volcanic Ash Inverse Modeling System: A Case\nStudy, Grímsvötn 2011.” Journal of Geophysical\nResearch: Atmospheres, ahead of print. https://doi.org/10.1029/2022JD036469.\n\n\nZheng, Dongqin, J. K. C. Leung, and B. Y. Lee. 2009. “Online\nUpdate of Model State and Parameters of a Monte Carlo\nAtmospheric Dispersion Model by Using Ensemble Kalman\nFilter.” Atmospheric Environment, ahead of print. https://doi.org/10.1016/j.atmosenv.2009.01.014.\n\n\nZhou, Chenhong, Meng Chun Gao, Jianjun Li, et al. 2022. “Optimal\nPlanning of Air Quality-Monitoring Sites for Better Depiction of\nPM2.5 Pollution Across China.” ACS\nEnvironmental Au, ahead of print. https://doi.org/10.1021/acsenvironau.1c00051.",
+    "crumbs": [
+      "References"
+    ]
+  }
+]

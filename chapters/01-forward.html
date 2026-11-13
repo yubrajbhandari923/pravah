@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>4&nbsp; E01 Forward-solver verification (local 16²/32²/64²) – PRAVAH: sparse low-cost sensor placement under uncertain wind</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/02-benchmark.html" rel="next">
+<link href="../chapters/e00-protocol.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-17329ef5f9a609701b0437e64bf71ff1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/e00-protocol.html">Experiments</a></li><li class="breadcrumb-item"><a href="../chapters/01-forward.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">E01 Forward-solver verification (local 16²/32²/64²)</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">PRAVAH: sparse low-cost sensor placement under uncertain wind</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Executive summary</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/00-background.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Background and starting literature</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/00-methods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Methods</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Experiments</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/e00-protocol.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">E00 Protocol and evaluation contract</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01-forward.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">E01 Forward-solver verification (local 16²/32²/64²)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/02-benchmark.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">E02 Tiny local benchmark: three hand-placed examples</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/03-inverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">E03 Static source-strength inverse (known wind)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/04-footprints.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">E04 Footprints, Fisher information and identifiability</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/05-time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">E05 Temporal observability: sensor count versus observation window</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/06-placement-methods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">E06 Placement algorithms and their own objectives</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/07-cross-objective.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">E07 Cross-objective placement on held-out winds</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/90-lessons.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/91-next.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Next steps</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#grid-convergence-at-constant-courant-number" id="toc-grid-convergence-at-constant-courant-number" class="nav-link active" data-scroll-target="#grid-convergence-at-constant-courant-number"><span class="header-section-number">4.1</span> Grid convergence at constant Courant number</a></li>
+  <li><a href="#time-step-refinement-32²-fixed" id="toc-time-step-refinement-32²-fixed" class="nav-link" data-scroll-target="#time-step-refinement-32²-fixed"><span class="header-section-number">4.2</span> Time-step refinement (32² fixed)</a></li>
+  <li><a href="#advection-dominated-sensitivity-32²-k-20-m²-s¹" id="toc-advection-dominated-sensitivity-32²-k-20-m²-s¹" class="nav-link" data-scroll-target="#advection-dominated-sensitivity-32²-k-20-m²-s¹"><span class="header-section-number">4.3</span> Advection-dominated sensitivity (32², K = 20 m² s⁻¹)</a></li>
+  <li><a href="#mass-budget-closed-box-prescribed-forcing-32²" id="toc-mass-budget-closed-box-prescribed-forcing-32²" class="nav-link" data-scroll-target="#mass-budget-closed-box-prescribed-forcing-32²"><span class="header-section-number">4.4</span> Mass budget (closed box, prescribed forcing, 32²)</a></li>
+  <li><a href="#audit-outcome-gate-01" id="toc-audit-outcome-gate-01" class="nav-link" data-scroll-target="#audit-outcome-gate-01"><span class="header-section-number">4.5</span> Audit outcome (gate-01)</a></li>
+  <li><a href="#amendment-a2-split-vanleer-for-64²" id="toc-amendment-a2-split-vanleer-for-64²" class="nav-link" data-scroll-target="#amendment-a2-split-vanleer-for-64²"><span class="header-section-number">4.6</span> Amendment A2: split VanLeer for 64²</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">4.7</span> Limitations</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/e00-protocol.html">Experiments</a></li><li class="breadcrumb-item"><a href="../chapters/01-forward.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">E01 Forward-solver verification (local 16²/32²/64²)</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">E01 Forward-solver verification (local 16²/32²/64²)</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><strong>Question.</strong> Does the FiPy solver solve the declared PDE accurately, conserve mass, and stay positive? <strong>Evidence label:</strong> verified (conditionally cleared by gate-01) for the closed-box/periodic oracles; superseded for 64² production runs by amendment A2 (section at the end).</p>
+<p>Simulated passive tracer only; nothing here is evidence about ambient PM2.5. All numbers below are read from <code>tables/e01-verification.csv</code>, written by <code>scripts/e01_verification.py</code> (one registered run) and rendered to markdown by <code>tables/make_e01_md.py</code>. References are the closed-form oracles of <code>tests/test_forward_oracles.py</code>; tolerances come from <code>docs/research/pde-and-discretization.md</code> §5 (order p = 1, margin 0.2, discrete-exact 1e-8), not from solver output.</p>
+<section id="grid-convergence-at-constant-courant-number" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="grid-convergence-at-constant-courant-number"><span class="header-section-number">4.1</span> Grid convergence at constant Courant number</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>case</th>
+<th>n</th>
+<th>dt</th>
+<th>rel_l2</th>
+<th>peak_ratio</th>
+<th>min_over_max</th>
+<th>mass_rel_err</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>diffusion_n16</td>
+<td>16</td>
+<td>120</td>
+<td>0.00659</td>
+<td>1.01</td>
+<td>0.223</td>
+<td>1.65e-15</td>
+</tr>
+<tr class="even">
+<td>diffusion_n32</td>
+<td>32</td>
+<td>60</td>
+<td>0.0021</td>
+<td>1</td>
+<td>0.223</td>
+<td>6.58e-14</td>
+</tr>
+<tr class="odd">
+<td>diffusion_n64</td>
+<td>64</td>
+<td>30</td>
+<td>0.000758</td>
+<td>1</td>
+<td>0.224</td>
+<td>1.84e-13</td>
+</tr>
+<tr class="even">
+<td>advect_K20_n16</td>
+<td>16</td>
+<td>120</td>
+<td>0.0493</td>
+<td>0.939</td>
+<td>0.0953</td>
+<td>1.65e-16</td>
+</tr>
+<tr class="odd">
+<td>advect_K20_n32</td>
+<td>32</td>
+<td>60</td>
+<td>0.0259</td>
+<td>0.966</td>
+<td>0.0853</td>
+<td>9.93e-16</td>
+</tr>
+<tr class="even">
+<td>advect_K20_n64</td>
+<td>64</td>
+<td>30</td>
+<td>0.0132</td>
+<td>0.983</td>
+<td>0.0792</td>
+<td>2.98e-15</td>
+</tr>
+<tr class="odd">
+<td>advect_K200_n16</td>
+<td>16</td>
+<td>120</td>
+<td>0.0477</td>
+<td>0.941</td>
+<td>0.102</td>
+<td>8.27e-16</td>
+</tr>
+<tr class="even">
+<td>advect_K200_n32</td>
+<td>32</td>
+<td>60</td>
+<td>0.0252</td>
+<td>0.967</td>
+<td>0.0919</td>
+<td>1.65e-15</td>
+</tr>
+<tr class="odd">
+<td>advect_K200_n64</td>
+<td>64</td>
+<td>30</td>
+<td>0.0129</td>
+<td>0.983</td>
+<td>0.0856</td>
+<td>2.32e-15</td>
+</tr>
+</tbody>
+</table>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>case</th>
+<th>observed_order</th>
+<th>floor</th>
+<th>passes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>diffusion_16_32</td>
+<td>1.65</td>
+<td>0.8</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td>diffusion_32_64</td>
+<td>1.47</td>
+<td>0.8</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td>advect_K20_16_32</td>
+<td>0.928</td>
+<td>0.8</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td>advect_K20_32_64</td>
+<td>0.969</td>
+<td>0.8</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<td>advect_K200_16_32</td>
+<td>0.924</td>
+<td>0.8</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<td>advect_K200_32_64</td>
+<td>0.967</td>
+<td>0.8</td>
+<td>True</td>
+</tr>
+</tbody>
+</table>
+<p>Finest-pair rule (order ≥ p − 0.2 = 0.8): 3 of 3 oracles pass.</p>
+</section>
+<section id="time-step-refinement-32²-fixed" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="time-step-refinement-32²-fixed"><span class="header-section-number">4.2</span> Time-step refinement (32² fixed)</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>case</th>
+<th>dt</th>
+<th>courant</th>
+<th>rel_l2</th>
+<th>peak_ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>diffusion_dt120</td>
+<td>120</td>
+<td>0</td>
+<td>0.00303</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>diffusion_dt60</td>
+<td>60</td>
+<td>0</td>
+<td>0.0021</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>diffusion_dt30</td>
+<td>30</td>
+<td>0</td>
+<td>0.00164</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>diffusion_dt15</td>
+<td>15</td>
+<td>0</td>
+<td>0.00141</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>advect_K20_dt120</td>
+<td>120</td>
+<td>0.768</td>
+<td>0.0321</td>
+<td>0.959</td>
+</tr>
+<tr class="even">
+<td>advect_K20_dt60</td>
+<td>60</td>
+<td>0.384</td>
+<td>0.0259</td>
+<td>0.966</td>
+</tr>
+<tr class="odd">
+<td>advect_K20_dt30</td>
+<td>30</td>
+<td>0.192</td>
+<td>0.0227</td>
+<td>0.97</td>
+</tr>
+<tr class="even">
+<td>advect_K20_dt15</td>
+<td>15</td>
+<td>0.096</td>
+<td>0.0211</td>
+<td>0.972</td>
+</tr>
+</tbody>
+</table>
+<p>Error falls with dt but plateaus at the spatial error; halving dt does not halve the total error because the fixed-grid error (numerical diffusion, central-diffusion truncation) is not removed by it.</p>
+</section>
+<section id="advection-dominated-sensitivity-32²-k-20-m²-s¹" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="advection-dominated-sensitivity-32²-k-20-m²-s¹"><span class="header-section-number">4.3</span> Advection-dominated sensitivity (32², K = 20 m² s⁻¹)</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>case</th>
+<th>U</th>
+<th>courant</th>
+<th>peclet</th>
+<th>rel_l2</th>
+<th>peak_ratio</th>
+<th>min_over_max</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>U1</td>
+<td>1</td>
+<td>0.192</td>
+<td>15.6</td>
+<td>0.0245</td>
+<td>0.973</td>
+<td>9.81e-05</td>
+</tr>
+<tr class="even">
+<td>U2</td>
+<td>2</td>
+<td>0.384</td>
+<td>31.2</td>
+<td>0.0543</td>
+<td>0.939</td>
+<td>0.000138</td>
+</tr>
+<tr class="odd">
+<td>U4</td>
+<td>4</td>
+<td>0.768</td>
+<td>62.5</td>
+<td>0.124</td>
+<td>0.865</td>
+<td>0.000297</td>
+</tr>
+<tr class="even">
+<td>U8</td>
+<td>8</td>
+<td>1.54</td>
+<td>125</td>
+<td>0.275</td>
+<td>0.726</td>
+<td>0.00102</td>
+</tr>
+</tbody>
+</table>
+<p>Peak ratio below 1 is numerical diffusion (peak smeared). <code>min_over_max</code> is the domain minimum over the maximum: it is positive in every row, so no negative overshoot was observed for first-order upwind with backward Euler, as predicted by the M-matrix argument (doc §5.5). This does not carry over to a higher-order scheme.</p>
+</section>
+<section id="mass-budget-closed-box-prescribed-forcing-32²" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="mass-budget-closed-box-prescribed-forcing-32²"><span class="header-section-number">4.4</span> Mass budget (closed box, prescribed forcing, 32²)</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>case</th>
+<th>group</th>
+<th>final_mass_g</th>
+<th>max_rel_mass_err</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>noflux_theta10</td>
+<td>mass</td>
+<td>4.41e+05</td>
+<td>1.99e-14</td>
+</tr>
+</tbody>
+</table>
+<p>Maximum relative difference from the discrete-exact mass recurrence over the run; the preregistered tolerance is 1e-8.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figures/e01-convergence.png" class="img-fluid figure-img"></p>
+<figcaption>Convergence, mass budget, pulse profile and wind sensitivity</figcaption>
+</figure>
+</div>
+</section>
+<section id="audit-outcome-gate-01" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="audit-outcome-gate-01"><span class="header-section-number">4.5</span> Audit outcome (gate-01)</h2>
+<p>Gate-01 <strong>conditionally cleared</strong> the solver for the three convergence oracles and three discrete-exact oracles on the closed-box/periodic verification set (36 tests re-run, all pass). It did <strong>not</strong> clear the <code>study</code> boundary conditions, the literal protocol §3 gates, or any physical claim, and it flagged that upwind numerical diffusion grows strongly with Courant/Péclet number (relative L2 error 0.025 → 0.27 for U = 1 → 8 m s⁻¹ at 32²).</p>
+</section>
+<section id="amendment-a2-split-vanleer-for-64²" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="amendment-a2-split-vanleer-for-64²"><span class="header-section-number">4.6</span> Amendment A2: split VanLeer for 64²</h2>
+<p>The gate-00 risk B3 materialised. At 64² upwind’s effective diffusivity is 350–2900 m² s⁻¹ against the physical K = 50 m² s⁻¹, and it fails the dt-halving gate at every dt tried (<code>docs/research/gates/b3-advection-scheme.md</code>). FiPy’s only higher-order convection term, <code>VanLeerConvectionTerm</code>, is explicit (unstable for Courant &gt; 1) and, unsplit, misses the cross term so that it is anti-diffusive along oblique winds (fitted K_eff,along = −16.3 m² s⁻¹ for a 3 m s⁻¹ diagonal wind at 64², dt 30 s). PRAVAH applies it <strong>dimensionally split</strong> at dt = 30 s:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Wind (64², puff σ₀ = 1 km, 1 h)</th>
+<th>upwind dt 300 s: K_eff (rel. L2)</th>
+<th>split VanLeer dt 30 s: K_eff (rel. L2)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>3 m s⁻¹ along x</td>
+<td>1371 (0.70)</td>
+<td>50.9 / 49.6 (0.0033)</td>
+</tr>
+<tr class="even">
+<td>5 m s⁻¹ along x</td>
+<td>2933 (0.78)</td>
+<td>49.9 / 49.7 (0.0014)</td>
+</tr>
+<tr class="odd">
+<td>3 m s⁻¹ diagonal</td>
+<td>1407 / 208 (0.72)</td>
+<td>50.7 / 50.7 (0.0047)</td>
+</tr>
+</tbody>
+</table>
+<p>(Values along / across the wind, from the B3 note.) Split VanLeer converges at order ≈ 2, changes by 0.54–0.71 % on dt-halving (gate ≤ 1 %), conserves mass to 1e-15 and stays non-negative; it costs about 17× upwind (7.8 s per simulated hour at 64², serial). The lead reproduced K_eff independently (diagonal wind: upwind dt 300 s 1545 / 235, upwind dt 30 s 351 / 216, VanLeer dt 30 s 50.1 / 50.1). The limiter makes the scheme slightly non-linear (superposition error ~1 % in a two-blob test). Upwind remains the default and is bit-identical to the earlier code, so the 32² results in E02–E06 and the E07 pilot are unchanged.</p>
+</section>
+<section id="limitations" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="limitations"><span class="header-section-number">4.7</span> Limitations</h2>
+<ul>
+<li>Only the three convergence oracles, one mass case and uniform wind are covered; the <code>study</code> boundary mass budget is diagnostic only (doc §3), and the wind-reversal face-switch test (gate item 3) is not covered here.</li>
+<li>Oracle (ii) uses the revised regime (doc §5.3); that revision was made after an earlier regime failed and has not been independently reviewed.</li>
+<li>Single deterministic run, no seeds involved; the figure’s pulse snapshot is a 1-D cut, not a full 2-D snapshot.</li>
+<li>Findings from this chapter stay preliminary until an independent review.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapters/e00-protocol.html" class="pagination-link" aria-label="E00 Protocol and evaluation contract">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">E00 Protocol and evaluation contract</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../chapters/02-benchmark.html" class="pagination-link" aria-label="E02 Tiny local benchmark: three hand-placed examples">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">E02 Tiny local benchmark: three hand-placed examples</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

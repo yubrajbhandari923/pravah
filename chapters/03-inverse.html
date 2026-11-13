@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>6&nbsp; E03 Static source-strength inverse (known wind) – PRAVAH: sparse low-cost sensor placement under uncertain wind</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/04-footprints.html" rel="next">
+<link href="../chapters/02-benchmark.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-17329ef5f9a609701b0437e64bf71ff1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/e00-protocol.html">Experiments</a></li><li class="breadcrumb-item"><a href="../chapters/03-inverse.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">E03 Static source-strength inverse (known wind)</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">PRAVAH: sparse low-cost sensor placement under uncertain wind</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Executive summary</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/00-background.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Background and starting literature</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/00-methods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Methods</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Experiments</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/e00-protocol.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">E00 Protocol and evaluation contract</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01-forward.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">E01 Forward-solver verification (local 16²/32²/64²)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/02-benchmark.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">E02 Tiny local benchmark: three hand-placed examples</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/03-inverse.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">E03 Static source-strength inverse (known wind)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/04-footprints.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">E04 Footprints, Fisher information and identifiability</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/05-time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">E05 Temporal observability: sensor count versus observation window</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/06-placement-methods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">E06 Placement algorithms and their own objectives</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/07-cross-objective.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">E07 Cross-objective placement on held-out winds</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/90-lessons.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/91-next.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Next steps</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#design" id="toc-design" class="nav-link active" data-scroll-target="#design"><span class="header-section-number">6.1</span> Design</a></li>
+  <li><a href="#validity-checks-on-the-operator" id="toc-validity-checks-on-the-operator" class="nav-link" data-scroll-target="#validity-checks-on-the-operator"><span class="header-section-number">6.2</span> Validity checks on the operator</a></li>
+  <li><a href="#main-results-weighted-nnls-background-known-mean-min-max-over-three-seeds" id="toc-main-results-weighted-nnls-background-known-mean-min-max-over-three-seeds" class="nav-link" data-scroll-target="#main-results-weighted-nnls-background-known-mean-min-max-over-three-seeds"><span class="header-section-number">6.3</span> Main results (weighted NNLS, background known; mean [min, max] over three seeds)</a></li>
+  <li><a href="#estimator-and-background-comparison" id="toc-estimator-and-background-comparison" class="nav-link" data-scroll-target="#estimator-and-background-comparison"><span class="header-section-number">6.4</span> Estimator and background comparison</a></li>
+  <li><a href="#failures-characterised" id="toc-failures-characterised" class="nav-link" data-scroll-target="#failures-characterised"><span class="header-section-number">6.5</span> Failures, characterised</a></li>
+  <li><a href="#intentionally-non-identifiable-case" id="toc-intentionally-non-identifiable-case" class="nav-link" data-scroll-target="#intentionally-non-identifiable-case"><span class="header-section-number">6.6</span> Intentionally non-identifiable case</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">6.7</span> Limitations</a></li>
+  <li><a href="#audit-outcome-gate-03" id="toc-audit-outcome-gate-03" class="nav-link" data-scroll-target="#audit-outcome-gate-03"><span class="header-section-number">6.8</span> Audit outcome (gate-03)</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/e00-protocol.html">Experiments</a></li><li class="breadcrumb-item"><a href="../chapters/03-inverse.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">E03 Static source-strength inverse (known wind)</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">E03 Static source-strength inverse (known wind)</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><strong>Question.</strong> With fixed (non-optimised) sensors, known wind and a perfect model, can a weighted non-negative inverse recover source strengths? <strong>Evidence label:</strong> exploratory; a <strong>negative result</strong>. <strong>Current status:</strong> rerun at a_ref = 1 g s⁻¹ (A1); the tables below are from that rerun (commit 04bbd28).</p>
+<p><strong>Headline.</strong> The weighted sensitivity matrix is rank-deficient (tolerance 1e-8) in <strong>all 648 fits</strong>, at both the old and the new source scale. Rank does not depend on scale, so the cause is structural: ≤ 8 fixed sensors and a 24 h window cannot separate the sources. For K = 2, two of three seeds put every sensor outside the plumes. The lever is sensor placement (E06/E07) and wind change (E05), not the estimator.</p>
+<p>Simulated passive tracer only; nothing here is evidence about ambient PM2.5. Every number below is generated from <code>tables/e03-inversion.csv</code>, <code>tables/e03-estimates.csv</code>, <code>tables/e03-validity.csv</code> and <code>tables/e03-nonidentifiable.json</code>, written by <code>scripts/e03_inversion.py</code> (one registered run) and rendered by <code>tables/make_e03_md.py</code>.</p>
+<section id="design" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="design"><span class="header-section-number">6.1</span> Design</h2>
+<ul>
+<li>Perfect model: the response matrix is built from the same transient solver, winds and spin-up as the hidden truth, so this measures the inverse problem only, not model mismatch. Source locations and shapes are known; the unknowns are the source strengths (nonnegative) and, in one arm, a constant background.</li>
+<li>Smoke scale (32² grid, 12 h spin-up, one 24 h window of hourly readings), not the preregistered 64² / 60-day design. Three replicate seeds per cell; each seed has its own truth and its own noise stream.</li>
+<li>Sources K ∈ {2, 4, 8}, sensors ∈ {2, 4, 8} chosen by a fixed deterministic rule from the admissible candidate sites (not optimised).</li>
+<li>Noise levels. Three data-relative levels set σ₀ to a fixed fraction r of the rms noise-free anomaly at the chosen sensors, with per-site σ varying by a factor up to 9 (heteroscedastic, so weighting is not a no-op). A fourth level is the preregistered homoscedastic noise (5% of the median background-dominated truth), read through the leak-checked inference view; there weighting and no weighting are mathematically identical.</li>
+<li>Estimators: unweighted NNLS, noise-weighted NNLS, noise-weighted ridge NNLS (one fixed relative ridge, chosen before any run, not tuned); each with the background known (subtracted) or estimated as a sign-free nuisance coefficient.</li>
+<li>Scores: source relative RMSE (‖â − a‖/‖a‖), field RMSE over the whole grid and window against the noise-free truth anomaly (compared with the RMSE of the all-zero estimate), measurement fit (rms of residual over true σ; about 1 when the model and noise are consistent), and identifiability diagnostics (rank and conditioning of the weighted sensitivity matrix at relative tolerance 1e-8, and the fraction of sources whose local Cramér–Rao standard deviation is at most half the true strength). The CRB is an unconstrained local approximation. No pass/fail threshold on error was preregistered for this experiment, so none is applied; outcomes are described, not graded.</li>
+</ul>
+</section>
+<section id="validity-checks-on-the-operator" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="validity-checks-on-the-operator"><span class="header-section-number">6.2</span> Validity checks on the operator</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>scenario</th>
+<th>check</th>
+<th>value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>K2_s0</td>
+<td>G,F reproduce hidden truth anomaly on the whole grid (rel err)</td>
+<td>4.9e-06</td>
+</tr>
+<tr class="even">
+<td>K2_s0</td>
+<td>G equals sensitivity.scenario_response_matrix (max abs diff)</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>K2_s1</td>
+<td>G,F reproduce hidden truth anomaly on the whole grid (rel err)</td>
+<td>6.9e-06</td>
+</tr>
+<tr class="even">
+<td>K2_s2</td>
+<td>G,F reproduce hidden truth anomaly on the whole grid (rel err)</td>
+<td>7.4e-06</td>
+</tr>
+<tr class="odd">
+<td>K4_s0</td>
+<td>G,F reproduce hidden truth anomaly on the whole grid (rel err)</td>
+<td>4.9e-06</td>
+</tr>
+<tr class="even">
+<td>K4_s1</td>
+<td>G,F reproduce hidden truth anomaly on the whole grid (rel err)</td>
+<td>8.4e-06</td>
+</tr>
+<tr class="odd">
+<td>K4_s2</td>
+<td>G,F reproduce hidden truth anomaly on the whole grid (rel err)</td>
+<td>6.9e-06</td>
+</tr>
+<tr class="even">
+<td>K8_s0</td>
+<td>G,F reproduce hidden truth anomaly on the whole grid (rel err)</td>
+<td>8.7e-06</td>
+</tr>
+<tr class="odd">
+<td>K8_s1</td>
+<td>G,F reproduce hidden truth anomaly on the whole grid (rel err)</td>
+<td>3.8e-06</td>
+</tr>
+<tr class="even">
+<td>K8_s2</td>
+<td>G,F reproduce hidden truth anomaly on the whole grid (rel err)</td>
+<td>5.9e-06</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="main-results-weighted-nnls-background-known-mean-min-max-over-three-seeds" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="main-results-weighted-nnls-background-known-mean-min-max-over-three-seeds"><span class="header-section-number">6.3</span> Main results (weighted NNLS, background known; mean [min, max] over three seeds)</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>K</th>
+<th>sensors</th>
+<th>noise level</th>
+<th>SNR (rms signal / sigma0)</th>
+<th>rank of weighted G</th>
+<th>source relative RMSE</th>
+<th>field RMSE / zero-estimate RMSE</th>
+<th>measurement fit (rms of residual / sigma)</th>
+<th>CRB fraction</th>
+<th>outcome (3 seeds)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>2</td>
+<td>2</td>
+<td>r=0.01</td>
+<td>0.71</td>
+<td>1 [1, 1]</td>
+<td>0.99 [0.96, 1]</td>
+<td>0.94 [0.83, 1]</td>
+<td>0.93 [0.81, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>2</td>
+<td>r=0.1</td>
+<td>0.071</td>
+<td>1 [1, 1]</td>
+<td>3.6e+03 [1, 1.1e+04]</td>
+<td>3.6e+03 [1, 1.1e+04]</td>
+<td>0.91 [0.81, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>2</td>
+<td>r=1</td>
+<td>0.0071</td>
+<td>1 [1, 1]</td>
+<td>7.3e+25 [1, 2.2e+26]</td>
+<td>1e+26 [1, 3e+26]</td>
+<td>1 [0.95, 1.1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>2</td>
+<td>prereg</td>
+<td>0.0064</td>
+<td>1 [1, 1]</td>
+<td>4.9e+04 [1, 1.5e+05]</td>
+<td>4.9e+04 [1, 1.5e+05]</td>
+<td>1.1 [1.1, 1.1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>4</td>
+<td>r=0.01</td>
+<td>0.5</td>
+<td>1 [1, 1]</td>
+<td>2.3e+24 [1.3e+02, 7e+24]</td>
+<td>3.2e+24 [1.3e+02, 9.5e+24]</td>
+<td>0.99 [0.94, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>4</td>
+<td>r=0.1</td>
+<td>0.05</td>
+<td>1 [1, 1]</td>
+<td>1 [1, 1]</td>
+<td>1 [1, 1]</td>
+<td>0.96 [0.91, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>4</td>
+<td>r=1</td>
+<td>0.005</td>
+<td>1 [1, 1]</td>
+<td>3.4e+26 [1, 1e+27]</td>
+<td>4.7e+26 [1, 1.4e+27]</td>
+<td>0.96 [0.91, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>4</td>
+<td>prereg</td>
+<td>0.0045</td>
+<td>1 [1, 1]</td>
+<td>4.9e+04 [1, 1.5e+05]</td>
+<td>4.9e+04 [1, 1.5e+05]</td>
+<td>1 [1, 1.1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>8</td>
+<td>r=0.01</td>
+<td>27</td>
+<td>1 [1, 1]</td>
+<td>5.6e+23 [2.2e+07, 1.7e+24]</td>
+<td>7.7e+23 [2.2e+07, 2.3e+24]</td>
+<td>1 [1, 1.1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>8</td>
+<td>r=0.1</td>
+<td>2.7</td>
+<td>1 [1, 1]</td>
+<td>7.1e+13 [0.96, 2.1e+14]</td>
+<td>6.6e+13 [0.83, 2e+14]</td>
+<td>0.98 [0.97, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>8</td>
+<td>r=1</td>
+<td>0.27</td>
+<td>1 [1, 1]</td>
+<td>2.3e+26 [1, 7e+26]</td>
+<td>3.2e+26 [1, 9.6e+26]</td>
+<td>0.96 [0.9, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>8</td>
+<td>prereg</td>
+<td>0.24</td>
+<td>1 [1, 1]</td>
+<td>1.1e+17 [1, 3.2e+17]</td>
+<td>9.1e+16 [1, 2.7e+17]</td>
+<td>1 [1, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2</td>
+<td>r=0.01</td>
+<td>32</td>
+<td>1.7 [1, 2]</td>
+<td>2.7e+18 [0.19, 8.2e+18]</td>
+<td>2.1e+18 [0.19, 6.2e+18]</td>
+<td>0.99 [0.93, 1.1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>2</td>
+<td>r=0.1</td>
+<td>3.2</td>
+<td>1.7 [1, 2]</td>
+<td>8.9e+18 [0.19, 2.7e+19]</td>
+<td>6.8e+18 [0.19, 2e+19]</td>
+<td>1 [0.97, 1.1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2</td>
+<td>r=1</td>
+<td>0.32</td>
+<td>1.7 [1, 2]</td>
+<td>0.73 [0.2, 1]</td>
+<td>0.73 [0.2, 1]</td>
+<td>1.1 [0.97, 1.2]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>2</td>
+<td>prereg</td>
+<td>0.68</td>
+<td>1.7 [1, 2]</td>
+<td>5.2e+19 [0.22, 1.5e+20]</td>
+<td>3.9e+19 [0.22, 1.2e+20]</td>
+<td>0.99 [0.92, 1.1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>4</td>
+<td>r=0.01</td>
+<td>38</td>
+<td>1.7 [1, 2]</td>
+<td>5.2e+24 [6.7e+12, 1.6e+25]</td>
+<td>3.1e+24 [6.9e+12, 9.2e+24]</td>
+<td>0.99 [0.93, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>4</td>
+<td>r=0.1</td>
+<td>3.8</td>
+<td>1.7 [1, 2]</td>
+<td>2.5e+18 [22, 7.6e+18]</td>
+<td>1.9e+18 [22, 5.8e+18]</td>
+<td>0.94 [0.83, 0.99]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>4</td>
+<td>r=1</td>
+<td>0.38</td>
+<td>1.7 [1, 2]</td>
+<td>6.2e+14 [0.92, 1.9e+15]</td>
+<td>6.4e+14 [0.79, 1.9e+15]</td>
+<td>1 [0.97, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>4</td>
+<td>prereg</td>
+<td>0.59</td>
+<td>1.7 [1, 2]</td>
+<td>4.3e+19 [0.22, 1.3e+20]</td>
+<td>3.3e+19 [0.22, 9.8e+19]</td>
+<td>0.99 [0.92, 1.1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>8</td>
+<td>r=0.01</td>
+<td>39</td>
+<td>2 [1, 3]</td>
+<td>2.7e+18 [1.5e+05, 8.2e+18]</td>
+<td>2.1e+18 [1.4e+05, 6.2e+18]</td>
+<td>1 [0.95, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>8</td>
+<td>r=0.1</td>
+<td>3.9</td>
+<td>2 [1, 3]</td>
+<td>4.8e+18 [0.13, 1.4e+19]</td>
+<td>3.6e+18 [0.12, 1.1e+19]</td>
+<td>0.99 [0.94, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>8</td>
+<td>r=1</td>
+<td>0.39</td>
+<td>2 [1, 3]</td>
+<td>2.4e+19 [0.25, 7.1e+19]</td>
+<td>1.6e+19 [0.24, 4.7e+19]</td>
+<td>0.97 [0.92, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>8</td>
+<td>prereg</td>
+<td>0.55</td>
+<td>2 [1, 3]</td>
+<td>4.3e+19 [0.17, 1.3e+20]</td>
+<td>3.3e+19 [0.16, 9.8e+19]</td>
+<td>0.99 [0.94, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2</td>
+<td>r=0.01</td>
+<td>40</td>
+<td>1.7 [1, 2]</td>
+<td>1.5e+08 [24, 4.5e+08]</td>
+<td>1.5e+08 [27, 4.4e+08]</td>
+<td>0.99 [0.92, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>2</td>
+<td>r=0.1</td>
+<td>4</td>
+<td>1.7 [1, 2]</td>
+<td>1.5e+08 [0.93, 4.5e+08]</td>
+<td>1.4e+08 [0.83, 4.3e+08]</td>
+<td>0.9 [0.86, 0.92]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>2</td>
+<td>r=1</td>
+<td>0.4</td>
+<td>1.7 [1, 2]</td>
+<td>3.2e+02 [0.95, 9.6e+02]</td>
+<td>2.7e+02 [0.82, 8.2e+02]</td>
+<td>1 [1, 1.1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>2</td>
+<td>prereg</td>
+<td>1.3</td>
+<td>1.7 [1, 2]</td>
+<td>1.3e+08 [0.82, 3.9e+08]</td>
+<td>1.3e+08 [0.87, 3.8e+08]</td>
+<td>1 [0.91, 1.1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>4</td>
+<td>r=0.01</td>
+<td>32</td>
+<td>2.3 [1, 3]</td>
+<td>4.3e+25 [1.3, 1.3e+26]</td>
+<td>1.6e+25 [1, 4.9e+25]</td>
+<td>0.99 [0.95, 1.1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>4</td>
+<td>r=0.1</td>
+<td>3.2</td>
+<td>2.3 [1, 3]</td>
+<td>4.6e+25 [7.9, 1.4e+26]</td>
+<td>1.8e+25 [8.7, 5.3e+25]</td>
+<td>0.98 [0.93, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>4</td>
+<td>r=1</td>
+<td>0.32</td>
+<td>2.3 [1, 3]</td>
+<td>5.3e+25 [0.9, 1.6e+26]</td>
+<td>2e+25 [0.89, 6.1e+25]</td>
+<td>0.98 [0.85, 1.1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>4</td>
+<td>prereg</td>
+<td>1.1</td>
+<td>2.3 [1, 3]</td>
+<td>3.1e+25 [0.89, 9.3e+25]</td>
+<td>1.2e+25 [0.88, 3.5e+25]</td>
+<td>0.99 [0.97, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>8</td>
+<td>r=0.01</td>
+<td>59</td>
+<td>3.3 [3, 4]</td>
+<td>1.2e+23 [1.3e+17, 2.4e+23]</td>
+<td>4.3e+22 [5.7e+16, 9.2e+22]</td>
+<td>1 [0.96, 1.1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>8</td>
+<td>r=0.1</td>
+<td>5.9</td>
+<td>3.3 [3, 4]</td>
+<td>2e+23 [1e+17, 4.5e+23]</td>
+<td>7.4e+22 [4.6e+16, 1.7e+23]</td>
+<td>1 [0.97, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>8</td>
+<td>r=1</td>
+<td>0.59</td>
+<td>3.3 [3, 4]</td>
+<td>2e+18 [1.3e+08, 5.8e+18]</td>
+<td>5.6e+17 [1.2e+08, 1.5e+18]</td>
+<td>0.98 [0.97, 1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>8</td>
+<td>prereg</td>
+<td>1.9</td>
+<td>3.3 [3, 4]</td>
+<td>4.3e+23 [0.67, 1.3e+24]</td>
+<td>1.5e+23 [0.52, 4.4e+23]</td>
+<td>1 [0.99, 1.1]</td>
+<td>0</td>
+<td>3 non_identifiable</td>
+</tr>
+</tbody>
+</table>
+<p>At noise level r=0.01 (mean SNR 30), 0 of 27 weighted known-background fits are full rank with a non-zero estimate.</p>
+<p>At noise level r=0.1 (mean SNR 3), 0 of 27 weighted known-background fits are full rank with a non-zero estimate.</p>
+<p>At noise level r=1 (mean SNR 0.3), 0 of 27 weighted known-background fits are full rank with a non-zero estimate.</p>
+<p>At noise level prereg (mean SNR 0.71), 0 of 27 weighted known-background fits are full rank with a non-zero estimate.</p>
+<p>Over all 648 fits, 648 are non-identifiable at relative tolerance 1e-8 and 0 return an all-zero estimate.</p>
+<p>Rank of the weighted sensitivity matrix (fits per K x sensors, deficit = K - rank): K=2, n=2: mean deficit 1; K=2, n=4: mean deficit 1; K=2, n=8: mean deficit 1; K=4, n=2: mean deficit 2.3; K=4, n=4: mean deficit 2.3; K=4, n=8: mean deficit 2; K=8, n=2: mean deficit 6.3; K=8, n=4: mean deficit 5.7; K=8, n=8: mean deficit 4.7.</p>
+<p>The largest relative error seen is 1.1e+27; values far above 1 are noise amplified along a near-null direction, not recovery.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figures/e03-source-estimates.png" class="img-fluid figure-img"></p>
+<figcaption>Estimated against true source strengths for weighted NNLS with known background, one panel per sensor count, colour by noise level. Triangles are zero estimates plotted on a floor.</figcaption>
+</figure>
+</div>
+</section>
+<section id="estimator-and-background-comparison" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="estimator-and-background-comparison"><span class="header-section-number">6.4</span> Estimator and background comparison</h2>
+<p>Paired on identical data, restricted to cells where both fits are full rank with a non-zero estimate; a negative change is an improvement.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>noise level</th>
+<th>comparison (method minus baseline)</th>
+<th>paired cells (full rank, non-zero)</th>
+<th>median change in source relative RMSE</th>
+<th>cells where method is better</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>r=0.01</td>
+<td>unweighted vs weighted (bg known)</td>
+<td>0</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr class="even">
+<td>r=0.01</td>
+<td>ridge vs weighted (bg known)</td>
+<td>0</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr class="odd">
+<td>r=0.01</td>
+<td>bg estimated vs known (weighted)</td>
+<td>0</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr class="even">
+<td>r=0.1</td>
+<td>unweighted vs weighted (bg known)</td>
+<td>0</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr class="odd">
+<td>r=0.1</td>
+<td>ridge vs weighted (bg known)</td>
+<td>0</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr class="even">
+<td>r=0.1</td>
+<td>bg estimated vs known (weighted)</td>
+<td>0</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr class="odd">
+<td>r=1</td>
+<td>unweighted vs weighted (bg known)</td>
+<td>0</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr class="even">
+<td>r=1</td>
+<td>ridge vs weighted (bg known)</td>
+<td>0</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr class="odd">
+<td>r=1</td>
+<td>bg estimated vs known (weighted)</td>
+<td>0</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr class="even">
+<td>prereg</td>
+<td>unweighted vs weighted (bg known)</td>
+<td>0</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr class="odd">
+<td>prereg</td>
+<td>ridge vs weighted (bg known)</td>
+<td>0</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr class="even">
+<td>prereg</td>
+<td>bg estimated vs known (weighted)</td>
+<td>0</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="failures-characterised" class="level2" data-number="6.5">
+<h2 data-number="6.5" class="anchored" data-anchor-id="failures-characterised"><span class="header-section-number">6.5</span> Failures, characterised</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>noise level</th>
+<th>non_identifiable</th>
+<th>rows</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>r=0.01</td>
+<td>162</td>
+<td>162</td>
+</tr>
+<tr class="even">
+<td>r=0.1</td>
+<td>162</td>
+<td>162</td>
+</tr>
+<tr class="odd">
+<td>r=1</td>
+<td>162</td>
+<td>162</td>
+</tr>
+<tr class="even">
+<td>prereg</td>
+<td>162</td>
+<td>162</td>
+</tr>
+</tbody>
+</table>
+<p>Non-identifiable means the rank of the weighted sensitivity matrix is below the number of sources, so the data cannot determine the strengths; the estimate is then one member of a family and its error says nothing about the method. An all-zero estimate means the nonnegativity constraint set every strength to zero, which the protocol counts as a failure. Neither is tuned away.</p>
+</section>
+<section id="intentionally-non-identifiable-case" class="level2" data-number="6.6">
+<h2 data-number="6.6" class="anchored" data-anchor-id="intentionally-non-identifiable-case"><span class="header-section-number">6.6</span> Intentionally non-identifiable case</h2>
+<p>Four sources, two sensors, a single snapshot hour, noiseless. A nonnegative alternative strength vector is constructed along a null direction of the sensitivity matrix.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>quantity</th>
+<th>value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>rank of snapshot sensitivity</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>sources K</td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>observations</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>alternative: smallest coefficient (ug/s)</td>
+<td>3.3e+05</td>
+</tr>
+<tr class="odd">
+<td>alternative vs truth, relative distance</td>
+<td>3.1e+04</td>
+</tr>
+<tr class="even">
+<td>alternative: relative data misfit</td>
+<td>1.6e-15</td>
+</tr>
+<tr class="odd">
+<td>alternative: relative field difference at that hour</td>
+<td>2.6e+04</td>
+</tr>
+<tr class="even">
+<td>noiseless NNLS: source relative error</td>
+<td>0.81</td>
+</tr>
+<tr class="odd">
+<td>noiseless NNLS: relative data misfit</td>
+<td>6.5e-17</td>
+</tr>
+</tbody>
+</table>
+<p>The alternative reproduces the readings to round-off while differing from the truth, and the whole-field difference shows that a non-identifiable source set does not give a determined field either.</p>
+</section>
+<section id="limitations" class="level2" data-number="6.7">
+<h2 data-number="6.7" class="anchored" data-anchor-id="limitations"><span class="header-section-number">6.7</span> Limitations</h2>
+<ul>
+<li>Smoke scale and perfect model only: no wind, diffusivity, removal or location error, single noise realisation per cell, three seeds, deterministic non-optimised sensor sites. No claim about generality or about the preregistered 64² design.</li>
+<li>The tables use the amended source scale a_ref = 1 g s⁻¹ (A1), chosen after seeing data, so they are exploratory. The data-relative noise levels are chosen so the signal is visible; they are not the preregistered noise, which is reported separately. (Earlier text here describing the preregistered 100 µg s⁻¹ scale is superseded.)</li>
+<li>The estimate is scored in-window on the analysis field, not as a held-out forecast, so it is not the primary endpoint.</li>
+<li>Rank decisions depend on the 1e-8 relative tolerance; badly conditioned but nominally full-rank cells are not identifiable in practice, which the conditioning column shows.</li>
+<li>The ridge strength is a single fixed value; no validation-based selection was run.</li>
+<li>Sources whose plume barely reaches any chosen sensor give near-zero columns of the sensitivity matrix; unregularised NNLS can then assign them enormous strengths for negligible change in the readings. Errors many orders above 1 are this numerical effect, reported as observed and not clipped. The fixed, non-optimised sensor rule and 24 h window may be a main cause; sensor placement is a later experiment and was not varied here.</li>
+<li>The run budget for this experiment was used up, so no redesign (different window, tolerance or sensor rule) was run after seeing these results.</li>
+<li>Findings from these runs stay preliminary.</li>
+</ul>
+</section>
+<section id="audit-outcome-gate-03" class="level2" data-number="6.8">
+<h2 data-number="6.8" class="anchored" data-anchor-id="audit-outcome-gate-03"><span class="header-section-number">6.8</span> Audit outcome (gate-03)</h2>
+<p>Gate-03 found the code engineering-sound (23 tests pass) but <strong>did not clear</strong> the baseline for fair placement comparisons: no fit is full rank, so the estimator has no demonstrated recovery regime. It recommended a regime where rank = K is achievable (longer window, optimised sensors or larger source scale), a noise-referenced rank criterion, and validation-only ridge tuning. What changed: the source scale (A1), the noise-referenced <strong>practical rank</strong> used from E04 on, a prior-referenced ridge (MAP) in E05/E07, and optimised placement (E06/E07). The “identifiable recovery” half of the E03 hypothesis remains untested in this configuration.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapters/02-benchmark.html" class="pagination-link" aria-label="E02 Tiny local benchmark: three hand-placed examples">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">E02 Tiny local benchmark: three hand-placed examples</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../chapters/04-footprints.html" class="pagination-link" aria-label="E04 Footprints, Fisher information and identifiability">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">E04 Footprints, Fisher information and identifiability</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

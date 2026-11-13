@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-11-13">
+
+<title>PRAVAH: sparse low-cost sensor placement under uncertain wind</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./chapters/00-background.html" rel="next">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-17329ef5f9a609701b0437e64bf71ff1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Executive summary</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">PRAVAH: sparse low-cost sensor placement under uncertain wind</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Executive summary</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapters/00-background.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Background and starting literature</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapters/00-methods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Methods</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Experiments</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapters/e00-protocol.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">E00 Protocol and evaluation contract</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapters/01-forward.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">E01 Forward-solver verification (local 16²/32²/64²)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapters/02-benchmark.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">E02 Tiny local benchmark: three hand-placed examples</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapters/03-inverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">E03 Static source-strength inverse (known wind)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapters/04-footprints.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">E04 Footprints, Fisher information and identifiability</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapters/05-time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">E05 Temporal observability: sensor count versus observation window</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapters/06-placement-methods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">E06 Placement algorithms and their own objectives</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapters/07-cross-objective.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">E07 Cross-objective placement on held-out winds</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapters/90-lessons.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapters/91-next.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Next steps</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapters/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#executive-summary" id="toc-executive-summary" class="nav-link active" data-scroll-target="#executive-summary">Executive summary</a>
+  <ul class="collapse">
+  <li><a href="#the-question" id="toc-the-question" class="nav-link" data-scroll-target="#the-question">The question</a></li>
+  <li><a href="#where-we-started-green-2006" id="toc-where-we-started-green-2006" class="nav-link" data-scroll-target="#where-we-started-green-2006">Where we started: Green (2006)</a></li>
+  <li><a href="#the-testbed" id="toc-the-testbed" class="nav-link" data-scroll-target="#the-testbed">The testbed</a></li>
+  <li><a href="#results-at-a-glance" id="toc-results-at-a-glance" class="nav-link" data-scroll-target="#results-at-a-glance">Results at a glance</a></li>
+  <li><a href="#key-figures" id="toc-key-figures" class="nav-link" data-scroll-target="#key-figures">Key figures</a></li>
+  <li><a href="#what-we-learned-in-plain-language" id="toc-what-we-learned-in-plain-language" class="nav-link" data-scroll-target="#what-we-learned-in-plain-language">What we learned, in plain language</a></li>
+  <li><a href="#honest-limitations" id="toc-honest-limitations" class="nav-link" data-scroll-target="#honest-limitations">Honest limitations</a></li>
+  <li><a href="#whats-next" id="toc-whats-next" class="nav-link" data-scroll-target="#whats-next">What’s next</a></li>
+  <li><a href="#how-to-read-this-report" id="toc-how-to-read-this-report" class="nav-link" data-scroll-target="#how-to-read-this-report">How to read this report</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">PRAVAH: sparse low-cost sensor placement under uncertain wind</h1>
+<p class="subtitle lead">Plan 1–2 research report (E00–E07), synthetic 2-D benchmark</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 13, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="executive-summary" class="level1 unnumbered">
+<h1 class="unnumbered">Executive summary</h1>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Scope
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Everything in this report is a <strong>synthetic</strong> study: a 2-D, depth-averaged passive tracer simulated with FiPy on a 10 km × 10 km square, with known truth. It is <strong>not</strong> PM2.5, not validated against observations, and makes <strong>no real-world exposure or deployment claim</strong>. Most results are exploratory; one test (E07) is confirmatory, and only for the cells that were run.</p>
+</div>
+</div>
+<section id="the-question" class="level2">
+<h2 class="anchored" data-anchor-id="the-question">The question</h2>
+<p>How few <strong>low-cost, noisy sensors</strong> do we need, and <strong>where</strong> should they go, to reconstruct and forecast a pollution field when the <strong>wind and the emissions are uncertain</strong>? Plan 2 (<code>plans/plan-02-identifiability-placement-forecast.yaml</code>) breaks this into: which source combinations a network can actually distinguish (identifiability), whether a longer history can replace sensors, which placement rule is best for which task, and finally sequential forecasting (E08–E11).</p>
+</section>
+<section id="where-we-started-green-2006" class="level2">
+<h2 class="anchored" data-anchor-id="where-we-started-green-2006">Where we started: Green (2006)</h2>
+<p>Our methodological starting point is Kary Green’s Rice master’s thesis on optimal sensor placement for parameter identification <span class="citation" data-cites="green2006">(<a href="chapters/references.html#ref-green2006" role="doc-biblioref">Green 2006</a>)</span>. Green linearises sensor readings around the parameters of a semi-discretised PDE, forms the <strong>Fisher information matrix</strong> M = GᵀR⁻¹G, and chooses sensor locations that maximise log det M (<strong>D-optimal design</strong>). His worked example is a <strong>1-D advection–diffusion</strong> problem with <strong>two</strong> unknown parameters (diffusivity and advection coefficient); the optimised design shrinks the 95 % confidence-ellipse area by about 36 % relative to equal spacing (reading notes, <code>docs/research/green-2006-reading-notes.md</code>).</p>
+<p>PRAVAH keeps the Fisher/D-optimal machinery but changes almost everything around it:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Green (2006)</th>
+<th>PRAVAH</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Space</td>
+<td>1-D</td>
+<td>2-D, 64 × 64 grid (32² for pilots)</td>
+</tr>
+<tr class="even">
+<td>Unknowns</td>
+<td>2 transport parameters</td>
+<td>K = 2–8 source strengths (plus, later, the field)</td>
+</tr>
+<tr class="odd">
+<td>Sensors</td>
+<td>ideal, few</td>
+<td>low-cost, noise σ = 5 % of median concentration; AR(1) and per-site arms</td>
+</tr>
+<tr class="even">
+<td>Wind</td>
+<td>known, fixed</td>
+<td>time-varying; <strong>test winds held out</strong> from design</td>
+</tr>
+<tr class="odd">
+<td>Endpoint</td>
+<td>parameter confidence ellipse</td>
+<td><strong>held-out one-hour-ahead field forecast RMSE</strong> (protocol primary)</td>
+</tr>
+<tr class="even">
+<td>Truth</td>
+<td>analytic</td>
+<td>synthetic simulator with known truth, independent audits</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="the-testbed" class="level2">
+<h2 class="anchored" data-anchor-id="the-testbed">The testbed</h2>
+<p>A FiPy finite-volume solver of ∂c/∂t + u·∇c = ∇·(K∇c) − λ(c − c_bg) + S, with K = 50 m² s⁻¹, λ = 1/12 h, Gaussian area sources (σ = 400 m), background 5 µg m⁻³, hourly-piecewise wind, a 60-day calendar split into train (days 1–30), validation (31–42) and test (43–60) with <strong>held-out test wind regimes</strong>. Sensors sit on a 16 × 16 candidate lattice with 1.25 km minimum spacing. Every experiment received an independent audit (“gate”).</p>
+</section>
+<section id="results-at-a-glance" class="level2">
+<h2 class="anchored" data-anchor-id="results-at-a-glance">Results at a glance</h2>
+<p>Evidence labels: <strong>verified</strong> = engineering check passed an independent gate; <strong>exploratory</strong> = smoke scale and/or settings chosen after seeing data; <strong>confirmatory (cells run)</strong> = preregistered test, supported only in the cells run.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Exp</th>
+<th>Question</th>
+<th>What we did</th>
+<th>What we found</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="./chapters/e00-protocol.html">E00</a></td>
+<td>Can we fix endpoints and rules before data?</td>
+<td>Preregistered protocol, evaluation contract; audit</td>
+<td>Audit found 3 blockers: signal 1000× below noise (B1), no approval (B2), upwind numerics (B3). All resolved: amendment A1, user approval, amendment A2</td>
+<td>approved baseline, amendable</td>
+</tr>
+<tr class="even">
+<td><a href="./chapters/01-forward.html">E01</a></td>
+<td>Does the solver solve the PDE?</td>
+<td>Convergence, mass, dt-halving oracles 16²–64²</td>
+<td>Upwind converges at ~1st order, mass to ~1e-14, but at 64² its numerical diffusivity is 350–2900 m² s⁻¹ vs K = 50. Split VanLeer at dt 30 s gives K_eff ≈ 50 (A2)</td>
+<td>verified (conditionally cleared)</td>
+</tr>
+<tr class="odd">
+<td><a href="./chapters/02-benchmark.html">E02</a></td>
+<td>Is the benchmark sound and leak-free?</td>
+<td>Generator, splits, 65 validity/leakage checks</td>
+<td>Checks pass; at 100 µg/s the plume was invisible (SNR ~2e-3); at 1 g/s peak SNR is 21–32</td>
+<td>verified (smoke)</td>
+</tr>
+<tr class="even">
+<td><a href="./chapters/03-inverse.html">E03</a></td>
+<td>Can fixed sensors recover source strengths?</td>
+<td>NNLS inverse, 648 fits, 24 h window</td>
+<td>Rank-deficient in <strong>all 648</strong> fits, at both scales: a structural failure of fixed, non-optimised sensors</td>
+<td>exploratory (negative)</td>
+</tr>
+<tr class="odd">
+<td><a href="./chapters/04-footprints.html">E04</a></td>
+<td>Which source combinations can a network distinguish?</td>
+<td>Footprints, Fisher information, SVD</td>
+<td>At 1 g/s a D-optimal 4-sensor design has practical rank 4/4; coverage 1–2, redundant 2. One replicate</td>
+<td>exploratory</td>
+</tr>
+<tr class="even">
+<td><a href="./chapters/05-time.html">E05</a></td>
+<td>Can a longer window replace sensors?</td>
+<td>Window × sensors × wind ablation, 20 seeds</td>
+<td>Elapsed time alone adds <strong>nothing</strong> (constant wind); <strong>wind change</strong> adds rank (+0.37, 16/17 seeds). v1 claims were overstated and withdrawn</td>
+<td>exploratory</td>
+</tr>
+<tr class="odd">
+<td><a href="./chapters/06-placement-methods.html">E06</a></td>
+<td>Can we reproduce standard placement algorithms?</td>
+<td>uniform/random/coverage/source-near/D/A/diversity/POD-QR</td>
+<td>Implementations check out (QR = PySensors). Source-informed designs reach full rank; most of that is <strong>knowing source locations</strong></td>
+<td>verified methods; results in-sample</td>
+</tr>
+<tr class="even">
+<td><a href="./chapters/07-cross-objective.html">E07</a></td>
+<td>Which placement is best for which held-out task?</td>
+<td>32² pilot + 64² sweep (40 scenarios, held-out winds)</td>
+<td>D-opt beats random on held-out forecast RMSE by a median 42–84 % per cell (8/8 cells). But <strong>sensors next to known sources beat D-opt</strong> in 115/120 pairs</td>
+<td><strong>confirmatory in cells run</strong>; source-near result exploratory</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="key-figures" class="level2">
+<h2 class="anchored" data-anchor-id="key-figures">Key figures</h2>
+<div id="fig-summary-confirm" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-summary-confirm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/report-e07-confirmatory.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-summary-confirm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: E07 64² sweep (confirmatory): relative reduction in held-out forecast RMSE of the D-optimal network versus random networks, per cell. Dotted line = preregistered 10 % threshold.
+</figcaption>
+</figure>
+</div>
+<div id="fig-summary-sweep" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-summary-sweep-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/e07-sweep-crossobjective.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-summary-sweep-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: E07 64² sweep: left, regret when a network chosen by one criterion is scored on another; right, forecast-RMSE reduction against random by strategy and budget. <code>source_near</code> (green) is the top line throughout.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="what-we-learned-in-plain-language" class="level2">
+<h2 class="anchored" data-anchor-id="what-we-learned-in-plain-language">What we learned, in plain language</h2>
+<ol type="1">
+<li><strong>Scale matters before cleverness.</strong> At the originally declared emission rate, sensors could not see the plumes at all; no placement rule can fix that (E00–E05, amendment A1).</li>
+<li><strong>Numerics matter.</strong> The first-order scheme smeared plumes with 7–60× the physical diffusivity at 64²; switching to a split VanLeer scheme was necessary before any 64² result could mean anything (A2).</li>
+<li><strong>Time helps only when the wind changes.</strong> Repeated readings under the same wind reduce noise but do not separate sources; a change in wind direction does (E05, exploratory).</li>
+<li><strong>Optimised placement beats random</strong>, confirmed in the 8 cells run (E07).</li>
+<li><strong>But the gain comes from knowing where the sources are</strong>, not from D-optimisation: simply placing sensors next to the known sources did better still, and D-optimal networks tuned to training winds failed when an unseen (southerly) wind blew in the test period (E07, exploratory).</li>
+</ol>
+</section>
+<section id="honest-limitations" class="level2">
+<h2 class="anchored" data-anchor-id="honest-limitations">Honest limitations</h2>
+<ul>
+<li>Synthetic, perfect-model world: known source locations, known wind, constant sources, ideal sensors, uniform wind.</li>
+<li>Smoke scale (32²) for E02–E06; only E07 ran at 64² and only for K ∈ {2, 4}, k ∈ {4, 8, 16}, 10 seeds.</li>
+<li>The source scale (1 g/s) was chosen after seeing data, so E02–E06 at that scale are exploratory.</li>
+<li>The E07 mechanism rests on one unseen wind direction; the “source-near” advantage may partly reflect sensors sitting inside the 1200 m emission disc (checked in 2 scenarios only; sweep-wide control running).</li>
+<li>No sequential filter, no wind error, no model mismatch yet: that is E09–E15.</li>
+</ul>
+</section>
+<section id="whats-next" class="level2">
+<h2 class="anchored" data-anchor-id="whats-next">What’s next</h2>
+<p>E07 follow-up controls (1200 m exclusion, per-wind-regime window analysis) are running on cached fields; then E08 (sensor sufficiency, preregistered from E05), E09–E10 (Kalman filtering and joint source–field assimilation), E11 (placement for forecasting), and plan 3 (wind and model mismatch, robust placement, calibration). See <a href="./chapters/91-next.html">Next steps</a>.</p>
+</section>
+<section id="how-to-read-this-report" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-read-this-report">How to read this report</h2>
+<p>Chapters <a href="./chapters/00-background.html">Background</a> and <a href="./chapters/00-methods.html">Methods</a> set the stage; one chapter per experiment follows; <a href="./chapters/90-lessons.html">Lessons and corrections</a> collects what the independent audits caught. Every number is read from versioned tables under <code>reports/quarto/tables/</code>, figures under <code>figures/</code>, the experiment journals in <code>state/experiments/</code>, or the audits in <code>docs/research/gates/</code>.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-green2006" class="csl-entry" role="listitem">
+Green, Kary. 2006. <span>“Optimal Sensor Placement for Parameter Identification.”</span> Master’s thesis, Rice University. <a href="https://repository.rice.edu/items/4d4b4f81-1c4b-4362-8513-685eac332c7c">https://repository.rice.edu/items/4d4b4f81-1c4b-4362-8513-685eac332c7c</a>.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./chapters/00-background.html" class="pagination-link" aria-label="Background and starting literature">
+        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Background and starting literature</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
