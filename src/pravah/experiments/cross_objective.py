@@ -77,6 +77,13 @@ def design_input(sc, G3_all, sigma):
                        tuple(sc.cfg.sources.strength_loguniform))
 
 
+def exclude_near_sources(xy, cand, source_xy, radius_m):
+    """cand without the sites within radius_m (inclusive) of any source centre; order kept (gate-07 exclusion control)."""
+    cand = np.asarray(cand, int)
+    d = np.linalg.norm(np.asarray(xy)[cand][:, None] - np.asarray(source_xy)[None], axis=2).min(1)
+    return cand[d > radius_m]
+
+
 def problem(di: DesignInput, cand=None):
     """placement.Problem with the field-variance weight Q and the PRIOR-ENSEMBLE POD archive (gate-06 condition 1)."""
     G = di.G3_train
@@ -193,6 +200,15 @@ def boot_median_ci(x, n=10000, seed=4000):
     i = np.random.default_rng(seed).integers(0, len(x), (n, len(x)))
     m = np.median(x[i], axis=1)  # -inf (undefined designs) stay as order statistics
     return float(np.quantile(m, .025, method="lower")), float(np.quantile(m, .975, method="higher"))
+
+
+def df_median_ci(x, cover=.95):
+    """Distribution-free order-statistic CI for the median: (x(j), x(n+1-j)) with the largest j giving >= cover
+    binomial coverage (gate-07 issue 5)."""
+    from scipy.stats import binom
+    x, n = np.sort(np.asarray(x, float)), len(x)
+    j = max(i for i in range(1, n // 2 + 1) if 1 - 2 * binom.cdf(i - 1, n, .5) >= cover)
+    return float(x[j - 1]), float(x[n - j])
 
 
 def sign_test(x, tie=1e-12):

@@ -4,10 +4,9 @@ Sources: `state/STATUS.md`, `state/experiments/e05.md` and `e07.md`, plans 2 and
 
 ## Immediately (E07 close-out, no new simulations)
 
-1. **User sign-off on the confirmatory scope**: accept the 8 cells run (K ∈ {2, 4}, k ∈ {8, 16}, 10 seeds) as the
-   confirmatory population, or report "supported in run cells, unresolved overall".
-2. **1200 m exclusion control** across all 40 scenarios (running on cached fields).
-3. **Rank-deficient window fraction per test wind regime** for every design and scenario (running).
+Done: the user approved the confirmatory scope ("supported in the cells run"), and both follow-up controls finished
+(see the E07 chapter). One implication carries forward: placement must be judged with sensors kept out of the emission
+discs as well, and against unseen wind directions (E08, E15).
 
 ## Plan 2, remaining experiments
 

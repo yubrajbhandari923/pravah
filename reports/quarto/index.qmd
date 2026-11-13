@@ -75,7 +75,7 @@ settings chosen after seeing data; **confirmatory (cells run)** = preregistered 
 4. **Optimised placement beats random**, confirmed in the 8 cells run (E07).
 5. **But the gain comes from knowing where the sources are**, not from D-optimisation: simply placing sensors next to
    the known sources did better still, and D-optimal networks tuned to training winds failed when an unseen
-   (southerly) wind blew in the test period (E07, exploratory).
+   (southerly) wind blew in the test period: 79 % of their forecast error falls in those blind windows (E07, exploratory).
 
 ## Honest limitations
 
@@ -83,12 +83,13 @@ settings chosen after seeing data; **confirmatory (cells run)** = preregistered 
 - Smoke scale (32²) for E02–E06; only E07 ran at 64² and only for K ∈ {2, 4}, k ∈ {4, 8, 16}, 10 seeds.
 - The source scale (1 g/s) was chosen after seeing data, so E02–E06 at that scale are exploratory.
 - The E07 mechanism rests on one unseen wind direction; the "source-near" advantage may partly reflect sensors sitting
-  inside the 1200 m emission disc (checked in 2 scenarios only; sweep-wide control running).
+  inside the 1200 m emission disc. Across all 40 scenarios, excluding those sites keeps near-source ahead (104/120) but
+  shrinks D-optimal's gain over random from 71 % to 20 %, and no single cell then clears the 10 % test threshold (exploratory control).
 - No sequential filter, no wind error, no model mismatch yet: that is E09–E15.
 
 ## What's next
 
-E07 follow-up controls (1200 m exclusion, per-wind-regime window analysis) are running on cached fields; then E08
+E07 is closed out (follow-up controls done, see its chapter); next E08
 (sensor sufficiency, preregistered from E05), E09–E10 (Kalman filtering and joint source–field assimilation), E11
 (placement for forecasting), and plan 3 (wind and model mismatch, robust placement, calibration). See
 [Next steps](chapters/91-next.qmd).

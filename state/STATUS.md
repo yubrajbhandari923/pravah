@@ -15,9 +15,9 @@ Protocol and `configs/benchmark-v1.yaml` APPROVED 2026-11-12 as an amendable bas
 
 1. **B3 resolved by amendment A2** (`decisions/2026-11-12-advection-scheme.md`): 64² runs use split VanLeer, dt 30 s
    (K_eff ≈ 50 vs 350–2900 for upwind; gates met). Before the 64² sweep, measure VanLeer's superposition error on benchmark footprints.
-2. **E07 64² sweep done** (job 204894; gate-07 pass with conditions). dopt beats random (≥ 10 %) in 8/8 cells run, but
-   source_near beats dopt in 115/120 pairs: the gain comes from knowing source locations. Open: user sign-off on the
-   confirmatory scope, the 1200 m exclusion control and the per-wind-regime window analysis on cached fields, chapter 07.
+2. **E07 closed** (sweep + gate-07 + follow-ups). Confirmatory supported in the cells run (user-approved scope). But
+   source_near beats dopt (115/120), and with in-footprint sites excluded dopt's gain over random drops to 0.20 (0/8 cells).
+   dopt's loss is concentrated in the unseen southerly regime. See `experiments/e07.md`.
 3. **E08 preregistration** from E05 v2 (see `experiments/e05.md`, gate-05 recommendations).
 4. HPC verified 2026-11-12 (smoke job 204775: 175 tests passed on node004; limits 64 CPU, 4 GPU, 2 days in settings.yaml).
 5. E09–E11 (Kalman, joint assimilation, forecast placement) after E07; plan 3 after plan 2.
@@ -35,7 +35,7 @@ Known open items: E03 (fixed-sensor static inverse) remains rank deficient for s
 | e04 | Footprints / Fisher information | rerun at 1 g/s, 1 replicate; D-opt design 4/4 practical rank | [e04](experiments/e04.md) |
 | e05 | Temporal observability | smoke, 20 seeds, audited (gate-05) and rerun; exploratory support | [e05](experiments/e05.md) |
 | e06 | Placement algorithms | smoke done, audited (gate-06); 3 conditions before E07 reuse | [e06](experiments/e06.md) |
-| e07 | Cross-objective placement | 64² sweep done, audited (gate-07): confirmatory supported in cells run; source_near beats dopt | [e07](experiments/e07.md) |
+| e07 | Cross-objective placement | closed: confirmatory supported in cells run; source_near beats dopt; gain shrinks with in-footprint sites excluded | [e07](experiments/e07.md) |
 | e08–e20 | see plans | not started | — |
 
 ## Verified facts vs questions

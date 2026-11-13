@@ -1,0 +1,72 @@
+{
+ "command": "OMP_NUM_THREADS=1 uv run python scripts/e07_cross_objective.py --sweep --stage 2 --fields /tmp/claude-1000/-home-yubraj-research-pravah-new/a85e2353-a4b0-4538-b8b9-d8d9279ac3d4/scratchpad/e07fields --exclude-radius 1200 --out /tmp/claude-1000/-home-yubraj-research-pravah-new/a85e2353-a4b0-4538-b8b9-d8d9279ac3d4/scratchpad/e07-excl-1200-96c5341 --workers 5",
+ "git_rev": "96c5341b60f7829a03427b5fbbc46451f1762841",
+ "git_dirty": false,
+ "host": "RAD-88300596",
+ "python": "3.14.9",
+ "numpy": "2.5.4",
+ "slurm_job": null,
+ "design_note": "docs/research/cross-objective-design.md",
+ "scale": {
+  "grid": [
+   64,
+   64
+  ],
+  "dt": 30,
+  "scheme": "vanleer",
+  "spinup": 48,
+  "split": null,
+  "Ks": [
+   2,
+   4
+  ],
+  "ks": [
+   4,
+   8,
+   16
+  ],
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "R": 5,
+  "winds": [
+   "veering",
+   "mixed"
+  ],
+  "estimators": [
+   "map"
+  ],
+  "strategies": [
+   "uniform",
+   "coverage",
+   "source_near",
+   "hotspot",
+   "dopt",
+   "diversity",
+   "podqr"
+  ]
+ },
+ "fields": "/tmp/claude-1000/-home-yubraj-research-pravah-new/a85e2353-a4b0-4538-b8b9-d8d9279ac3d4/scratchpad/e07fields",
+ "exclude_radius_m": 1200.0,
+ "winds": {
+  "veering": [
+   "veering"
+  ],
+  "mixed": [
+   "steady_westerly",
+   "veering",
+   "weak_variable"
+  ]
+ },
+ "workers": 5,
+ "total_wall_s": 1650.3986909389496
+}

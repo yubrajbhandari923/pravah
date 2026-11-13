@@ -66,3 +66,27 @@ def test_truth_field_must_match_calendar():
     cfg = E.make_cfg("tiny", "veering")
     with pytest.raises(ValueError, match="truth_field shape"):
         B.generate_scenario(cfg, 0, 2, truth_field=np.zeros((5, 16, 16)))
+
+
+def test_exclusion_removes_exactly_sites_within_radius():
+    wind, K, seed, r = "veering", 2, 0, 1200.0
+    sc = B.generate_scenario(E.make_cfg("tiny", wind), seed, K)
+    F, G3 = X.responses(sc)
+    adm = sc.admissible_sites()
+    d = np.linalg.norm(sc.site_xy[:, None] - sc.truth.source_xy[None], axis=2).min(1)
+    keep = X.exclude_near_sources(sc.site_xy, adm, sc.truth.source_xy, r)
+    assert keep.tolist() == [i for i in adm if d[i] > r] and 0 < len(keep) < len(adm)  # exactly the radius; order kept
+
+    rows0, swaps0, _ = E.evaluate("tiny", wind, K, seed, sc, F, G3, {}, 0.0, 0.0)
+    # a radius inside the admissibility mask (> 1 sigma = 400 m) removes nothing, so nothing else may change
+    rows_s, swaps_s, _ = E.evaluate("tiny", wind, K, seed, sc, F, G3, {}, 0.0, 0.0, exclude_m=300.0)
+    assert swaps_s == swaps0 and len(rows_s) == len(rows0)
+    assert all(all(_same(a[c], b[c]) for c in a if c != "design_s") for a, b in zip(rows0, rows_s))
+
+    rows1, _, tm = E.evaluate("tiny", wind, K, seed, sc, F, G3, {}, 0.0, 0.0, exclude_m=r)
+    assert tm["n_cand"] == len(keep) and len(rows1) == len(rows0)
+    sites = [int(i) for x in rows1 if isinstance(x.get("sites"), str) for i in x["sites"].split()]
+    assert sites and set(sites) <= set(keep.tolist())
+    base = lambda rows: [x for x in rows if x["k"] == 0]  # design-free baselines untouched
+    assert base(rows1) == base(rows0)
+    assert [x["sigma_med"] for x in rows1 if "sigma_med" in x] == [x["sigma_med"] for x in rows0 if "sigma_med" in x]

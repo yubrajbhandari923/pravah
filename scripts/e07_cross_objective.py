@@ -5,6 +5,7 @@ Sweep (64^2, HPC), one job:  ... --sweep --out DIR --workers 64   (stage 1 then 
   or split over jobs (optional; --shard i/n):
   stage 1 (solves):   ... --sweep --stage 1 --shard 0/2 --out DIR --workers 64
   stage 2 (designs):  ... --sweep --stage 2 --out DIR --workers 64      (after every stage-1 shard has finished)
+Exclusion control (gate-07, post hoc; no solves): ... --sweep --stage 2 --fields OLD/fields --exclude-radius 1200 --out NEW
 Preflight (64^2):     ... --preflight --out DIR [--throughput-n 1,16,32,64]
 Report only:          uv run python scripts/e07_cross_objective.py --pilot --report
 
@@ -111,14 +112,15 @@ def run_field(task):
 
 
 # ---------------------------------------------------------------- stage 2: designs + evaluation per scenario
-def run_scenario(job):
-    """Stage 2 for one scenario from the stage-1 caches (FileNotFoundError if any is missing)."""
+def run_scenario(job, fields=None, exclude_m=0.0):
+    """Stage 2 for one scenario from the stage-1 caches in `fields` (default out/fields; FileNotFoundError if any is
+    missing). exclude_m > 0: candidates within exclude_m of any source centre are removed before every design."""
     scale, wind, K, seed, out = job
     fl = scenario_fields(scale, wind, K, seed)
     f = Path(out) / "scen" / f"{wind}_K{K}_s{seed}_{fl[0][0]}.pkl"
     if f.exists():
         return pickle.loads(f.read_bytes())
-    d = Path(out) / "fields"
+    d = Path(fields or Path(out) / "fields")
     missing = [n for n, _ in fl if not (d / f"{n}.npy").exists()]
     if missing:
         raise FileNotFoundError(f"{wind}:{K}:{seed} lacks stage-1 fields {missing}")
@@ -132,14 +134,15 @@ def run_scenario(job):
     tm = dict(truth_wall_s=st[0]["wall_s"], truth_cpu_s=st[0]["cpu_s"], resp_wall_s=sum(x["wall_s"] for x in st[1:]),
               resp_cpu_s=sum(x["cpu_s"] for x in st[1:]), stage1_peak_rss_mb=max(x["peak_rss_mb"] for x in st),
               load_wall_s=time.time() - w0)
-    res = evaluate(scale, wind, K, seed, sc, F, G3, tm, w0, c0)
+    res = evaluate(scale, wind, K, seed, sc, F, G3, tm, w0, c0, exclude_m)
     f.parent.mkdir(exist_ok=True)
     _save_atomic(f, lambda fh: fh.write(pickle.dumps(res)))
     return res
 
 
-def evaluate(scale, wind, K, seed, sc, F, G3, tm, w0, c0):
-    """Designs and held-out evaluation of one scenario given its truth `sc` and unit responses F, G3."""
+def evaluate(scale, wind, K, seed, sc, F, G3, tm, w0, c0, exclude_m=0.0):
+    """Designs and held-out evaluation of one scenario given its truth `sc` and unit responses F, G3. exclude_m > 0 drops
+    the candidates within exclude_m of any source (post-hoc gate-07 control); sigma, noise draws, seeds are unchanged."""
     s = SCALES[scale]
     _, strategies, estimators = scale_lists(scale)
     T, test_h, issue = len(sc.split_hours("train")), sc.split_hours("test"), X.issue_times(sc)
@@ -160,9 +163,11 @@ def evaluate(scale, wind, K, seed, sc, F, G3, tm, w0, c0):
     # designs (per sigma mode: scalar for white/ar1, per-site for persite)
     w2, c2 = time.time(), time.process_time()
     designs = {}
+    cand = X.exclude_near_sources(sc.site_xy, sc.admissible_sites(), sc.truth.source_xy, exclude_m)
+    tm["n_cand"] = len(cand)
     for ps in (False, True):
         sigma = X.site_sigma(sc, ps)
-        p = X.problem(X.design_input(sc, G3, sigma))
+        p = X.problem(X.design_input(sc, G3, sigma), cand=cand)
         for k in s["ks"]:
             for name, net in [("random", j) for j in range(X.N_RANDOM)] + [(n, 0) for n in strategies]:
                 t = time.time()
@@ -174,7 +179,7 @@ def evaluate(scale, wind, K, seed, sc, F, G3, tm, w0, c0):
                 designs[(ps, k, name, net)] = (S, dict(design_s=time.time() - t, **d))
         if not ps:  # exhaustive check where spacing binds: 5x5 block of the real lattice (design note §3)
             ii, jj = np.divmod(np.arange(sc.n_candidate_sites), sc.lattice_n)
-            adm = sc.admissible_sites()
+            adm = cand
             lo, hi = (sc.lattice_n // 2 - 3, sc.lattice_n // 2 + 1)
             blk = adm[(ii[adm] >= lo) & (ii[adm] <= hi) & (jj[adm] >= lo) & (jj[adm] <= hi)]
             pb = X.problem(X.design_input(sc, G3, sigma), cand=blk)
@@ -298,13 +303,12 @@ def confirmatory(df):
         pos, neg, tie, p = X.sign_test(rho)
         # gate-07 sensitivity (added after the sweep, reported beside the committed rule, never replacing it):
         # distribution-free order-statistic CI for the median (>= 95 % binomial coverage) and percentile bootstrap of the mean
-        from scipy.stats import binom
-        r_, n_ = np.sort(rho), len(rho)
-        j = max(i for i in range(1, n_ // 2 + 1) if 1 - 2 * binom.cdf(i - 1, n_, .5) >= .95)
+        n_ = len(rho)
+        dlo, dhi = X.df_median_ci(rho)
         g = np.random.default_rng(4000).choice(rho, (10000, n_)).mean(1)
         out.append(dict(wind=w_, K=K, k=k, n=n_, median=float(np.median(rho)), ci_lo=lo, ci_hi=hi, wins=pos, losses=neg,
                         sign_p=p, verdict="above" if lo > .1 else "below" if hi < .1 else "straddles",
-                        df_ci_lo=float(r_[j - 1]), df_ci_hi=float(r_[n_ - j]), df_verdict="above" if r_[j - 1] > .1 else "below" if r_[n_ - j] < .1 else "straddles",
+                        df_ci_lo=dlo, df_ci_hi=dhi, df_verdict="above" if dlo > .1 else "below" if dhi < .1 else "straddles",
                         mean=float(rho.mean()), mean_ci_lo=float(np.percentile(g, 2.5)), mean_ci_hi=float(np.percentile(g, 97.5))))
     t = pd.DataFrame(out)
     f = lambda v: (t.verdict == v).mean()
@@ -421,12 +425,19 @@ def main():
     ap.add_argument("--workers", type=int, default=min(12, os.cpu_count()))
     ap.add_argument("--out", default=None)
     ap.add_argument("--only", default=None, help="comma list wind:K:seed (smoke)")
+    ap.add_argument("--fields", default=None, help="field cache dir (default OUT/fields); e.g. an earlier run's, read-only")
+    ap.add_argument("--exclude-radius", type=float, default=0.0, help="m; drop candidates this close to any source")
     a = ap.parse_args()
     scale = "sweep" if a.sweep else "pilot"
     out = Path(a.out or root / f".cache/e07/{scale}")
     if a.report:
         return report(scale, out)
-    (out / "fields").mkdir(parents=True, exist_ok=True)
+    if a.fields and a.stage != "2":
+        ap.error("--fields reads an existing (read-only) cache: use it with --stage 2")
+    fdir = Path(a.fields or out / "fields")
+    out.mkdir(parents=True, exist_ok=True)
+    if a.fields is None:
+        fdir.mkdir(exist_ok=True)
     if a.preflight:
         return preflight(out, [int(x) for x in a.throughput_n.split(",")], a.preflight_hours)
     si, sn = map(int, a.shard.split("/"))
@@ -442,7 +453,7 @@ def main():
     if a.stage in ("1", "all"):
         tasks = list({n: sp for j in jobs for n, sp in scenario_fields(*j[:4])}.items())  # dedup identical solves
         tasks = tasks[si::sn] if a.stage == "1" else tasks  # every solve spans one calendar (same cost): round-robin balances
-        todo = [t for t in tasks if not (out / "fields" / f"{t[0]}.npy").exists()]
+        todo = [t for t in tasks if not (fdir / f"{t[0]}.npy").exists()]
         print(f"stage 1: {len(tasks)} solves in shard {a.shard}, {len(todo)} to run on {a.workers} workers", flush=True)
         with ProcessPoolExecutor(a.workers) as ex:
             futs = [ex.submit(run_field, (t, str(out))) for t in todo]
@@ -457,14 +468,14 @@ def main():
         jobs = jobs[si::sn]
     rows, swaps, comp = [], [], []
     with ProcessPoolExecutor(a.workers) as ex:
-        futs = {ex.submit(run_scenario, j): j for j in jobs}
+        futs = {ex.submit(run_scenario, j, a.fields, a.exclude_radius): j for j in jobs}
         for f in as_completed(futs):
             r, sw, tm = f.result()
             rows += r; swaps += sw; comp.append(tm)
             print(f"done {futs[f][1:4]} wall={tm['total_wall_s']:.0f}s rss={tm['peak_rss_mb']:.0f}MB", flush=True)
     if a.only or sn > 1:
         return
-    meta = dict(**provenance(), scale=s, winds={w: WINDS[w] for w in scale_lists(scale)[0]}, workers=a.workers, total_wall_s=time.time() - t0)
+    meta = dict(**provenance(), scale=s, fields=str(fdir), exclude_radius_m=a.exclude_radius, winds={w: WINDS[w] for w in scale_lists(scale)[0]}, workers=a.workers, total_wall_s=time.time() - t0)
     if scale != "pilot":  # whole-sweep tables next to the caches; the lead curates what enters reports/
         pd.DataFrame(rows).to_csv(out / "e07-sweep-rows.csv", index=False)
         pd.DataFrame(swaps).to_csv(out / "e07-sweep-swapcheck.csv", index=False)
