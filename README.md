@@ -3,6 +3,8 @@
 Sparse-sensor air quality reconstruction under uncertain meteorology and emissions.
 Currently a synthetic 2-D depth-averaged passive-tracer testbed (FiPy); no real PM2.5 or exposure claims.
 
+**Report:** https://yubrajbhandari923.github.io/pravah/ (Quarto book, rendered from `reports/quarto/`).
+
 Start with `state/STATUS.md`, then `settings.yaml` and the relevant part of `plans/`.
 
 | Path | What |
