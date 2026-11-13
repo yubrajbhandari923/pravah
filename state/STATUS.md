@@ -15,12 +15,14 @@ Protocol and `configs/benchmark-v1.yaml` APPROVED 2026-11-12 as an amendable bas
 
 1. **B3 resolved by amendment A2** (`decisions/2026-11-12-advection-scheme.md`): 64² runs use split VanLeer, dt 30 s
    (K_eff ≈ 50 vs 350–2900 for upwind; gates met). Before the 64² sweep, measure VanLeer's superposition error on benchmark footprints.
-2. **E07 closed** (sweep + gate-07 + follow-ups). Confirmatory supported in the cells run (user-approved scope). But
-   source_near beats dopt (115/120), and with in-footprint sites excluded dopt's gain over random drops to 0.20 (0/8 cells).
+2. **E07 closed** (sweep + gate-07 + follow-ups + gate-09). Confirmatory supported in the cells run (user-approved scope).
+   source_near beats dopt (115/120) ONLY for the 24 h-window estimator; with all past data dopt wins (103/120, gate-09), and with in-footprint sites excluded dopt's gain over random drops to 0.20 (0/8 cells).
    dopt's loss is concentrated in the unseen southerly regime. See `experiments/e07.md`.
-3. **E08 preregistration** from E05 v2 (see `experiments/e05.md`, gate-05 recommendations).
+3. **E08 running:** design committed, 32² pilot done, 64² sweep is job 205039 (~19 h; see `experiments/e08.md`). Then the
+   1200 m exclusion rerun on cached fields, the report, and a gate-08 audit.
 4. HPC verified 2026-11-12 (smoke job 204775: 175 tests passed on node004; limits 64 CPU, 4 GPU, 2 days in settings.yaml).
-5. E09–E11 (Kalman, joint assimilation, forecast placement) after E07; plan 3 after plan 2.
+5. E09 done and audited. Next: E10 (joint source+field) and E11 (forecast placement) build on `src/pravah/filter.py`,
+   baseline = growing-window MAP (≡ kf_aug) with map24 as a reference, memory length a declared factor. Plan 3 after plan 2.
 
 Known open items: E03 (fixed-sensor static inverse) remains rank deficient for structural reasons (sensor placement, 24 h window).
 
@@ -36,7 +38,9 @@ Known open items: E03 (fixed-sensor static inverse) remains rank deficient for s
 | e05 | Temporal observability | smoke, 20 seeds, audited (gate-05) and rerun; exploratory support | [e05](experiments/e05.md) |
 | e06 | Placement algorithms | smoke done, audited (gate-06); 3 conditions before E07 reuse | [e06](experiments/e06.md) |
 | e07 | Cross-objective placement | closed: confirmatory supported in cells run; source_near beats dopt; gain shrinks with in-footprint sites excluded | [e07](experiments/e07.md) |
-| e08–e20 | see plans | not started | — |
+| e08 | Sensor sufficiency | design committed; pilot done; 64² sweep running (job 205039) | [e08](experiments/e08.md) |
+| e09 | Causal Kalman filter | 32² replay + gate-09 (pass w/ conditions): all-past-data MAP ≫ 24 h MAP; placement ordering flips | [e09](experiments/e09.md) |
+| e10–e20 | see plans | not started | — |
 
 ## Verified facts vs questions
 

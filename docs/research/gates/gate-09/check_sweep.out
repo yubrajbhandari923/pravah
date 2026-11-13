@@ -1,0 +1,67 @@
+reproduction: max |map24_N0 - committed forecast_rmse| = 0.000e+00 over 1440 rows
+
+estimator  k   n   median sn_vs_dopt [DF 95% CI]  sn wins | median dopt_vs_rand [DF CI] dopt wins | median RMSE dopt / sn / rand
+map24_N0  all 120  +0.410 [+0.328, +0.467]  115/120 | +0.710 [+0.661, +0.763] 117/120 | 0.0495 / 0.0270 / 0.1796
+map24_N0  4    40  +0.453 [+0.290, +0.632]   37/40 | +0.788 [+0.707, +0.802]  40/40 | 0.0929 / 0.0403 / 0.3308
+map24_N0  8    40  +0.431 [+0.292, +0.523]   39/40 | +0.703 [+0.630, +0.781]  40/40 | 0.0502 / 0.0311 / 0.1913
+map24_N0  16   40  +0.380 [+0.267, +0.419]   39/40 | +0.586 [+0.467, +0.745]  37/40 | 0.0397 / 0.0219 / 0.0942
+map24_mm  all 120  +0.314 [+0.279, +0.379]  113/120 | +0.675 [+0.646, +0.706] 118/120 | 0.0452 / 0.0252 / 0.1374
+map24_mm  4    40  +0.321 [+0.209, +0.504]   35/40 | +0.765 [+0.675, +0.808]  40/40 | 0.0618 / 0.0365 / 0.2513
+map24_mm  8    40  +0.314 [+0.268, +0.407]   39/40 | +0.680 [+0.653, +0.755]  40/40 | 0.0490 / 0.0276 / 0.1437
+map24_mm  16   40  +0.316 [+0.275, +0.379]   39/40 | +0.553 [+0.459, +0.650]  38/40 | 0.0366 / 0.0214 / 0.0707
+full_N0   all 120  -0.247 [-0.375, -0.176]   17/120 | +0.735 [+0.690, +0.782] 120/120 | 0.0032 / 0.0044 / 0.0114
+full_N0   4    40  -0.501 [-0.766, -0.337]    3/40 | +0.883 [+0.792, +0.921]  40/40 | 0.0037 / 0.0058 / 0.0273
+full_N0   8    40  -0.221 [-0.462, -0.103]    5/40 | +0.719 [+0.658, +0.787]  40/40 | 0.0032 / 0.0043 / 0.0113
+full_N0   16   40  -0.147 [-0.211, -0.060]    9/40 | +0.522 [+0.427, +0.634]  40/40 | 0.0029 / 0.0033 / 0.0055
+full_mm   all 120  -0.236 [-0.375, -0.175]   16/120 | +0.733 [+0.675, +0.782] 120/120 | 0.0033 / 0.0044 / 0.0115
+full_mm   4    40  -0.495 [-0.759, -0.343]    3/40 | +0.863 [+0.787, +0.907]  40/40 | 0.0037 / 0.0058 / 0.0257
+full_mm   8    40  -0.225 [-0.453, -0.103]    4/40 | +0.696 [+0.646, +0.786]  40/40 | 0.0032 / 0.0043 / 0.0112
+full_mm   16   40  -0.147 [-0.207, -0.061]    9/40 | +0.513 [+0.427, +0.616]  40/40 | 0.0029 / 0.0033 / 0.0055
+
+layout level (20 layouts = (K, seed), both winds and all k averaged): median of layout means [DF CI], layouts favouring
+map24_N0  sn_vs_dopt   +0.421 [+0.300, +0.560]  20/20
+map24_N0  dopt_vs_rand +0.677 [+0.538, +0.755]  20/20
+map24_N0  sn_vs_dopt k=8 only: layouts favouring source_near 19/20
+map24_mm  sn_vs_dopt   +0.373 [+0.269, +0.428]  20/20
+map24_mm  dopt_vs_rand +0.606 [+0.532, +0.743]  20/20
+map24_mm  sn_vs_dopt k=8 only: layouts favouring source_near 20/20
+full_N0   sn_vs_dopt   -0.355 [-0.477, -0.255]  1/20
+full_N0   dopt_vs_rand +0.721 [+0.680, +0.770]  20/20
+full_N0   sn_vs_dopt k=8 only: layouts favouring source_near 1/20
+full_mm   sn_vs_dopt   -0.354 [-0.469, -0.237]  1/20
+full_mm   dopt_vs_rand +0.717 [+0.668, +0.773]  20/20
+full_mm   sn_vs_dopt k=8 only: layouts favouring source_near 1/20
+
+by wind x K (k = 8), median sn_vs_dopt, sn wins / 10
+map24_N0 {'mixedK2': '+0.270 (10/10)', 'mixedK4': '+0.359 (10/10)', 'veeringK2': '+0.699 (9/10)', 'veeringK4': '+0.474 (10/10)'}
+full_N0 {'mixedK2': '-0.126 (2/10)', 'mixedK4': '-0.207 (1/10)', 'veeringK2': '-0.247 (2/10)', 'veeringK4': '-0.352 (0/10)'}
+full_mm {'mixedK2': '-0.130 (2/10)', 'mixedK4': '-0.208 (1/10)', 'veeringK2': '-0.247 (1/10)', 'veeringK4': '-0.349 (0/10)'}
+
+memory vs prior attribution (median over all 1440 (scenario, k, design) rows: relative RMSE reduction vs map24_N0)
+random {'map24_mm': '+0.293', 'full_N0': '+0.935', 'full_mm': '+0.936'}
+dopt {'map24_mm': '+0.170', 'full_N0': '+0.943', 'full_mm': '+0.942'}
+source_near {'map24_mm': '+0.013', 'full_N0': '+0.851', 'full_mm': '+0.851'}
+
+calibration of the growing-window estimators (median over rows; 95 % nominal; NEES/K = 1 if calibrated)
+                       cov95_active  frac_active  nees_k
+estimator strategy                                      
+full_N0   dopt                0.939        0.152   0.995
+          random              0.947        0.246   1.009
+          source_near         0.942        0.181   1.030
+full_mm   dopt                0.940        0.152   1.001
+          random              0.952        0.246   0.984
+          source_near         0.941        0.181   1.028
+map24_N0  dopt                0.939        0.329   1.124
+          random              0.924        0.366   1.337
+          source_near         0.943        0.325   1.061
+               cov95_active  nees_k
+estimator                          
+full_N0   0.1         0.876   0.618
+          0.5         0.947   1.009
+          0.9         0.997   1.502
+full_mm   0.1         0.884   0.599
+          0.5         0.950   0.987
+          0.9         0.997   1.443
+map24_N0  0.1         0.783   0.944
+          0.5         0.930   1.267
+          0.9         0.963   2.855

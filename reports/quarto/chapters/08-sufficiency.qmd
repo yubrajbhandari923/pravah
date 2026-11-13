@@ -1,0 +1,52 @@
+# E08 Sensor sufficiency
+
+Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.
+
+**Question (plan 2).** How do sensor count k, number of sources K, noise level, sampling cadence and observation span
+interact? For each setting, what is the smallest network that is "sufficient"?
+
+**Evidence label.** 32² pilot: exploratory, 4 scenarios per K, indicative only. 64² sweep: running (cluster job 205039).
+
+**Evidence.**
+- Design note: `docs/research/sufficiency-design.md`, committed alone before any E08 computation. Hypotheses H1–H5 come
+  from E05 and E07; lead decisions are in §13.
+- Tables `tables/e08-local-*`; journal `state/experiments/e08.md`.
+
+## Design
+
+- **Scenario:** (K, seed) under the protocol's mixed training wind. K ∈ {2, 4, 8}.
+- **Factors:** k ∈ {2, 4, 8, 16, 32}; white noise at 0.2×, 1× and 5× the protocol σ, plus AR(1); seven sampling
+  schedules that separate span from reading count. These include exact matched-budget pairs: k sensors × 24 readings
+  against 4k sensors × 6.
+- **Strategies:** random, coverage (no source knowledge), near-source and D-optimal.
+- **Breakpoint k\*(τ):** the smallest k from which held-out forecast nRMSE (relative to background-only) stays ≤ τ.
+  The headline is τ = 0.2.
+- **64² sweep:** 20 seeds per K. It reuses 78 of E07's cached simulations and adds 256 new ones.
+- **Scope:** the K = 8 and k = 32 protocol cells that E07 left unrun are reported as secondary. E07's approved
+  confirmatory scope is unchanged.
+
+## Pilot results (32², exploratory)
+
+![E08 pilot: forecast nRMSE against sensor count by strategy and number of sources.](../figures/e08-local-sufficiency.png){#fig-e08-pilot}
+
+| Median k\*(0.2) | K = 2 | K = 4 | K = 8 |
+|---|---|---|---|
+| near-source | 2 | 3 | 8 |
+| D-optimal | 2 | 4 | 8 |
+| coverage | 12 | 8 | 8 |
+| random | 24 | 12 | 16 |
+
+- **Location knowledge sets the requirement.** Location-aware designs need about as many sensors as sources; random
+  layouts need 12–24.
+- **Span and sensor count beat reading density.** For random networks at K = 4, k = 8, nRMSE is 0.46 for a snapshot,
+  0.23 over 24 h and 0.10 over 168 h. At equal total readings, 4k sensors × 6 readings beat k × 24 in 11 of 12 scenarios.
+- **H2 reversed in the pilot.** Near-source is more noise-sensitive in relative terms, though far better in absolute
+  terms. The preregistered test is unchanged.
+- **H3** is inconclusive. **H5** (near-source beats D-optimal): 10 of 12 scenarios at k = 8.
+
+::: {.callout-warning}
+## Estimator-memory caveat (gate-09)
+E08 uses windowed estimators (windows of 1–168 h). Gate-09 showed that strategy orderings flip between short and
+unlimited estimator memory (see the E07 and E09 chapters). E08's strategy comparisons, H5 especially, therefore hold
+for windowed estimators only. An all-past-data rerun on the cached fields is planned after the sweep.
+:::

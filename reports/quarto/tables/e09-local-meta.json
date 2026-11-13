@@ -1,0 +1,65 @@
+{
+ "command": "OMP_NUM_THREADS=1 uv run python scripts/e09_filter.py --workers 6",
+ "git_rev": "abe3956af93f85636045897e1ed88aad1c403db5",
+ "git_dirty": false,
+ "host": "RAD-88300596",
+ "python": "3.14.9",
+ "numpy": "2.5.4",
+ "design_note": "docs/research/filter-design.md",
+ "winds": {
+  "veering": [
+   "veering"
+  ],
+  "mixed": [
+   "steady_westerly",
+   "veering",
+   "weak_variable"
+  ]
+ },
+ "Ks": [
+  2,
+  4
+ ],
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "ks": [
+  4,
+  8
+ ],
+ "designs": [
+  [
+   "random",
+   0
+  ],
+  [
+   "random",
+   1
+  ],
+  [
+   "dopt",
+   0
+  ],
+  [
+   "source_near",
+   0
+  ]
+ ],
+ "R": 3,
+ "rho": 0.8,
+ "q0_rel": 0.001,
+ "horizons": [
+  1,
+  6,
+  24
+ ],
+ "prior": {
+  "mean": 1.954325168564633,
+  "var": 1.555007349067559
+ },
+ "sd_active_rel": 0.01,
+ "workers": 6,
+ "total_wall_s": 2275.510593891144
+}

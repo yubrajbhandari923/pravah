@@ -1,0 +1,481 @@
+wind,K,seed,k,design,net,sites,check,value
+mixed,4,1,4,random,0,158 69 38 226,map24_vs_e07_code,2.9976021664879227e-15
+mixed,4,1,4,random,0,158 69 38 226,kf_field_min_var,6.260094002077545e-08
+mixed,4,1,4,random,0,158 69 38 226,kf_aug_min_var,3.002918903541106e-55
+mixed,4,1,4,random,0,158 69 38 226,kf_aug_ar1_min_var,6.291579033142038e-55
+mixed,4,1,4,random,0,158 69 38 226,kf_aug_vs_map_full_fc_maxabs,6.550315845288424e-14
+mixed,4,1,4,random,1,66 119 180 201,map24_vs_e07_code,6.661338147750939e-16
+mixed,4,1,4,random,1,66 119 180 201,kf_field_min_var,6.260094002038574e-08
+mixed,4,1,4,random,1,66 119 180 201,kf_aug_min_var,1.0192464398631518e-55
+mixed,4,1,4,random,1,66 119 180 201,kf_aug_ar1_min_var,2.2631497821497033e-55
+mixed,4,1,4,random,1,66 119 180 201,kf_aug_vs_map_full_fc_maxabs,2.5757174171303632e-14
+mixed,4,1,4,dopt,0,225 212 40 193,map24_vs_e07_code,1.5543122344752192e-15
+mixed,4,1,4,dopt,0,225 212 40 193,kf_field_min_var,6.260100262121497e-08
+mixed,4,1,4,dopt,0,225 212 40 193,kf_aug_min_var,8.35674993756165e-57
+mixed,4,1,4,dopt,0,225 212 40 193,kf_aug_ar1_min_var,3.4332622812272993e-56
+mixed,4,1,4,dopt,0,225 212 40 193,kf_aug_vs_map_full_fc_maxabs,2.6645352591003757e-14
+mixed,4,1,4,source_near,0,195 40 225 162,map24_vs_e07_code,1.4432899320127035e-15
+mixed,4,1,4,source_near,0,195 40 225 162,kf_field_min_var,6.260100262121497e-08
+mixed,4,1,4,source_near,0,195 40 225 162,kf_aug_min_var,3.3511053840983376e-56
+mixed,4,1,4,source_near,0,195 40 225 162,kf_aug_ar1_min_var,1.4747283952901664e-55
+mixed,4,1,4,source_near,0,195 40 225 162,kf_aug_vs_map_full_fc_maxabs,5.0182080713057076e-14
+mixed,4,1,8,random,0,158 69 38 226 25 56 76 87,map24_vs_e07_code,3.191891195797325e-15
+mixed,4,1,8,random,0,158 69 38 226 25 56 76 87,kf_field_min_var,6.260094002077545e-08
+mixed,4,1,8,random,0,158 69 38 226 25 56 76 87,kf_aug_min_var,2.7442837355139205e-55
+mixed,4,1,8,random,0,158 69 38 226 25 56 76 87,kf_aug_ar1_min_var,4.5329502255510056e-55
+mixed,4,1,8,random,0,158 69 38 226 25 56 76 87,kf_aug_vs_map_full_fc_maxabs,1.6964207816272392e-13
+mixed,4,1,8,random,1,66 119 180 201 148 41 109 212,map24_vs_e07_code,1.2351231148954867e-15
+mixed,4,1,8,random,1,66 119 180 201 148 41 109 212,kf_field_min_var,6.260094002036404e-08
+mixed,4,1,8,random,1,66 119 180 201 148 41 109 212,kf_aug_min_var,1.7642439519705792e-56
+mixed,4,1,8,random,1,66 119 180 201 148 41 109 212,kf_aug_ar1_min_var,4.148152984132209e-56
+mixed,4,1,8,random,1,66 119 180 201 148 41 109 212,kf_aug_vs_map_full_fc_maxabs,3.019806626980426e-14
+mixed,4,1,8,dopt,0,225 212 40 193 72 104 136 168,map24_vs_e07_code,8.881784197001252e-16
+mixed,4,1,8,dopt,0,225 212 40 193 72 104 136 168,kf_field_min_var,6.260100262121497e-08
+mixed,4,1,8,dopt,0,225 212 40 193 72 104 136 168,kf_aug_min_var,8.293259687623947e-57
+mixed,4,1,8,dopt,0,225 212 40 193 72 104 136 168,kf_aug_ar1_min_var,3.307009492896754e-56
+mixed,4,1,8,dopt,0,225 212 40 193 72 104 136 168,kf_aug_vs_map_full_fc_maxabs,2.398081733190338e-14
+mixed,4,1,8,source_near,0,195 40 225 162 197 22 193 129,map24_vs_e07_code,3.3306690738754696e-16
+mixed,4,1,8,source_near,0,195 40 225 162 197 22 193 129,kf_field_min_var,6.260100262121497e-08
+mixed,4,1,8,source_near,0,195 40 225 162 197 22 193 129,kf_aug_min_var,1.3411115183666798e-56
+mixed,4,1,8,source_near,0,195 40 225 162 197 22 193 129,kf_aug_ar1_min_var,5.713418571484554e-56
+mixed,4,1,8,source_near,0,195 40 225 162 197 22 193 129,kf_aug_vs_map_full_fc_maxabs,2.4868995751603507e-14
+mixed,4,0,4,random,0,23 26 129 35,map24_vs_e07_code,3.594347042223944e-15
+mixed,4,0,4,random,0,23 26 129 35,kf_field_min_var,6.399867026199819e-08
+mixed,4,0,4,random,0,23 26 129 35,kf_aug_min_var,6.172523695626779e-44
+mixed,4,0,4,random,0,23 26 129 35,kf_aug_ar1_min_var,3.600855945924256e-44
+mixed,4,0,4,random,0,23 26 129 35,kf_aug_vs_map_full_fc_maxabs,2.042810365310288e-14
+mixed,4,0,4,random,1,105 174 177 22,map24_vs_e07_code,4.440892098500626e-16
+mixed,4,0,4,random,1,105 174 177 22,kf_field_min_var,6.399867026170672e-08
+mixed,4,0,4,random,1,105 174 177 22,kf_aug_min_var,2.4158333022026566e-44
+mixed,4,0,4,random,1,105 174 177 22,kf_aug_ar1_min_var,2.847929401849037e-44
+mixed,4,0,4,random,1,105 174 177 22,kf_aug_vs_map_full_fc_maxabs,2.1316282072803006e-14
+mixed,4,0,4,dopt,0,165 126 37 100,map24_vs_e07_code,4.440892098500626e-16
+mixed,4,0,4,dopt,0,165 126 37 100,kf_field_min_var,6.3998734260059e-08
+mixed,4,0,4,dopt,0,165 126 37 100,kf_aug_min_var,4.443358594851018e-46
+mixed,4,0,4,dopt,0,165 126 37 100,kf_aug_ar1_min_var,1.827538103430911e-45
+mixed,4,0,4,dopt,0,165 126 37 100,kf_aug_vs_map_full_fc_maxabs,2.042810365310288e-14
+mixed,4,0,4,source_near,0,100 150 126 22,map24_vs_e07_code,2.0816681711721685e-15
+mixed,4,0,4,source_near,0,100 150 126 22,kf_field_min_var,6.3998734260059e-08
+mixed,4,0,4,source_near,0,100 150 126 22,kf_aug_min_var,1.4773273535514675e-45
+mixed,4,0,4,source_near,0,100 150 126 22,kf_aug_ar1_min_var,5.997980852221198e-45
+mixed,4,0,4,source_near,0,100 150 126 22,kf_aug_vs_map_full_fc_maxabs,1.9539925233402755e-14
+mixed,4,0,8,random,0,23 26 129 35 198 230 119 101,map24_vs_e07_code,6.8833827526759706e-15
+mixed,4,0,8,random,0,23 26 129 35 198 230 119 101,kf_field_min_var,6.399867026198574e-08
+mixed,4,0,8,random,0,23 26 129 35 198 230 119 101,kf_aug_min_var,6.417486650433968e-46
+mixed,4,0,8,random,0,23 26 129 35 198 230 119 101,kf_aug_ar1_min_var,2.333954961080163e-45
+mixed,4,0,8,random,0,23 26 129 35 198 230 119 101,kf_aug_vs_map_full_fc_maxabs,1.1546319456101628e-14
+mixed,4,0,8,random,1,105 174 177 22 138 205 209 125,map24_vs_e07_code,5.551115123125783e-16
+mixed,4,0,8,random,1,105 174 177 22 138 205 209 125,kf_field_min_var,6.399867026156697e-08
+mixed,4,0,8,random,1,105 174 177 22 138 205 209 125,kf_aug_min_var,8.883704998712167e-45
+mixed,4,0,8,random,1,105 174 177 22 138 205 209 125,kf_aug_ar1_min_var,1.5357477296202916e-44
+mixed,4,0,8,random,1,105 174 177 22 138 205 209 125,kf_aug_vs_map_full_fc_maxabs,1.4210854715202004e-14
+mixed,4,0,8,dopt,0,165 126 37 100 198 70 133 231,map24_vs_e07_code,4.440892098500626e-16
+mixed,4,0,8,dopt,0,165 126 37 100 198 70 133 231,kf_field_min_var,6.399867034815713e-08
+mixed,4,0,8,dopt,0,165 126 37 100 198 70 133 231,kf_aug_min_var,2.868460356387417e-46
+mixed,4,0,8,dopt,0,165 126 37 100 198 70 133 231,kf_aug_ar1_min_var,1.1357292901978806e-45
+mixed,4,0,8,dopt,0,165 126 37 100 198 70 133 231,kf_aug_vs_map_full_fc_maxabs,1.2212453270876722e-14
+mixed,4,0,8,source_near,0,100 150 126 22 68 148 94 20,map24_vs_e07_code,4.440892098500626e-16
+mixed,4,0,8,source_near,0,100 150 126 22 68 148 94 20,kf_field_min_var,6.3998734260059e-08
+mixed,4,0,8,source_near,0,100 150 126 22 68 148 94 20,kf_aug_min_var,1.1289412218638667e-45
+mixed,4,0,8,source_near,0,100 150 126 22 68 148 94 20,kf_aug_ar1_min_var,4.3845347236009804e-45
+mixed,4,0,8,source_near,0,100 150 126 22 68 148 94 20,kf_aug_vs_map_full_fc_maxabs,8.43769498715119e-15
+mixed,4,2,4,random,0,232 125 145 121,map24_vs_e07_code,2.4702462297909733e-15
+mixed,4,2,4,random,0,232 125 145 121,kf_field_min_var,6.665954522274503e-08
+mixed,4,2,4,random,0,232 125 145 121,kf_aug_min_var,9.491973037739475e-71
+mixed,4,2,4,random,0,232 125 145 121,kf_aug_ar1_min_var,2.724213560368161e-70
+mixed,4,2,4,random,0,232 125 145 121,kf_aug_vs_map_full_fc_maxabs,6.750155989720952e-14
+mixed,4,2,4,random,1,56 115 185 219,map24_vs_e07_code,2.7755575615628914e-15
+mixed,4,2,4,random,1,56 115 185 219,kf_field_min_var,6.665954522740112e-08
+mixed,4,2,4,random,1,56 115 185 219,kf_aug_min_var,8.428369416720063e-71
+mixed,4,2,4,random,1,56 115 185 219,kf_aug_ar1_min_var,1.3485924866795403e-70
+mixed,4,2,4,random,1,56 115 185 219,kf_aug_vs_map_full_fc_maxabs,1.3233858453531866e-13
+mixed,4,2,4,dopt,0,97 106 68 29,map24_vs_e07_code,3.3306690738754696e-15
+mixed,4,2,4,dopt,0,97 106 68 29,kf_field_min_var,6.665954522274503e-08
+mixed,4,2,4,dopt,0,97 106 68 29,kf_aug_min_var,3.213112131371474e-72
+mixed,4,2,4,dopt,0,97 106 68 29,kf_aug_ar1_min_var,1.3242896720782925e-71
+mixed,4,2,4,dopt,0,97 106 68 29,kf_aug_vs_map_full_fc_maxabs,2.1316282072803006e-14
+mixed,4,2,4,source_near,0,29 51 107 17,map24_vs_e07_code,3.3306690738754696e-15
+mixed,4,2,4,source_near,0,29 51 107 17,kf_field_min_var,6.66596118822859e-08
+mixed,4,2,4,source_near,0,29 51 107 17,kf_aug_min_var,8.293674908490933e-72
+mixed,4,2,4,source_near,0,29 51 107 17,kf_aug_ar1_min_var,3.946645610175511e-71
+mixed,4,2,4,source_near,0,29 51 107 17,kf_aug_vs_map_full_fc_maxabs,3.552713678800501e-14
+mixed,4,2,8,random,0,232 125 145 121 69 221 193 99,map24_vs_e07_code,1.3322676295501878e-15
+mixed,4,2,8,random,0,232 125 145 121 69 221 193 99,kf_field_min_var,6.665954522274503e-08
+mixed,4,2,8,random,0,232 125 145 121 69 221 193 99,kf_aug_min_var,5.240893340911505e-72
+mixed,4,2,8,random,0,232 125 145 121 69 221 193 99,kf_aug_ar1_min_var,2.057841095695458e-71
+mixed,4,2,8,random,0,232 125 145 121 69 221 193 99,kf_aug_vs_map_full_fc_maxabs,2.6645352591003757e-14
+mixed,4,2,8,random,1,56 115 185 219 44 212 94 126,map24_vs_e07_code,8.881784197001252e-16
+mixed,4,2,8,random,1,56 115 185 219 44 212 94 126,kf_field_min_var,6.665954522740108e-08
+mixed,4,2,8,random,1,56 115 185 219 44 212 94 126,kf_aug_min_var,4.501794694357106e-71
+mixed,4,2,8,random,1,56 115 185 219 44 212 94 126,kf_aug_ar1_min_var,8.211532303704553e-71
+mixed,4,2,8,random,1,56 115 185 219 44 212 94 126,kf_aug_vs_map_full_fc_maxabs,4.334310688136611e-13
+mixed,4,2,8,dopt,0,65 106 68 29 97 139 129 100,map24_vs_e07_code,3.3306690738754696e-15
+mixed,4,2,8,dopt,0,65 106 68 29 97 139 129 100,kf_field_min_var,6.665954522274503e-08
+mixed,4,2,8,dopt,0,65 106 68 29 97 139 129 100,kf_aug_min_var,2.1950736678208056e-72
+mixed,4,2,8,dopt,0,65 106 68 29 97 139 129 100,kf_aug_ar1_min_var,9.079413426290861e-72
+mixed,4,2,8,dopt,0,65 106 68 29 97 139 129 100,kf_aug_vs_map_full_fc_maxabs,1.9539925233402755e-14
+mixed,4,2,8,source_near,0,29 51 107 17 27 53 75 19,map24_vs_e07_code,6.661338147750939e-15
+mixed,4,2,8,source_near,0,29 51 107 17 27 53 75 19,kf_field_min_var,6.66596118822859e-08
+mixed,4,2,8,source_near,0,29 51 107 17 27 53 75 19,kf_aug_min_var,4.073789573931258e-72
+mixed,4,2,8,source_near,0,29 51 107 17 27 53 75 19,kf_aug_ar1_min_var,1.7934381874325697e-71
+mixed,4,2,8,source_near,0,29 51 107 17 27 53 75 19,kf_aug_vs_map_full_fc_maxabs,1.9539925233402755e-14
+veering,4,0,4,random,0,23 26 129 35,map24_vs_e07_code,2.4424906541753444e-15
+veering,4,0,4,random,0,23 26 129 35,kf_field_min_var,6.403397374465779e-08
+veering,4,0,4,random,0,23 26 129 35,kf_aug_min_var,6.026481537013573e-44
+veering,4,0,4,random,0,23 26 129 35,kf_aug_ar1_min_var,3.584122383697041e-44
+veering,4,0,4,random,0,23 26 129 35,kf_aug_vs_map_full_fc_maxabs,2.398081733190338e-14
+veering,4,0,4,random,1,105 174 177 22,map24_vs_e07_code,6.661338147750939e-16
+veering,4,0,4,random,1,105 174 177 22,kf_field_min_var,6.403397374436613e-08
+veering,4,0,4,random,1,105 174 177 22,kf_aug_min_var,2.2852597816762986e-44
+veering,4,0,4,random,1,105 174 177 22,kf_aug_ar1_min_var,2.801858362065351e-44
+veering,4,0,4,random,1,105 174 177 22,kf_aug_vs_map_full_fc_maxabs,1.7763568394002505e-14
+veering,4,0,4,dopt,0,165 126 100 37,map24_vs_e07_code,4.440892098500626e-16
+veering,4,0,4,dopt,0,165 126 100 37,kf_field_min_var,6.403403777802176e-08
+veering,4,0,4,dopt,0,165 126 100 37,kf_aug_min_var,4.149271726140128e-46
+veering,4,0,4,dopt,0,165 126 100 37,kf_aug_ar1_min_var,1.7657571868957336e-45
+veering,4,0,4,dopt,0,165 126 100 37,kf_aug_vs_map_full_fc_maxabs,1.1546319456101628e-14
+veering,4,0,4,source_near,0,100 150 126 22,map24_vs_e07_code,2.1094237467877974e-15
+veering,4,0,4,source_near,0,100 150 126 22,kf_field_min_var,6.403403777802176e-08
+veering,4,0,4,source_near,0,100 150 126 22,kf_aug_min_var,1.5208224513553895e-45
+veering,4,0,4,source_near,0,100 150 126 22,kf_aug_ar1_min_var,6.117096168516537e-45
+veering,4,0,4,source_near,0,100 150 126 22,kf_aug_vs_map_full_fc_maxabs,1.509903313490213e-14
+veering,4,0,8,random,0,23 26 129 35 198 230 119 101,map24_vs_e07_code,3.0531133177191805e-15
+veering,4,0,8,random,0,23 26 129 35 198 230 119 101,kf_field_min_var,6.403397374464535e-08
+veering,4,0,8,random,0,23 26 129 35 198 230 119 101,kf_aug_min_var,6.962310594684071e-46
+veering,4,0,8,random,0,23 26 129 35 198 230 119 101,kf_aug_ar1_min_var,2.401983641351458e-45
+veering,4,0,8,random,0,23 26 129 35 198 230 119 101,kf_aug_vs_map_full_fc_maxabs,1.9539925233402755e-14
+veering,4,0,8,random,1,105 174 177 22 138 205 209 125,map24_vs_e07_code,5.828670879282072e-16
+veering,4,0,8,random,1,105 174 177 22 138 205 209 125,kf_field_min_var,6.403397374422636e-08
+veering,4,0,8,random,1,105 174 177 22 138 205 209 125,kf_aug_min_var,8.097014206137433e-45
+veering,4,0,8,random,1,105 174 177 22 138 205 209 125,kf_aug_ar1_min_var,1.4442644826356904e-44
+veering,4,0,8,random,1,105 174 177 22 138 205 209 125,kf_aug_vs_map_full_fc_maxabs,1.0658141036401503e-14
+veering,4,0,8,dopt,0,165 126 100 37 131 158 196 68,map24_vs_e07_code,4.440892098500626e-16
+veering,4,0,8,dopt,0,165 126 100 37 131 158 196 68,kf_field_min_var,6.403403777802176e-08
+veering,4,0,8,dopt,0,165 126 100 37 131 158 196 68,kf_aug_min_var,3.60982746338195e-46
+veering,4,0,8,dopt,0,165 126 100 37 131 158 196 68,kf_aug_ar1_min_var,1.495667493908594e-45
+veering,4,0,8,dopt,0,165 126 100 37 131 158 196 68,kf_aug_vs_map_full_fc_maxabs,1.2656542480726785e-14
+veering,4,0,8,source_near,0,100 150 126 22 68 148 94 20,map24_vs_e07_code,4.440892098500626e-16
+veering,4,0,8,source_near,0,100 150 126 22 68 148 94 20,kf_field_min_var,6.403403777802176e-08
+veering,4,0,8,source_near,0,100 150 126 22 68 148 94 20,kf_aug_min_var,1.1221732562767034e-45
+veering,4,0,8,source_near,0,100 150 126 22 68 148 94 20,kf_aug_ar1_min_var,4.366907856637715e-45
+veering,4,0,8,source_near,0,100 150 126 22 68 148 94 20,kf_aug_vs_map_full_fc_maxabs,1.021405182655144e-14
+veering,4,2,4,random,0,232 125 145 121,map24_vs_e07_code,1.3322676295501878e-15
+veering,4,2,4,random,0,232 125 145 121,kf_field_min_var,6.570667164551102e-08
+veering,4,2,4,random,0,232 125 145 121,kf_aug_min_var,9.737157335915787e-71
+veering,4,2,4,random,0,232 125 145 121,kf_aug_ar1_min_var,2.616534985894297e-70
+veering,4,2,4,random,0,232 125 145 121,kf_aug_vs_map_full_fc_maxabs,5.81756864903582e-14
+veering,4,2,4,random,1,56 115 185 219,map24_vs_e07_code,2.7755575615628914e-15
+veering,4,2,4,random,1,56 115 185 219,kf_field_min_var,6.570667165010054e-08
+veering,4,2,4,random,1,56 115 185 219,kf_aug_min_var,9.582151739225419e-71
+veering,4,2,4,random,1,56 115 185 219,kf_aug_ar1_min_var,1.3852647780974002e-70
+veering,4,2,4,random,1,56 115 185 219,kf_aug_vs_map_full_fc_maxabs,1.0880185641326534e-13
+veering,4,2,4,dopt,0,67 29 17 106,map24_vs_e07_code,3.219646771412954e-15
+veering,4,2,4,dopt,0,67 29 17 106,kf_field_min_var,6.570673735217836e-08
+veering,4,2,4,dopt,0,67 29 17 106,kf_aug_min_var,8.526803203551048e-72
+veering,4,2,4,dopt,0,67 29 17 106,kf_aug_ar1_min_var,3.684602650833041e-71
+veering,4,2,4,dopt,0,67 29 17 106,kf_aug_vs_map_full_fc_maxabs,6.039613253960852e-14
+veering,4,2,4,source_near,0,29 51 107 17,map24_vs_e07_code,3.3306690738754696e-15
+veering,4,2,4,source_near,0,29 51 107 17,kf_field_min_var,6.570673735217836e-08
+veering,4,2,4,source_near,0,29 51 107 17,kf_aug_min_var,7.573276887672809e-72
+veering,4,2,4,source_near,0,29 51 107 17,kf_aug_ar1_min_var,3.6775154689630574e-71
+veering,4,2,4,source_near,0,29 51 107 17,kf_aug_vs_map_full_fc_maxabs,6.039613253960852e-14
+veering,4,2,8,random,0,232 125 145 121 69 221 193 99,map24_vs_e07_code,5.551115123125783e-15
+veering,4,2,8,random,0,232 125 145 121 69 221 193 99,kf_field_min_var,6.5706671645511e-08
+veering,4,2,8,random,0,232 125 145 121 69 221 193 99,kf_aug_min_var,5.93615024661423e-72
+veering,4,2,8,random,0,232 125 145 121 69 221 193 99,kf_aug_ar1_min_var,2.0682939160340813e-71
+veering,4,2,8,random,0,232 125 145 121 69 221 193 99,kf_aug_vs_map_full_fc_maxabs,9.237055564881302e-14
+veering,4,2,8,random,1,56 115 185 219 44 212 94 126,map24_vs_e07_code,8.881784197001252e-16
+veering,4,2,8,random,1,56 115 185 219 44 212 94 126,kf_field_min_var,6.57066716501005e-08
+veering,4,2,8,random,1,56 115 185 219 44 212 94 126,kf_aug_min_var,6.010576201212572e-71
+veering,4,2,8,random,1,56 115 185 219 44 212 94 126,kf_aug_ar1_min_var,8.430058348123436e-71
+veering,4,2,8,random,1,56 115 185 219 44 212 94 126,kf_aug_vs_map_full_fc_maxabs,1.1901590823981678e-13
+veering,4,2,8,dopt,0,129 29 97 106 67 17 65 137,map24_vs_e07_code,3.219646771412954e-15
+veering,4,2,8,dopt,0,129 29 97 106 67 17 65 137,kf_field_min_var,6.570667164551102e-08
+veering,4,2,8,dopt,0,129 29 97 106 67 17 65 137,kf_aug_min_var,6.885110474277885e-72
+veering,4,2,8,dopt,0,129 29 97 106 67 17 65 137,kf_aug_ar1_min_var,2.8586460462056316e-71
+veering,4,2,8,dopt,0,129 29 97 106 67 17 65 137,kf_aug_vs_map_full_fc_maxabs,5.684341886080802e-14
+veering,4,2,8,source_near,0,29 51 107 17 27 53 75 19,map24_vs_e07_code,1.27675647831893e-14
+veering,4,2,8,source_near,0,29 51 107 17 27 53 75 19,kf_field_min_var,6.570673735217836e-08
+veering,4,2,8,source_near,0,29 51 107 17 27 53 75 19,kf_aug_min_var,3.8943448634235687e-72
+veering,4,2,8,source_near,0,29 51 107 17 27 53 75 19,kf_aug_ar1_min_var,1.7259308020398922e-71
+veering,4,2,8,source_near,0,29 51 107 17 27 53 75 19,kf_aug_vs_map_full_fc_maxabs,5.1514348342607263e-14
+veering,4,1,4,random,0,158 69 38 226,map24_vs_e07_code,2.3869795029440866e-15
+veering,4,1,4,random,0,158 69 38 226,kf_field_min_var,6.257554854253117e-08
+veering,4,1,4,random,0,158 69 38 226,kf_aug_min_var,1.892799881878752e-55
+veering,4,1,4,random,0,158 69 38 226,kf_aug_ar1_min_var,4.9336825244024354e-55
+veering,4,1,4,random,0,158 69 38 226,kf_aug_vs_map_full_fc_maxabs,8.304468224196171e-14
+veering,4,1,4,random,1,66 119 180 201,map24_vs_e07_code,5.551115123125783e-16
+veering,4,1,4,random,1,66 119 180 201,kf_field_min_var,6.257557577430316e-08
+veering,4,1,4,random,1,66 119 180 201,kf_aug_min_var,1.0239009698138613e-55
+veering,4,1,4,random,1,66 119 180 201,kf_aug_ar1_min_var,2.265638796180984e-55
+veering,4,1,4,random,1,66 119 180 201,kf_aug_vs_map_full_fc_maxabs,1.865174681370263e-14
+veering,4,1,4,dopt,0,225 211 39 193,map24_vs_e07_code,2.942091015256665e-15
+veering,4,1,4,dopt,0,225 211 39 193,kf_field_min_var,6.257561111757942e-08
+veering,4,1,4,dopt,0,225 211 39 193,kf_aug_min_var,2.296102434390219e-56
+veering,4,1,4,dopt,0,225 211 39 193,kf_aug_ar1_min_var,9.317376825969108e-56
+veering,4,1,4,dopt,0,225 211 39 193,kf_aug_vs_map_full_fc_maxabs,2.042810365310288e-14
+veering,4,1,4,source_near,0,195 40 225 162,map24_vs_e07_code,1.3322676295501878e-15
+veering,4,1,4,source_near,0,195 40 225 162,kf_field_min_var,6.257561111757942e-08
+veering,4,1,4,source_near,0,195 40 225 162,kf_aug_min_var,3.001578327419564e-56
+veering,4,1,4,source_near,0,195 40 225 162,kf_aug_ar1_min_var,1.3362651537872031e-55
+veering,4,1,4,source_near,0,195 40 225 162,kf_aug_vs_map_full_fc_maxabs,3.5083047578154947e-14
+veering,4,1,8,random,0,158 69 38 226 25 56 76 87,map24_vs_e07_code,2.9932653577979806e-15
+veering,4,1,8,random,0,158 69 38 226 25 56 76 87,kf_field_min_var,6.257554854253117e-08
+veering,4,1,8,random,0,158 69 38 226 25 56 76 87,kf_aug_min_var,1.775870499008628e-55
+veering,4,1,8,random,0,158 69 38 226 25 56 76 87,kf_aug_ar1_min_var,3.786274072265301e-55
+veering,4,1,8,random,0,158 69 38 226 25 56 76 87,kf_aug_vs_map_full_fc_maxabs,1.199040866595169e-13
+veering,4,1,8,random,1,66 119 180 201 148 41 109 212,map24_vs_e07_code,9.992007221626409e-16
+veering,4,1,8,random,1,66 119 180 201 148 41 109 212,kf_field_min_var,6.257554857486409e-08
+veering,4,1,8,random,1,66 119 180 201 148 41 109 212,kf_aug_min_var,1.9103026085098328e-56
+veering,4,1,8,random,1,66 119 180 201 148 41 109 212,kf_aug_ar1_min_var,4.246332333907656e-56
+veering,4,1,8,random,1,66 119 180 201 148 41 109 212,kf_aug_vs_map_full_fc_maxabs,2.5757174171303632e-14
+veering,4,1,8,dopt,0,225 211 39 193 70 84 115 162,map24_vs_e07_code,5.839079220137933e-15
+veering,4,1,8,dopt,0,225 211 39 193 70 84 115 162,kf_field_min_var,6.257561111757942e-08
+veering,4,1,8,dopt,0,225 211 39 193 70 84 115 162,kf_aug_min_var,2.2066864144245614e-56
+veering,4,1,8,dopt,0,225 211 39 193 70 84 115 162,kf_aug_ar1_min_var,8.32373502219467e-56
+veering,4,1,8,dopt,0,225 211 39 193 70 84 115 162,kf_aug_vs_map_full_fc_maxabs,2.7533531010703882e-14
+veering,4,1,8,source_near,0,195 40 225 162 197 22 193 129,map24_vs_e07_code,4.440892098500626e-16
+veering,4,1,8,source_near,0,195 40 225 162 197 22 193 129,kf_field_min_var,6.257561111757942e-08
+veering,4,1,8,source_near,0,195 40 225 162 197 22 193 129,kf_aug_min_var,1.2983955357387265e-56
+veering,4,1,8,source_near,0,195 40 225 162 197 22 193 129,kf_aug_ar1_min_var,5.517992280169042e-56
+veering,4,1,8,source_near,0,195 40 225 162 197 22 193 129,kf_aug_vs_map_full_fc_maxabs,2.5757174171303632e-14
+veering,2,0,4,random,0,22 25 125 34,map24_vs_e07_code,8.881784197001252e-16
+veering,2,0,4,random,0,22 25 125 34,kf_field_min_var,6.2499939420816e-08
+veering,2,0,4,random,0,22 25 125 34,kf_aug_min_var,1.0948326790796638e-71
+veering,2,0,4,random,0,22 25 125 34,kf_aug_ar1_min_var,1.0948326790798025e-71
+veering,2,0,4,random,0,22 25 125 34,kf_aug_vs_map_full_fc_maxabs,8.881784197001252e-15
+veering,2,0,4,random,1,103 172 21 136,map24_vs_e07_code,8.881784197001252e-16
+veering,2,0,4,random,1,103 172 21 136,kf_field_min_var,6.2499939420816e-08
+veering,2,0,4,random,1,103 172 21 136,kf_aug_min_var,5.536147926224157e-72
+veering,2,0,4,random,1,103 172 21 136,kf_aug_ar1_min_var,9.142506505001805e-72
+veering,2,0,4,random,1,103 172 21 136,kf_aug_vs_map_full_fc_maxabs,6.927791673660977e-14
+veering,2,0,4,dopt,0,186 195 218 227,map24_vs_e07_code,3.552713678800501e-15
+veering,2,0,4,dopt,0,186 195 218 227,kf_field_min_var,6.249995471274641e-08
+veering,2,0,4,dopt,0,186 195 218 227,kf_aug_min_var,1.3607806047276077e-74
+veering,2,0,4,dopt,0,186 195 218 227,kf_aug_ar1_min_var,1.089170744971637e-73
+veering,2,0,4,dopt,0,186 195 218 227,kf_aug_vs_map_full_fc_maxabs,3.552713678800501e-14
+veering,2,0,4,source_near,0,171 179 203 181,map24_vs_e07_code,1.3322676295501878e-15
+veering,2,0,4,source_near,0,171 179 203 181,kf_field_min_var,6.250000192075543e-08
+veering,2,0,4,source_near,0,171 179 203 181,kf_aug_min_var,3.93280896191232e-74
+veering,2,0,4,source_near,0,171 179 203 181,kf_aug_ar1_min_var,2.8391344239305436e-73
+veering,2,0,4,source_near,0,171 179 203 181,kf_aug_vs_map_full_fc_maxabs,3.552713678800501e-14
+veering,2,0,8,random,0,22 25 125 34 198 230 117 99,map24_vs_e07_code,3.3536368126974025e-13
+veering,2,0,8,random,0,22 25 125 34 198 230 117 99,kf_field_min_var,6.2499939420816e-08
+veering,2,0,8,random,0,22 25 125 34 198 230 117 99,kf_aug_min_var,3.451844403184033e-73
+veering,2,0,8,random,0,22 25 125 34 198 230 117 99,kf_aug_ar1_min_var,2.1248142729347996e-72
+veering,2,0,8,random,0,22 25 125 34 198 230 117 99,kf_aug_vs_map_full_fc_maxabs,1.7763568394002505e-14
+veering,2,0,8,random,1,103 172 21 136 205 209 123 229,map24_vs_e07_code,1.3322676295501878e-15
+veering,2,0,8,random,1,103 172 21 136 205 209 123 229,kf_field_min_var,6.2499939420816e-08
+veering,2,0,8,random,1,103 172 21 136 205 209 123 229,kf_aug_min_var,7.767007995682115e-73
+veering,2,0,8,random,1,103 172 21 136 205 209 123 229,kf_aug_ar1_min_var,3.318306508787543e-72
+veering,2,0,8,random,1,103 172 21 136 205 209 123 229,kf_aug_vs_map_full_fc_maxabs,3.552713678800501e-14
+veering,2,0,8,dopt,0,186 195 218 227 225 232 229 200,map24_vs_e07_code,6.217248937900877e-15
+veering,2,0,8,dopt,0,186 195 218 227 225 232 229 200,kf_field_min_var,6.249993946396399e-08
+veering,2,0,8,dopt,0,186 195 218 227 225 232 229 200,kf_aug_min_var,1.1019900721959554e-74
+veering,2,0,8,dopt,0,186 195 218 227 225 232 229 200,kf_aug_ar1_min_var,8.50788339141115e-74
+veering,2,0,8,dopt,0,186 195 218 227 225 232 229 200,kf_aug_vs_map_full_fc_maxabs,3.907985046680551e-14
+veering,2,0,8,source_near,0,171 179 203 181 185 148 153 212,map24_vs_e07_code,1.3322676295501878e-15
+veering,2,0,8,source_near,0,171 179 203 181 185 148 153 212,kf_field_min_var,6.250000192075543e-08
+veering,2,0,8,source_near,0,171 179 203 181 185 148 153 212,kf_aug_min_var,2.934808177404849e-74
+veering,2,0,8,source_near,0,171 179 203 181 185 148 153 212,kf_aug_ar1_min_var,2.1157613127013658e-73
+veering,2,0,8,source_near,0,171 179 203 181 185 148 153 212,kf_aug_vs_map_full_fc_maxabs,2.1316282072803006e-14
+veering,2,2,4,random,0,237 53 45 92,map24_vs_e07_code,4.440892098500626e-16
+veering,2,2,4,random,0,237 53 45 92,kf_field_min_var,6.249993750006249e-08
+veering,2,2,4,random,0,237 53 45 92,kf_aug_min_var,2.0304317980697284e-91
+veering,2,2,4,random,0,237 53 45 92,kf_aug_ar1_min_var,7.179532640542944e-91
+veering,2,2,4,random,0,237 53 45 92,kf_aug_vs_map_full_fc_maxabs,9.50350909079134e-14
+veering,2,2,4,random,1,219 199 49 103,map24_vs_e07_code,4.440892098500626e-16
+veering,2,2,4,random,1,219 199 49 103,kf_field_min_var,6.249993750006249e-08
+veering,2,2,4,random,1,219 199 49 103,kf_aug_min_var,9.666875361297684e-91
+veering,2,2,4,random,1,219 199 49 103,kf_aug_ar1_min_var,1.2247870891785216e-90
+veering,2,2,4,random,1,219 199 49 103,kf_aug_vs_map_full_fc_maxabs,9.769962616701378e-15
+veering,2,2,4,dopt,0,225 235 237 233,map24_vs_e07_code,4.440892098500626e-16
+veering,2,2,4,dopt,0,225 235 237 233,kf_field_min_var,6.25e-08
+veering,2,2,4,dopt,0,225 235 237 233,kf_aug_min_var,1.524053109124235e-92
+veering,2,2,4,dopt,0,225 235 237 233,kf_aug_ar1_min_var,1.0874271420554651e-91
+veering,2,2,4,dopt,0,225 235 237 233,kf_aug_vs_map_full_fc_maxabs,1.1102230246251565e-14
+veering,2,2,4,source_near,0,235 210 237 177,map24_vs_e07_code,4.440892098500626e-16
+veering,2,2,4,source_near,0,235 210 237 177,kf_field_min_var,6.25e-08
+veering,2,2,4,source_near,0,235 210 237 177,kf_aug_min_var,1.5418204929052232e-92
+veering,2,2,4,source_near,0,235 210 237 177,kf_aug_ar1_min_var,1.1037763420417562e-91
+veering,2,2,4,source_near,0,235 210 237 177,kf_aug_vs_map_full_fc_maxabs,7.105427357601002e-15
+veering,2,2,8,random,0,237 53 45 92 135 99 94 86,map24_vs_e07_code,4.440892098500626e-16
+veering,2,2,8,random,0,237 53 45 92 135 99 94 86,kf_field_min_var,6.249993750006249e-08
+veering,2,2,8,random,0,237 53 45 92 135 99 94 86,kf_aug_min_var,2.0304317980697284e-91
+veering,2,2,8,random,0,237 53 45 92 135 99 94 86,kf_aug_ar1_min_var,7.179532640542944e-91
+veering,2,2,8,random,0,237 53 45 92 135 99 94 86,kf_aug_vs_map_full_fc_maxabs,9.237055564881302e-14
+veering,2,2,8,random,1,219 199 49 103 197 53 165 230,map24_vs_e07_code,4.440892098500626e-16
+veering,2,2,8,random,1,219 199 49 103 197 53 165 230,kf_field_min_var,6.249993750006249e-08
+veering,2,2,8,random,1,219 199 49 103 197 53 165 230,kf_aug_min_var,9.657363747183072e-91
+veering,2,2,8,random,1,219 199 49 103 197 53 165 230,kf_aug_ar1_min_var,1.2244813094527524e-90
+veering,2,2,8,random,1,219 199 49 103 197 53 165 230,kf_aug_vs_map_full_fc_maxabs,1.2434497875801753e-14
+veering,2,2,8,dopt,0,225 235 237 233 193 227 231 229,map24_vs_e07_code,4.440892098500626e-16
+veering,2,2,8,dopt,0,225 235 237 233 193 227 231 229,kf_field_min_var,6.249993757940235e-08
+veering,2,2,8,dopt,0,225 235 237 233 193 227 231 229,kf_aug_min_var,1.523839412897162e-92
+veering,2,2,8,dopt,0,225 235 237 233 193 227 231 229,kf_aug_ar1_min_var,1.0872147217051903e-91
+veering,2,2,8,dopt,0,225 235 237 233 193 227 231 229,kf_aug_vs_map_full_fc_maxabs,5.329070518200751e-15
+veering,2,2,8,source_near,0,235 210 237 177 204 212 233 179,map24_vs_e07_code,4.440892098500626e-16
+veering,2,2,8,source_near,0,235 210 237 177 204 212 233 179,kf_field_min_var,6.25e-08
+veering,2,2,8,source_near,0,235 210 237 177 204 212 233 179,kf_aug_min_var,1.5240530559883664e-92
+veering,2,2,8,source_near,0,235 210 237 177 204 212 233 179,kf_aug_ar1_min_var,1.0874271063343738e-91
+veering,2,2,8,source_near,0,235 210 237 177 204 212 233 179,kf_aug_vs_map_full_fc_maxabs,1.0658141036401503e-14
+veering,2,1,4,random,0,167 117 173 227,map24_vs_e07_code,4.440892098500626e-16
+veering,2,1,4,random,0,167 117 173 227,kf_field_min_var,6.325896910463033e-08
+veering,2,1,4,random,0,167 117 173 227,kf_aug_min_var,2.6261720734399894e-51
+veering,2,1,4,random,0,167 117 173 227,kf_aug_ar1_min_var,8.178771764910699e-51
+veering,2,1,4,random,0,167 117 173 227,kf_aug_vs_map_full_fc_maxabs,2.842170943040401e-14
+veering,2,1,4,random,1,66 236 218 210,map24_vs_e07_code,1.0269562977782698e-14
+veering,2,1,4,random,1,66 236 218 210,kf_field_min_var,6.32589690928022e-08
+veering,2,1,4,random,1,66 236 218 210,kf_aug_min_var,4.56754114662256e-51
+veering,2,1,4,random,1,66 236 218 210,kf_aug_ar1_min_var,9.749717349117079e-51
+veering,2,1,4,random,1,66 236 218 210,kf_aug_vs_map_full_fc_maxabs,1.9539925233402755e-14
+veering,2,1,4,dopt,0,231 26 40 71,map24_vs_e07_code,4.440892098500626e-16
+veering,2,1,4,dopt,0,231 26 40 71,kf_field_min_var,6.32590165528129e-08
+veering,2,1,4,dopt,0,231 26 40 71,kf_aug_min_var,2.292912377545143e-52
+veering,2,1,4,dopt,0,231 26 40 71,kf_aug_ar1_min_var,1.0479003140828892e-51
+veering,2,1,4,dopt,0,231 26 40 71,kf_aug_vs_map_full_fc_maxabs,2.1316282072803006e-14
+veering,2,1,4,source_near,0,27 232 25 200,map24_vs_e07_code,4.440892098500626e-16
+veering,2,1,4,source_near,0,27 232 25 200,kf_field_min_var,6.32590323501182e-08
+veering,2,1,4,source_near,0,27 232 25 200,kf_aug_min_var,1.6552332074890638e-52
+veering,2,1,4,source_near,0,27 232 25 200,kf_aug_ar1_min_var,6.842833380490752e-52
+veering,2,1,4,source_near,0,27 232 25 200,kf_aug_vs_map_full_fc_maxabs,4.263256414560601e-14
+veering,2,1,8,random,0,167 117 173 227 37 76 88 55,map24_vs_e07_code,4.440892098500626e-16
+veering,2,1,8,random,0,167 117 173 227 37 76 88 55,kf_field_min_var,6.325896910463033e-08
+veering,2,1,8,random,0,167 117 173 227 37 76 88 55,kf_aug_min_var,5.5424638056910265e-52
+veering,2,1,8,random,0,167 117 173 227 37 76 88 55,kf_aug_ar1_min_var,2.0366061566935294e-51
+veering,2,1,8,random,0,167 117 173 227 37 76 88 55,kf_aug_vs_map_full_fc_maxabs,1.7763568394002505e-14
+veering,2,1,8,random,1,66 236 218 210 68 232 152 129,map24_vs_e07_code,2.9992675010248604e-13
+veering,2,1,8,random,1,66 236 218 210 68 232 152 129,kf_field_min_var,6.32589690911891e-08
+veering,2,1,8,random,1,66 236 218 210 68 232 152 129,kf_aug_min_var,2.4424650600877673e-51
+veering,2,1,8,random,1,66 236 218 210 68 232 152 129,kf_aug_ar1_min_var,5.660478455396134e-51
+veering,2,1,8,random,1,66 236 218 210 68 232 152 129,kf_aug_vs_map_full_fc_maxabs,3.907985046680551e-14
+veering,2,1,8,dopt,0,231 26 40 71 229 58 85 116,map24_vs_e07_code,4.440892098500626e-16
+veering,2,1,8,dopt,0,231 26 40 71 229 58 85 116,kf_field_min_var,6.325896945157773e-08
+veering,2,1,8,dopt,0,231 26 40 71 229 58 85 116,kf_aug_min_var,1.6668200895576993e-52
+veering,2,1,8,dopt,0,231 26 40 71 229 58 85 116,kf_aug_ar1_min_var,7.373840825616206e-52
+veering,2,1,8,dopt,0,231 26 40 71 229 58 85 116,kf_aug_vs_map_full_fc_maxabs,2.4868995751603507e-14
+veering,2,1,8,source_near,0,27 232 25 200 29 214 59 218,map24_vs_e07_code,4.440892098500626e-16
+veering,2,1,8,source_near,0,27 232 25 200 29 214 59 218,kf_field_min_var,6.32590323501182e-08
+veering,2,1,8,source_near,0,27 232 25 200 29 214 59 218,kf_aug_min_var,1.1890038514370576e-52
+veering,2,1,8,source_near,0,27 232 25 200 29 214 59 218,kf_aug_ar1_min_var,4.759166972863053e-52
+veering,2,1,8,source_near,0,27 232 25 200 29 214 59 218,kf_aug_vs_map_full_fc_maxabs,1.4210854715202004e-14
+mixed,2,0,4,random,0,22 25 125 34,map24_vs_e07_code,8.881784197001252e-16
+mixed,2,0,4,random,0,22 25 125 34,kf_field_min_var,6.249994041802874e-08
+mixed,2,0,4,random,0,22 25 125 34,kf_aug_min_var,1.0948326790709668e-71
+mixed,2,0,4,random,0,22 25 125 34,kf_aug_ar1_min_var,1.094832679078509e-71
+mixed,2,0,4,random,0,22 25 125 34,kf_aug_vs_map_full_fc_maxabs,7.105427357601002e-15
+mixed,2,0,4,random,1,103 172 21 136,map24_vs_e07_code,8.881784197001252e-16
+mixed,2,0,4,random,1,103 172 21 136,kf_field_min_var,6.249994041802874e-08
+mixed,2,0,4,random,1,103 172 21 136,kf_aug_min_var,1.394844705397963e-72
+mixed,2,0,4,random,1,103 172 21 136,kf_aug_ar1_min_var,5.552977500661851e-72
+mixed,2,0,4,random,1,103 172 21 136,kf_aug_vs_map_full_fc_maxabs,8.704148513061227e-14
+mixed,2,0,4,dopt,0,229 203 196 236,map24_vs_e07_code,4.440892098500626e-15
+mixed,2,0,4,dopt,0,229 203 196 236,kf_field_min_var,6.24999412930165e-08
+mixed,2,0,4,dopt,0,229 203 196 236,kf_aug_min_var,1.805176856664884e-74
+mixed,2,0,4,dopt,0,229 203 196 236,kf_aug_ar1_min_var,1.400642551176981e-73
+mixed,2,0,4,dopt,0,229 203 196 236,kf_aug_vs_map_full_fc_maxabs,2.842170943040401e-14
+mixed,2,0,4,source_near,0,171 179 203 181,map24_vs_e07_code,1.3322676295501878e-15
+mixed,2,0,4,source_near,0,171 179 203 181,kf_field_min_var,6.250000291796916e-08
+mixed,2,0,4,source_near,0,171 179 203 181,kf_aug_min_var,2.3318287034563803e-74
+mixed,2,0,4,source_near,0,171 179 203 181,kf_aug_ar1_min_var,1.8768713883653428e-73
+mixed,2,0,4,source_near,0,171 179 203 181,kf_aug_vs_map_full_fc_maxabs,2.3092638912203256e-14
+mixed,2,0,8,random,0,22 25 125 34 198 230 117 99,map24_vs_e07_code,3.353602118227883e-13
+mixed,2,0,8,random,0,22 25 125 34 198 230 117 99,kf_field_min_var,6.249994041802874e-08
+mixed,2,0,8,random,0,22 25 125 34 198 230 117 99,kf_aug_min_var,3.6342013730096393e-73
+mixed,2,0,8,random,0,22 25 125 34 198 230 117 99,kf_aug_ar1_min_var,2.2587785606916313e-72
+mixed,2,0,8,random,0,22 25 125 34 198 230 117 99,kf_aug_vs_map_full_fc_maxabs,5.861977570020827e-14
+mixed,2,0,8,random,1,103 172 21 136 205 209 123 229,map24_vs_e07_code,1.3322676295501878e-15
+mixed,2,0,8,random,1,103 172 21 136 205 209 123 229,kf_field_min_var,6.249994041802874e-08
+mixed,2,0,8,random,1,103 172 21 136 205 209 123 229,kf_aug_min_var,2.364193890643379e-73
+mixed,2,0,8,random,1,103 172 21 136 205 209 123 229,kf_aug_ar1_min_var,1.385125121439842e-72
+mixed,2,0,8,random,1,103 172 21 136 205 209 123 229,kf_aug_vs_map_full_fc_maxabs,6.039613253960852e-14
+mixed,2,0,8,dopt,0,230 203 196 236 228 201 210 232,map24_vs_e07_code,8.881784197001252e-15
+mixed,2,0,8,dopt,0,230 203 196 236 228 201 210 232,kf_field_min_var,6.249994051033346e-08
+mixed,2,0,8,dopt,0,230 203 196 236 228 201 210 232,kf_aug_min_var,1.3717447542144695e-74
+mixed,2,0,8,dopt,0,230 203 196 236 228 201 210 232,kf_aug_ar1_min_var,1.0665302074598236e-73
+mixed,2,0,8,dopt,0,230 203 196 236 228 201 210 232,kf_aug_vs_map_full_fc_maxabs,6.039613253960852e-14
+mixed,2,0,8,source_near,0,171 179 203 181 185 148 153 212,map24_vs_e07_code,1.3322676295501878e-15
+mixed,2,0,8,source_near,0,171 179 203 181 185 148 153 212,kf_field_min_var,6.250000291796916e-08
+mixed,2,0,8,source_near,0,171 179 203 181 185 148 153 212,kf_aug_min_var,2.0688121291255133e-74
+mixed,2,0,8,source_near,0,171 179 203 181 185 148 153 212,kf_aug_ar1_min_var,1.6618971220967353e-73
+mixed,2,0,8,source_near,0,171 179 203 181 185 148 153 212,kf_aug_vs_map_full_fc_maxabs,2.3092638912203256e-14
+mixed,2,1,4,random,0,167 117 173 227,map24_vs_e07_code,4.440892098500626e-16
+mixed,2,1,4,random,0,167 117 173 227,kf_field_min_var,6.266260764111042e-08
+mixed,2,1,4,random,0,167 117 173 227,kf_aug_min_var,2.0540435034766942e-55
+mixed,2,1,4,random,0,167 117 173 227,kf_aug_ar1_min_var,8.318223984715541e-55
+mixed,2,1,4,random,0,167 117 173 227,kf_aug_vs_map_full_fc_maxabs,3.375077994860476e-14
+mixed,2,1,4,random,1,66 236 218 210,map24_vs_e07_code,1.021405182655144e-14
+mixed,2,1,4,random,1,66 236 218 210,kf_field_min_var,6.26626076277563e-08
+mixed,2,1,4,random,1,66 236 218 210,kf_aug_min_var,1.0028659397179828e-55
+mixed,2,1,4,random,1,66 236 218 210,kf_aug_ar1_min_var,5.536365091454196e-55
+mixed,2,1,4,random,1,66 236 218 210,kf_aug_vs_map_full_fc_maxabs,1.9539925233402755e-14
+mixed,2,1,4,dopt,0,232 26 59 91,map24_vs_e07_code,4.440892098500626e-16
+mixed,2,1,4,dopt,0,232 26 59 91,kf_field_min_var,6.266267029036393e-08
+mixed,2,1,4,dopt,0,232 26 59 91,kf_aug_min_var,1.3561436404748613e-56
+mixed,2,1,4,dopt,0,232 26 59 91,kf_aug_ar1_min_var,8.851715688153699e-56
+mixed,2,1,4,dopt,0,232 26 59 91,kf_aug_vs_map_full_fc_maxabs,6.927791673660977e-14
+mixed,2,1,4,source_near,0,27 232 25 200,map24_vs_e07_code,4.440892098500626e-16
+mixed,2,1,4,source_near,0,27 232 25 200,kf_field_min_var,6.266267029036393e-08
+mixed,2,1,4,source_near,0,27 232 25 200,kf_aug_min_var,2.2485610894247816e-56
+mixed,2,1,4,source_near,0,27 232 25 200,kf_aug_ar1_min_var,1.4535440719438039e-55
+mixed,2,1,4,source_near,0,27 232 25 200,kf_aug_vs_map_full_fc_maxabs,3.552713678800501e-14
+mixed,2,1,8,random,0,167 117 173 227 37 76 88 55,map24_vs_e07_code,4.440892098500626e-16
+mixed,2,1,8,random,0,167 117 173 227 37 76 88 55,kf_field_min_var,6.266260762838217e-08
+mixed,2,1,8,random,0,167 117 173 227 37 76 88 55,kf_aug_min_var,5.643866073774896e-56
+mixed,2,1,8,random,0,167 117 173 227 37 76 88 55,kf_aug_ar1_min_var,2.6481654301139882e-55
+mixed,2,1,8,random,0,167 117 173 227 37 76 88 55,kf_aug_vs_map_full_fc_maxabs,1.9539925233402755e-14
+mixed,2,1,8,random,1,66 236 218 210 68 232 152 129,map24_vs_e07_code,2.9687363678476686e-13
+mixed,2,1,8,random,1,66 236 218 210 68 232 152 129,kf_field_min_var,6.26626076277563e-08
+mixed,2,1,8,random,1,66 236 218 210 68 232 152 129,kf_aug_min_var,6.936131136018634e-56
+mixed,2,1,8,random,1,66 236 218 210 68 232 152 129,kf_aug_ar1_min_var,3.546706487121583e-55
+mixed,2,1,8,random,1,66 236 218 210 68 232 152 129,kf_aug_vs_map_full_fc_maxabs,2.1316282072803006e-14
+mixed,2,1,8,dopt,0,232 26 59 91 230 123 155 187,map24_vs_e07_code,4.440892098500626e-16
+mixed,2,1,8,dopt,0,232 26 59 91 230 123 155 187,kf_field_min_var,6.266261499743524e-08
+mixed,2,1,8,dopt,0,232 26 59 91 230 123 155 187,kf_aug_min_var,9.060188871337871e-57
+mixed,2,1,8,dopt,0,232 26 59 91 230 123 155 187,kf_aug_ar1_min_var,5.868384533482194e-56
+mixed,2,1,8,dopt,0,232 26 59 91 230 123 155 187,kf_aug_vs_map_full_fc_maxabs,1.9539925233402755e-14
+mixed,2,1,8,source_near,0,27 232 25 200 29 214 59 218,map24_vs_e07_code,4.440892098500626e-16
+mixed,2,1,8,source_near,0,27 232 25 200 29 214 59 218,kf_field_min_var,6.266267029036393e-08
+mixed,2,1,8,source_near,0,27 232 25 200 29 214 59 218,kf_aug_min_var,1.3796525766984423e-56
+mixed,2,1,8,source_near,0,27 232 25 200 29 214 59 218,kf_aug_ar1_min_var,8.564402535650454e-56
+mixed,2,1,8,source_near,0,27 232 25 200 29 214 59 218,kf_aug_vs_map_full_fc_maxabs,5.861977570020827e-14
+mixed,2,2,4,random,0,237 53 45 92,map24_vs_e07_code,4.440892098500626e-16
+mixed,2,2,4,random,0,237 53 45 92,kf_field_min_var,6.249993750006249e-08
+mixed,2,2,4,random,0,237 53 45 92,kf_aug_min_var,1.2297276291898569e-88
+mixed,2,2,4,random,0,237 53 45 92,kf_aug_ar1_min_var,6.113702019466382e-88
+mixed,2,2,4,random,0,237 53 45 92,kf_aug_vs_map_full_fc_maxabs,6.661338147750939e-14
+mixed,2,2,4,random,1,219 199 49 103,map24_vs_e07_code,4.440892098500626e-16
+mixed,2,2,4,random,1,219 199 49 103,kf_field_min_var,6.249993750006249e-08
+mixed,2,2,4,random,1,219 199 49 103,kf_aug_min_var,1.0979515207086853e-87
+mixed,2,2,4,random,1,219 199 49 103,kf_aug_ar1_min_var,1.3051914269538022e-87
+mixed,2,2,4,random,1,219 199 49 103,kf_aug_vs_map_full_fc_maxabs,1.3322676295501878e-14
+mixed,2,2,4,dopt,0,225 235 237 233,map24_vs_e07_code,4.440892098500626e-16
+mixed,2,2,4,dopt,0,225 235 237 233,kf_field_min_var,6.25e-08
+mixed,2,2,4,dopt,0,225 235 237 233,kf_aug_min_var,2.02995550101257e-89
+mixed,2,2,4,dopt,0,225 235 237 233,kf_aug_ar1_min_var,1.488055594468444e-88
+mixed,2,2,4,dopt,0,225 235 237 233,kf_aug_vs_map_full_fc_maxabs,6.217248937900877e-15
+mixed,2,2,4,source_near,0,235 210 237 177,map24_vs_e07_code,4.440892098500626e-16
+mixed,2,2,4,source_near,0,235 210 237 177,kf_field_min_var,6.25e-08
+mixed,2,2,4,source_near,0,235 210 237 177,kf_aug_min_var,2.0447384203035478e-89
+mixed,2,2,4,source_near,0,235 210 237 177,kf_aug_ar1_min_var,1.5015305952924784e-88
+mixed,2,2,4,source_near,0,235 210 237 177,kf_aug_vs_map_full_fc_maxabs,9.769962616701378e-15
+mixed,2,2,8,random,0,237 53 45 92 135 99 94 86,map24_vs_e07_code,4.440892098500626e-16
+mixed,2,2,8,random,0,237 53 45 92 135 99 94 86,kf_field_min_var,6.249993750006249e-08
+mixed,2,2,8,random,0,237 53 45 92 135 99 94 86,kf_aug_min_var,1.2297276291898569e-88
+mixed,2,2,8,random,0,237 53 45 92 135 99 94 86,kf_aug_ar1_min_var,6.113702019466382e-88
+mixed,2,2,8,random,0,237 53 45 92 135 99 94 86,kf_aug_vs_map_full_fc_maxabs,6.306066779870889e-14
+mixed,2,2,8,random,1,219 199 49 103 197 53 165 230,map24_vs_e07_code,4.440892098500626e-16
+mixed,2,2,8,random,1,219 199 49 103 197 53 165 230,kf_field_min_var,6.249993750006249e-08
+mixed,2,2,8,random,1,219 199 49 103 197 53 165 230,kf_aug_min_var,1.0974210165983722e-87
+mixed,2,2,8,random,1,219 199 49 103 197 53 165 230,kf_aug_ar1_min_var,1.3050479706564093e-87
+mixed,2,2,8,random,1,219 199 49 103 197 53 165 230,kf_aug_vs_map_full_fc_maxabs,1.4210854715202004e-14
+mixed,2,2,8,dopt,0,225 235 237 233 193 227 231 195,map24_vs_e07_code,4.440892098500626e-16
+mixed,2,2,8,dopt,0,225 235 237 233 193 227 231 195,kf_field_min_var,6.249993757927804e-08
+mixed,2,2,8,dopt,0,225 235 237 233 193 227 231 195,kf_aug_min_var,2.029789128313795e-89
+mixed,2,2,8,dopt,0,225 235 237 233 193 227 231 195,kf_aug_ar1_min_var,1.4878886854477697e-88
+mixed,2,2,8,dopt,0,225 235 237 233 193 227 231 195,kf_aug_vs_map_full_fc_maxabs,7.993605777301127e-15
+mixed,2,2,8,source_near,0,235 210 237 177 204 212 233 179,map24_vs_e07_code,4.440892098500626e-16
+mixed,2,2,8,source_near,0,235 210 237 177 204 212 233 179,kf_field_min_var,6.25e-08
+mixed,2,2,8,source_near,0,235 210 237 177 204 212 233 179,kf_aug_min_var,2.0299553970990828e-89
+mixed,2,2,8,source_near,0,235 210 237 177 204 212 233 179,kf_aug_ar1_min_var,1.4880555240150244e-88
+mixed,2,2,8,source_near,0,235 210 237 177 204 212 233 179,kf_aug_vs_map_full_fc_maxabs,1.2434497875801753e-14

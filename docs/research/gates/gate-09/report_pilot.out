@@ -1,0 +1,50 @@
+reproduce map24    by map24_N0: n=192  max|d forecast_rmse_h1| 4.09e-13  max|d source_rmse| 1.88e-12  max|d cov95_active| 2.22e-16
+reproduce kf_aug   by full_mm : n=192  max|d forecast_rmse_h1| 2.91e-15  max|d source_rmse| 1.43e-14  max|d cov95_active| 2.22e-16
+reproduce map_full by full_mm : n=192  max|d forecast_rmse_h1| 6.65e-15  max|d source_rmse| 2.11e-14  max|d cov95_active| 2.22e-16
+
+relative 1 h forecast-RMSE reduction vs map24_N0 (E07 frozen): median [bootstrap CI], wins/12
+arm   k design       | prior only (map24_mm) | memory only (full_N0) | both (full_mm = kf_aug) | memory given mm prior | prior given full memory
+ar1   4 dopt         | -0.01 [-0.06,-0.00]  3 | +0.65 [+0.61,+0.68] 12 | +0.66 [+0.61,+0.68] 12 | +0.67 [+0.60,+0.72] 12 | -0.00 [-0.01,+0.00]  3
+ar1   4 random       | +0.11 [-0.33,+0.26]  8 | +0.39 [+0.22,+0.62] 11 | +0.45 [+0.10,+0.61] 10 | +0.34 [-0.06,+0.60]  8 | -0.03 [-0.25,+0.28]  5
+ar1   4 source_near  | -0.02 [-0.15,-0.00]  2 | +0.51 [+0.47,+0.58] 12 | +0.52 [+0.47,+0.58] 12 | +0.56 [+0.47,+0.63] 12 | +0.00 [-0.00,+0.01]  7
+ar1   8 dopt         | -0.02 [-0.14,+0.02]  3 | +0.66 [+0.58,+0.71] 12 | +0.66 [+0.58,+0.71] 12 | +0.66 [+0.60,+0.75] 12 | -0.00 [-0.01,+0.00]  4
+ar1   8 random       | +0.10 [+0.07,+0.28] 10 | +0.47 [+0.16,+0.69] 12 | +0.47 [+0.16,+0.68] 10 | +0.31 [+0.10,+0.54] 10 | +0.00 [-0.21,+0.03]  6
+ar1   8 source_near  | -0.02 [-0.05,-0.01]  2 | +0.53 [+0.50,+0.57] 12 | +0.53 [+0.50,+0.58] 12 | +0.53 [+0.50,+0.60] 12 | -0.00 [-0.01,+0.00]  4
+white 4 dopt         | +0.10 [+0.00,+0.26]  9 | +0.78 [+0.62,+0.85] 12 | +0.79 [+0.63,+0.86] 12 | +0.74 [+0.65,+0.83] 12 | +0.01 [-0.00,+0.03]  9
+white 4 random       | +0.12 [-0.28,+0.43]  8 | +0.44 [+0.16,+0.72] 12 | +0.64 [+0.06,+0.77] 10 | +0.47 [+0.13,+0.68] 12 | -0.00 [-0.22,+0.41]  6
+white 4 source_near  | -0.01 [-0.08,+0.04]  5 | +0.58 [+0.54,+0.64] 12 | +0.59 [+0.55,+0.64] 12 | +0.61 [+0.58,+0.67] 12 | +0.01 [+0.00,+0.02]  9
+white 8 dopt         | +0.02 [-0.06,+0.24]  7 | +0.74 [+0.61,+0.84] 12 | +0.74 [+0.62,+0.85] 12 | +0.77 [+0.70,+0.80] 12 | +0.01 [+0.00,+0.03] 11
+white 8 random       | +0.15 [-0.17,+0.47]  8 | +0.68 [+0.58,+0.77] 12 | +0.70 [+0.57,+0.83] 10 | +0.65 [+0.62,+0.72] 12 | +0.02 [-0.14,+0.11]  6
+white 8 source_near  | -0.05 [-0.09,-0.01]  2 | +0.58 [+0.50,+0.61] 12 | +0.58 [+0.50,+0.61] 12 | +0.60 [+0.50,+0.66] 12 | +0.00 [-0.01,+0.01]  8
+
+white arm, all 96 (scenario, k, design): median share of log-RMSE gain from memory at N(0,I) prior 0.99 (IQR 0.96-1.00); pooled sum share 0.98
+
+source_near vs dopt, (dopt - sn)/dopt > 0 = source_near better; median, sn wins / 12
+white 4 map24_N0 +0.429 (10/12) | map24_mm +0.222 (8/12) | full_N0 -0.024 (4/12) | full_mm -0.019 (4/12)
+white 8 map24_N0 +0.375 (10/12) | map24_mm +0.307 (10/12) | full_N0 -0.153 (3/12) | full_mm -0.163 (3/12)
+ar1 4 map24_N0 +0.141 (10/12) | map24_mm +0.204 (9/12) | full_N0 -0.169 (3/12) | full_mm -0.141 (4/12)
+ar1 8 map24_N0 +0.131 (10/12) | map24_mm +0.178 (11/12) | full_N0 -0.057 (5/12) | full_mm -0.057 (5/12)
+
+calibration (median over scenario x k x design rows): cov95_active (nominal 0.95), source NEES/K (1 if calibrated)
+                 cov95_active   nees
+arm   estimator                     
+ar1   full_N0           0.505  7.138
+      full_mm           0.525  6.904
+      map24_N0          0.621  4.867
+      map24_mm          0.655  4.514
+white full_N0           0.957  0.983
+      full_mm           0.957  0.951
+      map24_N0          0.942  1.009
+      map24_mm          0.954  0.924
+                  0.1    0.9
+arm   estimator             
+ar1   full_N0    3.38  12.22
+      full_mm    3.75  11.98
+      map24_N0   3.11   7.25
+      map24_mm   2.68   6.68
+white full_N0    0.58   1.44
+      full_mm    0.57   1.27
+      map24_N0   0.83   2.37
+      map24_mm   0.79   1.15
+
+NEES/K pooled mean over draws/rows (white): {'full_N0': 1.212, 'full_mm': 0.937, 'map24_N0': 1.462, 'map24_mm': 0.971}

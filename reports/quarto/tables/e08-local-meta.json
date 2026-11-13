@@ -1,0 +1,58 @@
+{
+ "command": "OMP_NUM_THREADS=1 uv run python scripts/e08_sufficiency.py --pilot --workers 6",
+ "git_rev": "eae033be790f8ca2f28c6826fc4f742ff2203f7c",
+ "git_dirty": false,
+ "host": "RAD-88300596",
+ "python": "3.14.9",
+ "numpy": "2.5.4",
+ "slurm_job": null,
+ "design_note": "docs/research/sufficiency-design.md",
+ "scale": {
+  "grid": [
+   32,
+   32
+  ],
+  "dt": 300,
+  "scheme": "upwind",
+  "spinup": 12,
+  "split": [
+   [
+    1,
+    4
+   ],
+   [
+    5,
+    7
+   ],
+   [
+    8,
+    13
+   ]
+  ],
+  "Ks": [
+   2,
+   4,
+   8
+  ],
+  "ks": [
+   2,
+   4,
+   8,
+   16,
+   32
+  ],
+  "seeds": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "R": 5,
+  "winds": [
+   "mixed"
+  ]
+ },
+ "wind": "mixed",
+ "workers": 6,
+ "total_wall_s": 1630.0187590122223
+}

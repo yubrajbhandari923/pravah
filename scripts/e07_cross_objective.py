@@ -112,20 +112,16 @@ def run_field(task):
 
 
 # ---------------------------------------------------------------- stage 2: designs + evaluation per scenario
-def run_scenario(job, fields=None, exclude_m=0.0):
-    """Stage 2 for one scenario from the stage-1 caches in `fields` (default out/fields; FileNotFoundError if any is
-    missing). exclude_m > 0: candidates within exclude_m of any source centre are removed before every design."""
-    scale, wind, K, seed, out = job
+def load_scenario(scale, wind, K, seed, out, fields=None):
+    """(scenario, F, G3, stage-1 timings) from the stage-1 caches in `fields` (default out/fields; FileNotFoundError if any
+    is missing). Shared with E08."""
     fl = scenario_fields(scale, wind, K, seed)
-    f = Path(out) / "scen" / f"{wind}_K{K}_s{seed}_{fl[0][0]}.pkl"
-    if f.exists():
-        return pickle.loads(f.read_bytes())
     d = Path(fields or Path(out) / "fields")
     missing = [n for n, _ in fl if not (d / f"{n}.npy").exists()]
     if missing:
         raise FileNotFoundError(f"{wind}:{K}:{seed} lacks stage-1 fields {missing}")
     st = [json.loads((d / f"{n}.json").read_text()) for n, _ in fl]
-    w0, c0 = time.time(), time.process_time()
+    w0 = time.time()
     sc = B.generate_scenario(make_cfg(scale, wind), seed, K, truth_field=np.load(d / f"{fl[0][0]}.npy"))
     F = np.empty((K,) + sc.truth.field.shape)  # filled in place: no second K-field copy (0.4 GB at 64^2, K = 8)
     for i, (n, _) in enumerate(fl[1:]):
@@ -134,6 +130,19 @@ def run_scenario(job, fields=None, exclude_m=0.0):
     tm = dict(truth_wall_s=st[0]["wall_s"], truth_cpu_s=st[0]["cpu_s"], resp_wall_s=sum(x["wall_s"] for x in st[1:]),
               resp_cpu_s=sum(x["cpu_s"] for x in st[1:]), stage1_peak_rss_mb=max(x["peak_rss_mb"] for x in st),
               load_wall_s=time.time() - w0)
+    return sc, F, G3, tm
+
+
+def run_scenario(job, fields=None, exclude_m=0.0):
+    """Stage 2 for one scenario from the stage-1 caches. exclude_m > 0: candidates within exclude_m of any source centre
+    are removed before every design (post-hoc gate-07 control)."""
+    scale, wind, K, seed, out = job
+    fl = scenario_fields(scale, wind, K, seed)
+    f = Path(out) / "scen" / f"{wind}_K{K}_s{seed}_{fl[0][0]}.pkl"
+    if f.exists():
+        return pickle.loads(f.read_bytes())
+    w0, c0 = time.time(), time.process_time()
+    sc, F, G3, tm = load_scenario(scale, wind, K, seed, out, fields)
     res = evaluate(scale, wind, K, seed, sc, F, G3, tm, w0, c0, exclude_m)
     f.parent.mkdir(exist_ok=True)
     _save_atomic(f, lambda fh: fh.write(pickle.dumps(res)))

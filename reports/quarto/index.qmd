@@ -56,7 +56,9 @@ settings chosen after seeing data; **confirmatory (cells run)** = preregistered 
 | [E04](chapters/04-footprints.qmd) | Which source combinations can a network distinguish? | Footprints, Fisher information, SVD | At 1 g/s a D-optimal 4-sensor design has practical rank 4/4; coverage 1–2, redundant 2. One replicate | exploratory |
 | [E05](chapters/05-time.qmd) | Can a longer window replace sensors? | Window × sensors × wind ablation, 20 seeds | Elapsed time alone adds **nothing** (constant wind); **wind change** adds rank (+0.37, 16/17 seeds). v1 claims were overstated and withdrawn | exploratory |
 | [E06](chapters/06-placement-methods.qmd) | Can we reproduce standard placement algorithms? | uniform/random/coverage/source-near/D/A/diversity/POD-QR | Implementations check out (QR = PySensors). Source-informed designs reach full rank; most of that is **knowing source locations** | verified methods; results in-sample |
-| [E07](chapters/07-cross-objective.qmd) | Which placement is best for which held-out task? | 32² pilot + 64² sweep (40 scenarios, held-out winds) | D-opt beats random on held-out forecast RMSE by a median 42–84 % per cell (8/8 cells). But **sensors next to known sources beat D-opt** in 115/120 pairs | **confirmatory in cells run**; source-near result exploratory |
+| [E07](chapters/07-cross-objective.qmd) | Which placement is best for which held-out task? | 32² pilot + 64² sweep (40 scenarios, held-out winds) | D-opt beats random on held-out forecast RMSE by a median 42–84 % per cell (8/8 cells), and under every estimator tried. **Which strategy wins depends on estimator memory:** near-source beats D-opt with a 24 h window (115/120 pairs), D-opt wins with all past data (103/120) | **confirmatory in cells run**; strategy ordering exploratory |
+| [E08](chapters/08-sufficiency.qmd) | How many sensors are enough? | Preregistered factorial; 32² pilot; 64² sweep running | Pilot: location-aware designs need about k ≈ K sensors, random layouts 12–24. At equal readings, more sensors beat more readings | exploratory (pilot) |
+| [E09](chapters/09-filter.qmd) | Does sequential filtering help? | Kalman filters with independent tests; 32² replay; audit | Estimating sources from **all past data** cuts forecast error 58–74 % vs a 24 h window. The gain is memory, not filtering. A field-only filter is nearly useless | exploratory, audited |
 
 ## Key figures
 
@@ -73,9 +75,12 @@ settings chosen after seeing data; **confirmatory (cells run)** = preregistered 
 3. **Time helps only when the wind changes.** Repeated readings under the same wind reduce noise but do not separate
    sources; a change in wind direction does (E05, exploratory).
 4. **Optimised placement beats random**, confirmed in the 8 cells run (E07).
-5. **But the gain comes from knowing where the sources are**, not from D-optimisation: simply placing sensors next to
-   the known sources did better still, and D-optimal networks tuned to training winds failed when an unseen
-   (southerly) wind blew in the test period: 79 % of their forecast error falls in those blind windows (E07, exploratory).
+5. **Which placement wins depends on how much history the estimator uses.** With a 24 h estimation window, sensors
+   next to the known sources beat D-optimal (115/120), because D-optimal networks go blind when an unseen southerly
+   wind blows: 79 % of their error falls in those windows. When the estimator uses all past data, the blind spells are
+   bridged and D-optimal wins (103/120) (E07 + gate-09, exploratory).
+6. **Memory matters more than the algorithm.** Estimating the persistent sources from all past data cuts forecast error
+   by 58–74 % against a 24 h window; a filter that corrects only the field does almost nothing (E09, exploratory).
 
 ## Honest limitations
 
@@ -85,13 +90,12 @@ settings chosen after seeing data; **confirmatory (cells run)** = preregistered 
 - The E07 mechanism rests on one unseen wind direction; the "source-near" advantage may partly reflect sensors sitting
   inside the 1200 m emission disc. Across all 40 scenarios, excluding those sites keeps near-source ahead (104/120) but
   shrinks D-optimal's gain over random from 71 % to 20 %, and no single cell then clears the 10 % test threshold (exploratory control).
-- No sequential filter, no wind error, no model mismatch yet: that is E09–E15.
+- No wind error or model mismatch yet (E12–E13). Filtering (E09) is at 32² only, with an upwind surrogate.
 
 ## What's next
 
-E07 is closed out (follow-up controls done, see its chapter); next E08
-(sensor sufficiency, preregistered from E05), E09–E10 (Kalman filtering and joint source–field assimilation), E11
-(placement for forecasting), and plan 3 (wind and model mismatch, robust placement, calibration). See
+E08's 64² sweep is running on the cluster; E09 is done at 32² and audited. Next: E10 (joint source–field assimilation),
+E11 (placement for forecasting, with estimator memory as a declared factor), and plan 3 (wind and model mismatch, robust placement, calibration). See
 [Next steps](chapters/91-next.qmd).
 
 ## How to read this report

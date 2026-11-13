@@ -20,6 +20,8 @@ book:
         - chapters/05-time.qmd
         - chapters/06-placement-methods.qmd
         - chapters/07-cross-objective.qmd
+        - chapters/08-sufficiency.qmd
+        - chapters/09-filter.qmd
     - chapters/90-lessons.qmd
     - chapters/91-next.qmd
     - chapters/references.qmd

@@ -9,7 +9,8 @@
 set -euo pipefail
 W=${PRAVAH_HPC_ROOT:?export PRAVAH_HPC_ROOT (see settings.local.yaml)}
 export UV_CACHE_DIR=$W/cache/uv UV_PYTHON_INSTALL_DIR=$W/cache/python UV_PROJECT_ENVIRONMENT=$W/envs/main
-export XDG_CACHE_HOME=$W/cache/xdg MPLCONFIGDIR=$W/cache/matplotlib TMPDIR=$W/tmp PYTHONPYCACHEPREFIX=$W/cache/pycache
+export XDG_CACHE_HOME=$W/cache/xdg MPLCONFIGDIR=$W/cache/matplotlib PYTHONPYCACHEPREFIX=$W/cache/pycache
+export TMPDIR=/tmp/pv-$SLURM_JOB_ID; mkdir -p "$TMPDIR"; trap 'rm -rf "$TMPDIR"' EXIT  # node-local: multiprocessing sockets/semaphores misbehave on NFS
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1   # parallelism comes from worker processes, one per CPU
 export RESEARCH_RUN_DIR=$W/runs/$SLURM_JOB_ID; mkdir -p "$RESEARCH_RUN_DIR"
 echo "host=$(hostname) job=$SLURM_JOB_ID cpus=$SLURM_CPUS_PER_TASK snapshot=$(basename "$PWD") start=$(date -Is)"

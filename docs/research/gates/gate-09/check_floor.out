@@ -1,0 +1,4 @@
+floor (forecast RMSE with true strengths) over 40 scenarios: median 0.00057, max 0.00207
+full_N0: median sn_vs_dopt -0.247, source_near wins 17/120, layouts favouring source_near 1/20; by k: k=4 -0.501 (3/40), k=8 -0.221 (5/40), k=16 -0.147 (9/40)
+full_N0_linear: median sn_vs_dopt -0.330, source_near wins 17/120, layouts favouring source_near 1/20; by k: k=4 -0.550 (4/40), k=8 -0.235 (5/40), k=16 -0.173 (8/40)
+dopt RMSE / floor: median 6.16; source_near RMSE / floor: median 8.15

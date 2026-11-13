@@ -132,16 +132,18 @@ def make_design(name, p, k, T, seed, net=0):
 
 
 # ---------------------------------------------------------------- frozen estimator (sees readings up to issue time only)
-def estimate_series(A, z, issue, window=WINDOW_H, nonneg=False):
+def estimate_series(A, z, issue, window=WINDOW_H, nonneg=False, mask=None):
     """MAP (prior N(0, I) in a_ref units; independent noise) from the `window` hours ending at each issue time.
     A: (k, hours, K) whitened a_ref-scaled sensitivities of the chosen sites; z: (k, hours) whitened anomalies
-    (y - c_bg)/sigma. Rows after an issue time are never touched. Returns u_hat (n_issue, K) in a_ref units."""
+    (y - c_bg)/sigma. Rows after an issue time are never touched. mask: optional (hours,) bool, the sampled hours
+    (E08 cadence); unsampled hours contribute nothing. Returns u_hat (n_issue, K) in a_ref units."""
     issue = np.asarray(issue, int)
     if issue.min() - window + 1 < 0:
         raise ValueError("window starts before hour 0")
     K = A.shape[2]
-    Ph = np.einsum("shk,shl->hkl", A, A)
-    bh = np.einsum("shk,sh->hk", A, z)
+    m = 1.0 if mask is None else np.asarray(mask, float)[: A.shape[1]]
+    Ph = np.einsum("shk,shl->hkl", A, A) * (m[:, None, None] if mask is not None else 1.0)
+    bh = np.einsum("shk,sh->hk", A, z * m)
     cP = np.concatenate([np.zeros((1, K, K)), np.cumsum(Ph, 0)])
     cb = np.concatenate([np.zeros((1, K)), np.cumsum(bh, 0)])
     N = np.eye(K) + cP[issue + 1] - cP[issue + 1 - window]
@@ -155,9 +157,13 @@ def estimate_series(A, z, issue, window=WINDOW_H, nonneg=False):
     return out
 
 
-def window_info(A, issue, window=WINDOW_H):
-    """Eigenvalues (n_issue, K) of the window information A^T A (practical rank = count >= 1)."""
+def window_info(A, issue, window=WINDOW_H, mask=None):
+    """Eigenvalues (n_issue, K) of the window information A^T A (practical rank = count >= 1); mask as estimate_series."""
+    if np.min(issue) - window + 1 < 0:
+        raise ValueError("window starts before hour 0")  # negative indices would wrap silently
     Ph = np.einsum("shk,shl->hkl", A, A)
+    if mask is not None:
+        Ph = Ph * np.asarray(mask, float)[: A.shape[1], None, None]
     cP = np.concatenate([np.zeros((1,) + Ph.shape[1:]), np.cumsum(Ph, 0)])
     return np.linalg.eigvalsh(cP[np.asarray(issue) + 1] - cP[np.asarray(issue) + 1 - window])
 

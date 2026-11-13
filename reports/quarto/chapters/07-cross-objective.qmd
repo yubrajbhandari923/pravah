@@ -8,7 +8,7 @@ source strengths, population-weighted field)? The plan's hypothesis was that no 
 ≥ 10 % relative to random networks, for k ≥ 8?
 
 **Evidence label.** 32² pilot: exploratory. 64² sweep, dopt vs random: **confirmatory, supported in the cells run**
-(scope pending user sign-off). Everything else in the sweep (source_near vs dopt, mechanism, endpoint agreement):
+(scope approved by the user: `state/decisions/2026-11-13-e07-confirmatory-scope.md`). Everything else in the sweep (source_near vs dopt, mechanism, endpoint agreement):
 exploratory.
 
 **Evidence.** Design note `docs/research/cross-objective-design.md` (committed in 3e7d4d2 before any E07 computation;
@@ -167,6 +167,29 @@ separate all sources (practical rank < K):
   the unseen southerly wind blows. This is still one unseen direction, and 12/40 scenarios show no such loss.
 
 ![E07 follow-ups: exclusion control and rank-deficient windows by held-out wind regime.](../figures/e07-followup.png){#fig-e07-followup}
+
+## The ordering depends on estimator memory (gate-09, 64², exploratory)
+
+E09 showed that an estimator using all past data forecasts much better than E07's frozen 24 h window. The gate-09
+audit re-scored the committed E07 sweep designs, with the same noise draws, under both estimators. All 1440 white-arm
+map24 rows were reproduced exactly first.
+
+| Estimator | near-source better than D-opt by | Pairs near-source wins | Layouts favouring near-source |
+|---|---|---|---|
+| 24 h window (E07 frozen) | +0.41 [0.33, 0.47] | 115/120 | 20/20 |
+| All past data, N(0, I) prior | **−0.25 [−0.38, −0.18]** | 17/120 | 1/20 |
+
+- D-optimal beats random under both estimators: 117/120 and 120/120 pairs.
+- The reversal survives re-scoring on a perfectly linear truth.
+- **Reading:** a short window cannot bridge the blind spells that D-optimal networks have under unseen winds, so
+  sensors at the sources win. With all past data those spells are bridged, and D-optimal's greater total information
+  wins.
+- **Correct wording:** near-source placement beats D-optimal *for a 24 h-window estimator*; the ordering reverses when
+  the estimator uses all past data.
+- **Consequence:** which placement is "best" depends on assumed source persistence (estimator memory). E10 and E11
+  therefore treat memory length as a declared factor.
+
+Evidence: `docs/research/gates/gate-09-filter.md` and `gate-09/check_sweep.py`.
 
 ## Limitations
 

@@ -8,6 +8,13 @@ Done: the user approved the confirmatory scope ("supported in the cells run"), a
 (see the E07 chapter). One implication carries forward: placement must be judged with sensors kept out of the emission
 discs as well, and against unseen wind directions (E08, E15).
 
+## Since the first draft
+
+- E08's 64² sweep is running on the cluster (job 205039).
+- E09 is done at 32² and audited (gate-09).
+- Gate-09 found that placement orderings depend on estimator memory. E10 and E11 will therefore declare memory length
+  as a factor, use the growing-window MAP as the baseline, and keep the 24 h window as a reference.
+
 ## Plan 2, remaining experiments
 
 | Exp | Question (plan 2) | Planned design (from journals) |
