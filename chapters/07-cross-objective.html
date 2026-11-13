@@ -36,7 +36,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../chapters/90-lessons.html" rel="next">
+<link href="../chapters/08-sufficiency.html" rel="next">
 <link href="../chapters/06-placement-methods.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -188,18 +188,30 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">E07 Cross-objective placement on held-out winds</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/08-sufficiency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">E08 Sensor sufficiency</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/09-filter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">E09 Causal sequential filtering</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/90-lessons.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/91-next.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Next steps</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Next steps</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -231,7 +243,8 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#audit-outcome-gate-07-pass-with-conditions" id="toc-audit-outcome-gate-07-pass-with-conditions" class="nav-link" data-scroll-target="#audit-outcome-gate-07-pass-with-conditions"><span class="header-section-number">10.5</span> Audit outcome (gate-07): pass with conditions</a></li>
   <li><a href="#what-changed-because-of-the-audit" id="toc-what-changed-because-of-the-audit" class="nav-link" data-scroll-target="#what-changed-because-of-the-audit"><span class="header-section-number">10.6</span> What changed because of the audit</a></li>
   <li><a href="#follow-up-controls-post-hoc-exploratory-all-40-scenarios-no-new-solves" id="toc-follow-up-controls-post-hoc-exploratory-all-40-scenarios-no-new-solves" class="nav-link" data-scroll-target="#follow-up-controls-post-hoc-exploratory-all-40-scenarios-no-new-solves"><span class="header-section-number">10.7</span> Follow-up controls (post hoc, exploratory; all 40 scenarios, no new solves)</a></li>
-  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">10.8</span> Limitations</a></li>
+  <li><a href="#the-ordering-depends-on-estimator-memory-gate-09-64²-exploratory" id="toc-the-ordering-depends-on-estimator-memory-gate-09-64²-exploratory" class="nav-link" data-scroll-target="#the-ordering-depends-on-estimator-memory-gate-09-64²-exploratory"><span class="header-section-number">10.8</span> The ordering depends on estimator memory (gate-09, 64², exploratory)</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">10.9</span> Limitations</a></li>
   </ul>
 </nav>
     </div>
@@ -259,7 +272,7 @@ ul.task-list li input[type="checkbox"] {
 
 <p>Simulated passive tracer only; nothing here is evidence about ambient PM2.5, real sources or deployment.</p>
 <p><strong>Question (plan 2).</strong> Which placement objective is best for which held-out inference task (forecast, analysis field, source strengths, population-weighted field)? The plan’s hypothesis was that no single network wins on all of them. <strong>Confirmatory test (protocol §12):</strong> does the D-optimal network (<code>dopt</code>) reduce held-out one-step forecast RMSE by ≥ 10 % relative to random networks, for k ≥ 8?</p>
-<p><strong>Evidence label.</strong> 32² pilot: exploratory. 64² sweep, dopt vs random: <strong>confirmatory, supported in the cells run</strong> (scope pending user sign-off). Everything else in the sweep (source_near vs dopt, mechanism, endpoint agreement): exploratory.</p>
+<p><strong>Evidence label.</strong> 32² pilot: exploratory. 64² sweep, dopt vs random: <strong>confirmatory, supported in the cells run</strong> (scope approved by the user: <code>state/decisions/2026-11-13-e07-confirmatory-scope.md</code>). Everything else in the sweep (source_near vs dopt, mechanism, endpoint agreement): exploratory.</p>
 <p><strong>Evidence.</strong> Design note <code>docs/research/cross-objective-design.md</code> (committed in 3e7d4d2 before any E07 computation; deviations in its §12); tables <code>tables/e07-local-*</code> and <code>tables/e07-sweep-*</code>; audit <code>docs/research/gates/gate-07-cross-objective.md</code> (with check scripts); journal <code>state/experiments/e07.md</code>. Report-only summaries below are produced from the committed sweep tables by <code>scripts/report_e07.py</code>.</p>
 <section id="what-we-did" class="level2" data-number="10.1">
 <h2 data-number="10.1" class="anchored" data-anchor-id="what-we-did"><span class="header-section-number">10.1</span> What we did</h2>
@@ -619,8 +632,50 @@ Figure&nbsp;10.4: E07 follow-ups: exclusion control and rank-deficient windows b
 </figure>
 </div>
 </section>
-<section id="limitations" class="level2" data-number="10.8">
-<h2 data-number="10.8" class="anchored" data-anchor-id="limitations"><span class="header-section-number">10.8</span> Limitations</h2>
+<section id="the-ordering-depends-on-estimator-memory-gate-09-64²-exploratory" class="level2" data-number="10.8">
+<h2 data-number="10.8" class="anchored" data-anchor-id="the-ordering-depends-on-estimator-memory-gate-09-64²-exploratory"><span class="header-section-number">10.8</span> The ordering depends on estimator memory (gate-09, 64², exploratory)</h2>
+<p>E09 showed that an estimator using all past data forecasts much better than E07’s frozen 24 h window. The gate-09 audit re-scored the committed E07 sweep designs, with the same noise draws, under both estimators. All 1440 white-arm map24 rows were reproduced exactly first.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Estimator</th>
+<th>near-source better than D-opt by</th>
+<th>Pairs near-source wins</th>
+<th>Layouts favouring near-source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>24 h window (E07 frozen)</td>
+<td>+0.41 [0.33, 0.47]</td>
+<td>115/120</td>
+<td>20/20</td>
+</tr>
+<tr class="even">
+<td>All past data, N(0, I) prior</td>
+<td><strong>−0.25 [−0.38, −0.18]</strong></td>
+<td>17/120</td>
+<td>1/20</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>D-optimal beats random under both estimators: 117/120 and 120/120 pairs.</li>
+<li>The reversal survives re-scoring on a perfectly linear truth.</li>
+<li><strong>Reading:</strong> a short window cannot bridge the blind spells that D-optimal networks have under unseen winds, so sensors at the sources win. With all past data those spells are bridged, and D-optimal’s greater total information wins.</li>
+<li><strong>Correct wording:</strong> near-source placement beats D-optimal <em>for a 24 h-window estimator</em>; the ordering reverses when the estimator uses all past data.</li>
+<li><strong>Consequence:</strong> which placement is “best” depends on assumed source persistence (estimator memory). E10 and E11 therefore treat memory length as a declared factor.</li>
+</ul>
+<p>Evidence: <code>docs/research/gates/gate-09-filter.md</code> and <code>gate-09/check_sweep.py</code>.</p>
+</section>
+<section id="limitations" class="level2" data-number="10.9">
+<h2 data-number="10.9" class="anchored" data-anchor-id="limitations"><span class="header-section-number">10.9</span> Limitations</h2>
 <ul>
 <li>Perfect model: known wind, known source locations, constant sources, known background; the estimator uses the truth’s solver.</li>
 <li>Sensors may sit inside the 400 m-σ area-source footprint; point sources were not studied.</li>
@@ -1041,8 +1096,8 @@ Figure&nbsp;10.4: E07 follow-ups: exclusion control and rank-deficient windows b
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../chapters/90-lessons.html" class="pagination-link" aria-label="Lessons and corrections">
-        <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../chapters/08-sufficiency.html" class="pagination-link" aria-label="E08 Sensor sufficiency">
+        <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">E08 Sensor sufficiency</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
