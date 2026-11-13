@@ -458,7 +458,7 @@ Figure&nbsp;2: E07 64² sweep: left, regret when a network chosen by one criteri
 <li><strong>Numerics matter.</strong> The first-order scheme smeared plumes with 7–60× the physical diffusivity at 64²; switching to a split VanLeer scheme was necessary before any 64² result could mean anything (A2).</li>
 <li><strong>Time helps only when the wind changes.</strong> Repeated readings under the same wind reduce noise but do not separate sources; a change in wind direction does (E05, exploratory).</li>
 <li><strong>Optimised placement beats random</strong>, confirmed in the 8 cells run (E07).</li>
-<li><strong>But the gain comes from knowing where the sources are</strong>, not from D-optimisation: simply placing sensors next to the known sources did better still, and D-optimal networks tuned to training winds failed when an unseen (southerly) wind blew in the test period (E07, exploratory).</li>
+<li><strong>But the gain comes from knowing where the sources are</strong>, not from D-optimisation: simply placing sensors next to the known sources did better still, and D-optimal networks tuned to training winds failed when an unseen (southerly) wind blew in the test period: 79 % of their forecast error falls in those blind windows (E07, exploratory).</li>
 </ol>
 </section>
 <section id="honest-limitations" class="level2">
@@ -467,13 +467,13 @@ Figure&nbsp;2: E07 64² sweep: left, regret when a network chosen by one criteri
 <li>Synthetic, perfect-model world: known source locations, known wind, constant sources, ideal sensors, uniform wind.</li>
 <li>Smoke scale (32²) for E02–E06; only E07 ran at 64² and only for K ∈ {2, 4}, k ∈ {4, 8, 16}, 10 seeds.</li>
 <li>The source scale (1 g/s) was chosen after seeing data, so E02–E06 at that scale are exploratory.</li>
-<li>The E07 mechanism rests on one unseen wind direction; the “source-near” advantage may partly reflect sensors sitting inside the 1200 m emission disc (checked in 2 scenarios only; sweep-wide control running).</li>
+<li>The E07 mechanism rests on one unseen wind direction; the “source-near” advantage may partly reflect sensors sitting inside the 1200 m emission disc. Across all 40 scenarios, excluding those sites keeps near-source ahead (104/120) but shrinks D-optimal’s gain over random from 71 % to 20 %, and no single cell then clears the 10 % test threshold (exploratory control).</li>
 <li>No sequential filter, no wind error, no model mismatch yet: that is E09–E15.</li>
 </ul>
 </section>
 <section id="whats-next" class="level2">
 <h2 class="anchored" data-anchor-id="whats-next">What’s next</h2>
-<p>E07 follow-up controls (1200 m exclusion, per-wind-regime window analysis) are running on cached fields; then E08 (sensor sufficiency, preregistered from E05), E09–E10 (Kalman filtering and joint source–field assimilation), E11 (placement for forecasting), and plan 3 (wind and model mismatch, robust placement, calibration). See <a href="./chapters/91-next.html">Next steps</a>.</p>
+<p>E07 is closed out (follow-up controls done, see its chapter); next E08 (sensor sufficiency, preregistered from E05), E09–E10 (Kalman filtering and joint source–field assimilation), E11 (placement for forecasting), and plan 3 (wind and model mismatch, robust placement, calibration). See <a href="./chapters/91-next.html">Next steps</a>.</p>
 </section>
 <section id="how-to-read-this-report" class="level2">
 <h2 class="anchored" data-anchor-id="how-to-read-this-report">How to read this report</h2>

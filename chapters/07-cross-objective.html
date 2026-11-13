@@ -230,7 +230,8 @@ ul.task-list li input[type="checkbox"] {
   </ul></li>
   <li><a href="#audit-outcome-gate-07-pass-with-conditions" id="toc-audit-outcome-gate-07-pass-with-conditions" class="nav-link" data-scroll-target="#audit-outcome-gate-07-pass-with-conditions"><span class="header-section-number">10.5</span> Audit outcome (gate-07): pass with conditions</a></li>
   <li><a href="#what-changed-because-of-the-audit" id="toc-what-changed-because-of-the-audit" class="nav-link" data-scroll-target="#what-changed-because-of-the-audit"><span class="header-section-number">10.6</span> What changed because of the audit</a></li>
-  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">10.7</span> Limitations</a></li>
+  <li><a href="#follow-up-controls-post-hoc-exploratory-all-40-scenarios-no-new-solves" id="toc-follow-up-controls-post-hoc-exploratory-all-40-scenarios-no-new-solves" class="nav-link" data-scroll-target="#follow-up-controls-post-hoc-exploratory-all-40-scenarios-no-new-solves"><span class="header-section-number">10.7</span> Follow-up controls (post hoc, exploratory; all 40 scenarios, no new solves)</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">10.8</span> Limitations</a></li>
   </ul>
 </nav>
     </div>
@@ -556,22 +557,70 @@ Figure&nbsp;10.3: 64² sweep: regret heatmap and forecast-RMSE reduction against
 <section id="what-changed-because-of-the-audit" class="level2" data-number="10.6">
 <h2 data-number="10.6" class="anchored" data-anchor-id="what-changed-because-of-the-audit"><span class="header-section-number">10.6</span> What changed because of the audit</h2>
 <p>The confirmatory table now carries the distribution-free and mean-bootstrap variants; the verdict wording is the gate’s; the A2 decision file was updated with the full-calendar superposition error; the source_near contrast is labelled exploratory and pooled p-values were dropped.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+</section>
+<section id="follow-up-controls-post-hoc-exploratory-all-40-scenarios-no-new-solves" class="level2" data-number="10.7">
+<h2 data-number="10.7" class="anchored" data-anchor-id="follow-up-controls-post-hoc-exploratory-all-40-scenarios-no-new-solves"><span class="header-section-number">10.7</span> Follow-up controls (post hoc, exploratory; all 40 scenarios, no new solves)</h2>
+<p>These two analyses were prompted by gate-07. They re-use the cached 64² fields and change no confirmatory number. Evidence: <code>tables/e07-followup-*.csv</code>; code <code>scripts/e07_followup.py</code> and the driver’s <code>--exclude-radius</code> option.</p>
+<p><strong>1. Sensors kept out of the emission discs.</strong> All candidate sites within 1200 m of any source centre were removed, which is the 3σ truncation radius of the area source. That leaves 152–188 of about 195 candidates, and every design was rebuilt on the reduced set.</p>
+<ul>
+<li><strong>Near-source still beats D-optimal.</strong> Median advantage 0.375 (95 % CI 0.31–0.45; distribution-free 0.31–0.46), 104/120 pairs, 19/20 source layouts. Without exclusion it was 0.41, 115/120, 20/20. The exception is the sparsest cell (K = 4, k = 4), where the two are indistinguishable.</li>
+<li><strong>But D-optimal’s gain over random shrinks sharply,</strong> from 0.71 to <strong>0.20</strong> (CI 0.15–0.33; 87/120). On the reduced candidate set no cell clears the 10 % confirmatory threshold, so the exclusion version of the test is unresolved. Much of D-optimal’s margin came from sites inside or next to the emission discs. The confirmatory verdict above stands for the protocol’s candidate set only.</li>
+</ul>
+<p><strong>2. Where identifiability is lost.</strong> This is the fraction of 24 h test windows in which a k = 8 network cannot separate all sources (practical rank &lt; K):</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Held-out wind regime</th>
+<th>D-optimal</th>
+<th>near-source</th>
+<th>random</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>steady southerly (absent in training)</td>
+<td>0.37 (28/40 scenarios)</td>
+<td>0.01 (3/40)</td>
+<td>0.63</td>
+</tr>
+<tr class="even">
+<td>stagnation then front</td>
+<td>0.005</td>
+<td>0.002</td>
+<td>0.45</td>
+</tr>
+<tr class="odd">
+<td>diurnal rotation</td>
+<td>0.017</td>
+<td>0.007</td>
+<td>0.09</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Pooled, 79 % of D-optimal’s squared forecast error falls in such windows (per-scenario median 55 %); for near-source the share is 6 %.</li>
+<li>The loss is a signal-to-noise effect, not a structural one: exact rank is full for k ≥ 8.</li>
+<li>Gate-07’s 2-scenario finding therefore generalises. D-optimal networks tuned to training winds go blind mainly when the unseen southerly wind blows. This is still one unseen direction, and 12/40 scenarios show no such loss.</li>
+</ul>
+<div id="fig-e07-followup" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-e07-followup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figures/e07-followup.png" class="img-fluid figure-img">
 </div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Follow-up controls running — this chapter may change
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Two follow-up analyses on the cached 64² fields are <strong>in progress</strong> at the time of writing: (1) the 1200 m exclusion control across all 40 scenarios, and (2) the fraction of rank-deficient windows per test wind regime for every design and scenario. <strong>[PLACEHOLDER: results to be inserted when the runs finish; until then the exclusion result rests on 2 scenarios and the mechanism on one unseen wind direction.]</strong></p>
-</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-e07-followup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.4: E07 follow-ups: exclusion control and rank-deficient windows by held-out wind regime.
+</figcaption>
+</figure>
 </div>
 </section>
-<section id="limitations" class="level2" data-number="10.7">
-<h2 data-number="10.7" class="anchored" data-anchor-id="limitations"><span class="header-section-number">10.7</span> Limitations</h2>
+<section id="limitations" class="level2" data-number="10.8">
+<h2 data-number="10.8" class="anchored" data-anchor-id="limitations"><span class="header-section-number">10.8</span> Limitations</h2>
 <ul>
 <li>Perfect model: known wind, known source locations, constant sources, known background; the estimator uses the truth’s solver.</li>
 <li>Sensors may sit inside the 400 m-σ area-source footprint; point sources were not studied.</li>

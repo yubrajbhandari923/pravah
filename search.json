@@ -64,7 +64,7 @@
     "href": "index.html#what-we-learned-in-plain-language",
     "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
     "section": "What we learned, in plain language",
-    "text": "What we learned, in plain language\n\nScale matters before cleverness. At the originally declared emission rate, sensors could not see the plumes at all; no placement rule can fix that (E00–E05, amendment A1).\nNumerics matter. The first-order scheme smeared plumes with 7–60× the physical diffusivity at 64²; switching to a split VanLeer scheme was necessary before any 64² result could mean anything (A2).\nTime helps only when the wind changes. Repeated readings under the same wind reduce noise but do not separate sources; a change in wind direction does (E05, exploratory).\nOptimised placement beats random, confirmed in the 8 cells run (E07).\nBut the gain comes from knowing where the sources are, not from D-optimisation: simply placing sensors next to the known sources did better still, and D-optimal networks tuned to training winds failed when an unseen (southerly) wind blew in the test period (E07, exploratory).",
+    "text": "What we learned, in plain language\n\nScale matters before cleverness. At the originally declared emission rate, sensors could not see the plumes at all; no placement rule can fix that (E00–E05, amendment A1).\nNumerics matter. The first-order scheme smeared plumes with 7–60× the physical diffusivity at 64²; switching to a split VanLeer scheme was necessary before any 64² result could mean anything (A2).\nTime helps only when the wind changes. Repeated readings under the same wind reduce noise but do not separate sources; a change in wind direction does (E05, exploratory).\nOptimised placement beats random, confirmed in the 8 cells run (E07).\nBut the gain comes from knowing where the sources are, not from D-optimisation: simply placing sensors next to the known sources did better still, and D-optimal networks tuned to training winds failed when an unseen (southerly) wind blew in the test period: 79 % of their forecast error falls in those blind windows (E07, exploratory).",
     "crumbs": [
       "Executive summary"
     ]
@@ -74,7 +74,7 @@
     "href": "index.html#honest-limitations",
     "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
     "section": "Honest limitations",
-    "text": "Honest limitations\n\nSynthetic, perfect-model world: known source locations, known wind, constant sources, ideal sensors, uniform wind.\nSmoke scale (32²) for E02–E06; only E07 ran at 64² and only for K ∈ {2, 4}, k ∈ {4, 8, 16}, 10 seeds.\nThe source scale (1 g/s) was chosen after seeing data, so E02–E06 at that scale are exploratory.\nThe E07 mechanism rests on one unseen wind direction; the “source-near” advantage may partly reflect sensors sitting inside the 1200 m emission disc (checked in 2 scenarios only; sweep-wide control running).\nNo sequential filter, no wind error, no model mismatch yet: that is E09–E15.",
+    "text": "Honest limitations\n\nSynthetic, perfect-model world: known source locations, known wind, constant sources, ideal sensors, uniform wind.\nSmoke scale (32²) for E02–E06; only E07 ran at 64² and only for K ∈ {2, 4}, k ∈ {4, 8, 16}, 10 seeds.\nThe source scale (1 g/s) was chosen after seeing data, so E02–E06 at that scale are exploratory.\nThe E07 mechanism rests on one unseen wind direction; the “source-near” advantage may partly reflect sensors sitting inside the 1200 m emission disc. Across all 40 scenarios, excluding those sites keeps near-source ahead (104/120) but shrinks D-optimal’s gain over random from 71 % to 20 %, and no single cell then clears the 10 % test threshold (exploratory control).\nNo sequential filter, no wind error, no model mismatch yet: that is E09–E15.",
     "crumbs": [
       "Executive summary"
     ]
@@ -84,7 +84,7 @@
     "href": "index.html#whats-next",
     "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
     "section": "What’s next",
-    "text": "What’s next\nE07 follow-up controls (1200 m exclusion, per-wind-regime window analysis) are running on cached fields; then E08 (sensor sufficiency, preregistered from E05), E09–E10 (Kalman filtering and joint source–field assimilation), E11 (placement for forecasting), and plan 3 (wind and model mismatch, robust placement, calibration). See Next steps.",
+    "text": "What’s next\nE07 is closed out (follow-up controls done, see its chapter); next E08 (sensor sufficiency, preregistered from E05), E09–E10 (Kalman filtering and joint source–field assimilation), E11 (placement for forecasting), and plan 3 (wind and model mismatch, robust placement, calibration). See Next steps.",
     "crumbs": [
       "Executive summary"
     ]
@@ -816,7 +816,18 @@
     "href": "chapters/07-cross-objective.html#what-changed-because-of-the-audit",
     "title": "10  E07 Cross-objective placement on held-out winds",
     "section": "10.6 What changed because of the audit",
-    "text": "10.6 What changed because of the audit\nThe confirmatory table now carries the distribution-free and mean-bootstrap variants; the verdict wording is the gate’s; the A2 decision file was updated with the full-calendar superposition error; the source_near contrast is labelled exploratory and pooled p-values were dropped.\n\n\n\n\n\n\nNoteFollow-up controls running — this chapter may change\n\n\n\nTwo follow-up analyses on the cached 64² fields are in progress at the time of writing: (1) the 1200 m exclusion control across all 40 scenarios, and (2) the fraction of rank-deficient windows per test wind regime for every design and scenario. [PLACEHOLDER: results to be inserted when the runs finish; until then the exclusion result rests on 2 scenarios and the mechanism on one unseen wind direction.]",
+    "text": "10.6 What changed because of the audit\nThe confirmatory table now carries the distribution-free and mean-bootstrap variants; the verdict wording is the gate’s; the A2 decision file was updated with the full-calendar superposition error; the source_near contrast is labelled exploratory and pooled p-values were dropped.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>E07 Cross-objective placement on held-out winds</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/07-cross-objective.html#follow-up-controls-post-hoc-exploratory-all-40-scenarios-no-new-solves",
+    "href": "chapters/07-cross-objective.html#follow-up-controls-post-hoc-exploratory-all-40-scenarios-no-new-solves",
+    "title": "10  E07 Cross-objective placement on held-out winds",
+    "section": "10.7 Follow-up controls (post hoc, exploratory; all 40 scenarios, no new solves)",
+    "text": "10.7 Follow-up controls (post hoc, exploratory; all 40 scenarios, no new solves)\nThese two analyses were prompted by gate-07. They re-use the cached 64² fields and change no confirmatory number. Evidence: tables/e07-followup-*.csv; code scripts/e07_followup.py and the driver’s --exclude-radius option.\n1. Sensors kept out of the emission discs. All candidate sites within 1200 m of any source centre were removed, which is the 3σ truncation radius of the area source. That leaves 152–188 of about 195 candidates, and every design was rebuilt on the reduced set.\n\nNear-source still beats D-optimal. Median advantage 0.375 (95 % CI 0.31–0.45; distribution-free 0.31–0.46), 104/120 pairs, 19/20 source layouts. Without exclusion it was 0.41, 115/120, 20/20. The exception is the sparsest cell (K = 4, k = 4), where the two are indistinguishable.\nBut D-optimal’s gain over random shrinks sharply, from 0.71 to 0.20 (CI 0.15–0.33; 87/120). On the reduced candidate set no cell clears the 10 % confirmatory threshold, so the exclusion version of the test is unresolved. Much of D-optimal’s margin came from sites inside or next to the emission discs. The confirmatory verdict above stands for the protocol’s candidate set only.\n\n2. Where identifiability is lost. This is the fraction of 24 h test windows in which a k = 8 network cannot separate all sources (practical rank &lt; K):\n\n\n\n\n\n\n\n\n\nHeld-out wind regime\nD-optimal\nnear-source\nrandom\n\n\n\n\nsteady southerly (absent in training)\n0.37 (28/40 scenarios)\n0.01 (3/40)\n0.63\n\n\nstagnation then front\n0.005\n0.002\n0.45\n\n\ndiurnal rotation\n0.017\n0.007\n0.09\n\n\n\n\nPooled, 79 % of D-optimal’s squared forecast error falls in such windows (per-scenario median 55 %); for near-source the share is 6 %.\nThe loss is a signal-to-noise effect, not a structural one: exact rank is full for k ≥ 8.\nGate-07’s 2-scenario finding therefore generalises. D-optimal networks tuned to training winds go blind mainly when the unseen southerly wind blows. This is still one unseen direction, and 12/40 scenarios show no such loss.\n\n\n\n\n\n\n\nFigure 10.4: E07 follow-ups: exclusion control and rank-deficient windows by held-out wind regime.",
     "crumbs": [
       "Experiments",
       "<span class='chapter-number'>10</span>  <span class='chapter-title'>E07 Cross-objective placement on held-out winds</span>"
@@ -826,8 +837,8 @@
     "objectID": "chapters/07-cross-objective.html#limitations",
     "href": "chapters/07-cross-objective.html#limitations",
     "title": "10  E07 Cross-objective placement on held-out winds",
-    "section": "10.7 Limitations",
-    "text": "10.7 Limitations\n\nPerfect model: known wind, known source locations, constant sources, known background; the estimator uses the truth’s solver.\nSensors may sit inside the 400 m-σ area-source footprint; point sources were not studied.\nOne unseen wind direction (southerly) drives the mechanism; a 24 h estimator window only.\n10 seeds per cell; cells are not independent (two training-wind arms share layouts, test winds and noise seeds).\nσ ≈ 0.25 ≈ 0.05·c_bg is effectively a fixed instrument noise, and near-source SNR is ~50–80, which is why the per-site arm changes little.\nThe forecast is from a static inverse, not a filter; calibration endpoints are deferred to E09.",
+    "section": "10.8 Limitations",
+    "text": "10.8 Limitations\n\nPerfect model: known wind, known source locations, constant sources, known background; the estimator uses the truth’s solver.\nSensors may sit inside the 400 m-σ area-source footprint; point sources were not studied.\nOne unseen wind direction (southerly) drives the mechanism; a 24 h estimator window only.\n10 seeds per cell; cells are not independent (two training-wind arms share layouts, test winds and noise seeds).\nσ ≈ 0.25 ≈ 0.05·c_bg is effectively a fixed instrument noise, and near-source SNR is ~50–80, which is why the per-site arm changes little.\nThe forecast is from a static inverse, not a filter; calibration endpoints are deferred to E09.",
     "crumbs": [
       "Experiments",
       "<span class='chapter-number'>10</span>  <span class='chapter-title'>E07 Cross-objective placement on held-out winds</span>"
@@ -858,17 +869,7 @@
     "href": "chapters/91-next.html",
     "title": "12  Next steps",
     "section": "",
-    "text": "12.1 Immediately (E07 close-out, no new simulations)\nSources: state/STATUS.md, state/experiments/e05.md and e07.md, plans 2 and 3. Nothing in this chapter is a result.",
-    "crumbs": [
-      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Next steps</span>"
-    ]
-  },
-  {
-    "objectID": "chapters/91-next.html#immediately-e07-close-out-no-new-simulations",
-    "href": "chapters/91-next.html#immediately-e07-close-out-no-new-simulations",
-    "title": "12  Next steps",
-    "section": "",
-    "text": "User sign-off on the confirmatory scope: accept the 8 cells run (K ∈ {2, 4}, k ∈ {8, 16}, 10 seeds) as the confirmatory population, or report “supported in run cells, unresolved overall”.\n1200 m exclusion control across all 40 scenarios (running on cached fields).\nRank-deficient window fraction per test wind regime for every design and scenario (running).",
+    "text": "12.1 Immediately (E07 close-out, no new simulations)\nSources: state/STATUS.md, state/experiments/e05.md and e07.md, plans 2 and 3. Nothing in this chapter is a result.\nDone: the user approved the confirmatory scope (“supported in the cells run”), and both follow-up controls finished (see the E07 chapter). One implication carries forward: placement must be judged with sensors kept out of the emission discs as well, and against unseen wind directions (E08, E15).",
     "crumbs": [
       "<span class='chapter-number'>12</span>  <span class='chapter-title'>Next steps</span>"
     ]
