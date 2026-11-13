@@ -53,6 +53,8 @@ local:
 # HPC verified 2026-11-12: SSH (BatchMode) works, workspace below exists, uv env builds, smoke job ran.
 # The repo is public: the real host and workspace path live in the untracked settings.local.yaml; <...> are placeholders.
 # Project root on the cluster = <hpc-workspace-parent>/pravah, exported as PRAVAH_HPC_ROOT for jobs.
+# Public mirror: github.com/yubrajbhandari923/pravah (squashed `public` history, noreply email) + Pages at
+# yubrajbhandari923.github.io/pravah. Publish ONLY via scripts/publish_public.sh (refuses on private identifiers).
 hpc:
   ssh_host_hint: <hpc-host>
   scheduler: slurm                        # Slurm 21.08; sinfo/sbatch need a login shell (`ssh host "bash -lc '...'"`).
