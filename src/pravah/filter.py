@@ -7,6 +7,7 @@ on the data. Tests: tests/test_filter.py.
 import numpy as np
 import scipy.sparse as sp
 from scipy.linalg import cho_solve, solve_triangular
+from scipy.optimize import lsq_linear
 from scipy.sparse.linalg import splu
 from scipy.stats import norm
 
@@ -51,7 +52,7 @@ def update(m, P, y, H, R):
     return m + K @ nu, (P + P.T) / 2, nu, w, (w ** 2).sum(0), int(ok.sum())
 
 
-def run(m0, P0, transition, H, R, Y, *, issue=(), horizons=(1,)):
+def run(m0, P0, transition, H, R, Y, *, issue=(), horizons=(1,), keep=None):
     """Causal forecast-observe-update loop over hours h = 0 .. T-1.
 
     (m0, P0): forecast (prior) for hour 0. transition(h) -> (A, u, Q) for hour h-1 -> h, h >= 1, called once per hour
@@ -59,6 +60,7 @@ def run(m0, P0, transition, H, R, Y, *, issue=(), horizons=(1,)):
     the mean forecasts of hour t + hz (hz in horizons) are made from the analysis at t alone (NaN past T-1).
     Returns dict: fm/fv (forecast mean (T, n, c) / variance diag (T, n)), am/av (analysis), nis (T, c), kobs (T,),
     white (T, k, c) whitened innovations (NaN where absent), fc {hz: (len(issue), n, c)}.
+    keep: optional state indices; adds aPk (T, n, len(keep)) = analysis covariance columns P[:, keep] (E10).
     """
     Y = np.asarray(Y, float)
     T, (n, c) = len(Y), (len(m0), Y.shape[2])
@@ -68,6 +70,9 @@ def run(m0, P0, transition, H, R, Y, *, issue=(), horizons=(1,)):
     out = dict(fm=np.empty((T, n, c)), fv=np.empty((T, n)), am=np.empty((T, n, c)), av=np.empty((T, n)),
                nis=np.full((T, c), np.nan), kobs=np.zeros(T, int), white=np.full((T,) + Y.shape[1:], np.nan),
                fc={hz: np.full((len(issue), n, c), np.nan) for hz in horizons})
+    if keep is not None:
+        keep = np.asarray(keep, int)
+        out["aPk"] = np.empty((T, n, len(keep)))
     pos = {t: i for i, t in enumerate(issue)}
     m, P = np.repeat(np.reshape(m0, (n, 1)), c, 1).astype(float), np.array(P0, float)
     pending = []  # [issue index, target hour, mean] advanced with the mean transition each hour
@@ -88,9 +93,22 @@ def run(m0, P0, transition, H, R, Y, *, issue=(), horizons=(1,)):
         ok = ~np.isnan(Y[h]).all(1)
         out["white"][h][ok], out["nis"][h], out["kobs"][h] = w, nis if k else np.nan, k
         out["am"][h], out["av"][h] = m, np.diag(P)
+        if keep is not None:
+            out["aPk"][h] = P[:, keep]
         if h in pos:
             pending += [[pos[h], h + hz, m.copy(), hz] for hz in horizons if hz > 1 and h + hz < T]
     return out
+
+
+def nonneg_mode(m, C):
+    """Mode of N(m, C) truncated to a >= 0 (E10 admissibility): argmin (a-m)^T C^-1 (a-m) s.t. a >= 0, per column of
+    m (K,) or (K, c). Equals m where m >= 0. Bounded least squares on the Cholesky-whitened residual."""
+    m = np.asarray(m, float)
+    out = m.reshape(len(m), -1).copy()
+    W = solve_triangular(np.linalg.cholesky(C), np.eye(len(C)), lower=True)  # W^T W = C^-1
+    for j in np.flatnonzero((out < 0).any(0)):
+        out[:, j] = lsq_linear(W, W @ out[:, j], bounds=(0, np.inf), method="bvls", tol=1e-12).x
+    return out.reshape(m.shape)
 
 
 # ---------------------------------------------------------------- transport operators from the verified solver

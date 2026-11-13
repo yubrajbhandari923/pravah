@@ -1,0 +1,78 @@
+{
+ "command": "OMP_NUM_THREADS=1 uv run python scripts/e11_forecast_design.py --workers 5",
+ "git_rev": "95c72b60b278d4193abcb7ee499127ea691e3afa",
+ "git_dirty": false,
+ "host": "RAD-88300596",
+ "python": "3.14.9",
+ "numpy": "2.5.4",
+ "slurm_job": null,
+ "design_note": "docs/research/forecast-design-placement.md",
+ "scale": "pilot",
+ "world": {
+  "grid": [
+   32,
+   32
+  ],
+  "dt": 300,
+  "scheme": "upwind",
+  "spinup": 12,
+  "split": [
+   [
+    1,
+    4
+   ],
+   [
+    5,
+    5
+   ],
+   [
+    6,
+    11
+   ]
+  ],
+  "Ks": [
+   2,
+   4
+  ],
+  "ks": [
+   2,
+   4,
+   8
+  ],
+  "seeds": [
+   0,
+   1,
+   2
+  ],
+  "R": 5
+ },
+ "e11": {
+  "Ks": [
+   2,
+   4
+  ],
+  "seeds": [
+   0,
+   1,
+   2
+  ],
+  "ks": [
+   2,
+   4,
+   8
+  ],
+  "R": 5
+ },
+ "winds": [
+  "veering",
+  "mixed"
+ ],
+ "design_prior": {
+  "n_dirs": 8,
+  "block_h": 24,
+  "speed": 3.0
+ },
+ "workers": 5,
+ "stage1_wall_s": 741.4896068572998,
+ "stage2_wall_s": 27.48726224899292
+}

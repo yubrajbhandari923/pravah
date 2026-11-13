@@ -1,0 +1,75 @@
+{
+ "command": "OMP_NUM_THREADS=1 uv run python scripts/e10_joint.py --workers 5",
+ "git_rev": "6ad088678fe90b16da4d46464ad9489256b80980",
+ "git_dirty": false,
+ "host": "RAD-88300596",
+ "python": "3.14.9",
+ "numpy": "2.5.4",
+ "design_note": "docs/research/joint-assimilation-design.md",
+ "winds": {
+  "veering": [
+   "veering"
+  ],
+  "mixed": [
+   "steady_westerly",
+   "veering",
+   "weak_variable"
+  ]
+ },
+ "Ks": [
+  2,
+  4
+ ],
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "ks": [
+  4,
+  8
+ ],
+ "designs": [
+  [
+   "random",
+   0
+  ],
+  [
+   "dopt",
+   0
+  ],
+  [
+   "source_near",
+   0
+  ]
+ ],
+ "R": 3,
+ "qs": [
+  0.0001,
+  0.001,
+  0.01,
+  0.1,
+  1.0
+ ],
+ "map_windows": {
+  "map6": 6,
+  "map12": 12,
+  "map24": 24,
+  "map72": 72,
+  "map_full": null
+ },
+ "variants": [
+  "const",
+  "diurnal",
+  "logrw"
+ ],
+ "phi": 0.9862071167439163,
+ "sd_log": 0.5,
+ "prior": "N(0, I) a_ref units",
+ "horizons": [
+  1,
+  6
+ ],
+ "workers": 5,
+ "total_wall_s": 3298.0997099876404
+}
