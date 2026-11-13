@@ -13,10 +13,14 @@ if git grep -nE "$pat" main -- . ':!uv.lock'; then echo "REFUSING: private ident
 if grep -rlE "$pat" reports/quarto/_build; then echo "REFUSING: private identifiers in rendered site"; exit 1; fi
 id() { GIT_AUTHOR_NAME=yubrajbhandari923 GIT_AUTHOR_EMAIL=$E GIT_COMMITTER_NAME=yubrajbhandari923 GIT_COMMITTER_EMAIL=$E "$@"; }
 git fetch -q origin main gh-pages
-c=$(id git commit-tree 'main^{tree}' -p origin/main -m "$msg")
-git branch -f public "$c" && git push origin public:main
+if [ "$(git rev-parse 'main^{tree}')" != "$(git rev-parse 'origin/main^{tree}')" ]; then
+  c=$(id git commit-tree 'main^{tree}' -p origin/main -m "$msg")
+  git branch -f public "$c" && git push origin public:main
+fi
 touch reports/quarto/_build/.nojekyll
-idx=$(mktemp); GIT_INDEX_FILE=$idx git --work-tree=reports/quarto/_build add -A . ; t=$(GIT_INDEX_FILE=$idx git write-tree); rm -f "$idx"
-p=$(id git commit-tree "$t" -p origin/gh-pages -m "Rendered report: $msg")
-git branch -f gh-pages "$p" && git push origin gh-pages
+idx=$(mktemp -u); GIT_INDEX_FILE=$idx git --work-tree=reports/quarto/_build add -A . ; t=$(GIT_INDEX_FILE=$idx git write-tree); rm -f "$idx"
+if [ "$t" != "$(git rev-parse 'origin/gh-pages^{tree}')" ]; then
+  p=$(id git commit-tree "$t" -p origin/gh-pages -m "Rendered report: $msg")
+  git branch -f gh-pages "$p" && git push origin gh-pages
+fi
 echo "published: https://github.com/yubrajbhandari923/pravah  https://yubrajbhandari923.github.io/pravah/"
