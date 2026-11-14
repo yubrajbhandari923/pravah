@@ -19,10 +19,12 @@ Protocol and `configs/benchmark-v1.yaml` APPROVED 2026-11-12 as an amendable bas
    source_near beats dopt (115/120) ONLY for the 24 h-window estimator; with all past data dopt wins (103/120, gate-09), and with in-footprint sites excluded dopt's gain over random drops to 0.20 (0/8 cells).
    dopt's loss is concentrated in the unseen southerly regime. See `experiments/e07.md`.
 3. **E08 64² sweep done** (job 205039, 18.8 h). Holm family: H1, H3, H4 and H5 supported; H2 contradicted. k*(0.2) ≈ K
-   for location-aware designs. Pending: all-past-data and 1200 m exclusion stage-2 reruns (code in progress), gate-08.
+   for location-aware designs. Stage-2 reruns done (job 205394): with all past data every strategy reaches τ = 0.2
+   at k = 2 and H5 reverses (dopt beats source_near 36/40). With 1200 m exclusion, about twice the sensors are needed.
+   Pending: gate-08.
 4. HPC verified 2026-11-12 (smoke job 204775: 175 tests passed on node004; limits 64 CPU, 4 GPU, 2 days in settings.yaml).
 5. E09 done and audited. E10 and E11 32² pilots done (see journals). Gate-10/11 done (pass w/ conditions; E10 diurnal gain is 1 h only; ~40 % of E11's gain was in-sample).
-   E11 64² running as job 205282 (started 2026-11-14 08:00); E08 report and exclusion rerun. Plan 3 started: E12 pilot done. From now on, heavy 64² sweeps are deferred (user, 2026-11-13): pilots plus documented submission plans.
+   E11 64² done (job 205282): the out-of-sample wind-robust design beats dopt under map24 (19/20 clusters at k = 8), loses to source_near, and is worse under map_grow; E08 report and exclusion rerun. Plan 3 started: E12 pilot done. From now on, heavy 64² sweeps are deferred (user, 2026-11-13): pilots plus documented submission plans.
 
 Known open items: E03 (fixed-sensor static inverse) remains rank deficient for structural reasons (sensor placement, 24 h window).
 
@@ -38,15 +40,18 @@ Known open items: E03 (fixed-sensor static inverse) remains rank deficient for s
 | e05 | Temporal observability | smoke, 20 seeds, audited (gate-05) and rerun; exploratory support | [e05](experiments/e05.md) |
 | e06 | Placement algorithms | smoke done, audited (gate-06); 3 conditions before E07 reuse | [e06](experiments/e06.md) |
 | e07 | Cross-objective placement | closed: confirmatory supported in cells run; source_near beats dopt; gain shrinks with in-footprint sites excluded | [e07](experiments/e07.md) |
-| e08 | Sensor sufficiency | 64² sweep done (H1/H3/H4/H5 supported, H2 contradicted); reruns + audit pending | [e08](experiments/e08.md) |
+| e08 | Sensor sufficiency | 64² sweep + reruns done; H5 reverses with all past data; audit pending | [e08](experiments/e08.md) |
 | e09 | Causal Kalman filter | 32² replay + gate-09 (pass w/ conditions): all-past-data MAP ≫ 24 h MAP; placement ordering flips | [e09](experiments/e09.md) |
 | e10 | Joint source–field assimilation | 32² pilot: q=0 best for constant sources; random-walk filter wins and is calibrated for time-varying ones | [e10](experiments/e10.md) |
-| e11 | Forecast placement | 32² pilot + gate-10/11: wind-robust 24 h objective beats dopt under map24 at k=8 (+0.22–0.26 out of sample); worse under map_grow | [e11](experiments/e11.md) |
+| e11 | Forecast placement | 64² (20 clusters): out-of-sample wind-robust design beats dopt under map24 (+0.34 at k = 8, 19/20); loses to source_near; worse under map_grow | [e11](experiments/e11.md) |
 | e12 | Wind mismatch | 32² pilot: direction/timing error destroys forecast skill; estimators compensate by distorting sources (good fit, wrong strengths) | [e12](experiments/e12.md) |
 | e13 | Model mismatch | 32² pilot: background offset fixable by estimating it (but indistinguishable from common-mode bias → silent failure); source-basis errors unfixable | [e13](experiments/e13.md) |
 | e14 | Reliability diagnostics | 32² pilot: truth-free warnings only moderate (AUC ≤ 0.71 overall); slow-wind and missing-source failures undetectable | [e14](experiments/e14.md) |
 | e15 | Robust placement | pilot running (agent) | — |
-| e16–e20 | see plans (plan 3) | not started | — |
+| e16 | Generalization/ablation | 32² pilot running (agent) | — |
+| e17 | Regional case (Belauri) | feasibility audit done; **awaiting user decision on wind data source** (D1–D4) | [doc](../docs/research/regional-feasibility.md) |
+| e18 | Observational validation | gap assessment done: only 2 DoEnv PM2.5 stations within 100 km, sparse record; held-out test not defensible as validation; proposed "not conducted" (O1–O4) | [doc](../docs/research/observational-validation-audit.md) |
+| e19–e20 | synthesis, audit/release | not started | — |
 
 ## Verified facts vs questions
 

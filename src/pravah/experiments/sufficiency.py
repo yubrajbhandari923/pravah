@@ -86,13 +86,14 @@ def identifiability(A, issue, W, mask, K, regimes):
     return d
 
 
-def make_designs(sc, G3, ks, sigma0):
+def make_designs(sc, G3, ks, sigma0, exclude_m=0):
     """{(mult, k, strategy, net): (sites or None, info)}. dopt is rebuilt per sigma multiplier; the others are sigma-free and
     stored under mult None."""
     T, seedp = len(sc.split_hours("train")), sc.cfg.seeds.streams(sc.replicate)["placement"]
     out = {}
+    cand = X.exclude_near_sources(sc.site_xy, sc.admissible_sites(), sc.truth.source_xy, exclude_m) if exclude_m else None
     for mult in sorted({m for _, m in ARMS.values()}):
-        p = X.problem(X.design_input(sc, G3, sigma0 * mult))
+        p = X.problem(X.design_input(sc, G3, sigma0 * mult), cand=cand)
         todo = [("dopt", 0)] + ([] if mult != 1.0 else [("random", j) for j in range(X.N_RANDOM)] + [("coverage", 0), ("source_near", 0)])
         for k in ks:
             for name, net in todo:
@@ -107,9 +108,11 @@ def make_designs(sc, G3, ks, sigma0):
     return out
 
 
-def evaluate(sc, F, G3, ks, R, schedules=SCHEDULES, arms=ARMS):
+def evaluate(sc, F, G3, ks, R, schedules=SCHEDULES, arms=ARMS, exclude_m=0, full_window=False):
     """All E08 rows of one scenario. Returns (rows, designs_rows, timings). `random` rows are means over its 10 networks
-    (defined only if all are; n_net_ok records how many were)."""
+    (defined only if all are; n_net_ok records how many were). exclude_m > 0: candidates within that distance of a true source
+    are dropped (E07 control). full_window: estimator uses all readings from hour 0 (map_full) instead of the W-hour window;
+    the schedule still sets which hours are read (identifiability descriptors keep the nominal W)."""
     K = sc.n_sources
     a_ref, c_bg, a_true = sc.cfg.sources.reference_rate_ug_s, sc.cfg.sources.background_ug_m3, sc.truth.strengths_ug_s
     issue, n_h = X.issue_times(sc), len(sc.truth.winds)
@@ -119,7 +122,7 @@ def evaluate(sc, F, G3, ks, R, schedules=SCHEDULES, arms=ARMS):
     sigma0 = X.site_sigma(sc, False)
     tm = {}
     t0 = time.time()
-    designs = make_designs(sc, G3, ks, sigma0)
+    designs = make_designs(sc, G3, ks, sigma0, exclude_m)
     tm["design_wall_s"] = time.time() - t0
     t0 = time.time()
     base = dict(n_issue=len(issue), **{f"n_issue_{g}": int(m.sum()) for g, m in groups.items()})
@@ -141,7 +144,7 @@ def evaluate(sc, F, G3, ks, R, schedules=SCHEDULES, arms=ARMS):
                     if kind == "white":
                         tti.append(time_to_information(A, issue, K))
                     for s, (W, n) in schedules.items():
-                        m = [scorer(X.estimate_series(A, z[S], issue, W, mask=masks[s])) for z in Z]
+                        m = [scorer(X.estimate_series(A, z[S], issue, None if full_window else W, mask=masks[s])) for z in Z]
                         sc_ = {c: float(np.mean([x[c] for x in m])) for c in m[0]}
                         per[s].append({**sc_, **identifiability(A, issue, W, masks[s], K, regimes)})
                 for s, (W, n) in schedules.items():

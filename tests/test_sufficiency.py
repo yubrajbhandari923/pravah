@@ -113,3 +113,27 @@ def test_tiny_scenario_end_to_end():
     y1, y5 = (X.readings(sc, sigma * f, "white", 0, 10) for f in (1, 5))
     st = sc.truth.site_truth[:, :10]
     assert np.allclose(y5 - st, 5 * (y1 - st))
+
+
+def test_growing_window_equals_windowed_over_same_span():
+    rng = np.random.default_rng(3)
+    A, z = rng.normal(size=(3, 60, 2)), rng.normal(size=(3, 60))
+    m = S.schedule_mask(60, 6, 3)
+    full = X.estimate_series(A, z, np.array([23, 40]), None, mask=m)
+    assert np.allclose(full[0], X.estimate_series(A, z, np.array([23]), 24, mask=m)[0])  # span = all past data at hour 23
+    assert np.allclose(full[1], X.estimate_series(A, z, np.array([40]), 41, mask=m)[0])
+    assert not np.allclose(full[1], X.estimate_series(A, z, np.array([40]), 24, mask=m)[0])
+
+
+def test_exclusion_and_full_window_variants_run():
+    D.E7.SCALES["tiny8"] = dict(grid=(16, 16), dt=300, scheme="upwind", spinup=6, split=((1, 1), (2, 2), (3, 4)), Ks=(2,),
+                                ks=(2, 4), seeds=(0,), R=2)
+    sc = B.generate_scenario(D.E7.make_cfg("tiny8", "mixed"), 0, 2)
+    F, G3 = X.responses(sc)
+    r = 1200.0
+    keep = X.exclude_near_sources(sc.site_xy, sc.admissible_sites(), sc.truth.source_xy, r)
+    assert 0 < len(keep) < len(sc.admissible_sites())
+    rows, drows, _ = S.evaluate(sc, F, G3, (2, 4), 2, schedules={"S4": (24, 24)}, exclude_m=r, full_window=True)
+    used = {int(i) for d in drows if d.get("sites") for i in d["sites"].split()}
+    assert used and used <= set(keep.tolist())
+    assert all(np.isfinite(x["forecast_rmse"]) for x in rows if x["status"] == "ok")

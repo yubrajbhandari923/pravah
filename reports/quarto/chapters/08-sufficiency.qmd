@@ -60,6 +60,24 @@ audited.
   cells (K = 2, 4, 8 × k = 8, 16, 32). The exception, K = 4 with k = 32, straddles the threshold. These cells were not
   added to E07's confirmatory set.
 
+### Follow-up: all past data, and no sites near the sources (64², exploratory)
+
+These reruns were declared in advance and reuse the stored 64² simulations (cluster job 205394).
+
+| Median k\*(0.2), K = 2 / 4 / 8 | 24 h window (reference) | sites within 1200 m excluded | all past data |
+|---|---|---|---|
+| near-source | 2 / 4 / 8 | 4 / 8 / 8 | 2 / 2 / 2 |
+| D-optimal | 2 / 4 / 8 | 4 / 8 / 16 | 2 / 2 / 2 |
+| coverage | 8 / 8 / 8 | 12 / 8 / >32 | 2 / 2 / 2 |
+| random | 8 / 16 / 16 | 16 / 24 / >32 | 2 / 2 / 2 |
+
+- **With all past data, sufficiency at τ = 0.2 becomes trivial.** Every strategy gets there with 2 sensors for every K.
+  This is a floor effect: k\* stops discriminating between strategies.
+- **H5 reverses with memory.** At k = 8 on the 40 fresh scenarios, D-optimal beats near-source in 36 of 40 cases
+  (the 24 h window gave 39 of 40 the other way). This replicates gate-09's E07 finding on new scenarios.
+- **Without in-footprint sites, about twice as many sensors are needed.** Near-source still beats D-optimal (34 of 40
+  at k = 8), by a smaller margin.
+
 ## Pilot results (32², exploratory)
 
 ![E08 pilot: forecast nRMSE against sensor count by strategy and number of sources.](../figures/e08-local-sufficiency.png){#fig-e08-pilot}
@@ -83,6 +101,5 @@ audited.
 ## Estimator-memory caveat (gate-09)
 E08 uses windowed estimators (windows of 1–168 h). Gate-09 showed that strategy orderings flip between short and
 unlimited estimator memory (see the E07 and E09 chapters). E08's strategy comparisons, H5 especially, therefore hold
-for windowed estimators only. An all-past-data rerun and a 1200 m source-exclusion rerun on the cached 64² fields are
-pre-declared and will reuse the stored simulations (no new solves).
+for windowed estimators only. The all-past-data rerun above confirms this: H5 reverses.
 :::

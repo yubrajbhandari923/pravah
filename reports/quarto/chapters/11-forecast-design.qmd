@@ -5,8 +5,8 @@ Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or r
 **Question (plan 2).** Does a placement chosen to minimise *expected forecast variance* beat D-optimal and near-source
 placement for held-out forecasts?
 
-**Evidence label.** Exploratory: 32², 12 scenarios forming 6 clusters. Audited (gate-10/11: pass with conditions).
-The 64² run (cluster job 205282) was running when this chapter was written.
+**Evidence label.** Exploratory. 64² sweep (cluster job 205282): 40 scenarios forming 20 clusters, with cluster-level
+statistics and Holm correction. 32² pilot: 6 clusters. Audited at pilot stage (gate-10/11: pass with conditions).
 
 **Evidence.**
 - Design note `docs/research/forecast-design-placement.md` (addenda A1–A5).
@@ -23,7 +23,25 @@ The 64² run (cluster job 205282) was running when this chapter was written.
 - **Optimiser:** greedy + swap with multiple starts.
 - **Scoring:** both estimators, on held-out winds.
 
-## Results
+## 64² results
+
+![E11 64² sweep: forecast RMSE by design and estimator.](../figures/e11-sweep-forecast-design.png){#fig-e11-sweep}
+
+| 1 h forecast RMSE, cluster level (20 clusters), log ratio | k = 4 | k = 8 | k = 16 |
+|---|---|---|---|
+| wind-robust (all 8 directions) vs D-optimal, 24 h window | +0.43 (20/20) | +0.45 (20/20) | +0.33 (20/20) |
+| wind-robust, **out-of-sample prior**, vs D-optimal, 24 h window | +0.39 (19/20) | +0.34 (19/20) | +0.23 (18/20) |
+| wind-robust, out-of-sample prior, vs near-source, 24 h window | ≈ 0 | −0.22 (2/20) | −0.14 (2/20) |
+| wind-robust (all 8 directions) vs D-optimal, all past data | −0.29 (1/20) | −0.30 (2/20) | −0.09 (5/20) |
+
+- **Against D-optimal, under a 24 h window:** the wind-robust design wins even when the test directions are left out of
+  its prior (Holm p ≤ 0.02). At 32² this gain was not significant.
+- **Against near-source, under a 24 h window:** the out-of-sample version loses at k = 8 and 16.
+- **With all past data, the robust design loses to D-optimal.** The growing-window objective (`fc_grow`) reproduces
+  D-optimal.
+- **No single design wins under both memories.** This is now clear at 64².
+
+## 32² pilot results
 
 ![E11 (32², v2 with multi-start and cluster-level statistics): forecast RMSE by design and estimator.](../figures/e11-local-v2-forecast-design.png){#fig-e11}
 

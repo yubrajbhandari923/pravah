@@ -271,3 +271,8 @@ CIs), `e08-local-breakpoints.csv` (k*(τ)), `e08-local-contrasts.csv` (H1–H5 s
    fields with `--exclude-radius 1200`, because in E07 excluding in-footprint sites cut dopt's gain over random from 0.71 to
    0.20. It is reported beside the main results and never replaces them.
 9. The user authorised the 64² job ("get started with E08"). It runs as one 64-CPU job per the cluster rules.
+
+### Addendum 2026-11-14 (exploratory stage-2 reruns on the cached fields; no preregistered test changes)
+10. **`--exclude-radius M`** (decision 8) is implemented by `cross_objective.exclude_near_sources`, as in E07: all four strategies place only on candidates farther than M of every true source (inclusive boundary excluded); scoring, estimator and schedules are unchanged. Outputs carry the tag `excl1200`.
+11. **`--estimator map_full`** (motivated by gate-09: the all-past-data MAP equals the augmented Kalman filter under a perfect model). Only the estimator changes: at every issue hour t the MAP (prior N(0, I), same whitening) uses all sampled readings from hour 0 to t instead of the W-hour window ending at t (`estimate_series(window=None)`). The schedule still decides which hours are read (cadence W/n), so S1, S4 and S7 (all hourly) become identical and the span W no longer enters the estimator; the identifiability descriptors (`prank`, `tti`) keep their nominal-W definition and are not comparable under this variant. Outputs carry the tag `mapfull`; H1-H5 are recomputed by `--report` on these rows as exploratory, never as verdicts, and never replace the reference run.
+12. **Erratum to section 9, H5:** "60 scenarios not used by E07" is wrong; K = 8 seeds 0-19 plus K = 2, 4 seeds 10-19 is 40 scenarios (the code uses 40).

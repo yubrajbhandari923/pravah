@@ -2,6 +2,8 @@
 
 Pilot (32^2, local):  OMP_NUM_THREADS=1 uv run python scripts/e08_sufficiency.py --pilot --workers 6
 Sweep (64^2, HPC):    ... --sweep --out DIR --workers 64     (stage 1 solves, then stage 2 per scenario; rerun to resume)
+Variants (stage 2 only, reuse DIR/fields; outputs get a tag, reference files are never touched):
+                      --exclude-radius 1200  --estimator map_full   (tags excl1200 / mapfull; scen/ cache in scen-<tag>/)
 Report only:          uv run python scripts/e08_sufficiency.py --pilot --report   (or --sweep --report --out DIR)
 
 Stage 1 is E07's `run_field` (content-hashed caches in DIR/fields; E08's sweep scale has the same model, calendar and winds
@@ -41,17 +43,23 @@ def run_field(task):
     return E7.run_field(task)
 
 
+def variant_tag(excl, full):
+    return "-".join(([f"excl{int(excl)}"] if excl else []) + (["mapfull"] if full else []))
+
+
 def run_scenario(job):
-    scale, K, seed, out = job
+    scale, K, seed, out, excl, full = job
     fl = E7.scenario_fields(scale, WIND, K, seed)
-    f = Path(out) / "scen" / f"K{K}_s{seed}_{fl[0][0]}.pkl"
+    tag = variant_tag(excl, full)
+    f = Path(out) / (f"scen-{tag}" if tag else "scen") / f"K{K}_s{seed}_{fl[0][0]}.pkl"
     if f.exists():
         return pickle.loads(f.read_bytes())
     w0, c0 = time.time(), time.process_time()
     sc, F, G3, tm = E7.load_scenario(scale, WIND, K, seed, out)
     s = E7.SCALES[scale]
-    rows, drows, t2 = S.evaluate(sc, F, G3, s["ks"], s["R"])
+    rows, drows, t2 = S.evaluate(sc, F, G3, s["ks"], s["R"], exclude_m=excl, full_window=full)
     key = dict(scale=scale, K=K, seed=seed)
+    tm["n_cand"] = len(X.exclude_near_sources(sc.site_xy, sc.admissible_sites(), sc.truth.source_xy, excl)) if excl else len(sc.admissible_sites())
     lin = float(np.abs(sc.cfg.sources.background_ug_m3 + np.einsum("k,khxy->hxy", sc.truth.strengths_ug_s, F) - sc.truth.field).max())
     tm.update(key, **t2, total_wall_s=time.time() - w0, total_cpu_s=time.process_time() - c0, linearity_max_abs=lin,
               peak_rss_mb=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024, n_hours=len(sc.truth.winds),
@@ -198,9 +206,8 @@ def protocol_cells(d):
     return pd.DataFrame(out)
 
 
-def report(pre, rows_csv):
+def report(pre, rows_csv, sweep):
     df = pd.read_csv(rows_csv)
-    sweep = pre == "sweep"
     d, _ = with_nrmse(df)
     cur = curves(d)
     ksd = kstars(d)
@@ -266,15 +273,21 @@ def main():
     ap.add_argument("--report", action="store_true")
     ap.add_argument("--workers", type=int, default=min(6, os.cpu_count()))
     ap.add_argument("--out", default=None)
+    ap.add_argument("--exclude-radius", type=float, default=0, help="m; drop candidate sites within it of any true source (stage-2 variant)")
+    ap.add_argument("--estimator", choices=("map_window", "map_full"), default="map_window",
+                    help="map_full: all-past-data MAP instead of the schedule's W-hour window (stage-2 variant)")
     ap.add_argument("--only", default=None, help="comma list K:seed (smoke)")
     a = ap.parse_args()
     scale, pre = ("e08sweep", "sweep") if a.sweep else ("e08pilot", "local")
     out = Path(a.out or root / f".cache/e08/{pre}")
+    excl, full = a.exclude_radius, a.estimator == "map_full"
+    tag = variant_tag(excl, full)
+    pre_t = pre + (f"-{tag}" if tag else "")  # output prefix; the reference run (no tag) keeps its names
     if a.report:
-        return report(pre, tab / f"e08-{pre}-rows.csv" if pre == "local" else out / "e08-sweep-rows.csv")
+        return report(pre_t, tab / f"e08-{pre_t}-rows.csv" if pre == "local" else out / f"e08-{pre_t}-rows.csv", pre == "sweep")
     (out / "fields").mkdir(parents=True, exist_ok=True)
     s = E7.SCALES[scale]
-    jobs = [(scale, K, sd, str(out)) for K in sorted(s["Ks"], reverse=True) for sd in s["seeds"]]  # longest first
+    jobs = [(scale, K, sd, str(out), excl, full) for K in sorted(s["Ks"], reverse=True) for sd in s["seeds"]]  # longest first
     if a.only:
         sel = {tuple(map(int, x.split(":"))) for x in a.only.split(",")}
         jobs = [j for j in jobs if (j[1], j[2]) in sel]
@@ -296,16 +309,16 @@ def main():
                   f"rss={tm['peak_rss_mb']:.0f}MB", flush=True)
     if a.only:
         return
-    meta = {**E7.provenance(), "scale": s, "wind": WIND, "workers": a.workers, "total_wall_s": time.time() - t0,
+    meta = {**E7.provenance(), "scale": s, "wind": WIND, "workers": a.workers, "exclude_radius_m": excl, "estimator": a.estimator, "total_wall_s": time.time() - t0,
             "design_note": "docs/research/sufficiency-design.md"}
     meta["command"] = "OMP_NUM_THREADS=1 uv run python scripts/e08_sufficiency.py " + " ".join(sys.argv[1:])
     dest = tab if pre == "local" else out  # sweep tables stay next to the caches; the lead curates what enters reports/
-    pd.DataFrame(rows).to_csv(dest / f"e08-{pre}-rows.csv", index=False)
-    pd.DataFrame(drows).to_csv(dest / f"e08-{pre}-designs.csv", index=False)
-    pd.DataFrame(comp).to_csv(dest / f"e08-{pre}-compute.csv", index=False)
-    (dest / f"e08-{pre}-meta.json").write_text(json.dumps(meta, indent=1, default=str))
+    pd.DataFrame(rows).to_csv(dest / f"e08-{pre_t}-rows.csv", index=False)
+    pd.DataFrame(drows).to_csv(dest / f"e08-{pre_t}-designs.csv", index=False)
+    pd.DataFrame(comp).to_csv(dest / f"e08-{pre_t}-compute.csv", index=False)
+    (dest / f"e08-{pre_t}-meta.json").write_text(json.dumps(meta, indent=1, default=str))
     if pre == "local":
-        report(pre, tab / "e08-local-rows.csv")
+        report(pre_t, tab / f"e08-{pre_t}-rows.csv", False)
 
 
 if __name__ == "__main__":

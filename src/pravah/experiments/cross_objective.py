@@ -138,7 +138,7 @@ def estimate_series(A, z, issue, window=WINDOW_H, nonneg=False, mask=None):
     (y - c_bg)/sigma. Rows after an issue time are never touched. mask: optional (hours,) bool, the sampled hours
     (E08 cadence); unsampled hours contribute nothing. Returns u_hat (n_issue, K) in a_ref units."""
     issue = np.asarray(issue, int)
-    if issue.min() - window + 1 < 0:
+    if window is not None and issue.min() - window + 1 < 0:  # window=None: growing window from hour 0 (all past data)
         raise ValueError("window starts before hour 0")
     K = A.shape[2]
     m = 1.0 if mask is None else np.asarray(mask, float)[: A.shape[1]]
@@ -146,8 +146,9 @@ def estimate_series(A, z, issue, window=WINDOW_H, nonneg=False, mask=None):
     bh = np.einsum("shk,sh->hk", A, z * m)
     cP = np.concatenate([np.zeros((1, K, K)), np.cumsum(Ph, 0)])
     cb = np.concatenate([np.zeros((1, K)), np.cumsum(bh, 0)])
-    N = np.eye(K) + cP[issue + 1] - cP[issue + 1 - window]
-    b = cb[issue + 1] - cb[issue + 1 - window]
+    lo = np.zeros_like(issue) if window is None else issue + 1 - window
+    N = np.eye(K) + cP[issue + 1] - cP[lo]
+    b = cb[issue + 1] - cb[lo]
     if not nonneg:
         return np.linalg.solve(N, b[..., None])[..., 0]
     out = np.empty_like(b)

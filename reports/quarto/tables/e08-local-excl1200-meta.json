@@ -1,0 +1,60 @@
+{
+ "command": "OMP_NUM_THREADS=1 uv run python scripts/e08_sufficiency.py --pilot --workers 6 --out /tmp/claude-1000/-home-yubraj-research-pravah-new/a85e2353-a4b0-4538-b8b9-d8d9279ac3d4/scratchpad/e08local --exclude-radius 1200",
+ "git_rev": "cbc181d761889e7c07ef9e29731aa89b6f1678bd",
+ "git_dirty": true,
+ "host": "RAD-88300596",
+ "python": "3.14.9",
+ "numpy": "2.5.4",
+ "slurm_job": null,
+ "design_note": "docs/research/sufficiency-design.md",
+ "scale": {
+  "grid": [
+   32,
+   32
+  ],
+  "dt": 300,
+  "scheme": "upwind",
+  "spinup": 12,
+  "split": [
+   [
+    1,
+    4
+   ],
+   [
+    5,
+    7
+   ],
+   [
+    8,
+    13
+   ]
+  ],
+  "Ks": [
+   2,
+   4,
+   8
+  ],
+  "ks": [
+   2,
+   4,
+   8,
+   16,
+   32
+  ],
+  "seeds": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "R": 5,
+  "winds": [
+   "mixed"
+  ]
+ },
+ "wind": "mixed",
+ "workers": 6,
+ "exclude_radius_m": 1200.0,
+ "estimator": "map_window",
+ "total_wall_s": 718.2484965324402
+}
