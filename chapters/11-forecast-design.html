@@ -261,8 +261,9 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#what-we-did" id="toc-what-we-did" class="nav-link active" data-scroll-target="#what-we-did"><span class="header-section-number">14.1</span> What we did</a></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">14.2</span> Results</a></li>
-  <li><a href="#limits-and-what-carries-forward" id="toc-limits-and-what-carries-forward" class="nav-link" data-scroll-target="#limits-and-what-carries-forward"><span class="header-section-number">14.3</span> Limits and what carries forward</a></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">14.2</span> 64² results</a></li>
+  <li><a href="#pilot-results" id="toc-pilot-results" class="nav-link" data-scroll-target="#pilot-results"><span class="header-section-number">14.3</span> 32² pilot results</a></li>
+  <li><a href="#limits-and-what-carries-forward" id="toc-limits-and-what-carries-forward" class="nav-link" data-scroll-target="#limits-and-what-carries-forward"><span class="header-section-number">14.4</span> Limits and what carries forward</a></li>
   </ul>
 </nav>
     </div>
@@ -290,7 +291,7 @@ ul.task-list li input[type="checkbox"] {
 
 <p>Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.</p>
 <p><strong>Question (plan 2).</strong> Does a placement chosen to minimise <em>expected forecast variance</em> beat D-optimal and near-source placement for held-out forecasts?</p>
-<p><strong>Evidence label.</strong> Exploratory: 32², 12 scenarios forming 6 clusters. Audited (gate-10/11: pass with conditions). The 64² run (cluster job 205282) was running when this chapter was written.</p>
+<p><strong>Evidence label.</strong> Exploratory. 64² sweep (cluster job 205282): 40 scenarios forming 20 clusters, with cluster-level statistics and Holm correction. 32² pilot: 6 clusters. Audited at pilot stage (gate-10/11: pass with conditions).</p>
 <p><strong>Evidence.</strong> - Design note <code>docs/research/forecast-design-placement.md</code> (addenda A1–A5). - Code <code>src/pravah/experiments/forecast_design.py</code>, driver <code>scripts/e11_forecast_design.py</code>. - Tables <code>tables/e11-local-*</code> and <code>tables/e11-local-v2-*</code>; journal <code>state/experiments/e11.md</code>.</p>
 <section id="what-we-did" class="level2" data-number="14.1">
 <h2 data-number="14.1" class="anchored" data-anchor-id="what-we-did"><span class="header-section-number">14.1</span> What we did</h2>
@@ -304,14 +305,75 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 </section>
 <section id="results" class="level2" data-number="14.2">
-<h2 data-number="14.2" class="anchored" data-anchor-id="results"><span class="header-section-number">14.2</span> Results</h2>
+<h2 data-number="14.2" class="anchored" data-anchor-id="results"><span class="header-section-number">14.2</span> 64² results</h2>
+<div id="fig-e11-sweep" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-e11-sweep-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figures/e11-sweep-forecast-design.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-e11-sweep-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14.1: E11 64² sweep: forecast RMSE by design and estimator.
+</figcaption>
+</figure>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>1 h forecast RMSE, cluster level (20 clusters), log ratio</th>
+<th>k = 4</th>
+<th>k = 8</th>
+<th>k = 16</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>wind-robust (all 8 directions) vs D-optimal, 24 h window</td>
+<td>+0.43 (20/20)</td>
+<td>+0.45 (20/20)</td>
+<td>+0.33 (20/20)</td>
+</tr>
+<tr class="even">
+<td>wind-robust, <strong>out-of-sample prior</strong>, vs D-optimal, 24 h window</td>
+<td>+0.39 (19/20)</td>
+<td>+0.34 (19/20)</td>
+<td>+0.23 (18/20)</td>
+</tr>
+<tr class="odd">
+<td>wind-robust, out-of-sample prior, vs near-source, 24 h window</td>
+<td>≈ 0</td>
+<td>−0.22 (2/20)</td>
+<td>−0.14 (2/20)</td>
+</tr>
+<tr class="even">
+<td>wind-robust (all 8 directions) vs D-optimal, all past data</td>
+<td>−0.29 (1/20)</td>
+<td>−0.30 (2/20)</td>
+<td>−0.09 (5/20)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Against D-optimal, under a 24 h window:</strong> the wind-robust design wins even when the test directions are left out of its prior (Holm p ≤ 0.02). At 32² this gain was not significant.</li>
+<li><strong>Against near-source, under a 24 h window:</strong> the out-of-sample version loses at k = 8 and 16.</li>
+<li><strong>With all past data, the robust design loses to D-optimal.</strong> The growing-window objective (<code>fc_grow</code>) reproduces D-optimal.</li>
+<li><strong>No single design wins under both memories.</strong> This is now clear at 64².</li>
+</ul>
+</section>
+<section id="pilot-results" class="level2" data-number="14.3">
+<h2 data-number="14.3" class="anchored" data-anchor-id="pilot-results"><span class="header-section-number">14.3</span> 32² pilot results</h2>
 <div id="fig-e11" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-e11-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="../figures/e11-local-v2-forecast-design.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-e11-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;14.1: E11 (32², v2 with multi-start and cluster-level statistics): forecast RMSE by design and estimator.
+Figure&nbsp;14.2: E11 (32², v2 with multi-start and cluster-level statistics): forecast RMSE by design and estimator.
 </figcaption>
 </figure>
 </div>
@@ -327,8 +389,8 @@ Figure&nbsp;14.1: E11 (32², v2 with multi-start and cluster-level statistics): 
 <li><strong>Predicted vs realised error.</strong> The objective’s predicted RMSE is miscentred because the prior assumes a smaller E[a²] than the truth. With the declared prior’s second moment it over-predicts instead (median ratio 0.80).</li>
 </ul>
 </section>
-<section id="limits-and-what-carries-forward" class="level2" data-number="14.3">
-<h2 data-number="14.3" class="anchored" data-anchor-id="limits-and-what-carries-forward"><span class="header-section-number">14.3</span> Limits and what carries forward</h2>
+<section id="limits-and-what-carries-forward" class="level2" data-number="14.4">
+<h2 data-number="14.4" class="anchored" data-anchor-id="limits-and-what-carries-forward"><span class="header-section-number">14.4</span> Limits and what carries forward</h2>
 <ul>
 <li>Greedy + swap is a local optimum: it misses the exhaustive optimum in 12 of 48 small cases.</li>
 <li>The robust prior is a choice, and it decides how much “robustness” the design buys. E15 tests this directly.</li>

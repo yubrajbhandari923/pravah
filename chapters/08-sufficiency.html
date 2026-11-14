@@ -261,7 +261,10 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#design" id="toc-design" class="nav-link active" data-scroll-target="#design"><span class="header-section-number">11.1</span> Design</a></li>
-  <li><a href="#sweep-results" id="toc-sweep-results" class="nav-link" data-scroll-target="#sweep-results"><span class="header-section-number">11.2</span> 64² sweep results</a></li>
+  <li><a href="#sweep-results" id="toc-sweep-results" class="nav-link" data-scroll-target="#sweep-results"><span class="header-section-number">11.2</span> 64² sweep results</a>
+  <ul class="collapse">
+  <li><a href="#follow-up-all-past-data-and-no-sites-near-the-sources-64²-exploratory" id="toc-follow-up-all-past-data-and-no-sites-near-the-sources-64²-exploratory" class="nav-link" data-scroll-target="#follow-up-all-past-data-and-no-sites-near-the-sources-64²-exploratory"><span class="header-section-number">11.2.1</span> Follow-up: all past data, and no sites near the sources (64², exploratory)</a></li>
+  </ul></li>
   <li><a href="#pilot-results-32²-exploratory" id="toc-pilot-results-32²-exploratory" class="nav-link" data-scroll-target="#pilot-results-32²-exploratory"><span class="header-section-number">11.3</span> Pilot results (32², exploratory)</a></li>
   </ul>
 </nav>
@@ -406,6 +409,57 @@ Figure&nbsp;11.1: E08 sweep (64², 20 scenarios per K): held-out forecast nRMSE 
 <li><strong>Span and readings.</strong> For random networks, more sensors beat more readings at every budget tested. For location-aware designs this flips at large k: once the sources are covered (k = 8 → 32), extra readings per sensor beat extra sensors (near-source 0/60, D-optimal 5/60 at W = 168 h). Near-source also gains from a longer span, contrary to H3’s secondary prediction.</li>
 <li><strong>Protocol cells left unrun by E07 (secondary).</strong> D-optimal cuts error against random by at least 10 % in 8 of 9 cells (K = 2, 4, 8 × k = 8, 16, 32). The exception, K = 4 with k = 32, straddles the threshold. These cells were not added to E07’s confirmatory set.</li>
 </ul>
+<section id="follow-up-all-past-data-and-no-sites-near-the-sources-64²-exploratory" class="level3" data-number="11.2.1">
+<h3 data-number="11.2.1" class="anchored" data-anchor-id="follow-up-all-past-data-and-no-sites-near-the-sources-64²-exploratory"><span class="header-section-number">11.2.1</span> Follow-up: all past data, and no sites near the sources (64², exploratory)</h3>
+<p>These reruns were declared in advance and reuse the stored 64² simulations (cluster job 205394).</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Median k*(0.2), K = 2 / 4 / 8</th>
+<th>24 h window (reference)</th>
+<th>sites within 1200 m excluded</th>
+<th>all past data</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>near-source</td>
+<td>2 / 4 / 8</td>
+<td>4 / 8 / 8</td>
+<td>2 / 2 / 2</td>
+</tr>
+<tr class="even">
+<td>D-optimal</td>
+<td>2 / 4 / 8</td>
+<td>4 / 8 / 16</td>
+<td>2 / 2 / 2</td>
+</tr>
+<tr class="odd">
+<td>coverage</td>
+<td>8 / 8 / 8</td>
+<td>12 / 8 / &gt;32</td>
+<td>2 / 2 / 2</td>
+</tr>
+<tr class="even">
+<td>random</td>
+<td>8 / 16 / 16</td>
+<td>16 / 24 / &gt;32</td>
+<td>2 / 2 / 2</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>With all past data, sufficiency at τ = 0.2 becomes trivial.</strong> Every strategy gets there with 2 sensors for every K. This is a floor effect: k* stops discriminating between strategies.</li>
+<li><strong>H5 reverses with memory.</strong> At k = 8 on the 40 fresh scenarios, D-optimal beats near-source in 36 of 40 cases (the 24 h window gave 39 of 40 the other way). This replicates gate-09’s E07 finding on new scenarios.</li>
+<li><strong>Without in-footprint sites, about twice as many sensors are needed.</strong> Near-source still beats D-optimal (34 of 40 at k = 8), by a smaller margin.</li>
+</ul>
+</section>
 </section>
 <section id="pilot-results-32²-exploratory" class="level2" data-number="11.3">
 <h2 data-number="11.3" class="anchored" data-anchor-id="pilot-results-32²-exploratory"><span class="header-section-number">11.3</span> Pilot results (32², exploratory)</h2>
@@ -471,7 +525,7 @@ Figure&nbsp;11.2: E08 pilot: forecast nRMSE against sensor count by strategy and
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>E08 uses windowed estimators (windows of 1–168 h). Gate-09 showed that strategy orderings flip between short and unlimited estimator memory (see the E07 and E09 chapters). E08’s strategy comparisons, H5 especially, therefore hold for windowed estimators only. An all-past-data rerun and a 1200 m source-exclusion rerun on the cached 64² fields are pre-declared and will reuse the stored simulations (no new solves).</p>
+<p>E08 uses windowed estimators (windows of 1–168 h). Gate-09 showed that strategy orderings flip between short and unlimited estimator memory (see the E07 and E09 chapters). E08’s strategy comparisons, H5 especially, therefore hold for windowed estimators only. The all-past-data rerun above confirms this: H5 reverses.</p>
 </div>
 </div>
 

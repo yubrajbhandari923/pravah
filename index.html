@@ -471,7 +471,7 @@ div.csl-indent {
 <td><a href="./chapters/08-sufficiency.html">E08</a></td>
 <td>How many sensors are enough?</td>
 <td>Preregistered factorial; 32² pilot; 64² sweep (60 scenarios)</td>
-<td>Location-aware designs need k ≈ K sensors; random layouts need 8–16. More sensors beat more readings for random networks, but not once sources are covered. H1, H3, H4 and H5 supported; H2 contradicted</td>
+<td>Location-aware designs need k ≈ K sensors; random layouts need 8–16. More sensors beat more readings for random networks, but not once sources are covered. H1, H3, H4 and H5 supported; H2 contradicted. <strong>With all past data, 2 sensors suffice for every strategy and H5 reverses</strong></td>
 <td>64²: preregistered tests (windowed estimator); not yet audited</td>
 </tr>
 <tr class="even">
@@ -492,8 +492,8 @@ div.csl-indent {
 <td><a href="./chapters/11-forecast-design.html">E11</a></td>
 <td>Placement optimised for forecasting?</td>
 <td>Data-free forecast-variance objective, wind-robust prior; audit</td>
-<td>Beats D-optimal under a 24 h window at k = 8 (+0.38), but about 40 % of that was in-sample. Out-of-sample +0.31, not significant. Worse with all past data</td>
-<td>exploratory, audited; 64² running</td>
+<td>64² (20 clusters): under a 24 h window, beats D-optimal even with an out-of-sample prior (+0.34 at k = 8, 19/20) but loses to near-source. Worse than D-optimal with all past data</td>
+<td>exploratory; pilot audited</td>
 </tr>
 <tr class="odd">
 <td><a href="./chapters/12-wind-mismatch.html">E12</a></td>
@@ -569,7 +569,7 @@ Figure&nbsp;2: E07 64² sweep: left, regret when a network chosen by one criteri
 </section>
 <section id="whats-next" class="level2">
 <h2 class="anchored" data-anchor-id="whats-next">What’s next</h2>
-<p>E08’s 64² sweep is done (all-past-data and exclusion reruns pending); E09 is done at 32² and audited. E10–E14 pilots are done. Next: E15 (robust placement), E16 (generalisation), E17/E18 feasibility, a batched audit of E12–E15, and the deferred 64² runs. See <a href="./chapters/91-next.html">Next steps</a>.</p>
+<p>E08’s and E11’s 64² runs are done; E09 is done at 32² and audited. E10–E14 pilots are done. Next: E15 (robust placement), E16 (generalisation), E17/E18 feasibility, a batched audit of E12–E15, and the deferred 64² runs. See <a href="./chapters/91-next.html">Next steps</a>.</p>
 </section>
 <section id="how-to-read-this-report" class="level2">
 <h2 class="anchored" data-anchor-id="how-to-read-this-report">How to read this report</h2>
