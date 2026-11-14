@@ -161,5 +161,6 @@ issue time (reuse of `forecast_design.estimate`); a superposition check |c_bg + 
   stated wherever it is used.
 - Not added now: the E10 random-walk filter arm, negative direction bias, and speed overestimation. Plan-3 E13/E14 may
   revisit them.
-- The 64² run (≈ 1,270 CPU-h, ≈ 22 h on 64 CPUs) waits for the user's go-ahead, given its cost on the shared cluster.
+- **The 64² run is deferred by the user** ("option 3", 2026-11-13). The documented plan (≈ 1,270 CPU-h, about 22 h on
+  64 CPUs; the commands are in the agent handoff and in §9) stays here for later.
   The pre-declared reduction order applies if time binds.

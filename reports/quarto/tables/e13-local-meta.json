@@ -1,0 +1,186 @@
+{
+ "command": "OMP_NUM_THREADS=1 uv run python scripts/e13_model_mismatch.py --pilot --workers 4",
+ "git_rev": "16e4936ce775e7c066cc800816376d4fba1e134a",
+ "git_dirty": false,
+ "host": "RAD-88300596",
+ "python": "3.14.9",
+ "numpy": "2.5.4",
+ "slurm_job": null,
+ "design_note": "docs/research/model-mismatch-design.md",
+ "scale": "pilot",
+ "specs": {
+  "oracle": [],
+  "bgoff0.25": [
+   [
+    "bgoff",
+    0.25
+   ]
+  ],
+  "bgoff1": [
+   [
+    "bgoff",
+    1.0
+   ]
+  ],
+  "bgdrift0.25": [
+   [
+    "bgdrift",
+    0.25
+   ]
+  ],
+  "bgdrift1": [
+   [
+    "bgdrift",
+    1.0
+   ]
+  ],
+  "shift400": [
+   [
+    "shift",
+    400.0
+   ]
+  ],
+  "shift800": [
+   [
+    "shift",
+    800.0
+   ]
+  ],
+  "wide800": [
+   [
+    "wide",
+    800.0
+   ]
+  ],
+  "missing1": [
+   [
+    "missing",
+    1.0
+   ]
+  ],
+  "diurnal": [
+   [
+    "diurnal",
+    0.5
+   ]
+  ],
+  "ar1": [
+   [
+    "ar1",
+    0.8
+   ]
+  ],
+  "sitebias0.25": [
+   [
+    "sitebias",
+    0.25
+   ]
+  ],
+  "sitebias1": [
+   [
+    "sitebias",
+    1.0
+   ]
+  ],
+  "common1": [
+   [
+    "common",
+    1.0
+   ]
+  ],
+  "drift1": [
+   [
+    "drift",
+    1.0
+   ]
+  ],
+  "humid0.3": [
+   [
+    "humid",
+    0.3
+   ]
+  ],
+  "drop0.2": [
+   [
+    "drop",
+    0.2
+   ]
+  ],
+  "drop0.5": [
+   [
+    "drop",
+    0.5
+   ]
+  ],
+  "combined": [
+   [
+    "shift",
+    400.0
+   ],
+   [
+    "bgdrift",
+    0.25
+   ],
+   [
+    "ar1",
+    0.8
+   ],
+   [
+    "sitebias",
+    0.25
+   ],
+   [
+    "drop",
+    0.2
+   ]
+  ]
+ },
+ "ks": [
+  2,
+  8
+ ],
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "Ks": [
+  2,
+  4
+ ],
+ "R": 3,
+ "n_random": 5,
+ "estimators": {
+  "map24": [
+   24,
+   false
+  ],
+  "map_full": [
+   null,
+   false
+  ],
+  "map24_bg": [
+   24,
+   true
+  ],
+  "map_full_bg": [
+   null,
+   true
+  ]
+ },
+ "wind": "mixed",
+ "out": "/home/yubraj/research/pravah-new/.claude/worktrees/agent-a67c372679846e4ff/.cache/e13/pilot",
+ "fields": null,
+ "workers": 4,
+ "total_wall_s": 1390.4974913597107,
+ "stage1_cpu_s": 6043.05360819,
+ "stage1_cpu_s_by_kind": {
+  "src": 1084.1837638139998,
+  "diurnal0.5": 1054.3034503159997,
+  "missing": 348.32008601899986,
+  "wide800": 1062.441316819,
+  "shift800": 1062.905450682,
+  "truth": 359.94428132,
+  "shift400": 1070.9552592200002
+ }
+}

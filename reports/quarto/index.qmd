@@ -57,8 +57,13 @@ settings chosen after seeing data; **confirmatory (cells run)** = preregistered 
 | [E05](chapters/05-time.qmd) | Can a longer window replace sensors? | Window × sensors × wind ablation, 20 seeds | Elapsed time alone adds **nothing** (constant wind); **wind change** adds rank (+0.37, 16/17 seeds). v1 claims were overstated and withdrawn | exploratory |
 | [E06](chapters/06-placement-methods.qmd) | Can we reproduce standard placement algorithms? | uniform/random/coverage/source-near/D/A/diversity/POD-QR | Implementations check out (QR = PySensors). Source-informed designs reach full rank; most of that is **knowing source locations** | verified methods; results in-sample |
 | [E07](chapters/07-cross-objective.qmd) | Which placement is best for which held-out task? | 32² pilot + 64² sweep (40 scenarios, held-out winds) | D-opt beats random on held-out forecast RMSE by a median 42–84 % per cell (8/8 cells), and under every estimator tried. **Which strategy wins depends on estimator memory:** near-source beats D-opt with a 24 h window (115/120 pairs), D-opt wins with all past data (103/120) | **confirmatory in cells run**; strategy ordering exploratory |
-| [E08](chapters/08-sufficiency.qmd) | How many sensors are enough? | Preregistered factorial; 32² pilot; 64² sweep running | Pilot: location-aware designs need about k ≈ K sensors, random layouts 12–24. At equal readings, more sensors beat more readings | exploratory (pilot) |
+| [E08](chapters/08-sufficiency.qmd) | How many sensors are enough? | Preregistered factorial; 32² pilot; 64² sweep (60 scenarios) | Location-aware designs need k ≈ K sensors; random layouts need 8–16. More sensors beat more readings for random networks, but not once sources are covered. H1, H3, H4 and H5 supported; H2 contradicted | 64²: preregistered tests (windowed estimator); not yet audited |
 | [E09](chapters/09-filter.qmd) | Does sequential filtering help? | Kalman filters with independent tests; 32² replay; audit | Estimating sources from **all past data** cuts forecast error 58–74 % vs a 24 h window. The gain is memory, not filtering. A field-only filter is nearly useless | exploratory, audited |
+| [E10](chapters/10-joint.qmd) | Do drifting-source filters help? | Random-walk augmented filter; constant, diurnal and log-random-walk truths; audit | Constant sources: all past data is best. Time-varying: 1 h error falls 24–55 %, but the filter is 12–15 % worse at 6 h under a diurnal cycle. Calibrated only when q matches the truth | exploratory, audited |
+| [E11](chapters/11-forecast-design.qmd) | Placement optimised for forecasting? | Data-free forecast-variance objective, wind-robust prior; audit | Beats D-optimal under a 24 h window at k = 8 (+0.38), but about 40 % of that was in-sample. Out-of-sample +0.31, not significant. Worse with all past data | exploratory, audited; 64² running |
+| [E12](chapters/12-wind-mismatch.qmd) | What do wind errors do? | Biased direction, speed, timing and noise in the inverse wind | Direction ≥ 30° or a lag ≥ 2 h destroys forecast skill. Wrong strengths absorb wind errors while the fit stays good. The memory benefit vanishes | exploratory pilot |
+| [E13](chapters/13-model-mismatch.qmd) | What do background, source or sensor errors do? | 18 mismatches, with and without an estimated background | Background offset: fixable. Common-mode sensor bias: a **silent failure**. Wrong source shapes or locations: unfixable. Outages: benign | exploratory pilot |
+| [E14](chapters/14-reliability.qmd) | Can the method flag its own failures? | 8 truth-free diagnostics; ROC by stress | Moderate at best (AUC 0.71). Speed errors and missing sources are undetectable | exploratory pilot |
 
 ## Key figures
 
@@ -82,6 +87,15 @@ settings chosen after seeing data; **confirmatory (cells run)** = preregistered 
 6. **Memory matters more than the algorithm.** Estimating the persistent sources from all past data cuts forecast error
    by 58–74 % against a 24 h window; a filter that corrects only the field does almost nothing (E09, exploratory).
 
+7. **Drifting sources need drifting estimates, but only for short horizons.** A filter that lets strengths drift helps
+   1 h forecasts when sources really change, and hurts 6 h forecasts under a daily cycle (E10).
+8. **Placement tuned for one estimator loses under another.** Forecast-optimised networks win only with a 24 h window,
+   and part of their gain was in-sample (E11).
+9. **Model errors dominate placement differences.** Under a 30° wind error, a 2 h timing lag or a wrong source map,
+   no estimator beats persistence. Strategies stop mattering, and the residuals often still look fine (E12–E13).
+10. **Self-diagnosis is limited.** Truth-free checks catch some failures (timing and direction errors, correlated noise)
+    but not speed errors, missing sources or a common sensor bias (E13–E14).
+
 ## Honest limitations
 
 - Synthetic, perfect-model world: known source locations, known wind, constant sources, ideal sensors, uniform wind.
@@ -90,12 +104,13 @@ settings chosen after seeing data; **confirmatory (cells run)** = preregistered 
 - The E07 mechanism rests on one unseen wind direction; the "source-near" advantage may partly reflect sensors sitting
   inside the 1200 m emission disc. Across all 40 scenarios, excluding those sites keeps near-source ahead (104/120) but
   shrinks D-optimal's gain over random from 71 % to 20 %, and no single cell then clears the 10 % test threshold (exploratory control).
-- No wind error or model mismatch yet (E12–E13). Filtering (E09) is at 32² only, with an upwind surrogate.
+- E09–E14 are 32² pilots with an upwind surrogate and 6 independent clusters. Their 64² runs are documented but deferred
+  (E11's is running).
 
 ## What's next
 
-E08's 64² sweep is running on the cluster; E09 is done at 32² and audited. Next: E10 (joint source–field assimilation),
-E11 (placement for forecasting, with estimator memory as a declared factor), and plan 3 (wind and model mismatch, robust placement, calibration). See
+E08's 64² sweep is done (all-past-data and exclusion reruns pending); E09 is done at 32² and audited. E10–E14 pilots are done. Next: E15 (robust placement), E16
+(generalisation), E17/E18 feasibility, a batched audit of E12–E15, and the deferred 64² runs. See
 [Next steps](chapters/91-next.qmd).
 
 ## How to read this report

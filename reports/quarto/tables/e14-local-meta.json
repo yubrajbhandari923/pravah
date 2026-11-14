@@ -1,0 +1,40 @@
+{
+ "command": "OMP_NUM_THREADS=1 uv run python scripts/e14_reliability.py --workers 4",
+ "git_rev": "33efe6722a60f8451a102313c7098cd838fda71b",
+ "git_dirty": true,
+ "host": "RAD-88300596",
+ "python": "3.14.9",
+ "numpy": "2.5.4",
+ "slurm_job": null,
+ "design_note": "docs/research/reliability-design.md",
+ "Ks": [
+  2,
+  4
+ ],
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "ks": [
+  2,
+  4,
+  8
+ ],
+ "n_random": 5,
+ "R": 3,
+ "estimators": {
+  "map24": 24,
+  "map_full": null
+ },
+ "extra_arms": [
+  "noise_x2",
+  "noise_ar1",
+  "omit1"
+ ],
+ "n_val_blocks": 2,
+ "block_h": 24,
+ "n_units": 45360,
+ "wall_s": 54.85739827156067,
+ "workers": 4
+}

@@ -26,15 +26,20 @@ def superposition_error(forward, q1, q2, alpha, beta):
     return float(np.linalg.norm(lhs - rhs) / np.linalg.norm(rhs))
 
 
-def anomaly_fields(model, winds, S, hours):
+def anomaly_fields(model, winds, S, hours, amp=None):
     """Anomaly c - c_bg after each hour in [0, hours) for source field S [ug m^-3 s^-1] under hourly `winds`, after
-    `model.spinup_h` spin-up hours replaying the first winds; same loop as benchmarks.generate_scenario."""
+    `model.spinup_h` spin-up hours replaying the first winds; same loop as benchmarks.generate_scenario.
+    amp: optional (>= hours,) emission factor per hour (S * amp[h] is emitted during hour h; spin-up replays amp like
+    the winds); None = constant emission (bit-identical to the original loop)."""
     grid, dom, m = tuple(model.grid), tuple(model.domain_m), model
     spin = np.resize(winds[:max(m.spinup_h, 1)], (m.spinup_h, 2))
+    g = None if amp is None else np.concatenate([np.resize(np.asarray(amp, float)[:max(m.spinup_h, 1)], m.spinup_h),
+                                                 np.asarray(amp, float)[:hours]])
     d, out = np.zeros(grid), []
     for h, u in enumerate(np.concatenate([spin, winds[:hours]])):
         d = simulate(nx=grid[0], ny=grid[1], Lx=dom[0], Ly=dom[1], dt=m.dt_s, n_steps=3600 // m.dt_s, u=tuple(u),
-                     K=m.diffusivity_m2_s, lam=m.removal_per_s, c_bg=0.0, c0=d, bc="study", scheme=m.advection_scheme, source=S)
+                     K=m.diffusivity_m2_s, lam=m.removal_per_s, c_bg=0.0, c0=d, bc="study", scheme=m.advection_scheme,
+                     source=S if g is None else S * g[h])
         if h >= m.spinup_h:
             out.append(d)
     return np.array(out)

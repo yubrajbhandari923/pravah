@@ -93,7 +93,8 @@ hpc:
     experiment_environments: envs/
   # Limits granted by the user on 2026-11-12 (work is CPU-only so far; GPUs unused unless a method needs them).
   limits:
-    max_concurrent_cpus: 64                # one 64-CPU job at a time (user, 2026-11-12)
+    max_concurrent_cpus: 64                # one 64-CPU job at a time for sweeps (user, 2026-11-12)
+    preliminary_runs: up to 128 cores + 8 GPUs in total for pilot/preliminary jobs, ONLY when the cluster is otherwise idle (check sinfo/squeue for other users first); heavy 64^2 sweeps are deferred: document a submission plan instead (user, 2026-11-13)
     max_memory_per_job: 128G              # FiPy workers need <1 GB each at 64^2; 128G leaves headroom for 64 workers
     gpus: 4
     max_walltime: 2-00:00:00

@@ -5,12 +5,14 @@ Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or r
 **Question (plan 2).** How do sensor count k, number of sources K, noise level, sampling cadence and observation span
 interact? For each setting, what is the smallest network that is "sufficient"?
 
-**Evidence label.** 32² pilot: exploratory, 4 scenarios per K, indicative only. 64² sweep: running (cluster job 205039).
+**Evidence label.** 64² sweep (cluster job 205039, 20 scenarios per K): the five preregistered tests form one Holm
+family; everything else is exploratory. The 32² pilot (4 scenarios per K) is indicative only. Not yet independently
+audited.
 
 **Evidence.**
 - Design note: `docs/research/sufficiency-design.md`, committed alone before any E08 computation. Hypotheses H1–H5 come
   from E05 and E07; lead decisions are in §13.
-- Tables `tables/e08-local-*`; journal `state/experiments/e08.md`.
+- Tables `tables/e08-sweep-*` and `tables/e08-local-*`; journal `state/experiments/e08.md`.
 
 ## Design
 
@@ -24,6 +26,39 @@ interact? For each setting, what is the smallest network that is "sufficient"?
 - **64² sweep:** 20 seeds per K. It reuses 78 of E07's cached simulations and adds 256 new ones.
 - **Scope:** the K = 8 and k = 32 protocol cells that E07 left unrun are reported as secondary. E07's approved
   confirmatory scope is unchanged.
+
+## 64² sweep results
+
+![E08 sweep (64², 20 scenarios per K): held-out forecast nRMSE against sensor count. Top row: strategies at the reference setting. Middle row: noise arms. Bottom row: sampling schedules for random networks.](../figures/e08-sweep-sufficiency.png){#fig-e08-sweep}
+
+| Median k\*(0.2) | K = 2 | K = 4 | K = 8 |
+|---|---|---|---|
+| near-source | 2 | 4 | 8 |
+| D-optimal | 2 | 4 | 8 |
+| coverage | 8 | 8 | 8 |
+| random | 8 | 16 | 16 |
+
+**Preregistered tests (Holm family):**
+
+| Hypothesis | Unit | Result | Verdict |
+|---|---|---|---|
+| H1: D-optimal k\* larger at K = 8 than at K = 2 | 20 seeds | 19 wins, 0 losses, 1 tie | supported |
+| H2: 5× noise hurts random more than near-source (k = 8) | 60 scenarios | 0 / 60 | **contradicted** |
+| H3: D-optimal's 24 → 168 h span gain is larger in southerly hours (k = 8) | 60 scenarios | 60 / 60 | supported |
+| H4: 4k × 6 readings beat k × 24 (random, W = 168 h, k = 2 → 8) | 60 scenarios | 58 / 60 | supported |
+| H5: near-source beats D-optimal (k = 8, 40 fresh scenarios) | 40 scenarios | 39 / 40 | supported |
+
+- **Location knowledge sets the requirement.** Location-aware designs reach τ = 0.2 with about as many sensors as
+  sources. Location-blind designs need 8–16 sensors whatever K is.
+- **Noise (H2 reversed).** Near-source designs lose more in *relative* terms when noise rises fivefold. Their error
+  starts very low, so they remain far better in absolute terms.
+- **Span and readings.** For random networks, more sensors beat more readings at every budget tested. For location-aware
+  designs this flips at large k: once the sources are covered (k = 8 → 32), extra readings per sensor beat extra
+  sensors (near-source 0/60, D-optimal 5/60 at W = 168 h). Near-source also gains from a longer span, contrary to H3's
+  secondary prediction.
+- **Protocol cells left unrun by E07 (secondary).** D-optimal cuts error against random by at least 10 % in 8 of 9
+  cells (K = 2, 4, 8 × k = 8, 16, 32). The exception, K = 4 with k = 32, straddles the threshold. These cells were not
+  added to E07's confirmatory set.
 
 ## Pilot results (32², exploratory)
 
@@ -48,5 +83,6 @@ interact? For each setting, what is the smallest network that is "sufficient"?
 ## Estimator-memory caveat (gate-09)
 E08 uses windowed estimators (windows of 1–168 h). Gate-09 showed that strategy orderings flip between short and
 unlimited estimator memory (see the E07 and E09 chapters). E08's strategy comparisons, H5 especially, therefore hold
-for windowed estimators only. An all-past-data rerun on the cached fields is planned after the sweep.
+for windowed estimators only. An all-past-data rerun and a 1200 m source-exclusion rerun on the cached 64² fields are
+pre-declared and will reuse the stored simulations (no new solves).
 :::

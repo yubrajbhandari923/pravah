@@ -1,0 +1,48 @@
+# E13 Background, source-basis and sensor-error mismatch
+
+Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.
+
+**Question (plan 3).** What happens when the assumptions about the background, the source shapes or the sensors are
+wrong? Which errors can be repaired by estimating one extra term, and which can at least be detected?
+
+**Evidence label.** Exploratory pilot: 32², 6 clusters, k = 8 shown. Not yet independently audited. The 64² run
+(≈ 616 CPU-h) is deferred.
+
+**Evidence.**
+- Design note `docs/research/model-mismatch-design.md`.
+- Code `src/pravah/model_mismatch.py`, driver `scripts/e13_model_mismatch.py`.
+- Tables `tables/e13-local-*`; journal `state/experiments/e13.md`.
+
+## What we did
+
+- The inverse always uses the nominal model; only the world changes. There are 18 pre-declared mismatches:
+  - **background:** an offset, and a drift over time;
+  - **source basis:** a shifted source, a wider footprint, a missing source, and diurnal emission;
+  - **sensors:** AR(1) noise, bias, drift, gain errors and outages;
+  - a **combined** case.
+- Each estimator also runs with an unknown background term (`_bg`).
+
+## Results
+
+![E13: uncertainty coverage and forecast skill under each mismatch.](../figures/e13-local-uncertainty.png){#fig-e13}
+
+- **A wrong background is fixable.** A +1 µg/m³ offset (4σ) destroys forecasts (skill vs persistence −3.5), biases the
+  sources by +128 % and gives zero coverage. Estimating the background repairs this fully (skill +0.94, coverage 0.96,
+  6/6). A drifting background is only partly repaired.
+- **Silent failure.** At the sensors, a background offset and a bias common to all sensors look identical.
+  - The background term fixes the offset but makes the common bias worse (skill −3.9).
+  - Every diagnostic looks perfect: fit ratio 1.00, white innovations, coverage 0.96. Yet forecasts are far worse
+    than persistence.
+  - Telling the two apart needs outside information, such as a reference instrument or an upwind background site.
+- **Wrong source assumptions are not fixable.** For a shifted source, a wider footprint or a missing source, no
+  estimator beats persistence at k = 8. The warnings are weak (fit ratio 1.17–1.34, lag-1 0.17–0.35).
+- **Sensor errors.**
+  - AR(1) noise leaves strengths unbiased, but coverage falls to 0.45–0.60. Lag-1 autocorrelation warns (0.78).
+  - Random outages are benign, even at 50 % missing.
+  - Per-site bias destroys coverage.
+  - Under drift, all past data helps (+0.57 vs the 24 h window, 6/6).
+
+## Limits
+
+- The stress magnitudes are synthetic choices, and n = 6.
+- The rule for field-level silent failure was added after seeing results.

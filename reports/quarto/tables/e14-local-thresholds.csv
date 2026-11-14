@@ -1,0 +1,17 @@
+label,diagnostic,threshold_val,tpr,fpr,precision,frac_flagged,risk_all,risk_kept,fail_rate_all,fail_rate_kept
+worse_than_persistence,innov_ac1,0.05788,0.6274,0.4083,0.7353,0.5493,1.43,1.12,0.6438,0.5323
+worse_than_persistence,nis,1.085,0.7459,0.572,0.7021,0.684,1.43,1.072,0.6438,0.5176
+worse_than_persistence,resid_xcorr,0.09109,0.3197,0.2244,0.7202,0.2858,1.43,1.371,0.6438,0.6132
+worse_than_persistence,loso,1.021,0.8093,0.71,0.6732,0.7739,1.43,1.171,0.6438,0.5431
+worse_than_persistence,spread,0.2776,0.4593,0.148,0.8487,0.3484,1.43,1.144,0.6438,0.5342
+worse_than_persistence,drift,0.1174,0.7869,0.7972,0.6408,0.7906,1.43,1.599,0.6438,0.6551
+worse_than_persistence,sensor_skill,0.7566,0.5812,0.2214,0.826,0.453,1.43,0.9746,0.6438,0.4929
+worse_than_persistence,sensor_fit,1.011,0.7721,0.6146,0.6942,0.716,1.43,1.066,0.6438,0.5166
+coverage_failure,innov_ac1,0.04997,0.622,0.3774,0.8412,0.5639,1.43,1.107,0.7626,0.6611
+coverage_failure,nis,1.137,0.6934,0.4203,0.8413,0.6286,1.43,1.086,0.7626,0.6295
+coverage_failure,resid_xcorr,-0.1327,0.905,0.8969,0.7643,0.9031,1.43,1.682,0.7626,0.7474
+coverage_failure,loso,1.214,0.678,0.4015,0.8444,0.6124,1.43,1.196,0.7626,0.6336
+coverage_failure,spread,6.655,0.03026,0.05325,0.6461,0.03571,1.43,1.398,0.7626,0.767
+coverage_failure,drift,1.414,0.4726,0.2316,0.8677,0.4154,1.43,1.412,0.7626,0.688
+coverage_failure,sensor_skill,0.7489,0.5349,0.2845,0.858,0.4755,1.43,0.9354,0.7626,0.6762
+coverage_failure,sensor_fit,1.077,0.6306,0.3508,0.8524,0.5642,1.43,1.11,0.7626,0.6464
