@@ -1,0 +1,7 @@
+conclusion,label,nominal,cells_not_holding
+C1_sn_vs_dopt_map24,weakened in some regimes,holds,src_wide
+C2_dopt_vs_random_map24,robust (pilot),holds,
+C3_dopt_vs_sn_grow,weakened in some regimes,holds,diff_hi
+C4_memory_dopt,robust (pilot),holds,
+C4_memory_sn,robust (pilot),holds,
+C5_kstar_le_K,conditional,holds,bg_hi

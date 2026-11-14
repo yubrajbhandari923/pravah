@@ -61,6 +61,9 @@ def make_cfg(scale, wind):
     if s["split"]:
         c.split = Split(*s["split"])
     c.winds = Winds(train=WINDS[wind], heldout=c.winds.heldout)
+    for key, v in s.get("overrides", {}).items():  # E16 sensitivity cells ("model.x": v); validated by the E16 driver
+        sec, attr = key.split(".")
+        setattr(getattr(c, sec), attr, v)
     c.validate()
     return c
 

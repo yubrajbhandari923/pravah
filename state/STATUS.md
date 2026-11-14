@@ -47,8 +47,8 @@ Known open items: E03 (fixed-sensor static inverse) remains rank deficient for s
 | e12 | Wind mismatch | 32² pilot: direction/timing error destroys forecast skill; estimators compensate by distorting sources (good fit, wrong strengths) | [e12](experiments/e12.md) |
 | e13 | Model mismatch | 32² pilot: background offset fixable by estimating it (but indistinguishable from common-mode bias → silent failure); source-basis errors unfixable | [e13](experiments/e13.md) |
 | e14 | Reliability diagnostics | 32² pilot: truth-free warnings only moderate (AUC ≤ 0.71 overall); slow-wind and missing-source failures undetectable | [e14](experiments/e14.md) |
-| e15 | Robust placement | pilot running (agent) | — |
-| e16 | Generalization/ablation | 32² pilot running (agent) | — |
+| e15 | Robust placement | 32² pilot: robust ≈ source_near under map24; small tail gain vs dopt only at k = 2; no gain under map_full; 64² deferred (low priority) | [e15](experiments/e15.md) |
+| e16 | Generalization/ablation | 32² pilot (6/8 cells): no conclusion reversed; memory flip in every cell; 64² deferred (≈2,760 CPU-h) | [e16](experiments/e16.md) |
 | e17 | Regional case (Belauri) | 64² done: placement beats random; dopt≈source_near; only map_grow beats persistence; a nearest-point wind cancels all gains | [e17](experiments/e17.md) |
 | e18 | Observational validation | gap assessment done: only 2 DoEnv PM2.5 stations within 100 km, sparse record; held-out test not defensible as validation; **not conducted** (user, 2026-11-14: no data available); gap assessment is the final artefact | [doc](../docs/research/observational-validation-audit.md) |
 | e19–e20 | synthesis, audit/release | not started | — |

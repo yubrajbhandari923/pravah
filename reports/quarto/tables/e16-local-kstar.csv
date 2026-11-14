@@ -1,0 +1,7 @@
+cell,n,frac_le_K_random,frac_le_K_coverage,frac_le_K_source_near,frac_le_K_dopt,med_kstar_coverage_K2,med_kstar_coverage_K4,med_kstar_dopt_K2,med_kstar_dopt_K4,med_kstar_random_K2,med_kstar_random_K4,med_kstar_source_near_K2,med_kstar_source_near_K4,verdict
+bg_hi,10,0.0,0.0,0.6,0.7,64.0,16.0,2.0,4.0,64.0,64.0,4.0,4.0,conditional
+diff_hi,10,0.1,0.0,1.0,1.0,4.0,8.0,2.0,4.0,16.0,8.0,2.0,4.0,holds
+loss_hi,10,0.0,0.0,1.0,1.0,16.0,8.0,2.0,4.0,16.0,16.0,2.0,4.0,holds
+nominal,10,0.0,0.1,1.0,1.0,8.0,8.0,2.0,4.0,16.0,8.0,2.0,4.0,holds
+src_sparse,10,0.0,0.1,1.0,1.0,8.0,8.0,2.0,4.0,16.0,8.0,2.0,4.0,holds
+src_wide,10,0.2,0.2,1.0,0.8,4.0,8.0,2.0,2.0,8.0,8.0,2.0,4.0,holds

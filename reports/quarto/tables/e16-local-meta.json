@@ -1,0 +1,80 @@
+{
+ "command": "OMP_NUM_THREADS=1 uv run python scripts/e16_generalization.py --pilot --workers 6 --cells nominal,diff_hi,loss_hi,src_wide,src_sparse,bg_hi",
+ "git_rev": "d15755029c4804a7820f64facb6aba4cc9411052",
+ "git_dirty": false,
+ "host": "RAD-88300596",
+ "python": "3.14.9",
+ "numpy": "2.5.4",
+ "slurm_job": null,
+ "design_note": "docs/research/generalization-ablations.md",
+ "base": {
+  "grid": [
+   32,
+   32
+  ],
+  "dt": 300,
+  "scheme": "upwind",
+  "spinup": 12,
+  "split": [
+   [
+    1,
+    4
+   ],
+   [
+    5,
+    5
+   ],
+   [
+    6,
+    11
+   ]
+  ],
+  "Ks": [
+   2,
+   4
+  ],
+  "ks": [
+   2,
+   4,
+   8,
+   16
+  ],
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "R": 5,
+  "winds": [
+   "mixed"
+  ]
+ },
+ "cells": {
+  "bg_hi": {
+   "sources.background_ug_m3": 20.0
+  },
+  "diff_hi": {
+   "model.diffusivity_m2_s": 1000.0
+  },
+  "loss_hi": {
+   "model.removal_per_s": 0.0001388888888888889
+  },
+  "nominal": {},
+  "src_sparse": {
+   "sources.min_separation_m": 3000.0
+  },
+  "src_wide": {
+   "sources.footprint_sigma_m": 800.0
+  }
+ },
+ "share": {
+  "bg_hi": "nominal"
+ },
+ "wind": "mixed",
+ "workers": 6,
+ "total_wall_s": 5.92504096031189,
+ "stage1_solves": 195,
+ "stage1_cpu_s": 11484.384658584002
+}

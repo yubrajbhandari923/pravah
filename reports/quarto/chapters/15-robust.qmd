@@ -1,0 +1,49 @@
+# E15 Robust placement over wind scenarios
+
+Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.
+
+**Question (plan 3).** Does choosing sites for the *average*, *tail* (CVaR) or *worst* case over an ensemble of wind
+scenarios give networks that hold up better under wind errors and unseen regimes?
+
+**Evidence label.** Exploratory 32² pilot: 6 clusters, upwind numerics, no multiplicity correction. The 64² run is
+deferred. Not yet audited.
+
+**Evidence.**
+- Design note `docs/research/robust-placement-design.md`, committed before any computation.
+- Code `src/pravah/experiments/robust_design.py` and `scripts/e15_robust_placement.py`.
+- Tables `tables/e15-local-*`; journal `state/experiments/e15.md`.
+
+## What we did
+
+- **Loss per scenario:** for each 24 h wind scenario, the expected forecast error, normalised by the error with no
+  sensors.
+- **Criteria:** the mean, the CVaR at 0.8 and the worst case over the scenarios.
+- **Two scenario ensembles, neither containing a test direction:**
+  - six compass directions (N and S left out) × three speeds, plus veering days;
+  - the training regimes only.
+- **Two memories:** each design is built for the 24 h window or for all past data.
+- **Scoring:** nominal 1 h forecast error, and the tail over 18 held-out conditions (6 E12 wind errors × 3 regimes).
+
+## Results
+
+![E15: nominal error against tail risk for each design (lower-left is better).](../figures/e15-pareto-local.png){#fig-e15}
+
+- **The tail gain is small.**
+  - The only clear gain is against D-optimal with 2 sensors and a 24 h window: about 9–10 % lower tail risk, 6 of 6
+    clusters, uncorrected.
+  - With 4 or 8 sensors it is 2–4 % and not resolved.
+  - There is no gain over near-source.
+- **Robustness costs nothing nominal with a 24 h window.** The robust networks behave like near-source networks there.
+- **Memory decides again.**
+  - Robust designs built for the 24 h window lose heavily when the estimator uses all past data.
+  - Designs built for all past data score like D-optimal.
+- **The criteria and ensembles behave about the same.** Mean, CVaR and worst case are indistinguishable.
+- **Why the gain is small:** wind errors degrade every design by a similar amount (as in E12), which compresses the
+  differences between designs.
+
+## Limits
+
+- n = 6, upwind numerics, and one training wind.
+- Leaving N and S out of the ensemble was informed by the test set; this works against the robust designs.
+- The optimiser finds local optima.
+- The 64² plan is in the design note §10. It is cheapest (about 130–160 CPU-h) after E12's 64² run.
