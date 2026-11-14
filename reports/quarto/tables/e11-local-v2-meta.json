@@ -1,0 +1,103 @@
+{
+ "command": "OMP_NUM_THREADS=1 uv run python scripts/e11_forecast_design.py --workers 5",
+ "git_rev": "181adb7ff856f4c4911ed5102a6955b3b335d8c2",
+ "git_dirty": true,
+ "host": "RAD-88300596",
+ "python": "3.14.9",
+ "numpy": "2.5.4",
+ "slurm_job": null,
+ "design_note": "docs/research/forecast-design-placement.md (v2: addenda A1-A5)",
+ "scale": "pilot",
+ "world": {
+  "grid": [
+   32,
+   32
+  ],
+  "dt": 300,
+  "scheme": "upwind",
+  "spinup": 12,
+  "split": [
+   [
+    1,
+    4
+   ],
+   [
+    5,
+    5
+   ],
+   [
+    6,
+    11
+   ]
+  ],
+  "Ks": [
+   2,
+   4
+  ],
+  "ks": [
+   2,
+   4,
+   8
+  ],
+  "seeds": [
+   0,
+   1,
+   2
+  ],
+  "R": 5
+ },
+ "e11": {
+  "Ks": [
+   2,
+   4
+  ],
+  "seeds": [
+   0,
+   1,
+   2
+  ],
+  "ks": [
+   2,
+   4,
+   8
+  ],
+  "R": 5,
+  "rob_spinup": 12
+ },
+ "winds": [
+  "veering",
+  "mixed"
+ ],
+ "priors": {
+  "all8": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7
+  ],
+  "noSN": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7
+  ]
+ },
+ "design_prior": {
+  "n_dirs": 8,
+  "block_h": 24,
+  "speed": 3.0,
+  "spinup_h": 12,
+  "independent_blocks": true
+ },
+ "workers": 5,
+ "stage1_wall_s": 589.5227456092834,
+ "stage2_wall_s": 29.163911819458008,
+ "rob_blocks_solved": 136,
+ "rob_cpu_s": 799.557276445
+}

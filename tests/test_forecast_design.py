@@ -1,4 +1,5 @@
 """Contract for pravah.experiments.forecast_design (E11; docs/research/forecast-design-placement.md)."""
+import copy
 import dataclasses
 
 import numpy as np
@@ -158,3 +159,84 @@ def test_paired_summary_verdicts():
     assert FD.paired_summary(np.linspace(.1, .3, 12))["verdict"] == "better"
     assert FD.paired_summary(np.linspace(-.3, -.1, 12))["verdict"] == "worse"
     assert FD.paired_summary(np.linspace(-.03, .02, 12))["verdict"] == "non-inferior"
+
+
+# ---------------------------------------------------------------- 64^2 addenda A1-A4 (gate-10/11 conditions)
+@pytest.fixture(scope="module")
+def blocks(tiny):
+    sc = tiny[0]
+    return np.stack([[FD.prior_block(sc.cfg, xy, d, 6) for d in range(FD.N_DIRS)] for xy in sc.truth.source_xy])
+
+
+def test_prior_block_is_steady_solve_after_spinup(tiny, blocks):
+    sc = tiny[0]
+    xy, d = sc.truth.source_xy[0], 3
+    w = np.repeat(FD.design_winds()[d * FD.BLOCK_H][None], 6 + FD.BLOCK_H, 0)
+    c0 = copy.deepcopy(sc.cfg)
+    c0.model.spinup_h = 0
+    full = X.source_field(c0, xy, w, len(w))      # one steady solve from zero: the block is its hours [6, 30)
+    assert np.allclose(blocks[0, d], full[6:], rtol=1e-12, atol=0)
+    assert sc.cfg.model.spinup_h == 6             # prior_block did not touch the scenario config
+
+
+def test_subset_prior_from_blocks_equals_direct_construction(tiny, blocks):
+    sc, F, G3, *_ = tiny
+    dirs = FD.PRIORS["noSN"]
+    assert 0 not in dirs and 4 not in dirs and len(dirs) == 6
+    direct = np.stack([np.concatenate([FD.prior_block(sc.cfg, xy, d, 6) for d in dirs]) for xy in sc.truth.source_xy])
+    Fb = FD.prior_fields(blocks, dirs)
+    assert np.array_equal(Fb, direct)
+    di = X.design_input(sc, G3, X.site_sigma(sc, False))
+    p = X.problem(di)
+    mk = lambda Fp: FD.Objective(p, FD.forecast_input(di, F, X.site_responses(sc, Fp), Fp))
+    ob, one = mk(Fb), [mk(FD.prior_fields(blocks, [d])) for d in dirs]
+    S = [int(i) for i in p.cand[[0, 7, 20]]]
+    for n in FD.ROB:  # blocks are independent: the subset objective is the mean of the single-direction objectives
+        assert np.isclose(ob.value(n)(p, S), np.mean([o.value(n)(p, S) for o in one]), rtol=1e-10)
+
+
+def test_expected_mse_second_moment():
+    rng = np.random.default_rng(1)
+    k, T, K, N = 3, 30, 2, 5
+    A = rng.normal(0, .7, (k, T, K))
+    Fr = rng.normal(0, 1, (K, T, N))
+    Q = np.einsum("khn,lhn->hkl", Fr, Fr) / N
+    C = FD._cum(A).sum(0)
+    issue, hs = np.arange(10, 25), (1, 4)
+    for win in (None, 6):
+        assert np.isclose(FD.expected_mse(C, Q, issue, hs, win, m2=np.eye(K)), FD.expected_mse(C, Q, issue, hs, win))
+    m2 = FD.loguniform_m2(.5, 5, K)
+    assert np.isclose(m2[0, 0], 5.374, atol=1e-3) and np.isclose(m2[0, 1], 1.954 ** 2, atol=1e-2)
+    n = 4000  # Monte Carlo with a ~ LogUniform(0.5, 5) iid, growing and 6 h windows
+    a = np.exp(rng.uniform(np.log(.5), np.log(5), (K, n)))
+    z = np.einsum("shk,kn->shn", A, a) + rng.normal(size=(k, T, n))
+    for win in (None, 6):
+        u = FD.estimate(A, z, issue, win)
+        mse = np.mean([np.mean([np.mean((np.einsum("kn,kc->nc", Fr[:, t + h], u[i] - a)) ** 2) for i, t in enumerate(issue)
+                                if t + h <= T - 1]) for h in hs])
+        assert abs(mse / FD.expected_mse(C, Q, issue, hs, win, m2=m2) - 1) < 0.05
+
+
+def test_multistart_never_worse_and_finds_supplied_optimum(tiny):
+    sc, F, G3, Frob, G3rob = tiny
+    p, obj = _setup(sc, F, G3, Frob, G3rob)
+    ps = dataclasses.replace(p, cand=p.cand[::3][:14], _pod={})
+    for name in FD.FC:
+        v = obj.value(name)
+        S1, i1 = FD.make_fc_design(name, ps, obj, 2)
+        best, Sb, _ = P.brute_force(ps, 2, v)
+        S, info = FD.make_fc_design(name, ps, obj, 2, {"dopt": X.make_design("dopt", ps, 2, obj.T, 0)[0], "opt": Sb})
+        assert info["refined_value"] >= i1["refined_value"] and np.isclose(info["refined_value"], best)
+        assert np.isclose(v(ps, S), info["refined_value"]) and info["greedy_sites"] == " ".join(map(str, S1))
+        assert info["start"] in ("greedy", "dopt", "opt") and (info["start"] == "greedy") == (S == S1)
+    for name in FD.FC:  # full candidate set: the multi-start value is never below greedy + swap
+        S, info = FD.make_fc_design(name, p, obj, 3, {"sn": X.make_design("source_near", p, 3, obj.T, 0)[0]})
+        assert info["refined_value"] >= info["greedy_refined_value"]
+
+
+def test_cluster_summary_averages_within_cluster():
+    rho = np.array([.1, .3, .2, .2, -.1, .5, .4, .0, .3, .1, .2, .2])
+    cl = np.repeat(np.arange(6), 2)
+    r = FD.cluster_summary(rho, cl)
+    assert r["n"] == 6 and np.isclose(r["median"], .2) and r["wins"] == 6
+    assert FD.cluster_summary(rho, np.stack([cl // 3, cl % 3], 1))["n"] == 6

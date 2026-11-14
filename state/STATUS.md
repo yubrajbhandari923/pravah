@@ -22,7 +22,7 @@ Protocol and `configs/benchmark-v1.yaml` APPROVED 2026-11-12 as an amendable bas
    1200 m exclusion rerun on cached fields, the report, and a gate-08 audit.
 4. HPC verified 2026-11-12 (smoke job 204775: 175 tests passed on node004; limits 64 CPU, 4 GPU, 2 days in settings.yaml).
 5. E09 done and audited. E10 and E11 32² pilots done (see journals). Gate-10/11 done (pass w/ conditions; E10 diurnal gain is 1 h only; ~40 % of E11's gain was in-sample).
-   Next: E11 64² prep per gate conditions, run after E08 (one job); E08 report and exclusion rerun. Plan 3 (E12–E20) after that.
+   E11 64² queued as job 205282 (starts after E08); E08 report and exclusion rerun. Plan 3 (E12–E20) after that.
 
 Known open items: E03 (fixed-sensor static inverse) remains rank deficient for structural reasons (sensor placement, 24 h window).
 

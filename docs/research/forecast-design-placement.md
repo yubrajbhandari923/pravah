@@ -213,3 +213,61 @@ These were added in code before the pilot ran, and were not in the committed not
 5. **The robust design-prior solves are approved** (≈ 25 CPU-h). They run as one job after the E08 sweep (one-job rule),
    as stage 2 on the cached E07 fields plus those extra solves.
 6. **No memory-averaging objective is added now.** If tried later, it is labelled post hoc.
+
+### 64² addenda A1–A5 (gate-10/11 conditions; declared before any 64² E11 computation)
+These are revisions motivated by the 32² pilot and the gate-10/11 audit (`docs/research/gates/gate-10-11.md`), i.e. by
+observed results. They are recorded here before the 64² run so that the 64² analysis is fixed in advance. The 64² study
+stays exploratory (decision 4). Code: `scripts/e11_forecast_design.py` (v2), `forecast_design.py`, tests in
+`tests/test_forecast_design.py`; 32² re-run through the v2 path: `reports/quarto/tables/e11-local-v2-*`.
+
+- **A1. Design prior from independent per-direction blocks; co-reported out-of-sample prior.** §3.1's 8 × 24 h calendar
+  (one continuous solve per source) is replaced by 8 independent 24 h steady blocks per source, each after its own
+  steady spin-up (`FD.prior_block`), cached per source × direction by content hash. Any subset prior is then a
+  concatenation (`FD.prior_fields`); the robust objectives average per block, so a subset prior's objective is the mean of
+  the single-direction objectives (tested). Two priors are declared (`FD.PRIORS`):
+  - `all8` (all 8 directions): the designs keep their names `fc_grow_rob`, `fc_w24_rob`;
+  - `noSN` (drop 0° = N and 180° = S, the test's own directions): `fc_grow_rob_noSN`, `fc_w24_rob_noSN`, the
+    **out-of-sample variant**, reported beside `all8` in every table. A claim about wind-robust design is made only if it
+    holds for `noSN`; an `all8`-only advantage is reported as partly in-sample.
+
+  Block spin-up: **12 h** at both scales (`SCALE[*]["rob_spinup"]`). Checked at 64² before any 64² E11 run
+  (`scripts/e11_spinup_check.py`, `e11-local-v2-spinup.csv`): one source (K = 4, seed 0, source 0), all 8 directions, one
+  72 h steady solve each (the block after s h of spin-up is hours [s, s + 24) of that solve). Against the 48 h block, the
+  12 h block differs by ≤ 4e-16 (relative L2, full field and candidate sites); even no spin-up differs by ≤ 3e-4. The 10 km
+  domain is crossed in < 1 h at 3 m/s, so a steady plume is reached within hours. Cost of the check: 0.80 CPU-h locally.
+  (The 32² gate check used the 12 h config spin-up and gave the same sites as the continuous calendar in 100 % of cases.)
+- **A2. Cluster-level statistics.** The veering and mixed scenarios of one (K, seed) share sources, strengths, noise
+  streams and test winds. The reported unit is the **cluster (K, seed)**: per cell (estimator, k, metric, contrast) the
+  ρ of a cluster is the mean of its scenarios' ρ, and the median, distribution-free 95 % CI, sign test and verdict
+  (§7 rules) are computed over clusters (`FD.cluster_summary`; columns `cl_*`). Scenario-level numbers stay in the table
+  as descriptive. 64²: 20 clusters (32²: 6, smallest two-sided sign p 0.031). **Exploratory Holm family:** h = 1, both
+  estimators, every k, the six forecast designs (`fc_grow`, `fc_w24`, `fc_grow_rob`, `fc_w24_rob`, `fc_grow_rob_noSN`,
+  `fc_w24_rob_noSN`) vs `dopt` and vs `source_near`, on the cluster sign-test p (`cl_holm_p`). This replaces §7's
+  two-contrast family and is exploratory per decision 4.
+- **A3. Predicted-RMSE check uses the declared strength prior.** Beside `pred_rmse_h*` (N(0, I), the objective's
+  assumption), `pred_m2_rmse_h*` uses the declared prior's second moment E[aaᵀ] = s²I + ā²11ᵀ of LogUniform(0.5, 5)
+  (ā = 1.954, s² = 1.555): expected MSE tr(QΣ(E[aaᵀ] + M)Σ). `pred_true_rmse_h*` uses the true a (diagnostic only; truth).
+  The design objectives are **unchanged** (N(0, I), as preregistered). At 64² the check also absorbs VanLeer's ≈ 1 %
+  superposition error (gate-09); that is recorded, not read as a prior effect.
+- **A4. Multi-start swap refinement.** Every forecast design is 1-swap-refined from three starts (greedy, the `dopt`
+  set, the `source_near` set, same k) and the best objective value is kept (ties keep the earlier start, greedy first).
+  The rows record the winning start, the greedy + swap sites and value (`greedy_sites`, `greedy_refined_value`); the
+  `*-multistart.csv` table counts winners. The result is still a local optimum; "local optimum of the objective" applies
+  to every design comparison.
+- **A5. Per-k reporting only.** No pooled-k row and no pooled verdict (supersedes deviation 3).
+- **Unchanged:** worlds, scenarios, k grid (4, 8, 16 at 64²), estimators, scorer, R = 5, the four §3 objectives, §7's
+  verdict thresholds and margin.
+- **Cost (A1):** 60 sources × 8 directions × (12 + 24) h = 17 280 model hours (vs 60 × 240 = 14 400 for the §9
+  calendar). At E07's cluster rate (≈ 11.3 s per 64² VanLeer hour, job 204894) that is ≈ 54 CPU-h, ≈ 55 min on 64 CPUs
+  (480 blocks, 8 rounds); at the local rate measured in the spin-up check (≈ 5.0 s/h) ≈ 24 CPU-h. This supersedes §9's
+  ≈ 25 CPU-h estimate. Stage 2 (6 forecast designs × 3 starts, 2 priors) is not yet measured at 64²; at 32² it took
+  8–10 s per scenario.
+- **32² re-run through the v2 path** (`e11-local-v2-*`, not a 64² result): rows whose sites are unchanged reproduce
+  the committed v1 pilot to ≤ 2.2e-16 (all baselines; `e11-local-v2-reproduce.csv`). The greedy + swap sites equal v1's in
+  286/288 forecast-design rows (2 `fc_grow_rob` rows move with independent blocks); the multi-start then changes many
+  forecast designs (`fc_w24_rob` at k = 8: greedy start wins 0/12). Numbers: `e11-local-v2-contrasts.csv`.
+
+### Lead sign-off (2026-11-13, before any 64² E11 computation)
+- Addenda A1–A5 are accepted, including A2's exploratory Holm family of 24 contrasts (cluster level). Verdicts are per k,
+  from cluster-level statistics only.
+- The 64² run is queued to start after the E08 job ends (one-job rule), from snapshot 927a7af.
