@@ -44,7 +44,7 @@
     "href": "index.html#results-at-a-glance",
     "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
     "section": "Results at a glance",
-    "text": "Results at a glance\nEvidence labels: verified = engineering check passed an independent gate; exploratory = smoke scale and/or settings chosen after seeing data; confirmatory (cells run) = preregistered test, supported only in the cells run.\n\n\n\nExp\nQuestion\nWhat we did\nWhat we found\nEvidence\n\n\n\n\nE00\nCan we fix endpoints and rules before data?\nPreregistered protocol, evaluation contract; audit\nAudit found 3 blockers: signal 1000× below noise (B1), no approval (B2), upwind numerics (B3). All resolved: amendment A1, user approval, amendment A2\napproved baseline, amendable\n\n\nE01\nDoes the solver solve the PDE?\nConvergence, mass, dt-halving oracles 16²–64²\nUpwind converges at ~1st order, mass to ~1e-14, but at 64² its numerical diffusivity is 350–2900 m² s⁻¹ vs K = 50. Split VanLeer at dt 30 s gives K_eff ≈ 50 (A2)\nverified (conditionally cleared)\n\n\nE02\nIs the benchmark sound and leak-free?\nGenerator, splits, 65 validity/leakage checks\nChecks pass; at 100 µg/s the plume was invisible (SNR ~2e-3); at 1 g/s peak SNR is 21–32\nverified (smoke)\n\n\nE03\nCan fixed sensors recover source strengths?\nNNLS inverse, 648 fits, 24 h window\nRank-deficient in all 648 fits, at both scales: a structural failure of fixed, non-optimised sensors\nexploratory (negative)\n\n\nE04\nWhich source combinations can a network distinguish?\nFootprints, Fisher information, SVD\nAt 1 g/s a D-optimal 4-sensor design has practical rank 4/4; coverage 1–2, redundant 2. One replicate\nexploratory\n\n\nE05\nCan a longer window replace sensors?\nWindow × sensors × wind ablation, 20 seeds\nElapsed time alone adds nothing (constant wind); wind change adds rank (+0.37, 16/17 seeds). v1 claims were overstated and withdrawn\nexploratory\n\n\nE06\nCan we reproduce standard placement algorithms?\nuniform/random/coverage/source-near/D/A/diversity/POD-QR\nImplementations check out (QR = PySensors). Source-informed designs reach full rank; most of that is knowing source locations\nverified methods; results in-sample\n\n\nE07\nWhich placement is best for which held-out task?\n32² pilot + 64² sweep (40 scenarios, held-out winds)\nD-opt beats random on held-out forecast RMSE by a median 42–84 % per cell (8/8 cells), and under every estimator tried. Which strategy wins depends on estimator memory: near-source beats D-opt with a 24 h window (115/120 pairs), D-opt wins with all past data (103/120)\nconfirmatory in cells run; strategy ordering exploratory\n\n\nE08\nHow many sensors are enough?\nPreregistered factorial; 32² pilot; 64² sweep (60 scenarios)\nLocation-aware designs need k ≈ K sensors; random layouts need 8–16. More sensors beat more readings for random networks, but not once sources are covered. H1, H3, H4 and H5 supported; H2 contradicted. With all past data, 2 sensors suffice for every strategy and H5 reverses\n64²: preregistered tests (windowed estimator); not yet audited\n\n\nE09\nDoes sequential filtering help?\nKalman filters with independent tests; 32² replay; audit\nEstimating sources from all past data cuts forecast error 58–74 % vs a 24 h window. The gain is memory, not filtering. A field-only filter is nearly useless\nexploratory, audited\n\n\nE10\nDo drifting-source filters help?\nRandom-walk augmented filter; constant, diurnal and log-random-walk truths; audit\nConstant sources: all past data is best. Time-varying: 1 h error falls 24–55 %, but the filter is 12–15 % worse at 6 h under a diurnal cycle. Calibrated only when q matches the truth\nexploratory, audited\n\n\nE11\nPlacement optimised for forecasting?\nData-free forecast-variance objective, wind-robust prior; audit\n64² (20 clusters): under a 24 h window, beats D-optimal even with an out-of-sample prior (+0.34 at k = 8, 19/20) but loses to near-source. Worse than D-optimal with all past data\nexploratory; pilot audited\n\n\nE12\nWhat do wind errors do?\nBiased direction, speed, timing and noise in the inverse wind\nDirection ≥ 30° or a lag ≥ 2 h destroys forecast skill. Wrong strengths absorb wind errors while the fit stays good. The memory benefit vanishes\nexploratory pilot\n\n\nE13\nWhat do background, source or sensor errors do?\n18 mismatches, with and without an estimated background\nBackground offset: fixable. Common-mode sensor bias: a silent failure. Wrong source shapes or locations: unfixable. Outages: benign\nexploratory pilot\n\n\nE14\nCan the method flag its own failures?\n8 truth-free diagnostics; ROC by stress\nModerate at best (AUC 0.71). Speed errors and missing sources are undetectable\nexploratory pilot\n\n\nE17\nDo the conclusions survive real winds?\nSynthetic tracer under ERA5 winds near Belauri; 64², 3 cases × 20 clusters\nPlacement still beats random (35–64 %). D-optimal vs near-source mostly ties. Only all-past-data forecasts beat persistence in calm winds. A single-site wind instead of the box mean cancels every advantage\nexploratory; not validation\n\n\nE18\nCan real monitors validate it?\nAudit of public PM2.5 data near Belauri\nNot conducted: only 2 stations within 100 km, short records; a passive tracer cannot be validated against PM2.5\ngap assessment",
+    "text": "Results at a glance\nEvidence labels: verified = engineering check passed an independent gate; exploratory = smoke scale and/or settings chosen after seeing data; confirmatory (cells run) = preregistered test, supported only in the cells run.\n\n\n\nExp\nQuestion\nWhat we did\nWhat we found\nEvidence\n\n\n\n\nE00\nCan we fix endpoints and rules before data?\nPreregistered protocol, evaluation contract; audit\nAudit found 3 blockers: signal 1000× below noise (B1), no approval (B2), upwind numerics (B3). All resolved: amendment A1, user approval, amendment A2\napproved baseline, amendable\n\n\nE01\nDoes the solver solve the PDE?\nConvergence, mass, dt-halving oracles 16²–64²\nUpwind converges at ~1st order, mass to ~1e-14, but at 64² its numerical diffusivity is 350–2900 m² s⁻¹ vs K = 50. Split VanLeer at dt 30 s gives K_eff ≈ 50 (A2)\nverified (conditionally cleared)\n\n\nE02\nIs the benchmark sound and leak-free?\nGenerator, splits, 65 validity/leakage checks\nChecks pass; at 100 µg/s the plume was invisible (SNR ~2e-3); at 1 g/s peak SNR is 21–32\nverified (smoke)\n\n\nE03\nCan fixed sensors recover source strengths?\nNNLS inverse, 648 fits, 24 h window\nRank-deficient in all 648 fits, at both scales: a structural failure of fixed, non-optimised sensors\nexploratory (negative)\n\n\nE04\nWhich source combinations can a network distinguish?\nFootprints, Fisher information, SVD\nAt 1 g/s a D-optimal 4-sensor design has practical rank 4/4; coverage 1–2, redundant 2. One replicate\nexploratory\n\n\nE05\nCan a longer window replace sensors?\nWindow × sensors × wind ablation, 20 seeds\nElapsed time alone adds nothing (constant wind); wind change adds rank (+0.37, 16/17 seeds). v1 claims were overstated and withdrawn\nexploratory\n\n\nE06\nCan we reproduce standard placement algorithms?\nuniform/random/coverage/source-near/D/A/diversity/POD-QR\nImplementations check out (QR = PySensors). Source-informed designs reach full rank; most of that is knowing source locations\nverified methods; results in-sample\n\n\nE07\nWhich placement is best for which held-out task?\n32² pilot + 64² sweep (40 scenarios, held-out winds)\nD-opt beats random on held-out forecast RMSE by a median 42–84 % per cell (8/8 cells), and under every estimator tried. Which strategy wins depends on estimator memory: near-source beats D-opt with a 24 h window (115/120 pairs), D-opt wins with all past data (103/120)\nconfirmatory in cells run; strategy ordering exploratory\n\n\nE08\nHow many sensors are enough?\nPreregistered factorial; 32² pilot; 64² sweep (60 scenarios)\nLocation-aware designs need k ≈ K sensors; random layouts need 8–16. More sensors beat more readings for random networks, but not once sources are covered. H1, H3, H4 and H5 supported; H2 contradicted. With all past data, 2 sensors suffice for every strategy and H5 reverses\n64²: preregistered tests (windowed estimator); not yet audited\n\n\nE09\nDoes sequential filtering help?\nKalman filters with independent tests; 32² replay; audit\nEstimating sources from all past data cuts forecast error 58–74 % vs a 24 h window. The gain is memory, not filtering. A field-only filter is nearly useless\nexploratory, audited\n\n\nE10\nDo drifting-source filters help?\nRandom-walk augmented filter; constant, diurnal and log-random-walk truths; audit\nConstant sources: all past data is best. Time-varying: 1 h error falls 24–55 %, but the filter is 12–15 % worse at 6 h under a diurnal cycle. Calibrated only when q matches the truth\nexploratory, audited\n\n\nE11\nPlacement optimised for forecasting?\nData-free forecast-variance objective, wind-robust prior; audit\n64² (20 clusters): under a 24 h window, beats D-optimal even with an out-of-sample prior (+0.34 at k = 8, 19/20) but loses to near-source. Worse than D-optimal with all past data\nexploratory; pilot audited\n\n\nE12\nWhat do wind errors do?\nBiased direction, speed, timing and noise in the inverse wind\nDirection ≥ 30° or a lag ≥ 2 h destroys forecast skill. Wrong strengths absorb wind errors while the fit stays good. The memory benefit vanishes\nexploratory pilot\n\n\nE13\nWhat do background, source or sensor errors do?\n18 mismatches, with and without an estimated background\nBackground offset: fixable. Common-mode sensor bias: a silent failure. Wrong source shapes or locations: unfixable. Outages: benign\nexploratory pilot\n\n\nE14\nCan the method flag its own failures?\n8 truth-free diagnostics; ROC by stress\nModerate at best (AUC 0.71). Speed errors and missing sources are undetectable\nexploratory pilot\n\n\nE15\nDo scenario-robust networks hold up better?\nMean/CVaR/worst-case placement over wind ensembles; tail over 18 wind-error conditions\nSmall tail gain, only vs D-optimal at k = 2. Robust ≈ near-source with a 24 h window; no gain with all past data\nexploratory pilot\n\n\nE16\nDo conclusions survive other physics?\nOne-at-a-time ablations: diffusion, loss, source shape and spacing, background\nNo reversal. D-opt &gt; random and the memory gain are robust. The memory flip holds in every cell. Some margins weaken\nexploratory pilot (32²)\n\n\nE17\nDo the conclusions survive real winds?\nSynthetic tracer under ERA5 winds near Belauri; 64², 3 cases × 20 clusters\nPlacement still beats random (35–64 %). D-optimal vs near-source mostly ties. Only all-past-data forecasts beat persistence in calm winds. A single-site wind instead of the box mean cancels every advantage\nexploratory; not validation\n\n\nE18\nCan real monitors validate it?\nAudit of public PM2.5 data near Belauri\nNot conducted: only 2 stations within 100 km, short records; a passive tracer cannot be validated against PM2.5\ngap assessment",
     "crumbs": [
       "Executive summary"
     ]
@@ -84,7 +84,7 @@
     "href": "index.html#whats-next",
     "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
     "section": "What’s next",
-    "text": "What’s next\nE08’s and E11’s 64² runs are done; E09 is done at 32² and audited. E10–E14 pilots are done. Next: E15 (robust placement), E16 (generalisation), E17/E18 feasibility, a batched audit of E12–E15, and the deferred 64² runs. See Next steps.",
+    "text": "What’s next\nE08’s and E11’s 64² runs are done; E09 is done at 32² and audited. E10–E17 have results (E18 not conducted: no data). Next: a batched independent audit of E12–E17, the synthesis (E19), and the deferred 64² runs. See Next steps.",
     "crumbs": [
       "Executive summary"
     ]
@@ -1175,138 +1175,226 @@
     ]
   },
   {
-    "objectID": "chapters/17-regional.html",
-    "href": "chapters/17-regional.html",
-    "title": "18  E17 Regional case: synthetic tracer under ERA5 winds",
+    "objectID": "chapters/15-robust.html",
+    "href": "chapters/15-robust.html",
+    "title": "18  E15 Robust placement over wind scenarios",
     "section": "",
-    "text": "18.1 Setup\nSynthetic concentration under ERA5 reanalysis winds. This is not validation: no real pollution data are used, and nothing here is evidence about ambient PM2.5 or exposure near Belauri.\nQuestion (plan 3). Do the method comparisons from the synthetic study hold up under realistic wind sequences from a real place?\nEvidence label. Exploratory. - 64² VanLeer run (cluster job 205400): 3 cases × 20 clusters. - 32² pilot: 6 clusters.\nNot yet independently audited.\nEvidence. - Design note docs/research/regional-case-design.md. - Feasibility audit docs/research/regional-feasibility.md. - Data manifest with sha256 hashes: docs/research/data/e17-manifest.json. - Code src/pravah/data/region.py and scripts/e17_regional.py. - Tables tables/e17-*; journal state/experiments/e17.md.\nThe cool season is calm and has no dominant direction. Mean speed is 1.0–1.5 m s⁻¹, 27–50 % of hours are below 1 m s⁻¹, and there is a day–night swing. July has steady easterlies.",
+    "text": "18.1 What we did\nSimulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.\nQuestion (plan 3). Does choosing sites for the average, tail (CVaR) or worst case over an ensemble of wind scenarios give networks that hold up better under wind errors and unseen regimes?\nEvidence label. Exploratory 32² pilot: 6 clusters, upwind numerics, no multiplicity correction. The 64² run is deferred. Not yet audited.\nEvidence. - Design note docs/research/robust-placement-design.md, committed before any computation. - Code src/pravah/experiments/robust_design.py and scripts/e15_robust_placement.py. - Tables tables/e15-local-*; journal state/experiments/e15.md.",
     "crumbs": [
       "Experiments",
-      "<span class='chapter-number'>18</span>  <span class='chapter-title'>E17 Regional case: synthetic tracer under ERA5 winds</span>"
+      "<span class='chapter-number'>18</span>  <span class='chapter-title'>E15 Robust placement over wind scenarios</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/15-robust.html#what-we-did",
+    "href": "chapters/15-robust.html#what-we-did",
+    "title": "18  E15 Robust placement over wind scenarios",
+    "section": "",
+    "text": "Loss per scenario: for each 24 h wind scenario, the expected forecast error, normalised by the error with no sensors.\nCriteria: the mean, the CVaR at 0.8 and the worst case over the scenarios.\nTwo scenario ensembles, neither containing a test direction:\n\nsix compass directions (N and S left out) × three speeds, plus veering days;\nthe training regimes only.\n\nTwo memories: each design is built for the 24 h window or for all past data.\nScoring: nominal 1 h forecast error, and the tail over 18 held-out conditions (6 E12 wind errors × 3 regimes).",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>18</span>  <span class='chapter-title'>E15 Robust placement over wind scenarios</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/15-robust.html#results",
+    "href": "chapters/15-robust.html#results",
+    "title": "18  E15 Robust placement over wind scenarios",
+    "section": "18.2 Results",
+    "text": "18.2 Results\n\n\n\n\n\n\nFigure 18.1: E15: nominal error against tail risk for each design (lower-left is better).\n\n\n\n\nThe tail gain is small.\n\nThe only clear gain is against D-optimal with 2 sensors and a 24 h window: about 9–10 % lower tail risk, 6 of 6 clusters, uncorrected.\nWith 4 or 8 sensors it is 2–4 % and not resolved.\nThere is no gain over near-source.\n\nRobustness costs nothing nominal with a 24 h window. The robust networks behave like near-source networks there.\nMemory decides again.\n\nRobust designs built for the 24 h window lose heavily when the estimator uses all past data.\nDesigns built for all past data score like D-optimal.\n\nThe criteria and ensembles behave about the same. Mean, CVaR and worst case are indistinguishable.\nWhy the gain is small: wind errors degrade every design by a similar amount (as in E12), which compresses the differences between designs.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>18</span>  <span class='chapter-title'>E15 Robust placement over wind scenarios</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/15-robust.html#limits",
+    "href": "chapters/15-robust.html#limits",
+    "title": "18  E15 Robust placement over wind scenarios",
+    "section": "18.3 Limits",
+    "text": "18.3 Limits\n\nn = 6, upwind numerics, and one training wind.\nLeaving N and S out of the ensemble was informed by the test set; this works against the robust designs.\nThe optimiser finds local optima.\nThe 64² plan is in the design note §10. It is cheapest (about 130–160 CPU-h) after E12’s 64² run.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>18</span>  <span class='chapter-title'>E15 Robust placement over wind scenarios</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/16-generalization.html",
+    "href": "chapters/16-generalization.html",
+    "title": "19  E16 Generalization and ablation",
+    "section": "",
+    "text": "19.1 What we tested\nSimulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.\nQuestion (plan 3). Do the main conclusions survive changes in diffusion, removal, source shape and spacing, and background level?\nEvidence label. Exploratory 32² pilot: K = 2 and 4 × 5 seeds (n = 10 per cell), upwind numerics. The verdicts are not corrected for multiplicity. The 64² run (about 2,760 CPU-h) is deferred. Not yet audited.\nEvidence. - Design note docs/research/generalization-ablations.md, committed before any computation. - Code src/pravah/experiments/generalization.py and scripts/e16_generalization.py. - Tables tables/e16-local-*; journal state/experiments/e16.md.\nEach cell changes one physical setting at a time. Every conclusion is scored on held-out 1 h forecast RMSE at k = 8.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>19</span>  <span class='chapter-title'>E16 Generalization and ablation</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/16-generalization.html#what-we-tested",
+    "href": "chapters/16-generalization.html#what-we-tested",
+    "title": "19  E16 Generalization and ablation",
+    "section": "",
+    "text": "Conclusion\nComes from\n\n\n\n\nC1: near-source beats D-optimal with a 24 h window\nE07, E08\n\n\nC2: D-optimal beats random with a 24 h window\nE07 (confirmatory)\n\n\nC3: D-optimal beats near-source with all past data\ngate-09, E08 rerun\n\n\nC4: all past data beats a 24 h window\nE09\n\n\nC5: location-aware designs need k* ≤ K\nE08",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>19</span>  <span class='chapter-title'>E16 Generalization and ablation</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/16-generalization.html#results",
+    "href": "chapters/16-generalization.html#results",
+    "title": "19  E16 Generalization and ablation",
+    "section": "19.2 Results",
+    "text": "19.2 Results\n\n\n\n\n\n\nFigure 19.1: E16 pilot: strategy rankings and conclusion verdicts across ablation cells.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMedian contrast at k = 8 (wins/10)\nnominal\ndiffusion ×20\nfaster loss\nwider sources\nsparser sources\nhigher background\n\n\n\n\nC1 near-source &gt; D-opt, 24 h\n+0.23 (9)\n+0.09 (9)\n+0.40 (9)\n+0.39 (8) weakened\n+0.31 (9)\n+0.14 (9)\n\n\nC2 D-opt &gt; random, 24 h\n+0.79 (10)\n+0.67\n+0.78\n+0.62\n+0.79\n+0.68\n\n\nC3 D-opt &gt; near-source, all past data\n+0.14 (10)\n+0.08 (7) weakened\n+0.12 (9)\n+0.23 (9)\n+0.15 (10)\n+0.13 (10)\n\n\nC4 memory gain (D-opt)\n+0.69\n+0.66\n+0.75\n+0.77\n+0.72\n+0.67\n\n\n\n\nNo change reversed any conclusion.\nRobust everywhere: D-optimal beats random, and using all past data helps (10 of 10 in every cell).\nThe memory flip appears in every cell. Near-source is best with a 24 h window, and D-optimal is best with all past data.\nWeaker in some regimes:\n\nnear-source’s 24 h advantage shrinks when sources are wider;\nD-optimal’s all-past-data advantage shrinks with much stronger diffusion.\n\nConditional: with a higher background, the protocol noise grows about 4×. Then k* ≤ K holds in only 60–70 % of scenarios.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>19</span>  <span class='chapter-title'>E16 Generalization and ablation</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/16-generalization.html#limits",
+    "href": "chapters/16-generalization.html#limits",
+    "title": "19  E16 Generalization and ablation",
+    "section": "19.3 Limits",
+    "text": "19.3 Limits\n\nAt 32² the upwind scheme’s numerical diffusion is about 10³ m² s⁻¹, so the diffusion cell changes effective diffusion by only about 1.5×. The 64² VanLeer run is the real test.\nSparser sources changed the layout in only 4 of 10 scenarios.\nThe higher-background cell changes signal-to-noise; it does not test an unknown background (E13 does).\nThe two VanLeer cells (lower diffusion, and lower diffusion × faster loss) were still solving when this chapter was written.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>19</span>  <span class='chapter-title'>E16 Generalization and ablation</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/17-regional.html",
+    "href": "chapters/17-regional.html",
+    "title": "20  E17 Regional case: synthetic tracer under ERA5 winds",
+    "section": "",
+    "text": "20.1 Setup\nSynthetic concentration under ERA5 reanalysis winds. This is not validation: no real pollution data are used, and nothing here is evidence about ambient PM2.5 or exposure near Belauri.\nQuestion (plan 3). Do the method comparisons from the synthetic study hold up under realistic wind sequences from a real place?\nEvidence label. Exploratory. - 64² VanLeer run (cluster job 205400): 3 cases × 20 clusters. - 32² pilot: 6 clusters.\nNot yet independently audited.\nEvidence. - Design note docs/research/regional-case-design.md. - Feasibility audit docs/research/regional-feasibility.md. - Data manifest with sha256 hashes: docs/research/data/e17-manifest.json. - Code src/pravah/data/region.py and scripts/e17_regional.py. - Tables tables/e17-*; journal state/experiments/e17.md.\nThe cool season is calm and has no dominant direction. Mean speed is 1.0–1.5 m s⁻¹, 27–50 % of hours are below 1 m s⁻¹, and there is a day–night swing. July has steady easterlies.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>20</span>  <span class='chapter-title'>E17 Regional case: synthetic tracer under ERA5 winds</span>"
     ]
   },
   {
     "objectID": "chapters/17-regional.html#setup",
     "href": "chapters/17-regional.html#setup",
-    "title": "18  E17 Regional case: synthetic tracer under ERA5 winds",
+    "title": "20  E17 Regional case: synthetic tracer under ERA5 winds",
     "section": "",
-    "text": "Domain: a ~100 km box around Belauri, Kanchanpur (79.80–80.82 E, 28.34–29.24 N). Benchmark lengths are scaled ×10, with K = 500 m² s⁻¹.\nWind: ERA5 hourly 10 m wind, averaged over the box. The solver takes a spatially uniform wind.\nSources: synthetic, placed only where WorldPop population exists. That is Nepal only, so the Indian part of the box has no sources.\nCases (date blocks):\n\ncoolA (Nov–Dec 2021) and coolB (Jan–Feb 2022);\nmonsoon: trained on November, tested on July 2021, a wind regime absent from training.\n\nEstimators and endpoint: the same as E07 and E08 (24 h window map24, all past data map_grow; held-out 1 h forecast RMSE).\nWrong-wind tests: the model gets either the ERA5 point nearest Belauri or the box mean veered by 30°.\n\n\n\n\n\n\n\nFigure 18.1: ERA5 box-mean wind rose by month.",
+    "text": "Domain: a ~100 km box around Belauri, Kanchanpur (79.80–80.82 E, 28.34–29.24 N). Benchmark lengths are scaled ×10, with K = 500 m² s⁻¹.\nWind: ERA5 hourly 10 m wind, averaged over the box. The solver takes a spatially uniform wind.\nSources: synthetic, placed only where WorldPop population exists. That is Nepal only, so the Indian part of the box has no sources.\nCases (date blocks):\n\ncoolA (Nov–Dec 2021) and coolB (Jan–Feb 2022);\nmonsoon: trained on November, tested on July 2021, a wind regime absent from training.\n\nEstimators and endpoint: the same as E07 and E08 (24 h window map24, all past data map_grow; held-out 1 h forecast RMSE).\nWrong-wind tests: the model gets either the ERA5 point nearest Belauri or the box mean veered by 30°.\n\n\n\n\n\n\n\nFigure 20.1: ERA5 box-mean wind rose by month.",
     "crumbs": [
       "Experiments",
-      "<span class='chapter-number'>18</span>  <span class='chapter-title'>E17 Regional case: synthetic tracer under ERA5 winds</span>"
+      "<span class='chapter-number'>20</span>  <span class='chapter-title'>E17 Regional case: synthetic tracer under ERA5 winds</span>"
     ]
   },
   {
     "objectID": "chapters/17-regional.html#results-64²",
     "href": "chapters/17-regional.html#results-64²",
-    "title": "18  E17 Regional case: synthetic tracer under ERA5 winds",
-    "section": "18.2 Results (64²)",
-    "text": "18.2 Results (64²)\n\n\n\n\n\n\nFigure 18.2: E17 64²: reduction in forecast RMSE between strategies, by case and estimator (left), and degradation under a wrong model wind (right).\n\n\n\n\n\n\n\n\n\n\n\n\n\n1 h forecast RMSE, k = 8, median\nD-optimal\nnear-source\nrandom\npersistence\n\n\n\n\n24 h window, true wind\n0.018–0.024\n0.018–0.021\n0.034–0.038\n0.017–0.019\n\n\nall past data, true wind\n0.0014–0.0020\n0.0016–0.0020\n0.0035–0.0043\n0.017–0.019\n\n\nnearest-point wind (coolA)\n0.034 / 0.032\n0.034 / 0.032\n0.045 / 0.033\n0.017\n\n\n30° veer (coolA)\n0.046 / 0.045\n0.046 / 0.045\n0.052 / 0.045\n0.017\n\n\n\nWrong-wind rows show 24 h window / all past data.\n\nPlacement still matters with the true wind. D-optimal and near-source beat random in every case (20 of 20 clusters at k = 8), by 35–50 % under the 24 h window and 53–64 % with all past data.\nThe D-optimal vs near-source ordering mostly disappears.\n\nThe two tie in the cool season.\nIn the unseen monsoon regime, near-source edges ahead under the 24 h window (16 of 20). This is E07’s direction, much weaker.\nWith all past data they tie. E07/E08’s clear D-optimal win does not appear under these calm, rotating winds.\n\nOnly memory beats persistence. In calm winds, repeating the last reading is hard to beat. The 24 h-window forecasts only match it, while all-past-data forecasts beat it by about 10×.\nThe wrong wind cancels both advantages. The ERA5 point nearest Belauri differs from the box mean by about 17° and 13 % in speed. Using it instead of the box mean makes every forecast about 2× worse than persistence. All strategies become nearly equal, and the memory gain disappears (all-past-data error rises 15–27×). This reproduces E12 under realistic winds.",
+    "title": "20  E17 Regional case: synthetic tracer under ERA5 winds",
+    "section": "20.2 Results (64²)",
+    "text": "20.2 Results (64²)\n\n\n\n\n\n\nFigure 20.2: E17 64²: reduction in forecast RMSE between strategies, by case and estimator (left), and degradation under a wrong model wind (right).\n\n\n\n\n\n\n\n\n\n\n\n\n\n1 h forecast RMSE, k = 8, median\nD-optimal\nnear-source\nrandom\npersistence\n\n\n\n\n24 h window, true wind\n0.018–0.024\n0.018–0.021\n0.034–0.038\n0.017–0.019\n\n\nall past data, true wind\n0.0014–0.0020\n0.0016–0.0020\n0.0035–0.0043\n0.017–0.019\n\n\nnearest-point wind (coolA)\n0.034 / 0.032\n0.034 / 0.032\n0.045 / 0.033\n0.017\n\n\n30° veer (coolA)\n0.046 / 0.045\n0.046 / 0.045\n0.052 / 0.045\n0.017\n\n\n\nWrong-wind rows show 24 h window / all past data.\n\nPlacement still matters with the true wind. D-optimal and near-source beat random in every case (20 of 20 clusters at k = 8), by 35–50 % under the 24 h window and 53–64 % with all past data.\nThe D-optimal vs near-source ordering mostly disappears.\n\nThe two tie in the cool season.\nIn the unseen monsoon regime, near-source edges ahead under the 24 h window (16 of 20). This is E07’s direction, much weaker.\nWith all past data they tie. E07/E08’s clear D-optimal win does not appear under these calm, rotating winds.\n\nOnly memory beats persistence. In calm winds, repeating the last reading is hard to beat. The 24 h-window forecasts only match it, while all-past-data forecasts beat it by about 10×.\nThe wrong wind cancels both advantages. The ERA5 point nearest Belauri differs from the box mean by about 17° and 13 % in speed. Using it instead of the box mean makes every forecast about 2× worse than persistence. All strategies become nearly equal, and the memory gain disappears (all-past-data error rises 15–27×). This reproduces E12 under realistic winds.",
     "crumbs": [
       "Experiments",
-      "<span class='chapter-number'>18</span>  <span class='chapter-title'>E17 Regional case: synthetic tracer under ERA5 winds</span>"
+      "<span class='chapter-number'>20</span>  <span class='chapter-title'>E17 Regional case: synthetic tracer under ERA5 winds</span>"
     ]
   },
   {
     "objectID": "chapters/17-regional.html#limits",
     "href": "chapters/17-regional.html#limits",
-    "title": "18  E17 Regional case: synthetic tracer under ERA5 winds",
-    "section": "18.3 Limits",
-    "text": "18.3 Limits\n\nUniform wind. The ERA5 wind varies inside the box by about as much as its mean, so a spatially varying wind is the main missing ingredient.\nNo Indian sources or inflow. The boundary is clean.\nMixing depth. The cool-season boundary layer (median 47–88 m) is much shallower than the model’s 500 m.\nShort calendar.",
+    "title": "20  E17 Regional case: synthetic tracer under ERA5 winds",
+    "section": "20.3 Limits",
+    "text": "20.3 Limits\n\nUniform wind. The ERA5 wind varies inside the box by about as much as its mean, so a spatially varying wind is the main missing ingredient.\nNo Indian sources or inflow. The boundary is clean.\nMixing depth. The cool-season boundary layer (median 47–88 m) is much shallower than the model’s 500 m.\nShort calendar.",
     "crumbs": [
       "Experiments",
-      "<span class='chapter-number'>18</span>  <span class='chapter-title'>E17 Regional case: synthetic tracer under ERA5 winds</span>"
+      "<span class='chapter-number'>20</span>  <span class='chapter-title'>E17 Regional case: synthetic tracer under ERA5 winds</span>"
     ]
   },
   {
     "objectID": "chapters/17-regional.html#data-attribution",
     "href": "chapters/17-regional.html#data-attribution",
-    "title": "18  E17 Regional case: synthetic tracer under ERA5 winds",
-    "section": "18.4 Data attribution",
-    "text": "18.4 Data attribution\n\nContains modified Copernicus Climate Change Service information [2021–2022]. Neither the European Commission nor ECMWF is responsible for any use that may be made of the Copernicus information or data it contains. ERA5: Hersbach et al. (2023), ERA5 hourly data on single levels from 1940 to present, C3S Climate Data Store, doi:10.24381/cds.adbb2d47 (CC-BY 4.0).\nPopulation: WorldPop (www.worldpop.org), Nepal 2020 UN-adjusted 1 km, CC BY 4.0.",
+    "title": "20  E17 Regional case: synthetic tracer under ERA5 winds",
+    "section": "20.4 Data attribution",
+    "text": "20.4 Data attribution\n\nContains modified Copernicus Climate Change Service information [2021–2022]. Neither the European Commission nor ECMWF is responsible for any use that may be made of the Copernicus information or data it contains. ERA5: Hersbach et al. (2023), ERA5 hourly data on single levels from 1940 to present, C3S Climate Data Store, doi:10.24381/cds.adbb2d47 (CC-BY 4.0).\nPopulation: WorldPop (www.worldpop.org), Nepal 2020 UN-adjusted 1 km, CC BY 4.0.",
     "crumbs": [
       "Experiments",
-      "<span class='chapter-number'>18</span>  <span class='chapter-title'>E17 Regional case: synthetic tracer under ERA5 winds</span>"
+      "<span class='chapter-number'>20</span>  <span class='chapter-title'>E17 Regional case: synthetic tracer under ERA5 winds</span>"
     ]
   },
   {
     "objectID": "chapters/90-lessons.html",
     "href": "chapters/90-lessons.html",
-    "title": "19  Lessons and corrections",
+    "title": "21  Lessons and corrections",
     "section": "",
-    "text": "19.1 What these corrections taught us\nEvery experiment was audited by a separate agent (“gate”), working from the code, tables and run records rather than the author’s summary. The auditors share the authors’ model family, so their independence comes from the task split and from re-deriving numbers. This chapter collects what they caught and what was done about it. Superseded results stay in Git history and in the journals; they are not deleted.",
+    "text": "21.1 What these corrections taught us\nEvery experiment was audited by a separate agent (“gate”), working from the code, tables and run records rather than the author’s summary. The auditors share the authors’ model family, so their independence comes from the task split and from re-deriving numbers. This chapter collects what they caught and what was done about it. Superseded results stay in Git history and in the journals; they are not deleted.",
     "crumbs": [
-      "<span class='chapter-number'>19</span>  <span class='chapter-title'>Lessons and corrections</span>"
+      "<span class='chapter-number'>21</span>  <span class='chapter-title'>Lessons and corrections</span>"
     ]
   },
   {
     "objectID": "chapters/90-lessons.html#what-these-corrections-taught-us",
     "href": "chapters/90-lessons.html#what-these-corrections-taught-us",
-    "title": "19  Lessons and corrections",
+    "title": "21  Lessons and corrections",
     "section": "",
     "text": "Check the signal-to-noise ratio first. Three experiments were run before the scale problem was acted on; a one-line estimate in the protocol audit had already predicted it.\nA “steady” control must be exactly steady. The E05 confound came from a realistic-looking jitter in the control.\nMeans of ill-posed estimates are meaningless. Use medians, prior-referenced regularisation, and count failures.\nAlways include a dumb control that knows the same thing. The locations-only control is what revealed that the E06/E07 gains were mostly knowledge of source locations.\nIn-sample information is not held-out performance. Whole-period D on training (and even on test) winds missed the short windows in which a source became invisible.\nAmendments are fine if recorded. Each change above has a decision file or journal entry with its evidence and the results it affects.",
     "crumbs": [
-      "<span class='chapter-number'>19</span>  <span class='chapter-title'>Lessons and corrections</span>"
+      "<span class='chapter-number'>21</span>  <span class='chapter-title'>Lessons and corrections</span>"
     ]
   },
   {
     "objectID": "chapters/91-next.html",
     "href": "chapters/91-next.html",
-    "title": "20  Next steps",
+    "title": "22  Next steps",
     "section": "",
-    "text": "20.1 Immediately (E07 close-out, no new simulations)\nSources: state/STATUS.md, state/experiments/e05.md and e07.md, plans 2 and 3. Nothing in this chapter is a result.\nDone: the user approved the confirmatory scope (“supported in the cells run”), and both follow-up controls finished (see the E07 chapter). One implication carries forward: placement must be judged with sensors kept out of the emission discs as well, and against unseen wind directions (E08, E15).",
+    "text": "22.1 Immediately (E07 close-out, no new simulations)\nSources: state/STATUS.md, state/experiments/e05.md and e07.md, plans 2 and 3. Nothing in this chapter is a result.\nDone: the user approved the confirmatory scope (“supported in the cells run”), and both follow-up controls finished (see the E07 chapter). One implication carries forward: placement must be judged with sensors kept out of the emission discs as well, and against unseen wind directions (E08, E15).",
     "crumbs": [
-      "<span class='chapter-number'>20</span>  <span class='chapter-title'>Next steps</span>"
+      "<span class='chapter-number'>22</span>  <span class='chapter-title'>Next steps</span>"
     ]
   },
   {
     "objectID": "chapters/91-next.html#since-the-first-draft",
     "href": "chapters/91-next.html#since-the-first-draft",
-    "title": "20  Next steps",
-    "section": "20.2 Since the first draft",
-    "text": "20.2 Since the first draft\n\nE08’s 64² sweep is done (job 205039). Its all-past-data and exclusion reruns are done too. Pending: a gate-08 audit.\nE09 is done at 32² and audited (gate-09).\nGate-09 found that placement orderings depend on estimator memory. E10 and E11 will therefore declare memory length as a factor, use the growing-window MAP as the baseline, and keep the 24 h window as a reference.",
+    "title": "22  Next steps",
+    "section": "22.2 Since the first draft",
+    "text": "22.2 Since the first draft\n\nE08’s 64² sweep is done (job 205039). Its all-past-data and exclusion reruns are done too. Pending: a gate-08 audit.\nE09 is done at 32² and audited (gate-09).\nGate-09 found that placement orderings depend on estimator memory. E10 and E11 will therefore declare memory length as a factor, use the growing-window MAP as the baseline, and keep the 24 h window as a reference.",
     "crumbs": [
-      "<span class='chapter-number'>20</span>  <span class='chapter-title'>Next steps</span>"
+      "<span class='chapter-number'>22</span>  <span class='chapter-title'>Next steps</span>"
     ]
   },
   {
     "objectID": "chapters/91-next.html#plan-2-remaining-experiments",
     "href": "chapters/91-next.html#plan-2-remaining-experiments",
-    "title": "20  Next steps",
-    "section": "20.3 Plan 2, remaining experiments",
-    "text": "20.3 Plan 2, remaining experiments\n\n\n\n\n\n\n\n\nExp\nQuestion (plan 2)\nPlanned design (from journals)\n\n\n\n\nE08 Sensor sufficiency\nHow do k, source complexity, noise, sampling cadence and observation duration interact?\nPreregistered from E05 v2: factor = number of distinct wind directions (constant control), W ∈ {24 h, 7 d}, N ∈ {2, 4, 8} plus an optimised arm, seed as unit with paired bootstrap, difference-in-differences primary contrast with a minimum meaningful effect, practical-rank thresholds 1σ and 3σ, equal-reading comparisons only, held-out forecast/off-sensor evaluation, AR(1) arm\n\n\nE09 Causal filtering\nDoes a forecast–observe–update filter estimate and forecast the field better than a current-only batch inverse?\nKalman filter on the concentration state; calibration endpoints (coverage, CRPS) deferred here from E07\n\n\nE10 Joint assimilation\nCan sequential observations update emission strengths and state together without spurious certainty?\nAugmented-state Kalman, optional EnKF, DAPPER toy cross-check\n\n\nE11 Forecast placement\nDoes source/D-opt or POD/QR placement remain optimal when the endpoint is one-step and multi-horizon forecast skill?\nCausal evaluation loop across designs and horizons; uses E07’s finding that training-wind D-opt does not transfer",
+    "title": "22  Next steps",
+    "section": "22.3 Plan 2, remaining experiments",
+    "text": "22.3 Plan 2, remaining experiments\n\n\n\n\n\n\n\n\nExp\nQuestion (plan 2)\nPlanned design (from journals)\n\n\n\n\nE08 Sensor sufficiency\nHow do k, source complexity, noise, sampling cadence and observation duration interact?\nPreregistered from E05 v2: factor = number of distinct wind directions (constant control), W ∈ {24 h, 7 d}, N ∈ {2, 4, 8} plus an optimised arm, seed as unit with paired bootstrap, difference-in-differences primary contrast with a minimum meaningful effect, practical-rank thresholds 1σ and 3σ, equal-reading comparisons only, held-out forecast/off-sensor evaluation, AR(1) arm\n\n\nE09 Causal filtering\nDoes a forecast–observe–update filter estimate and forecast the field better than a current-only batch inverse?\nKalman filter on the concentration state; calibration endpoints (coverage, CRPS) deferred here from E07\n\n\nE10 Joint assimilation\nCan sequential observations update emission strengths and state together without spurious certainty?\nAugmented-state Kalman, optional EnKF, DAPPER toy cross-check\n\n\nE11 Forecast placement\nDoes source/D-opt or POD/QR placement remain optimal when the endpoint is one-step and multi-horizon forecast skill?\nCausal evaluation loop across designs and horizons; uses E07’s finding that training-wind D-opt does not transfer",
     "crumbs": [
-      "<span class='chapter-number'>20</span>  <span class='chapter-title'>Next steps</span>"
+      "<span class='chapter-number'>22</span>  <span class='chapter-title'>Next steps</span>"
     ]
   },
   {
     "objectID": "chapters/91-next.html#plan-3-e12e20-not-started",
     "href": "chapters/91-next.html#plan-3-e12e20-not-started",
-    "title": "20  Next steps",
-    "section": "20.4 Plan 3 (E12–E20), not started",
-    "text": "20.4 Plan 3 (E12–E20), not started\nMeteorological mismatch and source–transport compensation (E12); background, source-basis and realistic observation errors (E13); reliability diagnostics and uncertainty calibration (E14); nominal vs robust placement (E15, which inherits E07’s hypothesis that designs tuned to training winds fail on unseen directions); generalisation and sensitivity consolidation (E16); optional regional transport case (E17) and real monitoring validation (E18); synthesis (E19) and independent replication (E20).",
+    "title": "22  Next steps",
+    "section": "22.4 Plan 3 (E12–E20), not started",
+    "text": "22.4 Plan 3 (E12–E20), not started\nMeteorological mismatch and source–transport compensation (E12); background, source-basis and realistic observation errors (E13); reliability diagnostics and uncertainty calibration (E14); nominal vs robust placement (E15, which inherits E07’s hypothesis that designs tuned to training winds fail on unseen directions); generalisation and sensitivity consolidation (E16); optional regional transport case (E17) and real monitoring validation (E18); synthesis (E19) and independent replication (E20).",
     "crumbs": [
-      "<span class='chapter-number'>20</span>  <span class='chapter-title'>Next steps</span>"
+      "<span class='chapter-number'>22</span>  <span class='chapter-title'>Next steps</span>"
     ]
   },
   {
     "objectID": "chapters/91-next.html#open-decisions-and-known-gaps",
     "href": "chapters/91-next.html#open-decisions-and-known-gaps",
-    "title": "20  Next steps",
-    "section": "20.5 Open decisions and known gaps",
-    "text": "20.5 Open decisions and known gaps\n\nConfirmatory scope of E07 (above).\nWhether to make source_near (or a wind-robust variant) the reference design going forward; this is outcome-driven and must be preregistered for E11/E15, not adopted retroactively.\nE03 remains rank-deficient for structural reasons; a configuration where the “identifiable recovery” half of its hypothesis can be tested has not been run.\nE04’s spectrum-vs-coverage hypothesis has not been tested across seeds; the 1e-8 rank rule is applied on different scales in two code paths (gate-04).\nStudy-boundary behaviour of both advection schemes has no independent check.\nNo held-out forecast evaluation outside E07; no wind error or model mismatch anywhere yet.",
+    "title": "22  Next steps",
+    "section": "22.5 Open decisions and known gaps",
+    "text": "22.5 Open decisions and known gaps\n\nConfirmatory scope of E07 (above).\nWhether to make source_near (or a wind-robust variant) the reference design going forward; this is outcome-driven and must be preregistered for E11/E15, not adopted retroactively.\nE03 remains rank-deficient for structural reasons; a configuration where the “identifiable recovery” half of its hypothesis can be tested has not been run.\nE04’s spectrum-vs-coverage hypothesis has not been tested across seeds; the 1e-8 rank rule is applied on different scales in two code paths (gate-04).\nStudy-boundary behaviour of both advection schemes has no independent check.\nNo held-out forecast evaluation outside E07; no wind error or model mismatch anywhere yet.",
     "crumbs": [
-      "<span class='chapter-number'>20</span>  <span class='chapter-title'>Next steps</span>"
+      "<span class='chapter-number'>22</span>  <span class='chapter-title'>Next steps</span>"
     ]
   },
   {
     "objectID": "chapters/91-next.html#real-data-e17-e18",
     "href": "chapters/91-next.html#real-data-e17-e18",
-    "title": "20  Next steps",
-    "section": "20.6 Real data (E17, E18)",
-    "text": "20.6 Real data (E17, E18)\n\nE17: a regional case near Belauri, Kanchanpur, using ERA5 reanalysis winds and synthetic emissions. It tests whether the method rankings survive realistic wind sequences. It is not a validation.\nE18: not conducted. No usable public PM2.5 monitoring exists near Belauri: two Department of Environment stations lie within 100 km, with short records. See docs/research/observational-validation-audit.md.",
+    "title": "22  Next steps",
+    "section": "22.6 Real data (E17, E18)",
+    "text": "22.6 Real data (E17, E18)\n\nE17: a regional case near Belauri, Kanchanpur, using ERA5 reanalysis winds and synthetic emissions. It tests whether the method rankings survive realistic wind sequences. It is not a validation.\nE18: not conducted. No usable public PM2.5 monitoring exists near Belauri: two Department of Environment stations lie within 100 km, with short records. See docs/research/observational-validation-audit.md.",
     "crumbs": [
-      "<span class='chapter-number'>20</span>  <span class='chapter-title'>Next steps</span>"
+      "<span class='chapter-number'>22</span>  <span class='chapter-title'>Next steps</span>"
     ]
   },
   {

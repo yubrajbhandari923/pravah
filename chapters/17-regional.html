@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>18&nbsp; E17 Regional case: synthetic tracer under ERA5 winds – PRAVAH: sparse low-cost sensor placement under uncertain wind</title>
+<title>20&nbsp; E17 Regional case: synthetic tracer under ERA5 winds – PRAVAH: sparse low-cost sensor placement under uncertain wind</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -37,7 +37,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
 <link href="../chapters/90-lessons.html" rel="next">
-<link href="../chapters/14-reliability.html" rel="prev">
+<link href="../chapters/16-generalization.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -88,7 +88,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/e00-protocol.html">Experiments</a></li><li class="breadcrumb-item"><a href="../chapters/17-regional.html"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">E17 Regional case: synthetic tracer under ERA5 winds</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/e00-protocol.html">Experiments</a></li><li class="breadcrumb-item"><a href="../chapters/17-regional.html"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">E17 Regional case: synthetic tracer under ERA5 winds</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -232,8 +232,20 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../chapters/15-robust.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">E15 Robust placement over wind scenarios</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/16-generalization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">E16 Generalization and ablation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../chapters/17-regional.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">E17 Regional case: synthetic tracer under ERA5 winds</span></span></a>
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">E17 Regional case: synthetic tracer under ERA5 winds</span></span></a>
   </div>
 </li>
       </ul>
@@ -241,13 +253,13 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/90-lessons.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span></a>
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/91-next.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Next steps</span></span></a>
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Next steps</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -266,19 +278,19 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup"><span class="header-section-number">18.1</span> Setup</a></li>
-  <li><a href="#results-64²" id="toc-results-64²" class="nav-link" data-scroll-target="#results-64²"><span class="header-section-number">18.2</span> Results (64²)</a></li>
-  <li><a href="#limits" id="toc-limits" class="nav-link" data-scroll-target="#limits"><span class="header-section-number">18.3</span> Limits</a></li>
-  <li><a href="#data-attribution" id="toc-data-attribution" class="nav-link" data-scroll-target="#data-attribution"><span class="header-section-number">18.4</span> Data attribution</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup"><span class="header-section-number">20.1</span> Setup</a></li>
+  <li><a href="#results-64²" id="toc-results-64²" class="nav-link" data-scroll-target="#results-64²"><span class="header-section-number">20.2</span> Results (64²)</a></li>
+  <li><a href="#limits" id="toc-limits" class="nav-link" data-scroll-target="#limits"><span class="header-section-number">20.3</span> Limits</a></li>
+  <li><a href="#data-attribution" id="toc-data-attribution" class="nav-link" data-scroll-target="#data-attribution"><span class="header-section-number">20.4</span> Data attribution</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/e00-protocol.html">Experiments</a></li><li class="breadcrumb-item"><a href="../chapters/17-regional.html"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">E17 Regional case: synthetic tracer under ERA5 winds</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/e00-protocol.html">Experiments</a></li><li class="breadcrumb-item"><a href="../chapters/17-regional.html"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">E17 Regional case: synthetic tracer under ERA5 winds</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">E17 Regional case: synthetic tracer under ERA5 winds</span></h1>
+<h1 class="title"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">E17 Regional case: synthetic tracer under ERA5 winds</span></h1>
 </div>
 
 
@@ -300,8 +312,8 @@ ul.task-list li input[type="checkbox"] {
 <p><strong>Evidence label.</strong> Exploratory. - 64² VanLeer run (cluster job 205400): 3 cases × 20 clusters. - 32² pilot: 6 clusters.</p>
 <p>Not yet independently audited.</p>
 <p><strong>Evidence.</strong> - Design note <code>docs/research/regional-case-design.md</code>. - Feasibility audit <code>docs/research/regional-feasibility.md</code>. - Data manifest with sha256 hashes: <code>docs/research/data/e17-manifest.json</code>. - Code <code>src/pravah/data/region.py</code> and <code>scripts/e17_regional.py</code>. - Tables <code>tables/e17-*</code>; journal <code>state/experiments/e17.md</code>.</p>
-<section id="setup" class="level2" data-number="18.1">
-<h2 data-number="18.1" class="anchored" data-anchor-id="setup"><span class="header-section-number">18.1</span> Setup</h2>
+<section id="setup" class="level2" data-number="20.1">
+<h2 data-number="20.1" class="anchored" data-anchor-id="setup"><span class="header-section-number">20.1</span> Setup</h2>
 <ul>
 <li><strong>Domain:</strong> a ~100 km box around Belauri, Kanchanpur (79.80–80.82 E, 28.34–29.24 N). Benchmark lengths are scaled ×10, with K = 500 m² s⁻¹.</li>
 <li><strong>Wind:</strong> ERA5 hourly 10 m wind, averaged over the box. The solver takes a spatially uniform wind.</li>
@@ -320,21 +332,21 @@ ul.task-list li input[type="checkbox"] {
 <img src="../figures/e17-local-windrose.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-e17-rose-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;18.1: ERA5 box-mean wind rose by month.
+Figure&nbsp;20.1: ERA5 box-mean wind rose by month.
 </figcaption>
 </figure>
 </div>
 <p>The cool season is calm and has no dominant direction. Mean speed is 1.0–1.5 m s⁻¹, 27–50 % of hours are below 1 m s⁻¹, and there is a day–night swing. July has steady easterlies.</p>
 </section>
-<section id="results-64²" class="level2" data-number="18.2">
-<h2 data-number="18.2" class="anchored" data-anchor-id="results-64²"><span class="header-section-number">18.2</span> Results (64²)</h2>
+<section id="results-64²" class="level2" data-number="20.2">
+<h2 data-number="20.2" class="anchored" data-anchor-id="results-64²"><span class="header-section-number">20.2</span> Results (64²)</h2>
 <div id="fig-e17" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-e17-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="../figures/e17-sweep-results.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-e17-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;18.2: E17 64²: reduction in forecast RMSE between strategies, by case and estimator (left), and degradation under a wrong model wind (right).
+Figure&nbsp;20.2: E17 64²: reduction in forecast RMSE between strategies, by case and estimator (left), and degradation under a wrong model wind (right).
 </figcaption>
 </figure>
 </div>
@@ -399,8 +411,8 @@ Figure&nbsp;18.2: E17 64²: reduction in forecast RMSE between strategies, by ca
 <li><strong>The wrong wind cancels both advantages.</strong> The ERA5 point nearest Belauri differs from the box mean by about 17° and 13 % in speed. Using it instead of the box mean makes every forecast about 2× worse than persistence. All strategies become nearly equal, and the memory gain disappears (all-past-data error rises 15–27×). This reproduces E12 under realistic winds.</li>
 </ul>
 </section>
-<section id="limits" class="level2" data-number="18.3">
-<h2 data-number="18.3" class="anchored" data-anchor-id="limits"><span class="header-section-number">18.3</span> Limits</h2>
+<section id="limits" class="level2" data-number="20.3">
+<h2 data-number="20.3" class="anchored" data-anchor-id="limits"><span class="header-section-number">20.3</span> Limits</h2>
 <ul>
 <li><strong>Uniform wind.</strong> The ERA5 wind varies inside the box by about as much as its mean, so a spatially varying wind is the main missing ingredient.</li>
 <li><strong>No Indian sources or inflow.</strong> The boundary is clean.</li>
@@ -408,8 +420,8 @@ Figure&nbsp;18.2: E17 64²: reduction in forecast RMSE between strategies, by ca
 <li><strong>Short calendar.</strong></li>
 </ul>
 </section>
-<section id="data-attribution" class="level2" data-number="18.4">
-<h2 data-number="18.4" class="anchored" data-anchor-id="data-attribution"><span class="header-section-number">18.4</span> Data attribution</h2>
+<section id="data-attribution" class="level2" data-number="20.4">
+<h2 data-number="20.4" class="anchored" data-anchor-id="data-attribution"><span class="header-section-number">20.4</span> Data attribution</h2>
 <ul>
 <li>Contains modified Copernicus Climate Change Service information [2021–2022]. Neither the European Commission nor ECMWF is responsible for any use that may be made of the Copernicus information or data it contains. ERA5: Hersbach et al.&nbsp;(2023), ERA5 hourly data on single levels from 1940 to present, C3S Climate Data Store, doi:10.24381/cds.adbb2d47 (CC-BY 4.0).</li>
 <li>Population: WorldPop (www.worldpop.org), Nepal 2020 UN-adjusted 1 km, CC BY 4.0.</li>
@@ -821,13 +833,13 @@ Figure&nbsp;18.2: E17 64²: reduction in forecast RMSE between strategies, by ca
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../chapters/14-reliability.html" class="pagination-link" aria-label="E14 Reliability diagnostics">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">E14 Reliability diagnostics</span></span>
+      <a href="../chapters/16-generalization.html" class="pagination-link" aria-label="E16 Generalization and ablation">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">E16 Generalization and ablation</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="../chapters/90-lessons.html" class="pagination-link" aria-label="Lessons and corrections">
-        <span class="nav-page-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
