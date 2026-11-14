@@ -1,0 +1,62 @@
+{
+ "command": "OMP_NUM_THREADS=1 uv run python scripts/e12_wind_mismatch.py --pilot --workers 5",
+ "git_rev": "dcbc8bc04cf3a27b1e433e6ac04fe1768a82dd44",
+ "git_dirty": false,
+ "host": "RAD-88300596",
+ "python": "3.14.9",
+ "numpy": "2.5.4",
+ "slurm_job": null,
+ "design_note": "docs/research/wind-mismatch-design.md",
+ "scale": "pilot",
+ "specs": [
+  "oracle",
+  "dir10",
+  "dir30",
+  "spd0.8",
+  "spd0.6",
+  "lag2",
+  "lag6",
+  "ar15",
+  "ar30"
+ ],
+ "ks": [
+  2,
+  4,
+  8
+ ],
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "Ks": [
+  2,
+  4
+ ],
+ "R": 3,
+ "n_random": 5,
+ "estimators": {
+  "map24": 24,
+  "map72": 72,
+  "map_full": null
+ },
+ "wind": "mixed",
+ "out": "/home/yubraj/research/pravah-new/.claude/worktrees/agent-a6407c3fc6e0360f6/.cache/e12/pilot",
+ "fields": null,
+ "workers": 5,
+ "total_wall_s": 10.466846704483032,
+ "stage1_cpu_s": 7711.04683758,
+ "stage1_cpu_s_by_kind": {
+  "spd0.8": 820.6679424420004,
+  "spd0.6": 830.7302508189999,
+  "ar15": 827.2667625679998,
+  "src": 834.0955825719999,
+  "lag2": 827.350273044,
+  "truth": 276.60121468499995,
+  "ar30": 824.7205609560002,
+  "dir30": 820.4193243469997,
+  "dir10": 821.6013004859999,
+  "lag6": 827.5936256610003
+ },
+ "stage1_note": "stage-1 fields were solved 2026-11-13 by the uncommitted driver later committed as 1dea8a2 (solve path identical to this rev; later commits changed only stage-2 baselines/report and --dry-run). Stage 2 + report re-run at git_rev."
+}
