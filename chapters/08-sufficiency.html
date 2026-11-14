@@ -200,18 +200,48 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">E09 Causal sequential filtering</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/10-joint.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">E10 Joint source–field sequential inference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/11-forecast-design.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">E11 Placement optimised for causal forecasting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/12-wind-mismatch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">E12 Wind mismatch</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/13-model-mismatch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">E13 Background, source-basis and sensor-error mismatch</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/14-reliability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">E14 Reliability diagnostics</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/90-lessons.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span></a>
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/91-next.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Next steps</span></span></a>
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Next steps</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -231,7 +261,8 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#design" id="toc-design" class="nav-link active" data-scroll-target="#design"><span class="header-section-number">11.1</span> Design</a></li>
-  <li><a href="#pilot-results-32²-exploratory" id="toc-pilot-results-32²-exploratory" class="nav-link" data-scroll-target="#pilot-results-32²-exploratory"><span class="header-section-number">11.2</span> Pilot results (32², exploratory)</a></li>
+  <li><a href="#sweep-results" id="toc-sweep-results" class="nav-link" data-scroll-target="#sweep-results"><span class="header-section-number">11.2</span> 64² sweep results</a></li>
+  <li><a href="#pilot-results-32²-exploratory" id="toc-pilot-results-32²-exploratory" class="nav-link" data-scroll-target="#pilot-results-32²-exploratory"><span class="header-section-number">11.3</span> Pilot results (32², exploratory)</a></li>
   </ul>
 </nav>
     </div>
@@ -259,8 +290,8 @@ ul.task-list li input[type="checkbox"] {
 
 <p>Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.</p>
 <p><strong>Question (plan 2).</strong> How do sensor count k, number of sources K, noise level, sampling cadence and observation span interact? For each setting, what is the smallest network that is “sufficient”?</p>
-<p><strong>Evidence label.</strong> 32² pilot: exploratory, 4 scenarios per K, indicative only. 64² sweep: running (cluster job 205039).</p>
-<p><strong>Evidence.</strong> - Design note: <code>docs/research/sufficiency-design.md</code>, committed alone before any E08 computation. Hypotheses H1–H5 come from E05 and E07; lead decisions are in §13. - Tables <code>tables/e08-local-*</code>; journal <code>state/experiments/e08.md</code>.</p>
+<p><strong>Evidence label.</strong> 64² sweep (cluster job 205039, 20 scenarios per K): the five preregistered tests form one Holm family; everything else is exploratory. The 32² pilot (4 scenarios per K) is indicative only. Not yet independently audited.</p>
+<p><strong>Evidence.</strong> - Design note: <code>docs/research/sufficiency-design.md</code>, committed alone before any E08 computation. Hypotheses H1–H5 come from E05 and E07; lead decisions are in §13. - Tables <code>tables/e08-sweep-*</code> and <code>tables/e08-local-*</code>; journal <code>state/experiments/e08.md</code>.</p>
 <section id="design" class="level2" data-number="11.1">
 <h2 data-number="11.1" class="anchored" data-anchor-id="design"><span class="header-section-number">11.1</span> Design</h2>
 <ul>
@@ -272,15 +303,119 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>Scope:</strong> the K = 8 and k = 32 protocol cells that E07 left unrun are reported as secondary. E07’s approved confirmatory scope is unchanged.</li>
 </ul>
 </section>
-<section id="pilot-results-32²-exploratory" class="level2" data-number="11.2">
-<h2 data-number="11.2" class="anchored" data-anchor-id="pilot-results-32²-exploratory"><span class="header-section-number">11.2</span> Pilot results (32², exploratory)</h2>
+<section id="sweep-results" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="sweep-results"><span class="header-section-number">11.2</span> 64² sweep results</h2>
+<div id="fig-e08-sweep" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-e08-sweep-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figures/e08-sweep-sufficiency.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-e08-sweep-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.1: E08 sweep (64², 20 scenarios per K): held-out forecast nRMSE against sensor count. Top row: strategies at the reference setting. Middle row: noise arms. Bottom row: sampling schedules for random networks.
+</figcaption>
+</figure>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Median k*(0.2)</th>
+<th>K = 2</th>
+<th>K = 4</th>
+<th>K = 8</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>near-source</td>
+<td>2</td>
+<td>4</td>
+<td>8</td>
+</tr>
+<tr class="even">
+<td>D-optimal</td>
+<td>2</td>
+<td>4</td>
+<td>8</td>
+</tr>
+<tr class="odd">
+<td>coverage</td>
+<td>8</td>
+<td>8</td>
+<td>8</td>
+</tr>
+<tr class="even">
+<td>random</td>
+<td>8</td>
+<td>16</td>
+<td>16</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Preregistered tests (Holm family):</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Hypothesis</th>
+<th>Unit</th>
+<th>Result</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>H1: D-optimal k* larger at K = 8 than at K = 2</td>
+<td>20 seeds</td>
+<td>19 wins, 0 losses, 1 tie</td>
+<td>supported</td>
+</tr>
+<tr class="even">
+<td>H2: 5× noise hurts random more than near-source (k = 8)</td>
+<td>60 scenarios</td>
+<td>0 / 60</td>
+<td><strong>contradicted</strong></td>
+</tr>
+<tr class="odd">
+<td>H3: D-optimal’s 24 → 168 h span gain is larger in southerly hours (k = 8)</td>
+<td>60 scenarios</td>
+<td>60 / 60</td>
+<td>supported</td>
+</tr>
+<tr class="even">
+<td>H4: 4k × 6 readings beat k × 24 (random, W = 168 h, k = 2 → 8)</td>
+<td>60 scenarios</td>
+<td>58 / 60</td>
+<td>supported</td>
+</tr>
+<tr class="odd">
+<td>H5: near-source beats D-optimal (k = 8, 40 fresh scenarios)</td>
+<td>40 scenarios</td>
+<td>39 / 40</td>
+<td>supported</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Location knowledge sets the requirement.</strong> Location-aware designs reach τ = 0.2 with about as many sensors as sources. Location-blind designs need 8–16 sensors whatever K is.</li>
+<li><strong>Noise (H2 reversed).</strong> Near-source designs lose more in <em>relative</em> terms when noise rises fivefold. Their error starts very low, so they remain far better in absolute terms.</li>
+<li><strong>Span and readings.</strong> For random networks, more sensors beat more readings at every budget tested. For location-aware designs this flips at large k: once the sources are covered (k = 8 → 32), extra readings per sensor beat extra sensors (near-source 0/60, D-optimal 5/60 at W = 168 h). Near-source also gains from a longer span, contrary to H3’s secondary prediction.</li>
+<li><strong>Protocol cells left unrun by E07 (secondary).</strong> D-optimal cuts error against random by at least 10 % in 8 of 9 cells (K = 2, 4, 8 × k = 8, 16, 32). The exception, K = 4 with k = 32, straddles the threshold. These cells were not added to E07’s confirmatory set.</li>
+</ul>
+</section>
+<section id="pilot-results-32²-exploratory" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="pilot-results-32²-exploratory"><span class="header-section-number">11.3</span> Pilot results (32², exploratory)</h2>
 <div id="fig-e08-pilot" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-e08-pilot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="../figures/e08-local-sufficiency.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-e08-pilot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;11.1: E08 pilot: forecast nRMSE against sensor count by strategy and number of sources.
+Figure&nbsp;11.2: E08 pilot: forecast nRMSE against sensor count by strategy and number of sources.
 </figcaption>
 </figure>
 </div>
@@ -336,7 +471,7 @@ Figure&nbsp;11.1: E08 pilot: forecast nRMSE against sensor count by strategy and
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>E08 uses windowed estimators (windows of 1–168 h). Gate-09 showed that strategy orderings flip between short and unlimited estimator memory (see the E07 and E09 chapters). E08’s strategy comparisons, H5 especially, therefore hold for windowed estimators only. An all-past-data rerun on the cached fields is planned after the sweep.</p>
+<p>E08 uses windowed estimators (windows of 1–168 h). Gate-09 showed that strategy orderings flip between short and unlimited estimator memory (see the E07 and E09 chapters). E08’s strategy comparisons, H5 especially, therefore hold for windowed estimators only. An all-past-data rerun and a 1200 m source-exclusion rerun on the cached 64² fields are pre-declared and will reuse the stored simulations (no new solves).</p>
 </div>
 </div>
 

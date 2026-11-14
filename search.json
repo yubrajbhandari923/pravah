@@ -44,7 +44,7 @@
     "href": "index.html#results-at-a-glance",
     "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
     "section": "Results at a glance",
-    "text": "Results at a glance\nEvidence labels: verified = engineering check passed an independent gate; exploratory = smoke scale and/or settings chosen after seeing data; confirmatory (cells run) = preregistered test, supported only in the cells run.\n\n\n\nExp\nQuestion\nWhat we did\nWhat we found\nEvidence\n\n\n\n\nE00\nCan we fix endpoints and rules before data?\nPreregistered protocol, evaluation contract; audit\nAudit found 3 blockers: signal 1000× below noise (B1), no approval (B2), upwind numerics (B3). All resolved: amendment A1, user approval, amendment A2\napproved baseline, amendable\n\n\nE01\nDoes the solver solve the PDE?\nConvergence, mass, dt-halving oracles 16²–64²\nUpwind converges at ~1st order, mass to ~1e-14, but at 64² its numerical diffusivity is 350–2900 m² s⁻¹ vs K = 50. Split VanLeer at dt 30 s gives K_eff ≈ 50 (A2)\nverified (conditionally cleared)\n\n\nE02\nIs the benchmark sound and leak-free?\nGenerator, splits, 65 validity/leakage checks\nChecks pass; at 100 µg/s the plume was invisible (SNR ~2e-3); at 1 g/s peak SNR is 21–32\nverified (smoke)\n\n\nE03\nCan fixed sensors recover source strengths?\nNNLS inverse, 648 fits, 24 h window\nRank-deficient in all 648 fits, at both scales: a structural failure of fixed, non-optimised sensors\nexploratory (negative)\n\n\nE04\nWhich source combinations can a network distinguish?\nFootprints, Fisher information, SVD\nAt 1 g/s a D-optimal 4-sensor design has practical rank 4/4; coverage 1–2, redundant 2. One replicate\nexploratory\n\n\nE05\nCan a longer window replace sensors?\nWindow × sensors × wind ablation, 20 seeds\nElapsed time alone adds nothing (constant wind); wind change adds rank (+0.37, 16/17 seeds). v1 claims were overstated and withdrawn\nexploratory\n\n\nE06\nCan we reproduce standard placement algorithms?\nuniform/random/coverage/source-near/D/A/diversity/POD-QR\nImplementations check out (QR = PySensors). Source-informed designs reach full rank; most of that is knowing source locations\nverified methods; results in-sample\n\n\nE07\nWhich placement is best for which held-out task?\n32² pilot + 64² sweep (40 scenarios, held-out winds)\nD-opt beats random on held-out forecast RMSE by a median 42–84 % per cell (8/8 cells), and under every estimator tried. Which strategy wins depends on estimator memory: near-source beats D-opt with a 24 h window (115/120 pairs), D-opt wins with all past data (103/120)\nconfirmatory in cells run; strategy ordering exploratory\n\n\nE08\nHow many sensors are enough?\nPreregistered factorial; 32² pilot; 64² sweep running\nPilot: location-aware designs need about k ≈ K sensors, random layouts 12–24. At equal readings, more sensors beat more readings\nexploratory (pilot)\n\n\nE09\nDoes sequential filtering help?\nKalman filters with independent tests; 32² replay; audit\nEstimating sources from all past data cuts forecast error 58–74 % vs a 24 h window. The gain is memory, not filtering. A field-only filter is nearly useless\nexploratory, audited",
+    "text": "Results at a glance\nEvidence labels: verified = engineering check passed an independent gate; exploratory = smoke scale and/or settings chosen after seeing data; confirmatory (cells run) = preregistered test, supported only in the cells run.\n\n\n\nExp\nQuestion\nWhat we did\nWhat we found\nEvidence\n\n\n\n\nE00\nCan we fix endpoints and rules before data?\nPreregistered protocol, evaluation contract; audit\nAudit found 3 blockers: signal 1000× below noise (B1), no approval (B2), upwind numerics (B3). All resolved: amendment A1, user approval, amendment A2\napproved baseline, amendable\n\n\nE01\nDoes the solver solve the PDE?\nConvergence, mass, dt-halving oracles 16²–64²\nUpwind converges at ~1st order, mass to ~1e-14, but at 64² its numerical diffusivity is 350–2900 m² s⁻¹ vs K = 50. Split VanLeer at dt 30 s gives K_eff ≈ 50 (A2)\nverified (conditionally cleared)\n\n\nE02\nIs the benchmark sound and leak-free?\nGenerator, splits, 65 validity/leakage checks\nChecks pass; at 100 µg/s the plume was invisible (SNR ~2e-3); at 1 g/s peak SNR is 21–32\nverified (smoke)\n\n\nE03\nCan fixed sensors recover source strengths?\nNNLS inverse, 648 fits, 24 h window\nRank-deficient in all 648 fits, at both scales: a structural failure of fixed, non-optimised sensors\nexploratory (negative)\n\n\nE04\nWhich source combinations can a network distinguish?\nFootprints, Fisher information, SVD\nAt 1 g/s a D-optimal 4-sensor design has practical rank 4/4; coverage 1–2, redundant 2. One replicate\nexploratory\n\n\nE05\nCan a longer window replace sensors?\nWindow × sensors × wind ablation, 20 seeds\nElapsed time alone adds nothing (constant wind); wind change adds rank (+0.37, 16/17 seeds). v1 claims were overstated and withdrawn\nexploratory\n\n\nE06\nCan we reproduce standard placement algorithms?\nuniform/random/coverage/source-near/D/A/diversity/POD-QR\nImplementations check out (QR = PySensors). Source-informed designs reach full rank; most of that is knowing source locations\nverified methods; results in-sample\n\n\nE07\nWhich placement is best for which held-out task?\n32² pilot + 64² sweep (40 scenarios, held-out winds)\nD-opt beats random on held-out forecast RMSE by a median 42–84 % per cell (8/8 cells), and under every estimator tried. Which strategy wins depends on estimator memory: near-source beats D-opt with a 24 h window (115/120 pairs), D-opt wins with all past data (103/120)\nconfirmatory in cells run; strategy ordering exploratory\n\n\nE08\nHow many sensors are enough?\nPreregistered factorial; 32² pilot; 64² sweep (60 scenarios)\nLocation-aware designs need k ≈ K sensors; random layouts need 8–16. More sensors beat more readings for random networks, but not once sources are covered. H1, H3, H4 and H5 supported; H2 contradicted\n64²: preregistered tests (windowed estimator); not yet audited\n\n\nE09\nDoes sequential filtering help?\nKalman filters with independent tests; 32² replay; audit\nEstimating sources from all past data cuts forecast error 58–74 % vs a 24 h window. The gain is memory, not filtering. A field-only filter is nearly useless\nexploratory, audited\n\n\nE10\nDo drifting-source filters help?\nRandom-walk augmented filter; constant, diurnal and log-random-walk truths; audit\nConstant sources: all past data is best. Time-varying: 1 h error falls 24–55 %, but the filter is 12–15 % worse at 6 h under a diurnal cycle. Calibrated only when q matches the truth\nexploratory, audited\n\n\nE11\nPlacement optimised for forecasting?\nData-free forecast-variance objective, wind-robust prior; audit\nBeats D-optimal under a 24 h window at k = 8 (+0.38), but about 40 % of that was in-sample. Out-of-sample +0.31, not significant. Worse with all past data\nexploratory, audited; 64² running\n\n\nE12\nWhat do wind errors do?\nBiased direction, speed, timing and noise in the inverse wind\nDirection ≥ 30° or a lag ≥ 2 h destroys forecast skill. Wrong strengths absorb wind errors while the fit stays good. The memory benefit vanishes\nexploratory pilot\n\n\nE13\nWhat do background, source or sensor errors do?\n18 mismatches, with and without an estimated background\nBackground offset: fixable. Common-mode sensor bias: a silent failure. Wrong source shapes or locations: unfixable. Outages: benign\nexploratory pilot\n\n\nE14\nCan the method flag its own failures?\n8 truth-free diagnostics; ROC by stress\nModerate at best (AUC 0.71). Speed errors and missing sources are undetectable\nexploratory pilot",
     "crumbs": [
       "Executive summary"
     ]
@@ -64,7 +64,7 @@
     "href": "index.html#what-we-learned-in-plain-language",
     "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
     "section": "What we learned, in plain language",
-    "text": "What we learned, in plain language\n\nScale matters before cleverness. At the originally declared emission rate, sensors could not see the plumes at all; no placement rule can fix that (E00–E05, amendment A1).\nNumerics matter. The first-order scheme smeared plumes with 7–60× the physical diffusivity at 64²; switching to a split VanLeer scheme was necessary before any 64² result could mean anything (A2).\nTime helps only when the wind changes. Repeated readings under the same wind reduce noise but do not separate sources; a change in wind direction does (E05, exploratory).\nOptimised placement beats random, confirmed in the 8 cells run (E07).\nWhich placement wins depends on how much history the estimator uses. With a 24 h estimation window, sensors next to the known sources beat D-optimal (115/120), because D-optimal networks go blind when an unseen southerly wind blows: 79 % of their error falls in those windows. When the estimator uses all past data, the blind spells are bridged and D-optimal wins (103/120) (E07 + gate-09, exploratory).\nMemory matters more than the algorithm. Estimating the persistent sources from all past data cuts forecast error by 58–74 % against a 24 h window; a filter that corrects only the field does almost nothing (E09, exploratory).",
+    "text": "What we learned, in plain language\n\nScale matters before cleverness. At the originally declared emission rate, sensors could not see the plumes at all; no placement rule can fix that (E00–E05, amendment A1).\nNumerics matter. The first-order scheme smeared plumes with 7–60× the physical diffusivity at 64²; switching to a split VanLeer scheme was necessary before any 64² result could mean anything (A2).\nTime helps only when the wind changes. Repeated readings under the same wind reduce noise but do not separate sources; a change in wind direction does (E05, exploratory).\nOptimised placement beats random, confirmed in the 8 cells run (E07).\nWhich placement wins depends on how much history the estimator uses. With a 24 h estimation window, sensors next to the known sources beat D-optimal (115/120), because D-optimal networks go blind when an unseen southerly wind blows: 79 % of their error falls in those windows. When the estimator uses all past data, the blind spells are bridged and D-optimal wins (103/120) (E07 + gate-09, exploratory).\nMemory matters more than the algorithm. Estimating the persistent sources from all past data cuts forecast error by 58–74 % against a 24 h window; a filter that corrects only the field does almost nothing (E09, exploratory).\nDrifting sources need drifting estimates, but only for short horizons. A filter that lets strengths drift helps 1 h forecasts when sources really change, and hurts 6 h forecasts under a daily cycle (E10).\nPlacement tuned for one estimator loses under another. Forecast-optimised networks win only with a 24 h window, and part of their gain was in-sample (E11).\nModel errors dominate placement differences. Under a 30° wind error, a 2 h timing lag or a wrong source map, no estimator beats persistence. Strategies stop mattering, and the residuals often still look fine (E12–E13).\nSelf-diagnosis is limited. Truth-free checks catch some failures (timing and direction errors, correlated noise) but not speed errors, missing sources or a common sensor bias (E13–E14).",
     "crumbs": [
       "Executive summary"
     ]
@@ -74,7 +74,7 @@
     "href": "index.html#honest-limitations",
     "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
     "section": "Honest limitations",
-    "text": "Honest limitations\n\nSynthetic, perfect-model world: known source locations, known wind, constant sources, ideal sensors, uniform wind.\nSmoke scale (32²) for E02–E06; only E07 ran at 64² and only for K ∈ {2, 4}, k ∈ {4, 8, 16}, 10 seeds.\nThe source scale (1 g/s) was chosen after seeing data, so E02–E06 at that scale are exploratory.\nThe E07 mechanism rests on one unseen wind direction; the “source-near” advantage may partly reflect sensors sitting inside the 1200 m emission disc. Across all 40 scenarios, excluding those sites keeps near-source ahead (104/120) but shrinks D-optimal’s gain over random from 71 % to 20 %, and no single cell then clears the 10 % test threshold (exploratory control).\nNo wind error or model mismatch yet (E12–E13). Filtering (E09) is at 32² only, with an upwind surrogate.",
+    "text": "Honest limitations\n\nSynthetic, perfect-model world: known source locations, known wind, constant sources, ideal sensors, uniform wind.\nSmoke scale (32²) for E02–E06; only E07 ran at 64² and only for K ∈ {2, 4}, k ∈ {4, 8, 16}, 10 seeds.\nThe source scale (1 g/s) was chosen after seeing data, so E02–E06 at that scale are exploratory.\nThe E07 mechanism rests on one unseen wind direction; the “source-near” advantage may partly reflect sensors sitting inside the 1200 m emission disc. Across all 40 scenarios, excluding those sites keeps near-source ahead (104/120) but shrinks D-optimal’s gain over random from 71 % to 20 %, and no single cell then clears the 10 % test threshold (exploratory control).\nE09–E14 are 32² pilots with an upwind surrogate and 6 independent clusters. Their 64² runs are documented but deferred (E11’s is running).",
     "crumbs": [
       "Executive summary"
     ]
@@ -84,7 +84,7 @@
     "href": "index.html#whats-next",
     "title": "PRAVAH: sparse low-cost sensor placement under uncertain wind",
     "section": "What’s next",
-    "text": "What’s next\nE08’s 64² sweep is running on the cluster; E09 is done at 32² and audited. Next: E10 (joint source–field assimilation), E11 (placement for forecasting, with estimator memory as a declared factor), and plan 3 (wind and model mismatch, robust placement, calibration). See Next steps.",
+    "text": "What’s next\nE08’s 64² sweep is done (all-past-data and exclusion reruns pending); E09 is done at 32² and audited. E10–E14 pilots are done. Next: E15 (robust placement), E16 (generalisation), E17/E18 feasibility, a batched audit of E12–E15, and the deferred 64² runs. See Next steps.",
     "crumbs": [
       "Executive summary"
     ]
@@ -860,7 +860,7 @@
     "href": "chapters/08-sufficiency.html",
     "title": "11  E08 Sensor sufficiency",
     "section": "",
-    "text": "11.1 Design\nSimulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.\nQuestion (plan 2). How do sensor count k, number of sources K, noise level, sampling cadence and observation span interact? For each setting, what is the smallest network that is “sufficient”?\nEvidence label. 32² pilot: exploratory, 4 scenarios per K, indicative only. 64² sweep: running (cluster job 205039).\nEvidence. - Design note: docs/research/sufficiency-design.md, committed alone before any E08 computation. Hypotheses H1–H5 come from E05 and E07; lead decisions are in §13. - Tables tables/e08-local-*; journal state/experiments/e08.md.",
+    "text": "11.1 Design\nSimulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.\nQuestion (plan 2). How do sensor count k, number of sources K, noise level, sampling cadence and observation span interact? For each setting, what is the smallest network that is “sufficient”?\nEvidence label. 64² sweep (cluster job 205039, 20 scenarios per K): the five preregistered tests form one Holm family; everything else is exploratory. The 32² pilot (4 scenarios per K) is indicative only. Not yet independently audited.\nEvidence. - Design note: docs/research/sufficiency-design.md, committed alone before any E08 computation. Hypotheses H1–H5 come from E05 and E07; lead decisions are in §13. - Tables tables/e08-sweep-* and tables/e08-local-*; journal state/experiments/e08.md.",
     "crumbs": [
       "Experiments",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>E08 Sensor sufficiency</span>"
@@ -878,11 +878,22 @@
     ]
   },
   {
+    "objectID": "chapters/08-sufficiency.html#sweep-results",
+    "href": "chapters/08-sufficiency.html#sweep-results",
+    "title": "11  E08 Sensor sufficiency",
+    "section": "11.2 64² sweep results",
+    "text": "11.2 64² sweep results\n\n\n\n\n\n\nFigure 11.1: E08 sweep (64², 20 scenarios per K): held-out forecast nRMSE against sensor count. Top row: strategies at the reference setting. Middle row: noise arms. Bottom row: sampling schedules for random networks.\n\n\n\n\n\n\nMedian k*(0.2)\nK = 2\nK = 4\nK = 8\n\n\n\n\nnear-source\n2\n4\n8\n\n\nD-optimal\n2\n4\n8\n\n\ncoverage\n8\n8\n8\n\n\nrandom\n8\n16\n16\n\n\n\nPreregistered tests (Holm family):\n\n\n\n\n\n\n\n\n\nHypothesis\nUnit\nResult\nVerdict\n\n\n\n\nH1: D-optimal k* larger at K = 8 than at K = 2\n20 seeds\n19 wins, 0 losses, 1 tie\nsupported\n\n\nH2: 5× noise hurts random more than near-source (k = 8)\n60 scenarios\n0 / 60\ncontradicted\n\n\nH3: D-optimal’s 24 → 168 h span gain is larger in southerly hours (k = 8)\n60 scenarios\n60 / 60\nsupported\n\n\nH4: 4k × 6 readings beat k × 24 (random, W = 168 h, k = 2 → 8)\n60 scenarios\n58 / 60\nsupported\n\n\nH5: near-source beats D-optimal (k = 8, 40 fresh scenarios)\n40 scenarios\n39 / 40\nsupported\n\n\n\n\nLocation knowledge sets the requirement. Location-aware designs reach τ = 0.2 with about as many sensors as sources. Location-blind designs need 8–16 sensors whatever K is.\nNoise (H2 reversed). Near-source designs lose more in relative terms when noise rises fivefold. Their error starts very low, so they remain far better in absolute terms.\nSpan and readings. For random networks, more sensors beat more readings at every budget tested. For location-aware designs this flips at large k: once the sources are covered (k = 8 → 32), extra readings per sensor beat extra sensors (near-source 0/60, D-optimal 5/60 at W = 168 h). Near-source also gains from a longer span, contrary to H3’s secondary prediction.\nProtocol cells left unrun by E07 (secondary). D-optimal cuts error against random by at least 10 % in 8 of 9 cells (K = 2, 4, 8 × k = 8, 16, 32). The exception, K = 4 with k = 32, straddles the threshold. These cells were not added to E07’s confirmatory set.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>E08 Sensor sufficiency</span>"
+    ]
+  },
+  {
     "objectID": "chapters/08-sufficiency.html#pilot-results-32²-exploratory",
     "href": "chapters/08-sufficiency.html#pilot-results-32²-exploratory",
     "title": "11  E08 Sensor sufficiency",
-    "section": "11.2 Pilot results (32², exploratory)",
-    "text": "11.2 Pilot results (32², exploratory)\n\n\n\n\n\n\nFigure 11.1: E08 pilot: forecast nRMSE against sensor count by strategy and number of sources.\n\n\n\n\n\n\nMedian k*(0.2)\nK = 2\nK = 4\nK = 8\n\n\n\n\nnear-source\n2\n3\n8\n\n\nD-optimal\n2\n4\n8\n\n\ncoverage\n12\n8\n8\n\n\nrandom\n24\n12\n16\n\n\n\n\nLocation knowledge sets the requirement. Location-aware designs need about as many sensors as sources; random layouts need 12–24.\nSpan and sensor count beat reading density. For random networks at K = 4, k = 8, nRMSE is 0.46 for a snapshot, 0.23 over 24 h and 0.10 over 168 h. At equal total readings, 4k sensors × 6 readings beat k × 24 in 11 of 12 scenarios.\nH2 reversed in the pilot. Near-source is more noise-sensitive in relative terms, though far better in absolute terms. The preregistered test is unchanged.\nH3 is inconclusive. H5 (near-source beats D-optimal): 10 of 12 scenarios at k = 8.\n\n\n\n\n\n\n\nWarningEstimator-memory caveat (gate-09)\n\n\n\nE08 uses windowed estimators (windows of 1–168 h). Gate-09 showed that strategy orderings flip between short and unlimited estimator memory (see the E07 and E09 chapters). E08’s strategy comparisons, H5 especially, therefore hold for windowed estimators only. An all-past-data rerun on the cached fields is planned after the sweep.",
+    "section": "11.3 Pilot results (32², exploratory)",
+    "text": "11.3 Pilot results (32², exploratory)\n\n\n\n\n\n\nFigure 11.2: E08 pilot: forecast nRMSE against sensor count by strategy and number of sources.\n\n\n\n\n\n\nMedian k*(0.2)\nK = 2\nK = 4\nK = 8\n\n\n\n\nnear-source\n2\n3\n8\n\n\nD-optimal\n2\n4\n8\n\n\ncoverage\n12\n8\n8\n\n\nrandom\n24\n12\n16\n\n\n\n\nLocation knowledge sets the requirement. Location-aware designs need about as many sensors as sources; random layouts need 12–24.\nSpan and sensor count beat reading density. For random networks at K = 4, k = 8, nRMSE is 0.46 for a snapshot, 0.23 over 24 h and 0.10 over 168 h. At equal total readings, 4k sensors × 6 readings beat k × 24 in 11 of 12 scenarios.\nH2 reversed in the pilot. Near-source is more noise-sensitive in relative terms, though far better in absolute terms. The preregistered test is unchanged.\nH3 is inconclusive. H5 (near-source beats D-optimal): 10 of 12 scenarios at k = 8.\n\n\n\n\n\n\n\nWarningEstimator-memory caveat (gate-09)\n\n\n\nE08 uses windowed estimators (windows of 1–168 h). Gate-09 showed that strategy orderings flip between short and unlimited estimator memory (see the E07 and E09 chapters). E08’s strategy comparisons, H5 especially, therefore hold for windowed estimators only. An all-past-data rerun and a 1200 m source-exclusion rerun on the cached 64² fields are pre-declared and will reuse the stored simulations (no new solves).",
     "crumbs": [
       "Experiments",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>E08 Sensor sufficiency</span>"
@@ -933,73 +944,293 @@
     ]
   },
   {
+    "objectID": "chapters/10-joint.html",
+    "href": "chapters/10-joint.html",
+    "title": "13  E10 Joint source–field sequential inference",
+    "section": "",
+    "text": "13.1 What we did\nSimulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.\nQuestion (plan 2). When source strengths change over time, does a filter that lets them drift (a random walk with variance q) beat the all-past-data estimator? Are its uncertainties calibrated?\nEvidence label. Exploratory: 32² with the upwind operator, 12 scenarios. These come from only 6 independent clusters. Independently audited (gate-10/11: pass with conditions).\nEvidence. - Design note docs/research/joint-assimilation-design.md, committed before any code. - Driver scripts/e10_joint.py; filter code src/pravah/filter.py. - Tables tables/e10-local-*; journal state/experiments/e10.md; audit docs/research/gates/gate-10-11.md.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>E10 Joint source–field sequential inference</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/10-joint.html#what-we-did",
+    "href": "chapters/10-joint.html#what-we-did",
+    "title": "13  E10 Joint source–field sequential inference",
+    "section": "",
+    "text": "Augmented filter: source strengths follow a random walk of variance q. q = 0 is the all-past-data MAP (map_full), so q is the declared memory factor.\nTruths:\n\nconstant strengths;\na diurnal cycle (protocol §4);\na log random walk (exploratory).\n\nSelecting q: kf_qsel picks q on validation blocks only.\nNonnegativity: nonneg_mode reports the truncated-Gaussian posterior mode.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>E10 Joint source–field sequential inference</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/10-joint.html#results",
+    "href": "chapters/10-joint.html#results",
+    "title": "13  E10 Joint source–field sequential inference",
+    "section": "13.2 Results",
+    "text": "13.2 Results\n\n\n\n\n\n\nFigure 13.1: E10: forecast error over the test period by estimator and truth type.\n\n\n\n\nConstant truth: q = 0 is best. Validation picks q = 0 in 157 of 216 cases. Forecast error grows with q, at least for informative designs.\nTime-varying truth: the gain is real but short-range. At k = 8, the validation-selected filter cuts 1 h forecast RMSE by 0.24–0.55 against map_full, and by 0.30–0.42 against a MAP whose window was tuned on validation.\n\nUnder the diurnal truth it is 12–15 % worse than map_full at 6 h: the random walk carries a lagged strength forward.\nIt never improves source-strength RMSE.\n\nCalibration.\n\nUnder time-varying truth, map_full is badly overconfident (95 % coverage 0.09–0.25).\nThe filter is calibrated (0.91–0.98) only when q matches the truth.\nWith q &gt; 0 under constant truth, the bands are too wide (above 0.99).\nCoverage for the validation-selected q was not computed.\n\nPlacement × memory. Under constant truth, the strategy ordering depends on memory, as E09 found. Under time-varying truth, near-source is as good or better at every q. D-optimal beats random under every estimator.\nNonnegativity. Weak designs produce negative mean strengths in up to 46 % of rows. Enforcing nonnegativity never increased error.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>E10 Joint source–field sequential inference</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/10-joint.html#limits",
+    "href": "chapters/10-joint.html#limits",
+    "title": "13  E10 Joint source–field sequential inference",
+    "section": "13.3 Limits",
+    "text": "13.3 Limits\n\nThe time-varying truths come from the filter’s own model, which favours the filter.\nThere is no ensemble filter, AR(1) noise or background confounding (E13 covers background).\nn = 6 independent clusters.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>E10 Joint source–field sequential inference</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/11-forecast-design.html",
+    "href": "chapters/11-forecast-design.html",
+    "title": "14  E11 Placement optimised for causal forecasting",
+    "section": "",
+    "text": "14.1 What we did\nSimulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.\nQuestion (plan 2). Does a placement chosen to minimise expected forecast variance beat D-optimal and near-source placement for held-out forecasts?\nEvidence label. Exploratory: 32², 12 scenarios forming 6 clusters. Audited (gate-10/11: pass with conditions). The 64² run (cluster job 205282) was running when this chapter was written.\nEvidence. - Design note docs/research/forecast-design-placement.md (addenda A1–A5). - Code src/pravah/experiments/forecast_design.py, driver scripts/e11_forecast_design.py. - Tables tables/e11-local-* and tables/e11-local-v2-*; journal state/experiments/e11.md.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>E11 Placement optimised for causal forecasting</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/11-forecast-design.html#what-we-did",
+    "href": "chapters/11-forecast-design.html#what-we-did",
+    "title": "14  E11 Placement optimised for causal forecasting",
+    "section": "",
+    "text": "Objective: the expected multi-horizon forecast variance tr(Q Σ(S)). The covariance recursion does not depend on data (E09), so the objective needs no measurements.\nTwo memories: a 24 h window (fc_w24) and all past data (fc_grow).\nWind-robust versions (_rob): average the objective over a prior of 8 compass wind directions.\nOut-of-sample prior (noSN): drops the two test directions, south and north.\nOptimiser: greedy + swap with multiple starts.\nScoring: both estimators, on held-out winds.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>E11 Placement optimised for causal forecasting</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/11-forecast-design.html#results",
+    "href": "chapters/11-forecast-design.html#results",
+    "title": "14  E11 Placement optimised for causal forecasting",
+    "section": "14.2 Results",
+    "text": "14.2 Results\n\n\n\n\n\n\nFigure 14.1: E11 (32², v2 with multi-start and cluster-level statistics): forecast RMSE by design and estimator.\n\n\n\n\nNo single design wins under both memories.\n\nUnder the 24 h estimator at k = 8, the wind-robust forecast design beats D-optimal (+0.38, 6/6 clusters, p = 0.031).\nUnder the all-past-data estimator it is worse than D-optimal (−0.13).\n\nAbout 40 % of the gain was in-sample. With the test directions removed from the prior, the gain over D-optimal falls to +0.31 [−0.03, 0.70] (5 of 6 clusters). That is not significant, and non-inferiority to near-source is lost. All Holm-adjusted p = 1.0 at n = 6.\nHolds only at k = 8. At k = 2 and 4 the gain does not survive at cluster level.\nThe non-robust forecast objectives mostly reproduce D-optimal, with the same sites in 50–64 % of cases.\nPredicted vs realised error. The objective’s predicted RMSE is miscentred because the prior assumes a smaller E[a²] than the truth. With the declared prior’s second moment it over-predicts instead (median ratio 0.80).",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>E11 Placement optimised for causal forecasting</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/11-forecast-design.html#limits-and-what-carries-forward",
+    "href": "chapters/11-forecast-design.html#limits-and-what-carries-forward",
+    "title": "14  E11 Placement optimised for causal forecasting",
+    "section": "14.3 Limits and what carries forward",
+    "text": "14.3 Limits and what carries forward\n\nGreedy + swap is a local optimum: it misses the exhaustive optimum in 12 of 48 small cases.\nThe robust prior is a choice, and it decides how much “robustness” the design buys. E15 tests this directly.\nThe 64² run reuses E07’s cached fields with per-direction prior blocks.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>E11 Placement optimised for causal forecasting</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/12-wind-mismatch.html",
+    "href": "chapters/12-wind-mismatch.html",
+    "title": "15  E12 Wind mismatch",
+    "section": "",
+    "text": "15.1 What we did\nSimulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.\nQuestion (plan 3). How do errors in the wind given to the inverse model affect source estimates and forecasts? Can wrong source strengths absorb wind errors and still fit the sensors?\nEvidence label. Exploratory pilot: 32², upwind operator, 6 clusters, k = 2/4/8. Not yet independently audited. The 64² run is deferred.\nEvidence. - Design note docs/research/wind-mismatch-design.md. - Code src/pravah/uncertainty.py, driver scripts/e12_wind_mismatch.py. - Tables tables/e12-local-*; journal state/experiments/e12.md.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>E12 Wind mismatch</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/12-wind-mismatch.html#what-we-did",
+    "href": "chapters/12-wind-mismatch.html#what-we-did",
+    "title": "15  E12 Wind mismatch",
+    "section": "",
+    "text": "Truth always uses the true wind. The inverse and the forecast use a perturbed wind:\n\ndirection bias of +10° or +30°;\nspeed × 0.8 or × 0.6;\na 2 h or 6 h timing lag;\nAR(1) direction noise with sd 15° or 30°.\n\nOracle branch: uses the true wind.\nIsolation check: tests confirm the inverse never sees the true wind outside the oracle.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>E12 Wind mismatch</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/12-wind-mismatch.html#results",
+    "href": "chapters/12-wind-mismatch.html#results",
+    "title": "15  E12 Wind mismatch",
+    "section": "15.2 Results",
+    "text": "15.2 Results\n\n\n\n\n\n\nFigure 15.1: E12: source-strength bias and forecast skill under each wind error.\n\n\n\n\nForecast skill collapses quickly. Direction errors of 30° or more, a lag of 2 h or more, and AR(1) noise with sd 30° all make the 1 h forecast worse than persistence (0/6 clusters). A +10° error is about level with persistence. Underestimating the speed keeps skill (6/6).\nSource–transport compensation.\n\nThe sensor fit barely changes (residual ratio 1.02–1.3) while source RMSE rises 5–16×.\nSpeed errors bias the strengths low (−15 % for × 0.8, −32 % for × 0.6).\n95 % coverage of the strengths collapses to 0.00–0.54.\nThe fit looks good while the answer is wrong: 298 “deceptive fit” cells.\n\nWarning sign. Lag-1 innovation autocorrelation rises to 0.13–0.89. It stays weak for speed × 0.8.\nMemory. The large gain from using all past data (+0.6 to +0.77 with the true wind) mostly vanishes under any wind error.\nPlacement. Under the wrong wind, D-optimal and near-source are within a few per cent of each other. Rankings built on ratios flip with memory, but that is an artefact of the denominator.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>E12 Wind mismatch</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/12-wind-mismatch.html#limits",
+    "href": "chapters/12-wind-mismatch.html#limits",
+    "title": "15  E12 Wind mismatch",
+    "section": "15.3 Limits",
+    "text": "15.3 Limits\n\nn = 6, upwind numerics and a short calendar.\nThe persistence baseline was added after seeing results.\nThe 64² plan is in the design note.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>E12 Wind mismatch</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/13-model-mismatch.html",
+    "href": "chapters/13-model-mismatch.html",
+    "title": "16  E13 Background, source-basis and sensor-error mismatch",
+    "section": "",
+    "text": "16.1 What we did\nSimulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.\nQuestion (plan 3). What happens when the assumptions about the background, the source shapes or the sensors are wrong? Which errors can be repaired by estimating one extra term, and which can at least be detected?\nEvidence label. Exploratory pilot: 32², 6 clusters, k = 8 shown. Not yet independently audited. The 64² run (≈ 616 CPU-h) is deferred.\nEvidence. - Design note docs/research/model-mismatch-design.md. - Code src/pravah/model_mismatch.py, driver scripts/e13_model_mismatch.py. - Tables tables/e13-local-*; journal state/experiments/e13.md.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>E13 Background, source-basis and sensor-error mismatch</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/13-model-mismatch.html#what-we-did",
+    "href": "chapters/13-model-mismatch.html#what-we-did",
+    "title": "16  E13 Background, source-basis and sensor-error mismatch",
+    "section": "",
+    "text": "The inverse always uses the nominal model; only the world changes. There are 18 pre-declared mismatches:\n\nbackground: an offset, and a drift over time;\nsource basis: a shifted source, a wider footprint, a missing source, and diurnal emission;\nsensors: AR(1) noise, bias, drift, gain errors and outages;\na combined case.\n\nEach estimator also runs with an unknown background term (_bg).",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>E13 Background, source-basis and sensor-error mismatch</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/13-model-mismatch.html#results",
+    "href": "chapters/13-model-mismatch.html#results",
+    "title": "16  E13 Background, source-basis and sensor-error mismatch",
+    "section": "16.2 Results",
+    "text": "16.2 Results\n\n\n\n\n\n\nFigure 16.1: E13: uncertainty coverage and forecast skill under each mismatch.\n\n\n\n\nA wrong background is fixable. A +1 µg/m³ offset (4σ) destroys forecasts (skill vs persistence −3.5), biases the sources by +128 % and gives zero coverage. Estimating the background repairs this fully (skill +0.94, coverage 0.96, 6/6). A drifting background is only partly repaired.\nSilent failure. At the sensors, a background offset and a bias common to all sensors look identical.\n\nThe background term fixes the offset but makes the common bias worse (skill −3.9).\nEvery diagnostic looks perfect: fit ratio 1.00, white innovations, coverage 0.96. Yet forecasts are far worse than persistence.\nTelling the two apart needs outside information, such as a reference instrument or an upwind background site.\n\nWrong source assumptions are not fixable. For a shifted source, a wider footprint or a missing source, no estimator beats persistence at k = 8. The warnings are weak (fit ratio 1.17–1.34, lag-1 0.17–0.35).\nSensor errors.\n\nAR(1) noise leaves strengths unbiased, but coverage falls to 0.45–0.60. Lag-1 autocorrelation warns (0.78).\nRandom outages are benign, even at 50 % missing.\nPer-site bias destroys coverage.\nUnder drift, all past data helps (+0.57 vs the 24 h window, 6/6).",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>E13 Background, source-basis and sensor-error mismatch</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/13-model-mismatch.html#limits",
+    "href": "chapters/13-model-mismatch.html#limits",
+    "title": "16  E13 Background, source-basis and sensor-error mismatch",
+    "section": "16.3 Limits",
+    "text": "16.3 Limits\n\nThe stress magnitudes are synthetic choices, and n = 6.\nThe rule for field-level silent failure was added after seeing results.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>E13 Background, source-basis and sensor-error mismatch</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/14-reliability.html",
+    "href": "chapters/14-reliability.html",
+    "title": "17  E14 Reliability diagnostics",
+    "section": "",
+    "text": "17.1 What we did\nSimulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.\nQuestion (plan 3). Can a method tell, without knowing the truth, when its own forecast or uncertainty is unreliable?\nEvidence label. Exploratory pilot: 32², 6 clusters. The within-config AUC was added after seeing results (deviation 1). Not yet independently audited. The 64² run is deferred.\nEvidence. - Design note docs/research/reliability-design.md. - Code src/pravah/experiments/reliability.py, driver scripts/e14_reliability.py. - Tables tables/e14-local-*; journal state/experiments/e14.md.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>E14 Reliability diagnostics</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/14-reliability.html#what-we-did",
+    "href": "chapters/14-reliability.html#what-we-did",
+    "title": "17  E14 Reliability diagnostics",
+    "section": "",
+    "text": "Diagnostics: eight truth-free diagnostics, each computed from the data before each 24 h block. Tests confirm they are unchanged when all truth is replaced by NaN.\nFailure labels:\n\nL1: the 1 h forecast is worse than persistence;\nL2: 90 % coverage is below 0.70.\n\nThresholds: chosen on validation blocks only.\nStresses: E12’s wind errors, plus doubled noise, AR(1) noise and an omitted source.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>E14 Reliability diagnostics</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/14-reliability.html#results",
+    "href": "chapters/14-reliability.html#results",
+    "title": "17  E14 Reliability diagnostics",
+    "section": "17.2 Results",
+    "text": "17.2 Results\n\n\n\n\n\n\nFigure 17.1: E14: how well each diagnostic separates reliable from unreliable blocks (ROC).\n\n\n\n\n\n\n\n\n\nFigure 17.2: E14: interval coverage with the true and with a wrong wind.\n\n\n\n\nEarly warning works only moderately. The best warning of forecast failure is the sensor skill over the previous day, with AUC 0.71 [0.64, 0.77]. It reaches 0.81–0.86 for large direction or timing errors. Spread, fit and NIS give 0.65–0.67. For coverage failure, the best AUC is 0.63–0.65.\nCalibration depends on the wind. With the true wind, 90 % coverage is 0.91–0.995, but 50 % coverage is only 0.44–0.47. With a wrong wind it collapses: 0.07 for a 30° direction error.\nFailures nobody flags.\n\nA speed error of × 0.8 is undetectable (AUC 0.46–0.57).\nAn omitted source gives overconfident blocks that no diagnostic flags: forecasts are about 4× worse than persistence, with NIS ≈ 0.8 and lag-1 ≈ 0.\nNIS misses AR(1) noise, while lag-1 autocorrelation catches it.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>E14 Reliability diagnostics</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/14-reliability.html#limits",
+    "href": "chapters/14-reliability.html#limits",
+    "title": "17  E14 Reliability diagnostics",
+    "section": "17.3 Limits",
+    "text": "17.3 Limits\n\nThe 6 clusters are dependent.\nThe within-config AUC was chosen after seeing results.\nTogether with E13’s silent failure, these results mean that truth-free checks cannot certify a map. They can only flag some failures.",
+    "crumbs": [
+      "Experiments",
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>E14 Reliability diagnostics</span>"
+    ]
+  },
+  {
     "objectID": "chapters/90-lessons.html",
     "href": "chapters/90-lessons.html",
-    "title": "13  Lessons and corrections",
+    "title": "18  Lessons and corrections",
     "section": "",
-    "text": "13.1 What these corrections taught us\nEvery experiment was audited by a separate agent (“gate”), working from the code, tables and run records rather than the author’s summary. The auditors share the authors’ model family, so their independence comes from the task split and from re-deriving numbers. This chapter collects what they caught and what was done about it. Superseded results stay in Git history and in the journals; they are not deleted.",
+    "text": "18.1 What these corrections taught us\nEvery experiment was audited by a separate agent (“gate”), working from the code, tables and run records rather than the author’s summary. The auditors share the authors’ model family, so their independence comes from the task split and from re-deriving numbers. This chapter collects what they caught and what was done about it. Superseded results stay in Git history and in the journals; they are not deleted.",
     "crumbs": [
-      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Lessons and corrections</span>"
+      "<span class='chapter-number'>18</span>  <span class='chapter-title'>Lessons and corrections</span>"
     ]
   },
   {
     "objectID": "chapters/90-lessons.html#what-these-corrections-taught-us",
     "href": "chapters/90-lessons.html#what-these-corrections-taught-us",
-    "title": "13  Lessons and corrections",
+    "title": "18  Lessons and corrections",
     "section": "",
     "text": "Check the signal-to-noise ratio first. Three experiments were run before the scale problem was acted on; a one-line estimate in the protocol audit had already predicted it.\nA “steady” control must be exactly steady. The E05 confound came from a realistic-looking jitter in the control.\nMeans of ill-posed estimates are meaningless. Use medians, prior-referenced regularisation, and count failures.\nAlways include a dumb control that knows the same thing. The locations-only control is what revealed that the E06/E07 gains were mostly knowledge of source locations.\nIn-sample information is not held-out performance. Whole-period D on training (and even on test) winds missed the short windows in which a source became invisible.\nAmendments are fine if recorded. Each change above has a decision file or journal entry with its evidence and the results it affects.",
     "crumbs": [
-      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Lessons and corrections</span>"
+      "<span class='chapter-number'>18</span>  <span class='chapter-title'>Lessons and corrections</span>"
     ]
   },
   {
     "objectID": "chapters/91-next.html",
     "href": "chapters/91-next.html",
-    "title": "14  Next steps",
+    "title": "19  Next steps",
     "section": "",
-    "text": "14.1 Immediately (E07 close-out, no new simulations)\nSources: state/STATUS.md, state/experiments/e05.md and e07.md, plans 2 and 3. Nothing in this chapter is a result.\nDone: the user approved the confirmatory scope (“supported in the cells run”), and both follow-up controls finished (see the E07 chapter). One implication carries forward: placement must be judged with sensors kept out of the emission discs as well, and against unseen wind directions (E08, E15).",
+    "text": "19.1 Immediately (E07 close-out, no new simulations)\nSources: state/STATUS.md, state/experiments/e05.md and e07.md, plans 2 and 3. Nothing in this chapter is a result.\nDone: the user approved the confirmatory scope (“supported in the cells run”), and both follow-up controls finished (see the E07 chapter). One implication carries forward: placement must be judged with sensors kept out of the emission discs as well, and against unseen wind directions (E08, E15).",
     "crumbs": [
-      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Next steps</span>"
+      "<span class='chapter-number'>19</span>  <span class='chapter-title'>Next steps</span>"
     ]
   },
   {
     "objectID": "chapters/91-next.html#since-the-first-draft",
     "href": "chapters/91-next.html#since-the-first-draft",
-    "title": "14  Next steps",
-    "section": "14.2 Since the first draft",
-    "text": "14.2 Since the first draft\n\nE08’s 64² sweep is running on the cluster (job 205039).\nE09 is done at 32² and audited (gate-09).\nGate-09 found that placement orderings depend on estimator memory. E10 and E11 will therefore declare memory length as a factor, use the growing-window MAP as the baseline, and keep the 24 h window as a reference.",
+    "title": "19  Next steps",
+    "section": "19.2 Since the first draft",
+    "text": "19.2 Since the first draft\n\nE08’s 64² sweep is done (job 205039). Pending: all-past-data and 1200 m exclusion reruns on its cached fields, and a gate-08 audit.\nE09 is done at 32² and audited (gate-09).\nGate-09 found that placement orderings depend on estimator memory. E10 and E11 will therefore declare memory length as a factor, use the growing-window MAP as the baseline, and keep the 24 h window as a reference.",
     "crumbs": [
-      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Next steps</span>"
+      "<span class='chapter-number'>19</span>  <span class='chapter-title'>Next steps</span>"
     ]
   },
   {
     "objectID": "chapters/91-next.html#plan-2-remaining-experiments",
     "href": "chapters/91-next.html#plan-2-remaining-experiments",
-    "title": "14  Next steps",
-    "section": "14.3 Plan 2, remaining experiments",
-    "text": "14.3 Plan 2, remaining experiments\n\n\n\n\n\n\n\n\nExp\nQuestion (plan 2)\nPlanned design (from journals)\n\n\n\n\nE08 Sensor sufficiency\nHow do k, source complexity, noise, sampling cadence and observation duration interact?\nPreregistered from E05 v2: factor = number of distinct wind directions (constant control), W ∈ {24 h, 7 d}, N ∈ {2, 4, 8} plus an optimised arm, seed as unit with paired bootstrap, difference-in-differences primary contrast with a minimum meaningful effect, practical-rank thresholds 1σ and 3σ, equal-reading comparisons only, held-out forecast/off-sensor evaluation, AR(1) arm\n\n\nE09 Causal filtering\nDoes a forecast–observe–update filter estimate and forecast the field better than a current-only batch inverse?\nKalman filter on the concentration state; calibration endpoints (coverage, CRPS) deferred here from E07\n\n\nE10 Joint assimilation\nCan sequential observations update emission strengths and state together without spurious certainty?\nAugmented-state Kalman, optional EnKF, DAPPER toy cross-check\n\n\nE11 Forecast placement\nDoes source/D-opt or POD/QR placement remain optimal when the endpoint is one-step and multi-horizon forecast skill?\nCausal evaluation loop across designs and horizons; uses E07’s finding that training-wind D-opt does not transfer",
+    "title": "19  Next steps",
+    "section": "19.3 Plan 2, remaining experiments",
+    "text": "19.3 Plan 2, remaining experiments\n\n\n\n\n\n\n\n\nExp\nQuestion (plan 2)\nPlanned design (from journals)\n\n\n\n\nE08 Sensor sufficiency\nHow do k, source complexity, noise, sampling cadence and observation duration interact?\nPreregistered from E05 v2: factor = number of distinct wind directions (constant control), W ∈ {24 h, 7 d}, N ∈ {2, 4, 8} plus an optimised arm, seed as unit with paired bootstrap, difference-in-differences primary contrast with a minimum meaningful effect, practical-rank thresholds 1σ and 3σ, equal-reading comparisons only, held-out forecast/off-sensor evaluation, AR(1) arm\n\n\nE09 Causal filtering\nDoes a forecast–observe–update filter estimate and forecast the field better than a current-only batch inverse?\nKalman filter on the concentration state; calibration endpoints (coverage, CRPS) deferred here from E07\n\n\nE10 Joint assimilation\nCan sequential observations update emission strengths and state together without spurious certainty?\nAugmented-state Kalman, optional EnKF, DAPPER toy cross-check\n\n\nE11 Forecast placement\nDoes source/D-opt or POD/QR placement remain optimal when the endpoint is one-step and multi-horizon forecast skill?\nCausal evaluation loop across designs and horizons; uses E07’s finding that training-wind D-opt does not transfer",
     "crumbs": [
-      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Next steps</span>"
+      "<span class='chapter-number'>19</span>  <span class='chapter-title'>Next steps</span>"
     ]
   },
   {
     "objectID": "chapters/91-next.html#plan-3-e12e20-not-started",
     "href": "chapters/91-next.html#plan-3-e12e20-not-started",
-    "title": "14  Next steps",
-    "section": "14.4 Plan 3 (E12–E20), not started",
-    "text": "14.4 Plan 3 (E12–E20), not started\nMeteorological mismatch and source–transport compensation (E12); background, source-basis and realistic observation errors (E13); reliability diagnostics and uncertainty calibration (E14); nominal vs robust placement (E15, which inherits E07’s hypothesis that designs tuned to training winds fail on unseen directions); generalisation and sensitivity consolidation (E16); optional regional transport case (E17) and real monitoring validation (E18); synthesis (E19) and independent replication (E20).",
+    "title": "19  Next steps",
+    "section": "19.4 Plan 3 (E12–E20), not started",
+    "text": "19.4 Plan 3 (E12–E20), not started\nMeteorological mismatch and source–transport compensation (E12); background, source-basis and realistic observation errors (E13); reliability diagnostics and uncertainty calibration (E14); nominal vs robust placement (E15, which inherits E07’s hypothesis that designs tuned to training winds fail on unseen directions); generalisation and sensitivity consolidation (E16); optional regional transport case (E17) and real monitoring validation (E18); synthesis (E19) and independent replication (E20).",
     "crumbs": [
-      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Next steps</span>"
+      "<span class='chapter-number'>19</span>  <span class='chapter-title'>Next steps</span>"
     ]
   },
   {
     "objectID": "chapters/91-next.html#open-decisions-and-known-gaps",
     "href": "chapters/91-next.html#open-decisions-and-known-gaps",
-    "title": "14  Next steps",
-    "section": "14.5 Open decisions and known gaps",
-    "text": "14.5 Open decisions and known gaps\n\nConfirmatory scope of E07 (above).\nWhether to make source_near (or a wind-robust variant) the reference design going forward; this is outcome-driven and must be preregistered for E11/E15, not adopted retroactively.\nE03 remains rank-deficient for structural reasons; a configuration where the “identifiable recovery” half of its hypothesis can be tested has not been run.\nE04’s spectrum-vs-coverage hypothesis has not been tested across seeds; the 1e-8 rank rule is applied on different scales in two code paths (gate-04).\nStudy-boundary behaviour of both advection schemes has no independent check.\nNo held-out forecast evaluation outside E07; no wind error or model mismatch anywhere yet.",
+    "title": "19  Next steps",
+    "section": "19.5 Open decisions and known gaps",
+    "text": "19.5 Open decisions and known gaps\n\nConfirmatory scope of E07 (above).\nWhether to make source_near (or a wind-robust variant) the reference design going forward; this is outcome-driven and must be preregistered for E11/E15, not adopted retroactively.\nE03 remains rank-deficient for structural reasons; a configuration where the “identifiable recovery” half of its hypothesis can be tested has not been run.\nE04’s spectrum-vs-coverage hypothesis has not been tested across seeds; the 1e-8 rank rule is applied on different scales in two code paths (gate-04).\nStudy-boundary behaviour of both advection schemes has no independent check.\nNo held-out forecast evaluation outside E07; no wind error or model mismatch anywhere yet.",
     "crumbs": [
-      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Next steps</span>"
+      "<span class='chapter-number'>19</span>  <span class='chapter-title'>Next steps</span>"
     ]
   },
   {

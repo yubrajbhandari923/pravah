@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>13&nbsp; Lessons and corrections – PRAVAH: sparse low-cost sensor placement under uncertain wind</title>
+<title>18&nbsp; Lessons and corrections – PRAVAH: sparse low-cost sensor placement under uncertain wind</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -37,7 +37,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
 <link href="../chapters/91-next.html" rel="next">
-<link href="../chapters/09-filter.html" rel="prev">
+<link href="../chapters/14-reliability.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -88,7 +88,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/90-lessons.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/90-lessons.html"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -200,18 +200,48 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">E09 Causal sequential filtering</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/10-joint.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">E10 Joint source–field sequential inference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/11-forecast-design.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">E11 Placement optimised for causal forecasting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/12-wind-mismatch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">E12 Wind mismatch</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/13-model-mismatch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">E13 Background, source-basis and sensor-error mismatch</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/14-reliability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">E14 Reliability diagnostics</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/90-lessons.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span></a>
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/91-next.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Next steps</span></span></a>
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Next steps</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -230,7 +260,7 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#what-these-corrections-taught-us" id="toc-what-these-corrections-taught-us" class="nav-link active" data-scroll-target="#what-these-corrections-taught-us"><span class="header-section-number">13.1</span> What these corrections taught us</a></li>
+  <li><a href="#what-these-corrections-taught-us" id="toc-what-these-corrections-taught-us" class="nav-link active" data-scroll-target="#what-these-corrections-taught-us"><span class="header-section-number">18.1</span> What these corrections taught us</a></li>
   </ul>
 </nav>
     </div>
@@ -239,7 +269,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></h1>
+<h1 class="title"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></h1>
 </div>
 
 
@@ -383,8 +413,8 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 </tbody>
 </table>
-<section id="what-these-corrections-taught-us" class="level2" data-number="13.1">
-<h2 data-number="13.1" class="anchored" data-anchor-id="what-these-corrections-taught-us"><span class="header-section-number">13.1</span> What these corrections taught us</h2>
+<section id="what-these-corrections-taught-us" class="level2" data-number="18.1">
+<h2 data-number="18.1" class="anchored" data-anchor-id="what-these-corrections-taught-us"><span class="header-section-number">18.1</span> What these corrections taught us</h2>
 <ul>
 <li><strong>Check the signal-to-noise ratio first.</strong> Three experiments were run before the scale problem was acted on; a one-line estimate in the protocol audit had already predicted it.</li>
 <li><strong>A “steady” control must be exactly steady.</strong> The E05 confound came from a realistic-looking jitter in the control.</li>
@@ -800,13 +830,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../chapters/09-filter.html" class="pagination-link" aria-label="E09 Causal sequential filtering">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">E09 Causal sequential filtering</span></span>
+      <a href="../chapters/14-reliability.html" class="pagination-link" aria-label="E14 Reliability diagnostics">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">E14 Reliability diagnostics</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="../chapters/91-next.html" class="pagination-link" aria-label="Next steps">
-        <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Next steps</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Next steps</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
