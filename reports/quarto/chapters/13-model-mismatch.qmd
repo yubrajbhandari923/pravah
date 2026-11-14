@@ -5,7 +5,7 @@ Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or r
 **Question (plan 3).** What happens when the assumptions about the background, the source shapes or the sensors are
 wrong? Which errors can be repaired by estimating one extra term, and which can at least be detected?
 
-**Evidence label.** Exploratory pilot: 32², 6 clusters, k = 8 shown. Not yet independently audited. The 64² run
+**Evidence label.** Exploratory pilot: 32², 6 clusters, k = 8 shown. Audited (gate-12-17: pass with conditions; claims below corrected). The 64² run
 (≈ 616 CPU-h) is deferred.
 
 **Evidence.**
@@ -24,6 +24,13 @@ wrong? Which errors can be repaired by estimating one extra term, and which can 
 
 ## Results
 
+::: {.callout-note}
+## "Persistence" here is an oracle bound (gate-12-17)
+The persistence baseline carries the *true* field at hour t to t + 1 in every grid cell. No sensor network can do
+that, so "worse than persistence" means worse than an unreachable bound, not worse than a naive forecast.
+:::
+
+
 ![E13: uncertainty coverage and forecast skill under each mismatch.](../figures/e13-local-uncertainty.png){#fig-e13}
 
 - **A wrong background is fixable.** A +1 µg/m³ offset (4σ) destroys forecasts (skill vs persistence −3.5), biases the
@@ -35,7 +42,8 @@ wrong? Which errors can be repaired by estimating one extra term, and which can 
     than persistence.
   - Telling the two apart needs outside information, such as a reference instrument or an upwind background site.
 - **Wrong source assumptions are not fixable.** For a shifted source, a wider footprint or a missing source, no
-  estimator beats persistence at k = 8. The warnings are weak (fit ratio 1.17–1.34, lag-1 0.17–0.35).
+  estimator beats persistence at k = 8. A shifted source does show in the residuals (fit ratio 1.3–3.5, lag-1
+  0.30–0.82). A wide footprint or a missing source barely does (fit ratio 1.12–1.27).
 - **Sensor errors.**
   - AR(1) noise leaves strengths unbiased, but coverage falls to 0.45–0.60. Lag-1 autocorrelation warns (0.78).
   - Random outages are benign, even at 50 % missing.
@@ -45,4 +53,6 @@ wrong? Which errors can be repaired by estimating one extra term, and which can 
 ## Limits
 
 - The stress magnitudes are synthetic choices, and n = 6.
-- The rule for field-level silent failure was added after seeing results.
+- The rule for field-level silent failure was added after seeing results. The audit found it flags 65 cells, 46 of which
+  are already worse than persistence with the true wind. It needs a comparison against the true-wind run.
+  The common-bias silent failure itself is structural and confirmed exactly.

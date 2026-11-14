@@ -1,0 +1,403 @@
+
+====================================================================================================
+E08 map_full: k*(0.2), floor, H5 (64^2 rows)
+====================================================================================================
+
+[reference] median k*(0.2) (K x strategy):
+strategy  coverage  dopt  random  source_near
+K                                            
+2              8.0   2.0     8.0          2.0
+4              8.0   4.0    16.0          4.0
+8              8.0   8.0    16.0          8.0
+max nRMSE at k = 2 by K x strategy:
+strategy  coverage    dopt  random  source_near
+K                                              
+2           0.9125  0.2457  0.8483       0.1057
+4           0.8598  0.5819  0.7971       0.6323
+8           0.8397  0.6546  0.6832       0.7847
+H5 k=2 fresh n=40: source_near wins 24, dopt wins 16, median log ratio 0.056, n_nonfinite 0
+H5 k=8 fresh n=40: source_near wins 39, dopt wins 1, median log ratio 0.612, n_nonfinite 0
+H5 k=32 fresh n=40: source_near wins 38, dopt wins 2, median log ratio 0.329, n_nonfinite 0
+
+[-mapfull] median k*(0.2) (K x strategy):
+strategy  coverage  dopt  random  source_near
+K                                            
+2              2.0   2.0     2.0          2.0
+4              2.0   2.0     2.0          2.0
+8              2.0   2.0     2.0          2.0
+max nRMSE at k = 2 by K x strategy:
+strategy  coverage    dopt  random  source_near
+K                                              
+2           0.2589  0.0073  0.1439       0.0263
+4           0.2196  0.0469  0.2081       0.1517
+8           0.2072  0.0798  0.1757       0.2655
+H5 k=2 fresh n=40: source_near wins 7, dopt wins 33, median log ratio -0.565, n_nonfinite 0
+H5 k=8 fresh n=40: source_near wins 4, dopt wins 36, median log ratio -0.215, n_nonfinite 0
+H5 k=32 fresh n=40: source_near wins 14, dopt wins 26, median log ratio -0.059, n_nonfinite 0
+
+[-excl1200] median k*(0.2) (K x strategy):
+strategy  coverage  dopt  random  source_near
+K                                            
+2             12.0   4.0    16.0          4.0
+4              8.0   8.0    24.0          8.0
+8             64.0  16.0    64.0          8.0
+max nRMSE at k = 2 by K x strategy:
+strategy  coverage    dopt  random  source_near
+K                                              
+2           0.9362  0.8622  0.8635       0.7300
+4           0.8369  0.7009  0.8447       0.8159
+8           0.8296  0.7464  0.7415       0.8898
+H5 k=2 fresh n=40: source_near wins 18, dopt wins 22, median log ratio -0.081, n_nonfinite 0
+H5 k=8 fresh n=40: source_near wins 34, dopt wins 6, median log ratio 0.249, n_nonfinite 0
+H5 k=32 fresh n=39: source_near wins 29, dopt wins 5, median log ratio 0.271, n_nonfinite 5
+
+n_hours per scenario: [1440] ; train = days 1-30 = 720 h; test issue hours start after day 42
+VanLeer superposition |c_bg + sum a F - truth| max (ug/m3): median 0.060, max 0.183
+background-only forecast RMSE median 1.354; map_full dopt k=8 forecast RMSE median 0.0034
+excl1200 k=32 non-ok rows (dopt/source_near):
+ K  seed    strategy                                                             status
+ 8    10        dopt               undefined: cannot place 32 sites with min_sep=1250.0
+ 8    11        dopt               undefined: cannot place 32 sites with min_sep=1250.0
+ 8    17        dopt               undefined: cannot place 32 sites with min_sep=1250.0
+ 8     1        dopt               undefined: cannot place 32 sites with min_sep=1250.0
+ 8    18        dopt               undefined: cannot place 32 sites with min_sep=1250.0
+ 8     8 source_near undefined: cannot place 32 sites (source_near) with min_sep=1250.0
+ 8     8        dopt               undefined: cannot place 32 sites with min_sep=1250.0
+
+====================================================================================================
+E11 64^2: independent cluster-level statistics and Holm family
+====================================================================================================
+family size: 72 (sign-off text says 24; code family = 72 = 2 est x 3 k x 6 designs x 2 comparators)
+max |median - committed|: 0.0  max |p - committed|: 0.0  max |holm72 - committed|: 0.0
+verdict changes 72 vs 24-per-k at 0.05: 1
+estimator  k          design  comparator  n     med  w  l      p  holm72  holm24_perk
+    map24  4         fc_grow source_near 20 -1.2393  1 19 0.0000  0.0023       0.0008
+    map24  4         fc_grow        dopt 20  0.0000  3  1 0.6250  1.0000       1.0000
+    map24  4      fc_w24_rob source_near 20  0.0000  7  8 1.0000  1.0000       1.0000
+    map24  4      fc_w24_rob        dopt 20  0.4290 20  0 0.0000  0.0001       0.0000
+    map24  4 fc_w24_rob_noSN source_near 20 -0.0033  6 10 0.4545  1.0000       1.0000
+    map24  4 fc_w24_rob_noSN        dopt 20  0.3850 19  1 0.0000  0.0023       0.0008
+    map24  8         fc_grow source_near 20 -1.1284  0 20 0.0000  0.0001       0.0000
+    map24  8         fc_grow        dopt 20  0.0000  7  7 1.0000  1.0000       1.0000
+    map24  8      fc_w24_rob source_near 20  0.0039 12  8 0.5034  1.0000       1.0000
+    map24  8      fc_w24_rob        dopt 20  0.4484 20  0 0.0000  0.0001       0.0000
+    map24  8 fc_w24_rob_noSN source_near 20 -0.2241  2 18 0.0004  0.0181       0.0056
+    map24  8 fc_w24_rob_noSN        dopt 20  0.3379 19  1 0.0000  0.0023       0.0007
+    map24 16         fc_grow source_near 20 -0.5565  0 20 0.0000  0.0001       0.0000
+    map24 16         fc_grow        dopt 20  0.0000  8  4 0.3877  1.0000       1.0000
+    map24 16      fc_w24_rob source_near 20 -0.0122  8 12 0.5034  1.0000       1.0000
+    map24 16      fc_w24_rob        dopt 20  0.3296 20  0 0.0000  0.0001       0.0000
+    map24 16 fc_w24_rob_noSN source_near 20 -0.1442  2 18 0.0004  0.0181       0.0076
+    map24 16 fc_w24_rob_noSN        dopt 20  0.2305 18  2 0.0004  0.0181       0.0076
+ map_grow  4         fc_grow source_near 20  0.3433 20  0 0.0000  0.0001       0.0000
+ map_grow  4         fc_grow        dopt 20  0.0000  3  1 0.6250  1.0000       1.0000
+ map_grow  4      fc_w24_rob source_near 20  0.0836 12  3 0.0352  1.0000       0.4219
+ map_grow  4      fc_w24_rob        dopt 20 -0.2902  1 19 0.0000  0.0023       0.0008
+ map_grow  4 fc_w24_rob_noSN source_near 20  0.0715 12  4 0.0768  1.0000       0.8449
+ map_grow  4 fc_w24_rob_noSN        dopt 20 -0.2818  1 19 0.0000  0.0023       0.0008
+ map_grow  8         fc_grow source_near 20  0.2106 19  1 0.0000  0.0023       0.0007
+ map_grow  8         fc_grow        dopt 20  0.0000  7  7 1.0000  1.0000       1.0000
+ map_grow  8      fc_w24_rob source_near 20  0.0153 11  9 0.8238  1.0000       1.0000
+ map_grow  8      fc_w24_rob        dopt 20 -0.2955  2 18 0.0004  0.0181       0.0056
+ map_grow  8 fc_w24_rob_noSN source_near 20  0.0977 14  6 0.1153  1.0000       1.0000
+ map_grow  8 fc_w24_rob_noSN        dopt 20 -0.1924  1 19 0.0000  0.0023       0.0007
+ map_grow 16         fc_grow source_near 20  0.1381 18  2 0.0004  0.0181       0.0076
+ map_grow 16         fc_grow        dopt 20  0.0000  6  6 1.0000  1.0000       1.0000
+ map_grow 16      fc_w24_rob source_near 20  0.0356 14  6 0.1153  1.0000       1.0000
+ map_grow 16      fc_w24_rob        dopt 20 -0.0927  5 15 0.0414  1.0000       0.5381
+ map_grow 16 fc_w24_rob_noSN source_near 20  0.0639 13  7 0.2632  1.0000       1.0000
+ map_grow 16 fc_w24_rob_noSN        dopt 20 -0.0978  5 15 0.0414  1.0000       0.5381
+
+====================================================================================================
+E12 pilot: claims (k = 8, dopt/source_near)
+====================================================================================================
+sensor-fit ratio range by spec:
+        fit_lo  fit_hi  src_lo  src_hi  cov_lo  cov_hi  ac1_lo  ac1_hi
+spec                                                                  
+ar15     1.249   1.329   1.681   5.623   0.277   0.631   0.213   0.289
+ar30     1.603   1.738   2.440   9.922   0.200   0.487   0.424   0.491
+dir10    1.132   1.152   1.829   6.143   0.228   0.626   0.134   0.160
+dir30    1.701   1.998   2.603  11.670   0.158   0.347   0.478   0.616
+lag2     2.251   2.604   1.914   2.943   0.522   0.627   0.390   0.498
+lag6     3.614   4.335   3.800   8.359   0.303   0.385   0.509   0.824
+spd0.6   1.061   1.301   2.609  16.052   0.000   0.099   0.082   0.347
+spd0.8   1.009   1.058   1.561   8.140   0.000   0.362   0.018   0.070
+H3 oracle memory gain M (k = 8):      design  median
+       dopt   0.769
+     dopt_m   0.769
+     random   0.531
+source_near   0.601
+persistence 1 h RMSE median 0.2059; background-only 0.7036
+oracle forecast_rmse_h1 at k=8 by estimator (median): {'map24': 0.0298, 'map72': 0.0111, 'map_full': 0.0084}
+
+====================================================================================================
+E13 pilot: background / common-mode bias / silent failure (k = 8)
+====================================================================================================
+    spec      design   estimator  skill_h1  skill_lo  skill_hi  skill_wins  med_cover95_a  D_sensor_fit  med_innov_ac1  med_source_bias
+     ar1        dopt       map24     0.634     0.272     0.736           6          0.613         0.992          0.686           -0.039
+     ar1        dopt    map24_bg     0.536    -0.034     0.642           5          0.618         0.990          0.665           -0.044
+     ar1        dopt    map_full     0.877     0.681     0.967           6          0.501         1.002          0.779           -0.001
+     ar1        dopt map_full_bg     0.850     0.422     0.946           6          0.448         1.002          0.778            0.007
+     ar1 source_near       map24     0.675     0.289     0.897           6          0.552         0.997          0.764           -0.008
+     ar1 source_near    map24_bg     0.547     0.107     0.757           6          0.598         0.994          0.759           -0.066
+     ar1 source_near    map_full     0.854     0.574     0.955           6          0.471         1.007          0.785            0.008
+     ar1 source_near map_full_bg     0.799     0.490     0.942           6          0.455         1.006          0.785           -0.010
+bgdrift1        dopt       map24    -2.491    -4.068    -1.584           0          0.061         3.542          0.692            1.679
+bgdrift1        dopt    map24_bg    -1.582    -2.551    -0.956           0          0.306         2.908          0.829            0.015
+bgdrift1        dopt    map_full    -2.568    -4.086    -1.737           0          0.000         3.817          0.866            0.416
+bgdrift1        dopt map_full_bg    -1.877    -3.091    -1.252           0          0.163         3.245          0.854           -0.077
+bgdrift1 source_near       map24    -2.467    -4.083    -1.593           0          0.042         3.573          0.771            1.482
+bgdrift1 source_near    map24_bg    -1.588    -2.528    -0.942           0          0.392         2.925          0.839           -0.042
+bgdrift1 source_near    map_full    -2.567    -4.101    -1.732           0          0.000         3.858          0.866            0.521
+bgdrift1 source_near map_full_bg    -1.889    -3.092    -1.271           0          0.116         3.267          0.851            0.036
+  bgoff1        dopt       map24    -3.642   -10.681    -1.900           0          0.005         3.066          0.408            2.188
+  bgoff1        dopt    map24_bg     0.727     0.639     0.809           6          0.942         1.000         -0.010           -0.054
+  bgoff1        dopt    map_full    -3.532   -11.027    -1.949           0          0.000         4.113          0.868            1.284
+  bgoff1        dopt map_full_bg     0.941     0.875     0.968           6          0.962         1.000         -0.016           -0.005
+  bgoff1 source_near       map24    -3.482   -10.576    -1.858           0          0.005         2.992          0.529            2.296
+  bgoff1 source_near    map24_bg     0.796     0.650     0.904           6          0.946         1.000         -0.009           -0.021
+  bgoff1 source_near    map_full    -3.566   -11.169    -1.954           0          0.000         3.770          0.845            1.453
+  bgoff1 source_near map_full_bg     0.933     0.859     0.957           6          0.991         1.000         -0.005           -0.006
+ common1        dopt       map24    -1.928    -5.352    -0.507           0          0.005         3.066          0.408            2.188
+ common1        dopt    map24_bg    -3.928   -11.399    -2.153           0          0.942         1.000         -0.010           -0.054
+ common1        dopt    map_full    -1.489    -4.542    -0.422           0          0.000         4.113          0.868            1.284
+ common1        dopt map_full_bg    -3.929   -11.311    -2.156           0          0.962         1.000         -0.016           -0.005
+ common1 source_near       map24    -1.880    -4.583    -0.234           0          0.005         2.992          0.529            2.296
+ common1 source_near    map24_bg    -3.941   -11.410    -2.171           0          0.946         1.000         -0.009           -0.021
+ common1 source_near    map_full    -1.778    -5.832    -0.499           0          0.000         3.770          0.845            1.453
+ common1 source_near map_full_bg    -3.940   -11.355    -2.147           0          0.991         1.000         -0.005           -0.006
+  drift1        dopt       map24    -1.108    -3.557     0.112           1          0.014         2.510          0.412            1.478
+  drift1        dopt    map24_bg    -2.304    -9.369    -0.950           0          0.364         1.260          0.106           -0.158
+  drift1        dopt    map_full     0.200    -1.600     0.635           4          0.000         2.803          0.612            0.371
+  drift1        dopt map_full_bg    -0.804    -4.160    -0.037           0          0.173         1.935          0.235           -0.059
+  drift1 source_near       map24    -0.970    -2.382     0.156           1          0.009         2.493          0.484            1.193
+  drift1 source_near    map24_bg    -2.476    -7.976    -1.354           0          0.461         1.273          0.100           -0.210
+  drift1 source_near    map_full    -0.015    -1.897     0.438           3          0.000         2.811          0.622            0.459
+  drift1 source_near map_full_bg    -0.800    -3.558    -0.186           0          0.243         1.929          0.199           -0.005
+missing1        dopt       map24    -0.275    -0.965     0.618           2          0.806         1.156          0.156            0.037
+missing1        dopt    map24_bg    -0.350    -0.979     0.616           1          0.686         1.153          0.172           -0.088
+missing1        dopt    map_full    -0.263    -0.974     0.698           2          0.536         1.169          0.174            0.118
+missing1        dopt map_full_bg    -0.245    -0.944     0.695           2          0.482         1.166          0.179            0.067
+missing1 source_near       map24    -0.269    -0.970     0.681           1          0.851         1.121          0.141            0.026
+missing1 source_near    map24_bg    -0.285    -0.954     0.646           1          0.802         1.116          0.148           -0.030
+missing1 source_near    map_full    -0.264    -0.976     0.699           1          0.737         1.136          0.162            0.054
+missing1 source_near map_full_bg    -0.244    -0.937     0.696           1          0.595         1.132          0.161            0.022
+  oracle        dopt       map24     0.783     0.723     0.847           6          0.948         1.000         -0.017           -0.032
+  oracle        dopt    map24_bg     0.727     0.638     0.808           6          0.941         1.000         -0.010           -0.057
+  oracle        dopt    map_full     0.950     0.912     0.986           6          0.974         1.000         -0.017           -0.002
+  oracle        dopt map_full_bg     0.941     0.875     0.968           6          0.962         1.000         -0.016           -0.005
+  oracle source_near       map24     0.867     0.729     0.958           6          0.972         1.000         -0.009           -0.015
+  oracle source_near    map24_bg     0.794     0.649     0.903           6          0.945         1.000         -0.009           -0.022
+  oracle source_near    map_full     0.947     0.894     0.980           6          0.981         1.000         -0.007           -0.003
+  oracle source_near map_full_bg     0.933     0.859     0.957           6          0.992         1.000         -0.005           -0.006
+shift400        dopt       map24    -0.351    -1.586    -0.223           0          0.478         1.301          0.297           -0.032
+shift400        dopt    map24_bg    -0.486    -1.666    -0.314           0          0.467         1.306          0.311           -0.110
+shift400        dopt    map_full    -0.305    -1.545    -0.203           0          0.164         1.328          0.347           -0.091
+shift400        dopt map_full_bg    -0.312    -1.532    -0.235           0          0.139         1.336          0.351           -0.142
+shift400 source_near       map24    -0.298    -1.592    -0.093           0          0.393         2.086          0.634            0.050
+shift400 source_near    map24_bg    -0.444    -1.669    -0.218           0          0.316         2.050          0.631           -0.067
+shift400 source_near    map_full    -0.251    -1.547    -0.109           0          0.072         2.165          0.685           -0.054
+shift400 source_near map_full_bg    -0.268    -1.537    -0.130           0          0.064         2.148          0.686           -0.168
+shift800        dopt       map24    -1.236    -2.068    -0.970           0          0.338         1.620          0.438           -0.172
+shift800        dopt    map24_bg    -1.322    -2.626    -1.028           0          0.251         1.639          0.476           -0.345
+shift800        dopt    map_full    -1.200    -1.997    -0.937           0          0.019         1.676          0.536           -0.274
+shift800        dopt map_full_bg    -1.330    -1.986    -0.935           0          0.020         1.669          0.547           -0.360
+shift800 source_near       map24    -1.126    -2.080    -0.912           0          0.210         3.422          0.754           -0.071
+shift800 source_near    map24_bg    -1.319    -2.193    -1.062           0          0.149         3.415          0.752           -0.278
+shift800 source_near    map_full    -1.116    -2.000    -0.936           0          0.112         3.461          0.816           -0.171
+shift800 source_near map_full_bg    -1.142    -1.989    -0.966           0          0.093         3.476          0.822           -0.405
+ wide800        dopt       map24    -0.218    -0.646     0.024           1          0.392         1.210          0.217           -0.216
+ wide800        dopt    map24_bg    -0.429    -1.095    -0.149           0          0.281         1.209          0.254           -0.364
+ wide800        dopt    map_full    -0.167    -0.620     0.009           1          0.000         1.249          0.255           -0.263
+ wide800        dopt map_full_bg    -0.217    -0.586     0.024           1          0.009         1.266          0.311           -0.320
+ wide800 source_near       map24    -0.170    -0.652    -0.077           0          0.294         1.253          0.227           -0.209
+ wide800 source_near    map24_bg    -0.443    -1.103    -0.064           0          0.215         1.208          0.239           -0.430
+ wide800 source_near    map_full    -0.145    -0.599    -0.028           0          0.026         1.271          0.272           -0.204
+ wide800 source_near map_full_bg    -0.166    -0.564    -0.066           0          0.059         1.251          0.295           -0.343
+common1 _bg: bg_hat median 1.004 (truth has no field offset; the forecast adds bg_hat x 1 ug/m3 everywhere)
+persistence 1 h RMSE (median) oracle 0.2059, common1 0.2059, bgoff1 0.2059
+common1 _bg forecast_rmse_h1 median 1.000  (|offset| = 1 would give RMSE ~ 1)
+cells meeting the post-hoc field-level rule (median level):
+        spec  k      design   estimator  skill_h1  D_sensor_fit  med_innov_ac1  med_cover95_a
+   bgoff0.25  2        dopt    map24_bg    -0.281         1.000          0.006          0.934
+   bgoff0.25  2      random    map24_bg    -1.278         1.000          0.004          0.911
+   bgoff0.25  2      random map_full_bg    -0.794         1.000         -0.004          0.908
+   bgoff0.25  2 source_near    map24_bg    -0.018         1.000          0.007          0.934
+   bgoff0.25  8      random    map24_bg    -0.210         1.000         -0.002          0.933
+      bgoff1  2        dopt    map24_bg    -0.214         0.999          0.003          0.935
+      bgoff1  2      random    map24_bg    -1.274         1.000          0.003          0.912
+      bgoff1  2      random map_full_bg    -0.793         1.000         -0.004          0.908
+      bgoff1  8      random    map24_bg    -0.209         1.000         -0.002          0.933
+     common1  2        dopt    map24_bg    -3.794         0.999          0.003          0.935
+     common1  2        dopt map_full_bg    -3.909         1.000         -0.026          0.968
+     common1  2      random    map24_bg    -4.017         1.000          0.003          0.912
+     common1  2      random map_full_bg    -4.049         1.000         -0.004          0.908
+     common1  2 source_near    map24_bg    -4.060         0.999          0.001          0.938
+     common1  2 source_near map_full_bg    -3.931         1.000          0.008          0.954
+     common1  8        dopt    map24_bg    -3.928         1.000         -0.010          0.942
+     common1  8        dopt map_full_bg    -3.929         1.000         -0.016          0.962
+     common1  8      random    map24_bg    -4.043         1.000         -0.002          0.933
+     common1  8      random map_full_bg    -3.995         1.000         -0.010          0.930
+     common1  8 source_near    map24_bg    -3.941         1.000         -0.009          0.946
+     common1  8 source_near map_full_bg    -3.940         1.000         -0.005          0.991
+      drift1  2        dopt    map24_bg    -3.017         1.018          0.027          0.793
+      drift1  2 source_near    map24_bg    -2.430         1.042          0.056          0.765
+     drop0.2  2        dopt    map24_bg    -0.430         0.983          0.005          0.891
+     drop0.2  2      random       map24    -1.285         0.994          0.002          0.906
+     drop0.2  2      random    map24_bg    -1.441         0.989          0.003          0.903
+     drop0.2  2      random    map_full    -0.880         0.995         -0.011          0.921
+     drop0.2  2      random map_full_bg    -0.965         0.994         -0.010          0.903
+     drop0.2  2 source_near    map24_bg    -0.088         0.984          0.019          0.930
+     drop0.2  8      random       map24    -0.269         0.997         -0.010          0.926
+     drop0.2  8      random    map24_bg    -0.288         0.996         -0.008          0.928
+     drop0.5  2        dopt       map24    -0.672         1.005         -0.049          0.952
+     drop0.5  2        dopt    map24_bg    -1.499         0.990         -0.032          0.914
+     drop0.5  2      random       map24    -1.553         0.992          0.018          0.902
+     drop0.5  2      random    map24_bg    -1.675         0.982          0.025          0.904
+     drop0.5  2      random    map_full    -1.020         0.996         -0.009          0.949
+     drop0.5  2      random map_full_bg    -1.048         0.993         -0.006          0.932
+     drop0.5  2 source_near    map24_bg    -0.911         1.002         -0.011          0.947
+     drop0.5  8      random       map24    -0.415         0.991         -0.004          0.930
+     drop0.5  8      random    map24_bg    -0.475         0.988         -0.001          0.929
+    missing1  2        dopt       map24    -0.911         1.024          0.027          0.768
+    missing1  2        dopt    map24_bg    -1.022         1.017          0.039          0.789
+    missing1  2        dopt    map_full    -0.346         1.030          0.032          0.717
+    missing1  2        dopt map_full_bg    -0.354         1.030          0.041          0.689
+    missing1  2 source_near       map24    -0.643         1.020          0.021          0.869
+    missing1  2 source_near    map24_bg    -0.906         1.021          0.030          0.890
+    missing1  2 source_near    map_full    -0.646         1.029          0.041          0.714
+    missing1  2 source_near map_full_bg    -0.655         1.026          0.047          0.727
+    shift400  2      random       map24    -1.658         1.088          0.089          0.797
+    shift400  2      random    map24_bg    -1.753         1.085          0.087          0.784
+sitebias0.25  2        dopt       map24    -0.248         1.064          0.050          0.631
+sitebias0.25  2        dopt    map24_bg    -0.725         1.030          0.039          0.721
+sitebias0.25  2 source_near    map24_bg    -0.456         1.038          0.073          0.636
+     wide800  2        dopt       map24    -0.630         1.038          0.065          0.587
+     wide800  2        dopt    map24_bg    -0.867         1.025          0.018          0.539
+     wide800  2      random       map24    -1.793         1.024          0.040          0.799
+     wide800  2      random    map24_bg    -1.850         1.019          0.040          0.797
+     wide800  2      random    map_full    -1.512         1.039          0.037          0.617
+     wide800  2      random map_full_bg    -1.452         1.044          0.055          0.613
+     wide800  2 source_near       map24    -0.388         1.069          0.063          0.546
+     wide800  2 source_near    map24_bg    -0.614         1.030          0.019          0.478
+     wide800  8      random       map24    -1.381         1.075          0.077          0.667
+     wide800  8      random    map24_bg    -1.354         1.065          0.079          0.652
+     wide800  8      random    map_full    -0.803         1.094          0.095          0.408
+     wide800  8      random map_full_bg    -0.635         1.088          0.100          0.380
+pre-declared counterexample counts: {'deceptive_fit': 375, 'no_estimator_beats_persistence': 74, 'silent_failure': 21}
+
+====================================================================================================
+E14 pilot: AUC scopes, omitted source by design, AR(1)
+====================================================================================================
+                          L1    nis    ac1    fit  ratio
+arm       design                                        
+noise_ar1 dopt         0.083  0.891  0.629  0.922  0.038
+          random       0.446  0.938  0.633  0.949  0.138
+          source_near  0.090  0.948  0.647  0.955  0.039
+omit1     dopt         0.599  4.289  0.407  1.929  0.227
+          random       0.677  1.175  0.039  1.068  0.358
+          source_near  0.565  3.726  0.415  1.918  0.227
+oracle    dopt         0.052  0.991 -0.029  0.980  0.015
+          random       0.349  1.017 -0.039  0.994  0.096
+          source_near  0.034  1.017 -0.042  0.994  0.016
+validation blocks: [np.int64(0), np.int64(1)]  evaluation blocks: [np.int64(2), np.int64(3), np.int64(4)]
+  diagnostic         scope   auc  ci_lo  ci_hi
+   innov_ac1        pooled 0.621  0.590  0.658
+   innov_ac1 within_config 0.634  0.593  0.679
+         nis        pooled 0.637  0.596  0.691
+         nis within_config 0.648  0.618  0.699
+ resid_xcorr        pooled 0.535  0.519  0.554
+ resid_xcorr within_config 0.522  0.501  0.547
+        loso        pooled 0.605  0.553  0.669
+        loso within_config 0.619  0.582  0.679
+      spread        pooled 0.706  0.674  0.733
+      spread within_config 0.674  0.630  0.715
+       drift        pooled 0.536  0.463  0.624
+       drift within_config 0.523  0.442  0.609
+sensor_skill        pooled 0.743  0.674  0.799
+sensor_skill within_config 0.713  0.642  0.772
+  sensor_fit        pooled 0.634  0.593  0.687
+  sensor_fit within_config 0.652  0.620  0.703
+omit1+oracle, design=dopt        nis          pooled AUC 0.852  base rate 0.33
+omit1+oracle, design=dopt        innov_ac1    pooled AUC 0.861  base rate 0.33
+omit1+oracle, design=dopt        sensor_fit   pooled AUC 0.837  base rate 0.33
+omit1+oracle, design=dopt        sensor_skill pooled AUC 0.868  base rate 0.33
+omit1+oracle, design=source_near nis          pooled AUC 0.879  base rate 0.30
+omit1+oracle, design=source_near innov_ac1    pooled AUC 0.858  base rate 0.30
+omit1+oracle, design=source_near sensor_fit   pooled AUC 0.862  base rate 0.30
+omit1+oracle, design=source_near sensor_skill pooled AUC 0.886  base rate 0.30
+omit1+oracle, design=random      nis          pooled AUC 0.617  base rate 0.51
+omit1+oracle, design=random      innov_ac1    pooled AUC 0.632  base rate 0.51
+omit1+oracle, design=random      sensor_fit   pooled AUC 0.624  base rate 0.51
+omit1+oracle, design=random      sensor_skill pooled AUC 0.695  base rate 0.51
+
+====================================================================================================
+E15 pilot: multiplicity of the contrast table; headline
+====================================================================================================
+contrast rows: 2730 ; rows with 6/0 or 0/6 (p = 0.031): 379
+robust-design tail rows: 648 ; 6/0 favouring the robust design: 9 ; 0/6 against: 17
+estimator  k     metric              design      comparator  median  ci_lo  ci_hi
+    map24  2  cond_cvar  rob_cvar_w24_noSN6            dopt   0.090  0.026  0.120
+    map24  2  cond_cvar rob_worst_w24_noSN6            dopt   0.096  0.026  0.121
+    map24  8 max_regret rob_worst_w24_noSN6            dopt   0.046  0.002  0.548
+ map_full  2  cond_cvar rob_mean_w24_train3     source_near   0.046  0.010  0.318
+ map_full  8  cond_cvar rob_cvar_w24_train3     source_near   0.009  0.002  0.025
+ map_full  8  cond_cvar rob_cvar_w24_train3 fc_w24_rob_noSN   0.007  0.001  0.023
+ map_full  8 cond_worst rob_mean_w24_train3            dopt   0.001  0.000  0.371
+ map_full  8 max_regret rob_cvar_w24_train3            dopt   0.006  0.000  0.618
+ map_full  8 max_regret rob_cvar_w24_train3     source_near   0.009  0.001  0.039
+
+====================================================================================================
+E16 pilot: src_sparse layouts; bg_hi sigma ratio
+====================================================================================================
+src_sparse layout differs from nominal in 4 of 10 scenarios
+sigma(bg_hi)/sigma(nominal): median 4.00, range 3.85-4.00
+
+====================================================================================================
+E17 64^2: baselines, wrong wind vs persistence/background, clusters share one wind history
+====================================================================================================
+                                        rmse  vs_pers   vs_bg  beats_pers
+case    spec   estimator strategy                                        
+coolA   dir30  map24     coverage     0.0482   2.9356  0.6868           0
+                         dopt         0.0456   2.6706  0.6457           0
+                         random       0.0512   3.3314  0.7574           0
+                         source_near  0.0458   2.6711  0.6419           0
+               map_grow  coverage     0.0442   2.5986  0.6061           0
+                         dopt         0.0450   2.5995  0.5987           0
+                         random       0.0459   2.6712  0.6312           0
+                         source_near  0.0452   2.5857  0.5940           0
+        oracle map24     coverage     0.0299   1.9337  0.4438           0
+                         dopt         0.0183   1.2177  0.2942           4
+                         random       0.0405   2.5473  0.5934           0
+                         source_near  0.0181   1.2132  0.2888           5
+               map_grow  coverage     0.0028   0.1492  0.0351          20
+                         dopt         0.0017   0.0989  0.0231          20
+                         random       0.0047   0.3644  0.0848          20
+                         source_near  0.0018   0.1037  0.0247          20
+        point0 map24     coverage     0.0413   2.5654  0.6046           0
+                         dopt         0.0340   2.1140  0.4942           0
+                         random       0.0473   3.0367  0.7099           0
+                         source_near  0.0339   2.1151  0.4916           0
+               map_grow  coverage     0.0319   1.8775  0.4402           0
+                         dopt         0.0318   1.8389  0.4275           0
+                         random       0.0340   1.9751  0.4715           0
+                         source_near  0.0318   1.8491  0.4373           0
+coolB   oracle map24     coverage     0.0311   1.9527  0.5400           0
+                         dopt         0.0194   1.3375  0.3621           4
+                         random       0.0371   2.2735  0.6336           0
+                         source_near  0.0193   1.3247  0.3557           3
+               map_grow  coverage     0.0032   0.1657  0.0429          20
+                         dopt         0.0020   0.1030  0.0270          20
+                         random       0.0042   0.2516  0.0702          20
+                         source_near  0.0020   0.1088  0.0290          20
+monsoon oracle map24     coverage     0.0379   2.1626  0.6002           1
+                         dopt         0.0238   1.4369  0.4326           3
+                         random       0.0363   2.2414  0.6426           0
+                         source_near  0.0208   1.4434  0.4306           5
+               map_grow  coverage     0.0024   0.1340  0.0379          20
+                         dopt         0.0014   0.0809  0.0245          20
+                         random       0.0039   0.2775  0.0794          20
+                         source_near  0.0016   0.0887  0.0256          20
+all wrong-wind (coolA) forecasts / persistence, every k and strategy: range of cluster medians {'min': 1.84, 'max': 3.75}
+monsoon map24 k=8 dopt vs source_near: median -0.062, 4/16, p 0.0118; Holm over the 18 dopt-vs-source_near (case x est x k) tests would need p < 0.0028
+superposition_rel_max (VanLeer, 64^2): median 0.0066, max 0.0173

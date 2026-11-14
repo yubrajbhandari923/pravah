@@ -26,6 +26,8 @@ Protocol and `configs/benchmark-v1.yaml` APPROVED 2026-11-12 as an amendable bas
 5. E09 done and audited. E10 and E11 32² pilots done (see journals). Gate-10/11 done (pass w/ conditions; E10 diurnal gain is 1 h only; ~40 % of E11's gain was in-sample).
    E11 64² done (job 205282): the out-of-sample wind-robust design beats dopt under map24 (19/20 clusters at k = 8), loses to source_near, and is worse under map_grow; E08 report and exclusion rerun. Plan 3 started: E12 pilot done. From now on, heavy 64² sweeps are deferred (user, 2026-11-13): pilots plus documented submission plans.
 
+Gate-12-17 (2026-11-14): E12–E17 + E08/E11 64² audited, pass or pass with conditions; corrections applied (see any e12–e17 journal).
+
 Known open items: E03 (fixed-sensor static inverse) remains rank deficient for structural reasons (sensor placement, 24 h window).
 
 ## Experiments

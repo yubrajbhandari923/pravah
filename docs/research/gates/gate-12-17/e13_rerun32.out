@@ -1,0 +1,3 @@
+E13 K2 s0: rows mine 1140 committed 1140 matched 1140; max rel diff {'forecast_rmse_h1': 0.0, 'forecast_rmse_h6': 0.0, 'field_rmse': 0.0, 'source_rmse': 0.0, 'source_bias': 0.0, 'cover95_a': 0.0, 'sensor_fit': 0.0, 'innov_ac1': 0.0, 'forecast_rmse': 0.0}
+readings bgoff1 vs common1: max |diff| 3.6e-15 ug/m3 (rounding only; identical up to the order of additions)
+truth(bgoff1) - truth(oracle): min/max 1.000/1.000 ; truth(common1) - truth(oracle): max |.| 0.0e+00

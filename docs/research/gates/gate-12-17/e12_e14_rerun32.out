@@ -1,0 +1,8 @@
+/home/yubraj/research/pravah-new/.claude/worktrees/agent-a8dcd9db2e1209de8/src/pravah/experiments/reliability.py:57: RuntimeWarning: divide by zero encountered in divide
+  spread=sd.mean() / np.abs(mu).mean(0),
+E12 K2 s0: rows mine 650 committed 650 matched 650; max rel diff {'forecast_rmse_h1': 0.0, 'forecast_rmse_h6': 0.0, 'analysis_rmse': 0.0, 'source_rmse': 0.0, 'sensor_fit': 0.0, 'innov_ac1': 0.0, 'cover95_a': 0.0, 'rel_bias_a': 0.0}
+E12 linearity_max_abs (upwind): 3.901772492076461e-05
+dir30: speed max diff 4.4e-16; FROM-direction shift (deg) min/max 30.000000/30.000000
+lag6: model wind at h equals true wind at h-6 for h>=6: True (the model lags the truth: a 6 h late forecast wind)
+E14 K2 s0: units mine 7560 committed 7560 matched 7560; labels identical True
+  max rel diff (committed CSV stores 6 significant digits): {'innov_ac1': '5.0e-06', 'nis': '5.0e-06', 'resid_xcorr': '4.9e-06', 'loso': '4.8e-06', 'spread': '4.9e-06', 'drift': '4.8e-06', 'sensor_skill': '4.9e-06', 'sensor_fit': '5.0e-06', 'rmse_model': '5.0e-06', 'rmse_persist': '1.6e-06', 'cov90': '4.7e-06', 'crps': '4.9e-06'}

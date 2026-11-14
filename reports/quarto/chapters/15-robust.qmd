@@ -6,7 +6,7 @@ Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or r
 scenarios give networks that hold up better under wind errors and unseen regimes?
 
 **Evidence label.** Exploratory 32² pilot: 6 clusters, upwind numerics, no multiplicity correction. The 64² run is
-deferred. Not yet audited.
+deferred. Audited (gate-12-17: pass with conditions).
 
 **Evidence.**
 - Design note `docs/research/robust-placement-design.md`, committed before any computation.
@@ -29,8 +29,9 @@ deferred. Not yet audited.
 ![E15: nominal error against tail risk for each design (lower-left is better).](../figures/e15-pareto-local.png){#fig-e15}
 
 - **The tail gain is small.**
-  - The only clear gain is against D-optimal with 2 sensors and a 24 h window: about 9–10 % lower tail risk, 6 of 6
-    clusters, uncorrected.
+  - The largest gain is against D-optimal with 2 sensors and a 24 h window: about 9–10 % lower tail risk, 6 of 6
+    clusters. This **cannot be told apart from chance**: of 648 tail contrasts, 9 came out 6/0, and about 10 would
+    be expected by chance.
   - With 4 or 8 sensors it is 2–4 % and not resolved.
   - There is no gain over near-source.
 - **Robustness costs nothing nominal with a 24 h window.** The robust networks behave like near-source networks there.

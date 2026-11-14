@@ -1,0 +1,6 @@
+e08-local-rows.csv: rows mine 561 committed 561 matched 561; max rel diff {'forecast_rmse': 0.0, 'analysis_rmse': 0.0, 'source_rmse': 0.0, 'lam_min_med': 0.0, 'tti_med': 0.0}
+e08-local-mapfull-rows.csv: rows mine 561 committed 561 matched 561; max rel diff {'forecast_rmse': 0.0, 'analysis_rmse': 0.0, 'source_rmse': 0.0, 'lam_min_med': 0.0, 'tti_med': 0.0}
+direct per-issue MAP vs estimate_series (map_full): max rel diff 2.30e-15
+future readings poisoned (hours > 311): max |change| 0.00e+00
+calendar 312 h; training hours 96; first issue hour 174 -> map_full uses 175 hourly readings per sensor vs 24 for map24
+true a / a_ref: [3.43944542 4.04913634]  map_full estimate at first/last issue: [3.39708666 4.03065644] [3.48417454 4.0596207 ]

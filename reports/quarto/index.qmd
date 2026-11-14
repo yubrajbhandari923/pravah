@@ -63,10 +63,10 @@ settings chosen after seeing data; **confirmatory (cells run)** = preregistered 
 | [E11](chapters/11-forecast-design.qmd) | Placement optimised for forecasting? | Data-free forecast-variance objective, wind-robust prior; audit | 64² (20 clusters): under a 24 h window, beats D-optimal even with an out-of-sample prior (+0.34 at k = 8, 19/20) but loses to near-source. Worse than D-optimal with all past data | exploratory; pilot audited |
 | [E12](chapters/12-wind-mismatch.qmd) | What do wind errors do? | Biased direction, speed, timing and noise in the inverse wind | Direction ≥ 30° or a lag ≥ 2 h destroys forecast skill. Wrong strengths absorb wind errors while the fit stays good. The memory benefit vanishes | exploratory pilot |
 | [E13](chapters/13-model-mismatch.qmd) | What do background, source or sensor errors do? | 18 mismatches, with and without an estimated background | Background offset: fixable. Common-mode sensor bias: a **silent failure**. Wrong source shapes or locations: unfixable. Outages: benign | exploratory pilot |
-| [E14](chapters/14-reliability.qmd) | Can the method flag its own failures? | 8 truth-free diagnostics; ROC by stress | Moderate at best (AUC 0.71). Speed errors and missing sources are undetectable | exploratory pilot |
-| [E15](chapters/15-robust.qmd) | Do scenario-robust networks hold up better? | Mean/CVaR/worst-case placement over wind ensembles; tail over 18 wind-error conditions | Small tail gain, only vs D-optimal at k = 2. Robust ≈ near-source with a 24 h window; no gain with all past data | exploratory pilot |
+| [E14](chapters/14-reliability.qmd) | Can the method flag its own failures? | 8 truth-free diagnostics; ROC by stress | Moderate at best (AUC 0.71). Speed errors and common sensor bias are undetectable; a missing source is flagged by informed networks but not random ones | exploratory pilot |
+| [E15](chapters/15-robust.qmd) | Do scenario-robust networks hold up better? | Mean/CVaR/worst-case placement over wind ensembles; tail over 18 wind-error conditions | Tail gain indistinguishable from chance. Robust ≈ near-source with a 24 h window; no gain with all past data | exploratory pilot |
 | [E16](chapters/16-generalization.qmd) | Do conclusions survive other physics? | One-at-a-time ablations: diffusion, loss, source shape and spacing, background | No reversal. D-opt > random and the memory gain are robust. The memory flip holds in every cell. Some margins weaken | exploratory pilot (32²) |
-| [E17](chapters/17-regional.qmd) | Do the conclusions survive real winds? | Synthetic tracer under ERA5 winds near Belauri; 64², 3 cases × 20 clusters | Placement still beats random (35–64 %). D-optimal vs near-source mostly ties. Only all-past-data forecasts beat persistence in calm winds. A single-site wind instead of the box mean cancels every advantage | exploratory; **not validation** |
+| [E17](chapters/17-regional.qmd) | Do the conclusions survive real winds? | Synthetic tracer under ERA5 winds near Belauri; 64², 3 cases × 20 clusters | Placement still beats random (35–64 %). D-optimal vs near-source mostly ties. Only all-past-data forecasts beat the persistence bound. A single-site wind instead of the box mean cancels every advantage (a transport floor) | exploratory, audited; **not validation** |
 | E18 | Can real monitors validate it? | Audit of public PM2.5 data near Belauri | Not conducted: only 2 stations within 100 km, short records; a passive tracer cannot be validated against PM2.5 | gap assessment |
 
 ## Key figures
@@ -96,9 +96,10 @@ settings chosen after seeing data; **confirmatory (cells run)** = preregistered 
 8. **Placement tuned for one estimator loses under another.** Forecast-optimised networks win only with a 24 h window,
    and part of their gain was in-sample (E11).
 9. **Model errors dominate placement differences.** Under a 30° wind error, a 2 h timing lag or a wrong source map,
-   no estimator beats persistence. Strategies stop mattering, and the residuals often still look fine (E12–E13).
+   no estimator beats an oracle persistence bound. Strategies stop mattering. Some of these errors stay hidden in the
+   residuals (speed errors, common sensor bias) (E12–E13).
 10. **Self-diagnosis is limited.** Truth-free checks catch some failures (timing and direction errors, correlated noise)
-    but not speed errors, missing sources or a common sensor bias (E13–E14).
+    but not speed errors, a common sensor bias, or (for random networks) a missing source (E13–E14).
 
 ## Honest limitations
 

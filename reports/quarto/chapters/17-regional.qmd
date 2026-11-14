@@ -10,7 +10,8 @@ real place?
 - 64² VanLeer run (cluster job 205400): 3 cases × 20 clusters.
 - 32² pilot: 6 clusters.
 
-Not yet independently audited.
+Audited (gate-12-17: pass with conditions; one scenario re-solved from the raw ERA5
+files matches to 4e-16; claims below corrected).
 
 **Evidence.**
 - Design note `docs/research/regional-case-design.md`.
@@ -56,14 +57,16 @@ Wrong-wind rows show 24 h window / all past data.
 - **The D-optimal vs near-source ordering mostly disappears.**
   - The two tie in the cool season.
   - In the unseen monsoon regime, near-source edges ahead under the 24 h window (16 of 20). This is E07's direction,
-    much weaker.
+    much weaker, and it does not survive Holm correction over the 18 such tests.
   - With all past data they tie. E07/E08's clear D-optimal win does not appear under these calm, rotating winds.
-- **Only memory beats persistence.** In calm winds, repeating the last reading is hard to beat. The 24 h-window
-  forecasts only match it, while all-past-data forecasts beat it by about 10×.
+- **Only memory beats the persistence bound.** Persistence here carries the *true* field forward one hour, which no
+  network can do. The 24 h-window forecasts are 1.2–1.4× its error, beating it in only 3–5 of 20 clusters.
+  All-past-data forecasts beat it by about 10×.
 - **The wrong wind cancels both advantages.** The ERA5 point nearest Belauri differs from the box mean by about 17°
-  and 13 % in speed. Using it instead of the box mean makes every forecast about 2× worse than persistence. All
-  strategies become nearly equal, and the memory gain disappears (all-past-data error rises 15–27×). This reproduces
-  E12 under realistic winds.
+  and 13 % in speed (a 40 % vector error). Using it instead of the box mean puts every forecast at 1.8–3.7× the
+  persistence bound (still 0.43–0.76× the background-only error). All strategies become nearly equal and the memory
+  gain disappears. This is a **transport floor**: forecasts using the *true* source strengths with the wrong wind are
+  just as bad (0.047 vs 0.0465), so better estimation cannot fix it. This reproduces E12 under realistic winds.
 
 ## Limits
 
@@ -71,7 +74,7 @@ Wrong-wind rows show 24 h window / all past data.
   the main missing ingredient.
 - **No Indian sources or inflow.** The boundary is clean.
 - **Mixing depth.** The cool-season boundary layer (median 47–88 m) is much shallower than the model's 500 m.
-- **Short calendar.**
+- **Short calendar.** The 20 clusters in each case share one wind history.
 
 ## Data attribution
 

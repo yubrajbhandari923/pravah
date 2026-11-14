@@ -1,0 +1,9 @@
+(1) CVaR vs Rockafellar-Uryasev min_t t + E[(L-t)+]/(1-a), 300 random cases: max rel diff 1.7e-08
+(2) robust loss tr(Q Sig (m2 + M) Sig) 0.13379 vs Monte Carlo 0.13376 (N = 200000)
+(3) noSN6: block hours from 0 deg: 0, from 180 deg: 0; distinct FROM directions [np.int64(45), np.int64(90), np.int64(135), np.int64(225), np.int64(270), np.int64(315)]
+(3) train3: block hours from 0 deg: 0, from 180 deg: 0; distinct FROM directions [np.int64(90), np.int64(270), np.int64(315)]
+(4) E15 K2 s0: rows mine 1332 committed 1332 matched 1332; sites identical True; max rel diff {'forecast_rmse_h1': 0.0, 'forecast_rmse_h6': 0.0, 'source_rmse': 0.0, 'ins_cvar_w24_noSN6': 0.0, 'ins_worst_full_train3': 0.0}
+(5) bg_hi drivers (sources, strengths, xy, winds, regimes, hours) identical to nominal: True
+    nominal truth - 5 == the solved anomaly; bg_hi truth by reuse (truth + 15) vs anomaly + 20: max diff 0.0e+00
+(6) E16 nominal K2 s0: rows mine 33 committed 33 matched 33; max rel diff {'forecast_rmse': 0.0, 'analysis_rmse': 0.0, 'source_rmse': 0.0, 'sigma': 0.0}
+(6) E16 bg_hi K2 s0: rows mine 33 committed 33 matched 33; max rel diff {'forecast_rmse': 0.0, 'analysis_rmse': 0.0, 'source_rmse': 0.0, 'sigma': 0.0}

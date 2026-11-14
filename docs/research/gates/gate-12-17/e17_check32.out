@@ -1,0 +1,14 @@
+raw latitude order: descending ; lon 79.5 - 81.25
+(1) box mean, own vs region.model_winds: max |diff| 1.69e-14 m/s over 3624 hours; times identical True
+    July: share of hours with FROM direction in 67-112 deg (easterly): 0.45; mean u10 -1.05 m/s (negative = westward flow = easterly wind)
+    cool season 09-12 UTC = 14:45-17:45 NPT: vector-mean FROM direction 237 deg
+    cool season 18-21 UTC = 23:45-02:45 NPT: vector-mean FROM direction 352 deg
+(2) point vs box mean, coolA test hours: mean |dir diff| 16.5 deg (median 8.1, hours with box speed < 1 m/s: 41 %, their mean |dir diff| 29.2 deg); mean speed ratio 1.13, ratio of mean speeds 1.08; vector RMS diff 0.45 m/s vs mean box speed 1.12
+(3) box mean: max per-axis Courant at dt 240 s = 0.45 (VanLeer limit 1; the solver raises above it)
+(3) point: max per-axis Courant at dt 240 s = 0.50 (VanLeer limit 1; the solver raises above it)
+(4) 32^2 pilot coolA, k = 8: forecast RMSE with TRUE strengths under each model wind vs estimated (map_grow)
+        true_strength_rmse  map_grow_dopt  map_grow_random  persistence  floor_share_dopt
+spec                                                                                     
+dir30               0.0220         0.0213           0.0253       0.0088            1.0230
+oracle              0.0000         0.0034           0.0132       0.0088            0.0000
+point0              0.0178         0.0180           0.0203       0.0088            0.9857

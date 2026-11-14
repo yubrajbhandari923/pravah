@@ -6,7 +6,7 @@ Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or r
 placement for held-out forecasts?
 
 **Evidence label.** Exploratory. 64² sweep (cluster job 205282): 40 scenarios forming 20 clusters, with cluster-level
-statistics and Holm correction. 32² pilot: 6 clusters. Audited at pilot stage (gate-10/11: pass with conditions).
+statistics and Holm correction over 72 contrasts. Audited at 64² (gate-12-17: pass; statistics reproduced exactly). 32² pilot: 6 clusters. Audited at pilot stage (gate-10/11: pass with conditions).
 
 **Evidence.**
 - Design note `docs/research/forecast-design-placement.md` (addenda A1–A5).

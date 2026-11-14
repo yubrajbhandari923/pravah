@@ -6,7 +6,8 @@ Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or r
 background level?
 
 **Evidence label.** Exploratory 32² pilot: K = 2 and 4 × 5 seeds (n = 10 per cell), upwind numerics. The verdicts are
-not corrected for multiplicity. The 64² run (about 2,760 CPU-h) is deferred. Not yet audited.
+not corrected for multiplicity. The 64² run (about 2,760 CPU-h) is deferred. Audited (gate-12-17: pass; the
+background cell's reuse of fields is exact).
 
 **Evidence.**
 - Design note `docs/research/generalization-ablations.md`, committed before any computation.
@@ -29,7 +30,7 @@ Each cell changes one physical setting at a time. Every conclusion is scored on 
 
 ![E16 pilot: strategy rankings and conclusion verdicts across ablation cells.](../figures/e16-local-regime-ranks.png){#fig-e16}
 
-| Median contrast at k = 8 (wins/10) | nominal | diffusion ×20 | faster loss | wider sources | sparser sources | higher background |
+| Median contrast at k = 8 (wins/10) | nominal | K ×20 (effective ×1.5 at 32²) | faster loss | wider sources | sparser sources | higher background |
 |---|---|---|---|---|---|---|
 | C1 near-source > D-opt, 24 h | +0.23 (9) | +0.09 (9) | +0.40 (9) | +0.39 (8) *weakened* | +0.31 (9) | +0.14 (9) |
 | C2 D-opt > random, 24 h | +0.79 (10) | +0.67 | +0.78 | +0.62 | +0.79 | +0.68 |

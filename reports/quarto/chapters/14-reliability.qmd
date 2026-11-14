@@ -5,7 +5,7 @@ Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or r
 **Question (plan 3).** Can a method tell, without knowing the truth, when its own forecast or uncertainty is unreliable?
 
 **Evidence label.** Exploratory pilot: 32², 6 clusters. The within-config AUC was added after seeing results (deviation
-1). Not yet independently audited. The 64² run is deferred.
+1). Audited (gate-12-17: pass with conditions; claims below corrected). The 64² run is deferred.
 
 **Evidence.**
 - Design note `docs/research/reliability-design.md`.
@@ -24,6 +24,13 @@ Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or r
 
 ## Results
 
+::: {.callout-note}
+## "Persistence" here is an oracle bound (gate-12-17)
+The persistence baseline carries the *true* field at hour t to t + 1 in every grid cell. No sensor network can do
+that, so "worse than persistence" means worse than an unreachable bound, not worse than a naive forecast.
+:::
+
+
 ![E14: how well each diagnostic separates reliable from unreliable blocks (ROC).](../figures/e14-local-roc.png){#fig-e14-roc}
 
 ![E14: interval coverage with the true and with a wrong wind.](../figures/e14-local-calibration.png){#fig-e14-cal}
@@ -35,13 +42,14 @@ Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or r
   0.44–0.47. With a wrong wind it collapses: 0.07 for a 30° direction error.
 - **Failures nobody flags.**
   - A speed error of × 0.8 is undetectable (AUC 0.46–0.57).
-  - An omitted source gives overconfident blocks that no diagnostic flags: forecasts are about 4× worse than
-    persistence, with NIS ≈ 0.8 and lag-1 ≈ 0.
-  - NIS misses AR(1) noise, while lag-1 autocorrelation catches it.
+  - An omitted source is unflagged only for **random** networks. For D-optimal and near-source networks it shows clearly
+    (NIS ≈ 4, lag-1 0.41, AUC 0.84–0.89). Those networks were, however, designed knowing the omitted source.
+  - NIS misses AR(1) noise. Lag-1 autocorrelation detects it (0.63 vs −0.03), but as a warning of forecast failure it is
+    weak (AUC 0.58).
 
 ## Limits
 
 - The 6 clusters are dependent.
-- The within-config AUC was chosen after seeing results.
+- The within-config AUC was chosen after seeing results. It lowers the best score (0.74 to 0.71) rather than flattering it.
 - Together with E13's silent failure, these results mean that truth-free checks cannot certify a map. They can only flag
   some failures.

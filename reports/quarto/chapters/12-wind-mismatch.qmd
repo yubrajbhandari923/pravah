@@ -5,7 +5,8 @@ Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or r
 **Question (plan 3).** How do errors in the wind given to the inverse model affect source estimates and forecasts? Can
 wrong source strengths absorb wind errors and still fit the sensors?
 
-**Evidence label.** Exploratory pilot: 32², upwind operator, 6 clusters, k = 2/4/8. Not yet independently audited.
+**Evidence label.** Exploratory pilot: 32², upwind operator, 6 clusters, k = 2/4/8. Audited (gate-12-17: pass with
+conditions; claims below corrected).
 The 64² run is deferred.
 
 **Evidence.**
@@ -25,13 +26,22 @@ The 64² run is deferred.
 
 ## Results
 
+::: {.callout-note}
+## "Persistence" here is an oracle bound (gate-12-17)
+The persistence baseline carries the *true* field at hour t to t + 1 in every grid cell. No sensor network can do
+that, so "worse than persistence" means worse than an unreachable bound, not worse than a naive forecast.
+:::
+
+
 ![E12: source-strength bias and forecast skill under each wind error.](../figures/e12-local-bias.png){#fig-e12}
 
 - **Forecast skill collapses quickly.** Direction errors of 30° or more, a lag of 2 h or more, and AR(1) noise with
   sd 30° all make the 1 h forecast worse than persistence (0/6 clusters). A +10° error is about level with
   persistence. Underestimating the speed keeps skill (6/6).
 - **Source–transport compensation.**
-  - The sensor fit barely changes (residual ratio 1.02–1.3) while source RMSE rises 5–16×.
+  - Source RMSE rises 1.6–16×.
+  - The fit stays near perfect (ratio 1.01–1.33) only for speed errors, +10° and AR 15°: that is where compensation is
+    deceptive. For a 30° direction error, a lag or AR 30°, the fit ratio rises to 1.6–4.3 and does warn.
   - Speed errors bias the strengths low (−15 % for × 0.8, −32 % for × 0.6).
   - 95 % coverage of the strengths collapses to 0.00–0.54.
   - The fit looks good while the answer is wrong: 298 "deceptive fit" cells.

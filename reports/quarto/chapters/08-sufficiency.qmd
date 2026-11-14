@@ -72,7 +72,8 @@ These reruns were declared in advance and reuse the stored 64² simulations (clu
 | random | 8 / 16 / 16 | 16 / 24 / >32 | 2 / 2 / 2 |
 
 - **With all past data, sufficiency at τ = 0.2 becomes trivial.** Every strategy gets there with 2 sensors for every K.
-  This is a floor effect: k\* stops discriminating between strategies.
+  This is a genuine floor effect, not leakage (gate-12-17 checked causality exactly). It depends on the benchmark's
+  constant emissions over 60 days and a perfect transport model. E10, E12 and E13 each remove most of the memory gain.
 - **H5 reverses with memory.** At k = 8 on the 40 fresh scenarios, D-optimal beats near-source in 36 of 40 cases
   (the 24 h window gave 39 of 40 the other way). This replicates gate-09's E07 finding on new scenarios.
 - **Without in-footprint sites, about twice as many sensors are needed.** Near-source still beats D-optimal (34 of 40
