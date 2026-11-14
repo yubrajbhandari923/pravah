@@ -35,13 +35,16 @@ def source_basis(grid, domain, centre, sigma, truncate=3.0):
     return phi / (phi.sum() * dx * dy)
 
 
-def draw_sources(cfg: ExperimentConfig, replicate: int, n_sources: int):
-    """(lattice cells [(a, b)], strengths ug s^-1). Stream SeedSequence([truth_seed, K]); greedy min-separation draw."""
+def draw_sources(cfg: ExperimentConfig, replicate: int, n_sources: int, allowed=None):
+    """(lattice cells [(a, b)], strengths ug s^-1). Stream SeedSequence([truth_seed, K]); greedy min-separation draw.
+    allowed: optional bool (na, nb) lattice mask (E17 population mask); None = every cell (bit-identical to before)."""
     s, (Lx, Ly), (na, nb) = cfg.sources, cfg.model.domain_m, cfg.sources.lattice
     rng = np.random.default_rng(np.random.SeedSequence([cfg.seeds.streams(replicate)["truth"], n_sources]))
     cells, xy = [], []
     for p in rng.permutation(na * nb):
         a, b = divmod(int(p), nb)
+        if allowed is not None and not allowed[a, b]:
+            continue
         c = np.array([(a + .5) * Lx / na, (b + .5) * Ly / nb])
         if all(np.hypot(*(c - q)) >= s.min_separation_m for q in xy):
             cells.append((a, b)); xy.append(c)
@@ -186,20 +189,21 @@ def scenario_drivers(cfg: ExperimentConfig, replicate: int, n_sources: int):
 
 
 def generate_scenario(cfg: ExperimentConfig, replicate: int, n_sources: int, *, lattice_n: int = 16,
-                      heteroscedastic: bool = False, truth_field: np.ndarray | None = None) -> Scenario:
+                      heteroscedastic: bool = False, truth_field: np.ndarray | None = None, drivers=None) -> Scenario:
     """Run the verified forward solver for spin-up + the whole calendar and sample all candidate sites.
 
     Spin-up winds replay the first spin-up hours of the train stream (a [decision]: the spec names no spin-up wind).
     sigma = 0.05 x median train-period truth at the candidate sites, one scalar per scenario (or per site if
     heteroscedastic). Noise is drawn from SeedSequence(noise seed), independent of truth. Cost: ~1 solve per 300 s.
     `truth_field`: the post-spin-up field of an earlier identical call (e.g. a disk cache); skips the solve.
+    `drivers`: optional scenario_drivers-shaped tuple replacing the synthetic one (E17: ERA5 winds, masked sources).
     """
     cfg.validate()
     m = cfg.model
     grid, dom = tuple(m.grid), tuple(m.domain_m)
     if grid[0] % lattice_n or grid[1] % lattice_n:
         raise ValueError("lattice_n must divide the grid")
-    cells, a, sxy, winds, regimes, hrs = scenario_drivers(cfg, replicate, n_sources)
+    cells, a, sxy, winds, regimes, hrs = drivers or scenario_drivers(cfg, replicate, n_sources)
     if truth_field is not None:
         out = np.asarray(truth_field, float)
         if out.shape != (len(winds),) + grid:

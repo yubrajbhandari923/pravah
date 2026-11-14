@@ -3,7 +3,20 @@ name = "pravah"
 version = "0.1.0"
 description = "Sparse-sensor air quality reconstruction under uncertain meteorology and emissions"
 requires-python = ">=3.12"
-dependencies = ["fipy", "numpy", "scipy", "pandas", "xarray", "matplotlib", "pyyaml", "pydantic", "pytest"]
+dependencies = [
+    "fipy",
+    "numpy",
+    "scipy",
+    "pandas",
+    "xarray",
+    "matplotlib",
+    "pyyaml",
+    "pydantic",
+    "pytest",
+    "cdsapi>=0.7.7",
+    "h5netcdf>=1.8.3",
+    "h5py>=3.16.0",
+]
 
 [tool.uv]
 package = false

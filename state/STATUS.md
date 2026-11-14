@@ -49,8 +49,8 @@ Known open items: E03 (fixed-sensor static inverse) remains rank deficient for s
 | e14 | Reliability diagnostics | 32² pilot: truth-free warnings only moderate (AUC ≤ 0.71 overall); slow-wind and missing-source failures undetectable | [e14](experiments/e14.md) |
 | e15 | Robust placement | pilot running (agent) | — |
 | e16 | Generalization/ablation | 32² pilot running (agent) | — |
-| e17 | Regional case (Belauri) | feasibility audit done; **awaiting user decision on wind data source** (D1–D4) | [doc](../docs/research/regional-feasibility.md) |
-| e18 | Observational validation | gap assessment done: only 2 DoEnv PM2.5 stations within 100 km, sparse record; held-out test not defensible as validation; proposed "not conducted" (O1–O4) | [doc](../docs/research/observational-validation-audit.md) |
+| e17 | Regional case (Belauri) | 64² done: placement beats random; dopt≈source_near; only map_grow beats persistence; a nearest-point wind cancels all gains | [e17](experiments/e17.md) |
+| e18 | Observational validation | gap assessment done: only 2 DoEnv PM2.5 stations within 100 km, sparse record; held-out test not defensible as validation; **not conducted** (user, 2026-11-14: no data available); gap assessment is the final artefact | [doc](../docs/research/observational-validation-audit.md) |
 | e19–e20 | synthesis, audit/release | not started | — |
 
 ## Verified facts vs questions

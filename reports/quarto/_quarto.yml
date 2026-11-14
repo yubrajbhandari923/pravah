@@ -27,6 +27,7 @@ book:
         - chapters/12-wind-mismatch.qmd
         - chapters/13-model-mismatch.qmd
         - chapters/14-reliability.qmd
+        - chapters/17-regional.qmd
     - chapters/90-lessons.qmd
     - chapters/91-next.qmd
     - chapters/references.qmd

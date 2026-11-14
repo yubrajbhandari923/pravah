@@ -64,6 +64,8 @@ settings chosen after seeing data; **confirmatory (cells run)** = preregistered 
 | [E12](chapters/12-wind-mismatch.qmd) | What do wind errors do? | Biased direction, speed, timing and noise in the inverse wind | Direction ≥ 30° or a lag ≥ 2 h destroys forecast skill. Wrong strengths absorb wind errors while the fit stays good. The memory benefit vanishes | exploratory pilot |
 | [E13](chapters/13-model-mismatch.qmd) | What do background, source or sensor errors do? | 18 mismatches, with and without an estimated background | Background offset: fixable. Common-mode sensor bias: a **silent failure**. Wrong source shapes or locations: unfixable. Outages: benign | exploratory pilot |
 | [E14](chapters/14-reliability.qmd) | Can the method flag its own failures? | 8 truth-free diagnostics; ROC by stress | Moderate at best (AUC 0.71). Speed errors and missing sources are undetectable | exploratory pilot |
+| [E17](chapters/17-regional.qmd) | Do the conclusions survive real winds? | Synthetic tracer under ERA5 winds near Belauri; 64², 3 cases × 20 clusters | Placement still beats random (35–64 %). D-optimal vs near-source mostly ties. Only all-past-data forecasts beat persistence in calm winds. A single-site wind instead of the box mean cancels every advantage | exploratory; **not validation** |
+| E18 | Can real monitors validate it? | Audit of public PM2.5 data near Belauri | Not conducted: only 2 stations within 100 km, short records; a passive tracer cannot be validated against PM2.5 | gap assessment |
 
 ## Key figures
 

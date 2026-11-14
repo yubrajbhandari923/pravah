@@ -43,3 +43,10 @@ sensitivity consolidation (E16); optional regional transport case (E17) and real
   scales in two code paths (gate-04).
 - Study-boundary behaviour of both advection schemes has no independent check.
 - No held-out forecast evaluation outside E07; no wind error or model mismatch anywhere yet.
+
+## Real data (E17, E18)
+
+- **E17:** a regional case near Belauri, Kanchanpur, using ERA5 reanalysis winds and synthetic emissions. It tests
+  whether the method rankings survive realistic wind sequences. It is *not* a validation.
+- **E18:** not conducted. No usable public PM2.5 monitoring exists near Belauri: two Department of Environment stations
+  lie within 100 km, with short records. See `docs/research/observational-validation-audit.md`.
