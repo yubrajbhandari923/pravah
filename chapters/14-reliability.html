@@ -308,7 +308,7 @@ ul.task-list li input[type="checkbox"] {
 
 <p>Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.</p>
 <p><strong>Question (plan 3).</strong> Can a method tell, without knowing the truth, when its own forecast or uncertainty is unreliable?</p>
-<p><strong>Evidence label.</strong> Exploratory pilot: 32², 6 clusters. The within-config AUC was added after seeing results (deviation 1). Not yet independently audited. The 64² run is deferred.</p>
+<p><strong>Evidence label.</strong> Exploratory pilot: 32², 6 clusters. The within-config AUC was added after seeing results (deviation 1). Audited (gate-12-17: pass with conditions; claims below corrected). The 64² run is deferred.</p>
 <p><strong>Evidence.</strong> - Design note <code>docs/research/reliability-design.md</code>. - Code <code>src/pravah/experiments/reliability.py</code>, driver <code>scripts/e14_reliability.py</code>. - Tables <code>tables/e14-local-*</code>; journal <code>state/experiments/e14.md</code>.</p>
 <section id="what-we-did" class="level2" data-number="17.1">
 <h2 data-number="17.1" class="anchored" data-anchor-id="what-we-did"><span class="header-section-number">17.1</span> What we did</h2>
@@ -325,6 +325,19 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="results" class="level2" data-number="17.2">
 <h2 data-number="17.2" class="anchored" data-anchor-id="results"><span class="header-section-number">17.2</span> Results</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>“Persistence” here is an oracle bound (gate-12-17)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The persistence baseline carries the <em>true</em> field at hour t to t + 1 in every grid cell. No sensor network can do that, so “worse than persistence” means worse than an unreachable bound, not worse than a naive forecast.</p>
+</div>
+</div>
 <div id="fig-e14-roc" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-e14-roc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -351,8 +364,8 @@ Figure&nbsp;17.2: E14: interval coverage with the true and with a wrong wind.
 <li><strong>Failures nobody flags.</strong>
 <ul>
 <li>A speed error of × 0.8 is undetectable (AUC 0.46–0.57).</li>
-<li>An omitted source gives overconfident blocks that no diagnostic flags: forecasts are about 4× worse than persistence, with NIS ≈ 0.8 and lag-1 ≈ 0.</li>
-<li>NIS misses AR(1) noise, while lag-1 autocorrelation catches it.</li>
+<li>An omitted source is unflagged only for <strong>random</strong> networks. For D-optimal and near-source networks it shows clearly (NIS ≈ 4, lag-1 0.41, AUC 0.84–0.89). Those networks were, however, designed knowing the omitted source.</li>
+<li>NIS misses AR(1) noise. Lag-1 autocorrelation detects it (0.63 vs −0.03), but as a warning of forecast failure it is weak (AUC 0.58).</li>
 </ul></li>
 </ul>
 </section>
@@ -360,7 +373,7 @@ Figure&nbsp;17.2: E14: interval coverage with the true and with a wrong wind.
 <h2 data-number="17.3" class="anchored" data-anchor-id="limits"><span class="header-section-number">17.3</span> Limits</h2>
 <ul>
 <li>The 6 clusters are dependent.</li>
-<li>The within-config AUC was chosen after seeing results.</li>
+<li>The within-config AUC was chosen after seeing results. It lowers the best score (0.74 to 0.71) rather than flattering it.</li>
 <li>Together with E13’s silent failure, these results mean that truth-free checks cannot certify a map. They can only flag some failures.</li>
 </ul>
 

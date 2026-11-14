@@ -308,7 +308,7 @@ ul.task-list li input[type="checkbox"] {
 
 <p>Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.</p>
 <p><strong>Question (plan 3).</strong> Do the main conclusions survive changes in diffusion, removal, source shape and spacing, and background level?</p>
-<p><strong>Evidence label.</strong> Exploratory 32² pilot: K = 2 and 4 × 5 seeds (n = 10 per cell), upwind numerics. The verdicts are not corrected for multiplicity. The 64² run (about 2,760 CPU-h) is deferred. Not yet audited.</p>
+<p><strong>Evidence label.</strong> Exploratory 32² pilot: K = 2 and 4 × 5 seeds (n = 10 per cell), upwind numerics. The verdicts are not corrected for multiplicity. The 64² run (about 2,760 CPU-h) is deferred. Audited (gate-12-17: pass; the background cell’s reuse of fields is exact).</p>
 <p><strong>Evidence.</strong> - Design note <code>docs/research/generalization-ablations.md</code>, committed before any computation. - Code <code>src/pravah/experiments/generalization.py</code> and <code>scripts/e16_generalization.py</code>. - Tables <code>tables/e16-local-*</code>; journal <code>state/experiments/e16.md</code>.</p>
 <section id="what-we-tested" class="level2" data-number="19.1">
 <h2 data-number="19.1" class="anchored" data-anchor-id="what-we-tested"><span class="header-section-number">19.1</span> What we tested</h2>
@@ -374,7 +374,7 @@ Figure&nbsp;19.1: E16 pilot: strategy rankings and conclusion verdicts across ab
 <tr class="header">
 <th>Median contrast at k = 8 (wins/10)</th>
 <th>nominal</th>
-<th>diffusion ×20</th>
+<th>K ×20 (effective ×1.5 at 32²)</th>
 <th>faster loss</th>
 <th>wider sources</th>
 <th>sparser sources</th>

@@ -531,14 +531,14 @@ div.csl-indent {
 <td><a href="./chapters/14-reliability.html">E14</a></td>
 <td>Can the method flag its own failures?</td>
 <td>8 truth-free diagnostics; ROC by stress</td>
-<td>Moderate at best (AUC 0.71). Speed errors and missing sources are undetectable</td>
+<td>Moderate at best (AUC 0.71). Speed errors and common sensor bias are undetectable; a missing source is flagged by informed networks but not random ones</td>
 <td>exploratory pilot</td>
 </tr>
 <tr class="even">
 <td><a href="./chapters/15-robust.html">E15</a></td>
 <td>Do scenario-robust networks hold up better?</td>
 <td>Mean/CVaR/worst-case placement over wind ensembles; tail over 18 wind-error conditions</td>
-<td>Small tail gain, only vs D-optimal at k = 2. Robust ≈ near-source with a 24 h window; no gain with all past data</td>
+<td>Tail gain indistinguishable from chance. Robust ≈ near-source with a 24 h window; no gain with all past data</td>
 <td>exploratory pilot</td>
 </tr>
 <tr class="odd">
@@ -552,8 +552,8 @@ div.csl-indent {
 <td><a href="./chapters/17-regional.html">E17</a></td>
 <td>Do the conclusions survive real winds?</td>
 <td>Synthetic tracer under ERA5 winds near Belauri; 64², 3 cases × 20 clusters</td>
-<td>Placement still beats random (35–64 %). D-optimal vs near-source mostly ties. Only all-past-data forecasts beat persistence in calm winds. A single-site wind instead of the box mean cancels every advantage</td>
-<td>exploratory; <strong>not validation</strong></td>
+<td>Placement still beats random (35–64 %). D-optimal vs near-source mostly ties. Only all-past-data forecasts beat the persistence bound. A single-site wind instead of the box mean cancels every advantage (a transport floor)</td>
+<td>exploratory, audited; <strong>not validation</strong></td>
 </tr>
 <tr class="odd">
 <td>E18</td>
@@ -599,8 +599,8 @@ Figure&nbsp;2: E07 64² sweep: left, regret when a network chosen by one criteri
 <li><p><strong>Memory matters more than the algorithm.</strong> Estimating the persistent sources from all past data cuts forecast error by 58–74 % against a 24 h window; a filter that corrects only the field does almost nothing (E09, exploratory).</p></li>
 <li><p><strong>Drifting sources need drifting estimates, but only for short horizons.</strong> A filter that lets strengths drift helps 1 h forecasts when sources really change, and hurts 6 h forecasts under a daily cycle (E10).</p></li>
 <li><p><strong>Placement tuned for one estimator loses under another.</strong> Forecast-optimised networks win only with a 24 h window, and part of their gain was in-sample (E11).</p></li>
-<li><p><strong>Model errors dominate placement differences.</strong> Under a 30° wind error, a 2 h timing lag or a wrong source map, no estimator beats persistence. Strategies stop mattering, and the residuals often still look fine (E12–E13).</p></li>
-<li><p><strong>Self-diagnosis is limited.</strong> Truth-free checks catch some failures (timing and direction errors, correlated noise) but not speed errors, missing sources or a common sensor bias (E13–E14).</p></li>
+<li><p><strong>Model errors dominate placement differences.</strong> Under a 30° wind error, a 2 h timing lag or a wrong source map, no estimator beats an oracle persistence bound. Strategies stop mattering. Some of these errors stay hidden in the residuals (speed errors, common sensor bias) (E12–E13).</p></li>
+<li><p><strong>Self-diagnosis is limited.</strong> Truth-free checks catch some failures (timing and direction errors, correlated noise) but not speed errors, a common sensor bias, or (for random networks) a missing source (E13–E14).</p></li>
 </ol>
 </section>
 <section id="honest-limitations" class="level2">

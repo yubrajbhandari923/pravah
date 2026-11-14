@@ -310,7 +310,7 @@ ul.task-list li input[type="checkbox"] {
 <p><strong>Synthetic concentration under ERA5 reanalysis winds. This is not validation:</strong> no real pollution data are used, and nothing here is evidence about ambient PM2.5 or exposure near Belauri.</p>
 <p><strong>Question (plan 3).</strong> Do the method comparisons from the synthetic study hold up under realistic wind sequences from a real place?</p>
 <p><strong>Evidence label.</strong> Exploratory. - 64² VanLeer run (cluster job 205400): 3 cases × 20 clusters. - 32² pilot: 6 clusters.</p>
-<p>Not yet independently audited.</p>
+<p>Audited (gate-12-17: pass with conditions; one scenario re-solved from the raw ERA5 files matches to 4e-16; claims below corrected).</p>
 <p><strong>Evidence.</strong> - Design note <code>docs/research/regional-case-design.md</code>. - Feasibility audit <code>docs/research/regional-feasibility.md</code>. - Data manifest with sha256 hashes: <code>docs/research/data/e17-manifest.json</code>. - Code <code>src/pravah/data/region.py</code> and <code>scripts/e17_regional.py</code>. - Tables <code>tables/e17-*</code>; journal <code>state/experiments/e17.md</code>.</p>
 <section id="setup" class="level2" data-number="20.1">
 <h2 data-number="20.1" class="anchored" data-anchor-id="setup"><span class="header-section-number">20.1</span> Setup</h2>
@@ -404,11 +404,11 @@ Figure&nbsp;20.2: E17 64²: reduction in forecast RMSE between strategies, by ca
 <li><strong>The D-optimal vs near-source ordering mostly disappears.</strong>
 <ul>
 <li>The two tie in the cool season.</li>
-<li>In the unseen monsoon regime, near-source edges ahead under the 24 h window (16 of 20). This is E07’s direction, much weaker.</li>
+<li>In the unseen monsoon regime, near-source edges ahead under the 24 h window (16 of 20). This is E07’s direction, much weaker, and it does not survive Holm correction over the 18 such tests.</li>
 <li>With all past data they tie. E07/E08’s clear D-optimal win does not appear under these calm, rotating winds.</li>
 </ul></li>
-<li><strong>Only memory beats persistence.</strong> In calm winds, repeating the last reading is hard to beat. The 24 h-window forecasts only match it, while all-past-data forecasts beat it by about 10×.</li>
-<li><strong>The wrong wind cancels both advantages.</strong> The ERA5 point nearest Belauri differs from the box mean by about 17° and 13 % in speed. Using it instead of the box mean makes every forecast about 2× worse than persistence. All strategies become nearly equal, and the memory gain disappears (all-past-data error rises 15–27×). This reproduces E12 under realistic winds.</li>
+<li><strong>Only memory beats the persistence bound.</strong> Persistence here carries the <em>true</em> field forward one hour, which no network can do. The 24 h-window forecasts are 1.2–1.4× its error, beating it in only 3–5 of 20 clusters. All-past-data forecasts beat it by about 10×.</li>
+<li><strong>The wrong wind cancels both advantages.</strong> The ERA5 point nearest Belauri differs from the box mean by about 17° and 13 % in speed (a 40 % vector error). Using it instead of the box mean puts every forecast at 1.8–3.7× the persistence bound (still 0.43–0.76× the background-only error). All strategies become nearly equal and the memory gain disappears. This is a <strong>transport floor</strong>: forecasts using the <em>true</em> source strengths with the wrong wind are just as bad (0.047 vs 0.0465), so better estimation cannot fix it. This reproduces E12 under realistic winds.</li>
 </ul>
 </section>
 <section id="limits" class="level2" data-number="20.3">
@@ -417,7 +417,7 @@ Figure&nbsp;20.2: E17 64²: reduction in forecast RMSE between strategies, by ca
 <li><strong>Uniform wind.</strong> The ERA5 wind varies inside the box by about as much as its mean, so a spatially varying wind is the main missing ingredient.</li>
 <li><strong>No Indian sources or inflow.</strong> The boundary is clean.</li>
 <li><strong>Mixing depth.</strong> The cool-season boundary layer (median 47–88 m) is much shallower than the model’s 500 m.</li>
-<li><strong>Short calendar.</strong></li>
+<li><strong>Short calendar.</strong> The 20 clusters in each case share one wind history.</li>
 </ul>
 </section>
 <section id="data-attribution" class="level2" data-number="20.4">

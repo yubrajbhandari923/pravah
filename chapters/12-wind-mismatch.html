@@ -308,7 +308,7 @@ ul.task-list li input[type="checkbox"] {
 
 <p>Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.</p>
 <p><strong>Question (plan 3).</strong> How do errors in the wind given to the inverse model affect source estimates and forecasts? Can wrong source strengths absorb wind errors and still fit the sensors?</p>
-<p><strong>Evidence label.</strong> Exploratory pilot: 32², upwind operator, 6 clusters, k = 2/4/8. Not yet independently audited. The 64² run is deferred.</p>
+<p><strong>Evidence label.</strong> Exploratory pilot: 32², upwind operator, 6 clusters, k = 2/4/8. Audited (gate-12-17: pass with conditions; claims below corrected). The 64² run is deferred.</p>
 <p><strong>Evidence.</strong> - Design note <code>docs/research/wind-mismatch-design.md</code>. - Code <code>src/pravah/uncertainty.py</code>, driver <code>scripts/e12_wind_mismatch.py</code>. - Tables <code>tables/e12-local-*</code>; journal <code>state/experiments/e12.md</code>.</p>
 <section id="what-we-did" class="level2" data-number="15.1">
 <h2 data-number="15.1" class="anchored" data-anchor-id="what-we-did"><span class="header-section-number">15.1</span> What we did</h2>
@@ -326,6 +326,19 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="results" class="level2" data-number="15.2">
 <h2 data-number="15.2" class="anchored" data-anchor-id="results"><span class="header-section-number">15.2</span> Results</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>“Persistence” here is an oracle bound (gate-12-17)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The persistence baseline carries the <em>true</em> field at hour t to t + 1 in every grid cell. No sensor network can do that, so “worse than persistence” means worse than an unreachable bound, not worse than a naive forecast.</p>
+</div>
+</div>
 <div id="fig-e12" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-e12-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -340,7 +353,8 @@ Figure&nbsp;15.1: E12: source-strength bias and forecast skill under each wind e
 <li><strong>Forecast skill collapses quickly.</strong> Direction errors of 30° or more, a lag of 2 h or more, and AR(1) noise with sd 30° all make the 1 h forecast worse than persistence (0/6 clusters). A +10° error is about level with persistence. Underestimating the speed keeps skill (6/6).</li>
 <li><strong>Source–transport compensation.</strong>
 <ul>
-<li>The sensor fit barely changes (residual ratio 1.02–1.3) while source RMSE rises 5–16×.</li>
+<li>Source RMSE rises 1.6–16×.</li>
+<li>The fit stays near perfect (ratio 1.01–1.33) only for speed errors, +10° and AR 15°: that is where compensation is deceptive. For a 30° direction error, a lag or AR 30°, the fit ratio rises to 1.6–4.3 and does warn.</li>
 <li>Speed errors bias the strengths low (−15 % for × 0.8, −32 % for × 0.6).</li>
 <li>95 % coverage of the strengths collapses to 0.00–0.54.</li>
 <li>The fit looks good while the answer is wrong: 298 “deceptive fit” cells.</li>

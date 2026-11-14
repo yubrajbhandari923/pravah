@@ -308,7 +308,7 @@ ul.task-list li input[type="checkbox"] {
 
 <p>Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.</p>
 <p><strong>Question (plan 3).</strong> Does choosing sites for the <em>average</em>, <em>tail</em> (CVaR) or <em>worst</em> case over an ensemble of wind scenarios give networks that hold up better under wind errors and unseen regimes?</p>
-<p><strong>Evidence label.</strong> Exploratory 32² pilot: 6 clusters, upwind numerics, no multiplicity correction. The 64² run is deferred. Not yet audited.</p>
+<p><strong>Evidence label.</strong> Exploratory 32² pilot: 6 clusters, upwind numerics, no multiplicity correction. The 64² run is deferred. Audited (gate-12-17: pass with conditions).</p>
 <p><strong>Evidence.</strong> - Design note <code>docs/research/robust-placement-design.md</code>, committed before any computation. - Code <code>src/pravah/experiments/robust_design.py</code> and <code>scripts/e15_robust_placement.py</code>. - Tables <code>tables/e15-local-*</code>; journal <code>state/experiments/e15.md</code>.</p>
 <section id="what-we-did" class="level2" data-number="18.1">
 <h2 data-number="18.1" class="anchored" data-anchor-id="what-we-did"><span class="header-section-number">18.1</span> What we did</h2>
@@ -339,7 +339,7 @@ Figure&nbsp;18.1: E15: nominal error against tail risk for each design (lower-le
 <ul>
 <li><strong>The tail gain is small.</strong>
 <ul>
-<li>The only clear gain is against D-optimal with 2 sensors and a 24 h window: about 9–10 % lower tail risk, 6 of 6 clusters, uncorrected.</li>
+<li>The largest gain is against D-optimal with 2 sensors and a 24 h window: about 9–10 % lower tail risk, 6 of 6 clusters. This <strong>cannot be told apart from chance</strong>: of 648 tail contrasts, 9 came out 6/0, and about 10 would be expected by chance.</li>
 <li>With 4 or 8 sensors it is 2–4 % and not resolved.</li>
 <li>There is no gain over near-source.</li>
 </ul></li>

@@ -309,7 +309,7 @@ ul.task-list li input[type="checkbox"] {
 
 <p>Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.</p>
 <p><strong>Question (plan 2).</strong> Does a placement chosen to minimise <em>expected forecast variance</em> beat D-optimal and near-source placement for held-out forecasts?</p>
-<p><strong>Evidence label.</strong> Exploratory. 64² sweep (cluster job 205282): 40 scenarios forming 20 clusters, with cluster-level statistics and Holm correction. 32² pilot: 6 clusters. Audited at pilot stage (gate-10/11: pass with conditions).</p>
+<p><strong>Evidence label.</strong> Exploratory. 64² sweep (cluster job 205282): 40 scenarios forming 20 clusters, with cluster-level statistics and Holm correction over 72 contrasts. Audited at 64² (gate-12-17: pass; statistics reproduced exactly). 32² pilot: 6 clusters. Audited at pilot stage (gate-10/11: pass with conditions).</p>
 <p><strong>Evidence.</strong> - Design note <code>docs/research/forecast-design-placement.md</code> (addenda A1–A5). - Code <code>src/pravah/experiments/forecast_design.py</code>, driver <code>scripts/e11_forecast_design.py</code>. - Tables <code>tables/e11-local-*</code> and <code>tables/e11-local-v2-*</code>; journal <code>state/experiments/e11.md</code>.</p>
 <section id="what-we-did" class="level2" data-number="14.1">
 <h2 data-number="14.1" class="anchored" data-anchor-id="what-we-did"><span class="header-section-number">14.1</span> What we did</h2>
