@@ -1,6 +1,6 @@
 {
- "command": "OMP_NUM_THREADS=1 uv run python scripts/e16_generalization.py --pilot --workers 6 --cells nominal,diff_hi,loss_hi,src_wide,src_sparse,bg_hi",
- "git_rev": "d15755029c4804a7820f64facb6aba4cc9411052",
+ "command": "OMP_NUM_THREADS=1 uv run python scripts/e16_generalization.py --pilot --workers 6",
+ "git_rev": "61081f8742095e578be8f8212f8740218fcf008a",
  "git_dirty": false,
  "host": "RAD-88300596",
  "python": "3.14.9",
@@ -58,6 +58,15 @@
   "diff_hi": {
    "model.diffusivity_m2_s": 1000.0
   },
+  "diff_lo": {
+   "model.advection_scheme": "vanleer",
+   "model.dt_s": 60
+  },
+  "diff_lo_x_loss_hi": {
+   "model.advection_scheme": "vanleer",
+   "model.dt_s": 60,
+   "model.removal_per_s": 0.0001388888888888889
+  },
   "loss_hi": {
    "model.removal_per_s": 0.0001388888888888889
   },
@@ -74,7 +83,7 @@
  },
  "wind": "mixed",
  "workers": 6,
- "total_wall_s": 5.92504096031189,
- "stage1_solves": 195,
- "stage1_cpu_s": 11484.384658584002
+ "total_wall_s": 0.07690620422363281,
+ "stage1_solves": 273,
+ "stage1_cpu_s": 43363.771515493005
 }

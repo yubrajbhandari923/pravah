@@ -1,12 +1,16 @@
 estimator,cell,n,median_tau,mean_tau,frac_same_top,top_counts
 map24,bg_hi,10,0.6666666666666669,0.8000000000000002,0.8,source_near:9 dopt:1
 map24,diff_hi,10,1.0,0.9666666666666668,1.0,source_near:9 dopt:1
+map24,diff_lo,10,1.0,0.9666666666666668,1.0,source_near:9 dopt:1
+map24,diff_lo_x_loss_hi,10,1.0,0.9,1.0,source_near:9 dopt:1
 map24,loss_hi,10,1.0,0.9333333333333333,1.0,source_near:9 dopt:1
 map24,nominal,10,1.0,1.0,1.0,source_near:9 dopt:1
 map24,src_sparse,10,1.0,0.9333333333333333,1.0,source_near:9 dopt:1
 map24,src_wide,10,1.0,0.8666666666666668,0.9,source_near:8 dopt:2
 map_grow,bg_hi,10,1.0,0.9333333333333333,1.0,dopt:10
 map_grow,diff_hi,10,1.0,0.8333333333333334,0.7,dopt:7 source_near:3
+map_grow,diff_lo,10,1.0,0.9333333333333333,0.9,dopt:9 source_near:1
+map_grow,diff_lo_x_loss_hi,10,1.0,0.9333333333333333,1.0,dopt:10
 map_grow,loss_hi,10,1.0,0.9333333333333333,0.9,dopt:9 source_near:1
 map_grow,nominal,10,1.0,1.0,1.0,dopt:10
 map_grow,src_sparse,10,1.0,0.9666666666666668,1.0,dopt:10
