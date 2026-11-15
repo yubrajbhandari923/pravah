@@ -252,14 +252,20 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../chapters/19-conclusions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Conclusions: answers to the central questions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../chapters/90-lessons.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span></a>
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/91-next.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Next steps</span></span></a>
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Next steps</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -492,7 +498,7 @@ Figure&nbsp;10.2: Relative reduction in held-out forecast RMSE, dopt vs the mean
 </figcaption>
 </figure>
 </div>
-<p><strong>Verdict.</strong> In the 64² synthetic sweep (K ∈ {2, 4}, k ∈ {8, 16}, training winds veering or mixed, 10 seeds per cell, white noise, MAP with a 24 h window), the D-optimal network reduced held-out one-step forecast RMSE relative to the mean of 10 random networks by a median of <strong>42–84 % per cell</strong>. The 95 % bootstrap CI lay above 10 % in <strong>8/8 cells</strong>, so the preregistered hypothesis is <strong>supported in the cells run</strong>. With distribution-free intervals it is supported in 7/8 (veering K = 2, k = 16 straddles because dopt lost to random in 2 of 10 seeds); with a bootstrap of the mean, 8/8. K = 8 and k = 32 were <strong>not run</strong>; by the protocol’s own rule those cells are unresolved, so at protocol level the verdict is “supported in the run cells, unresolved overall” unless the user confirms the reduced cell set as the confirmatory population (gate-07 issue 1, open). <strong>A locations-only control placing sensors next to the known sources did better still, so the gain over random is attributable to knowing source locations, not to D-optimisation.</strong></p>
+<p><strong>Verdict.</strong> In the 64² synthetic sweep (K ∈ {2, 4}, k ∈ {8, 16}, training winds veering or mixed, 10 seeds per cell, white noise, MAP with a 24 h window), the D-optimal network reduced held-out one-step forecast RMSE relative to the mean of 10 random networks by a median of <strong>42–84 % per cell</strong>. The 95 % bootstrap CI lay above 10 % in <strong>8/8 cells</strong>, so the preregistered hypothesis is <strong>supported in the cells run</strong>. With distribution-free intervals it is supported in 7/8 (veering K = 2, k = 16 straddles because dopt lost to random in 2 of 10 seeds); with a bootstrap of the mean, 8/8. K = 8 and k = 32 were <strong>not run</strong>; by the protocol’s own rule those cells are unresolved, so at protocol level the verdict is “supported in the run cells, unresolved overall” unless the user confirms the reduced cell set as the confirmatory population (gate-07 issue 1; scope approved by the user 2026-11-13). <strong>A locations-only control placing sensors next to the known sources did better still, so the gain over random is attributable to knowing source locations, not to D-optimisation.</strong></p>
 </section>
 <section id="sweep-exploratory-results" class="level2" data-number="10.4">
 <h2 data-number="10.4" class="anchored" data-anchor-id="sweep-exploratory-results"><span class="header-section-number">10.4</span> 64² sweep: exploratory results</h2>
@@ -608,7 +614,7 @@ Figure&nbsp;10.3: 64² sweep: regret heatmap and forecast-RMSE reduction against
 <h2 data-number="10.5" class="anchored" data-anchor-id="audit-outcome-gate-07-pass-with-conditions"><span class="header-section-number">10.5</span> Audit outcome (gate-07): pass with conditions</h2>
 <p>Numbers reproducible, no leakage, confirmatory rule implemented faithfully. Conditions concern what the results may be said to show:</p>
 <ol type="1">
-<li><strong>Scope:</strong> state the verdict as “supported in the 8 cells run”; the user must confirm the reduced cell set (open).</li>
+<li><strong>Scope:</strong> state the verdict as “supported in the 8 cells run”; the user approved the reduced cell set (2026-11-13).</li>
 <li><strong>Credit:</strong> every statement of the confirmatory result carries the source_near caveat.</li>
 <li><strong>Mechanism:</strong> per-window rank loss under one unseen wind direction; make it sweep-wide from cached fields.</li>
 <li><strong>Artefact risk:</strong> source_near’s sites (456–643 m from source centres) sit inside the 1200 m truncated emission disc (σ = 400 m), where they see local emission under any wind. With every site within 1200 m excluded, source_near still won in the two scenarios checked (k = 8: 0.043 vs 0.203 and 0.115 vs 0.229).</li>

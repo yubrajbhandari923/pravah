@@ -271,14 +271,20 @@ div.csl-indent {
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./chapters/19-conclusions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Conclusions: answers to the central questions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./chapters/90-lessons.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span></a>
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Lessons and corrections</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chapters/91-next.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Next steps</span></span></a>
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Next steps</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -490,7 +496,7 @@ div.csl-indent {
 <td>How many sensors are enough?</td>
 <td>Preregistered factorial; 32² pilot; 64² sweep (60 scenarios)</td>
 <td>Location-aware designs need k ≈ K sensors; random layouts need 8–16. More sensors beat more readings for random networks, but not once sources are covered. H1, H3, H4 and H5 supported; H2 contradicted. <strong>With all past data, 2 sensors suffice for every strategy and H5 reverses</strong></td>
-<td>64²: preregistered tests (windowed estimator); not yet audited</td>
+<td>64²: preregistered tests (windowed estimator); stage-2 reruns audited</td>
 </tr>
 <tr class="even">
 <td><a href="./chapters/09-filter.html">E09</a></td>
@@ -607,15 +613,15 @@ Figure&nbsp;2: E07 64² sweep: left, regret when a network chosen by one criteri
 <h2 class="anchored" data-anchor-id="honest-limitations">Honest limitations</h2>
 <ul>
 <li>Synthetic, perfect-model world: known source locations, known wind, constant sources, ideal sensors, uniform wind.</li>
-<li>Smoke scale (32²) for E02–E06; only E07 ran at 64² and only for K ∈ {2, 4}, k ∈ {4, 8, 16}, 10 seeds.</li>
+<li>Smoke scale (32²) for E02–E06. Runs at 64²: E07 (K ∈ {2, 4}, k ∈ {4, 8, 16}, 10 seeds), E08 (20 seeds), E11 and E17. E09, E10 and E12–E16 are 32² pilots.</li>
 <li>The source scale (1 g/s) was chosen after seeing data, so E02–E06 at that scale are exploratory.</li>
 <li>The E07 mechanism rests on one unseen wind direction; the “source-near” advantage may partly reflect sensors sitting inside the 1200 m emission disc. Across all 40 scenarios, excluding those sites keeps near-source ahead (104/120) but shrinks D-optimal’s gain over random from 71 % to 20 %, and no single cell then clears the 10 % test threshold (exploratory control).</li>
-<li>E09–E14 are 32² pilots with an upwind surrogate and 6 independent clusters. Their 64² runs are documented but deferred (E11’s is running).</li>
+<li>E09–E14 are 32² pilots with an upwind surrogate and 6 independent clusters. Their 64² runs are documented but deferred</li>
 </ul>
 </section>
 <section id="whats-next" class="level2">
 <h2 class="anchored" data-anchor-id="whats-next">What’s next</h2>
-<p>E08’s and E11’s 64² runs are done; E09 is done at 32² and audited. E10–E17 have results (E18 not conducted: no data). Next: a batched independent audit of E12–E17, the synthesis (E19), and the deferred 64² runs. See <a href="./chapters/91-next.html">Next steps</a>.</p>
+<p>E08’s and E11’s 64² runs are done; E09 is done at 32² and audited. E10–E17 have results (E18 not conducted: no data). E12–E17 are audited (gate-12-17), and the synthesis (E19) is done; see <a href="./chapters/19-conclusions.html">Conclusions</a>. Next: independent replication and release review (E20), and the deferred 64² runs. See <a href="./chapters/91-next.html">Next steps</a>.</p>
 </section>
 <section id="how-to-read-this-report" class="level2">
 <h2 class="anchored" data-anchor-id="how-to-read-this-report">How to read this report</h2>
