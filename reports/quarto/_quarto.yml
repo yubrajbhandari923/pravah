@@ -30,6 +30,7 @@ book:
         - chapters/15-robust.qmd
         - chapters/16-generalization.qmd
         - chapters/17-regional.qmd
+    - chapters/19-conclusions.qmd
     - chapters/90-lessons.qmd
     - chapters/91-next.qmd
     - chapters/references.qmd

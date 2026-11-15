@@ -1,34 +1,52 @@
 # PRAVAH — current status
 
-**Status recorded:** 2026-11-12 (after amendment A1 reruns of E02–E05, E06, and gate-05/06 audits)
+**Status recorded:** 2026-11-14 (after E19 synthesis and gate-12-17)
 
-**Working plan:** `plans/plan-02-identifiability-placement-forecast.yaml` (E04–E11).
-Plan-01 (E00–E03) has been executed at smoke scale; plan-03 (E12–E20) is not started.
+**Working plan:** `plans/plan-03-robustness-synthesis.yaml` (E12–E20). Plans 1 and 2 are complete as executed.
 
 ## Current phase
 
-Plan 2. E04–E06 done at smoke scale (32², local, exploratory), each with an independent audit. E07 64² sweep done and audited; follow-up controls open.
-Amendment A1 (a_ref = 1 g/s, `decisions/2026-11-12-source-scale.md`) was approved by the user and applied on 2026-11-12.
-Protocol and `configs/benchmark-v1.yaml` APPROVED 2026-11-12 as an amendable baseline (`decisions/2026-11-12-protocol-approval.md`). HPC verified (smoke job only).
+- **Plan 3 is nearly complete.**
+  - E12–E17 have results (32² pilots; E17 also at 64²).
+  - E18 was not conducted: no data (user, 2026-11-14).
+  - E19 synthesis is done: `reports/evidence-matrix.csv`, `scripts/validate_report.py` (0 problems) and the
+    conclusions chapter.
+- **Next: E20, independent replication and release review.**
+- **Heavy 64² sweeps are deferred** (user, 2026-11-13). Each design note documents its cluster plan. Done at 64²: E07,
+  E08 (and stage-2 reruns), E11 and E17.
 
-## Next action
+## Key results (details in the journals and `reports/quarto`)
 
-1. **B3 resolved by amendment A2** (`decisions/2026-11-12-advection-scheme.md`): 64² runs use split VanLeer, dt 30 s
-   (K_eff ≈ 50 vs 350–2900 for upwind; gates met). Before the 64² sweep, measure VanLeer's superposition error on benchmark footprints.
-2. **E07 closed** (sweep + gate-07 + follow-ups + gate-09). Confirmatory supported in the cells run (user-approved scope).
-   source_near beats dopt (115/120) ONLY for the 24 h-window estimator; with all past data dopt wins (103/120, gate-09), and with in-footprint sites excluded dopt's gain over random drops to 0.20 (0/8 cells).
-   dopt's loss is concentrated in the unseen southerly regime. See `experiments/e07.md`.
-3. **E08 64² sweep done** (job 205039, 18.8 h). Holm family: H1, H3, H4 and H5 supported; H2 contradicted. k*(0.2) ≈ K
-   for location-aware designs. Stage-2 reruns done (job 205394): with all past data every strategy reaches τ = 0.2
-   at k = 2 and H5 reverses (dopt beats source_near 36/40). With 1200 m exclusion, about twice the sensors are needed.
-   Pending: gate-08.
-4. HPC verified 2026-11-12 (smoke job 204775: 175 tests passed on node004; limits 64 CPU, 4 GPU, 2 days in settings.yaml).
-5. E09 done and audited. E10 and E11 32² pilots done (see journals). Gate-10/11 done (pass w/ conditions; E10 diurnal gain is 1 h only; ~40 % of E11's gain was in-sample).
-   E11 64² done (job 205282): the out-of-sample wind-robust design beats dopt under map24 (19/20 clusters at k = 8), loses to source_near, and is worse under map_grow; E08 report and exclusion rerun. Plan 3 started: E12 pilot done. From now on, heavy 64² sweeps are deferred (user, 2026-11-13): pilots plus documented submission plans.
+- **E07 confirmatory:** dopt beats random by ≥ 10 % in the 8 cells run (scope user-approved).
+- **The strategy ordering depends on estimator memory** (E07, gate-09, E08 rerun, E16):
+  - with a 24 h window, source_near beats dopt;
+  - with all past data, dopt beats source_near.
+- **Sufficiency:** k*(0.2) ≈ K for location-aware designs (E08 64²). With all past data, k* = 2 for every strategy:
+  a genuine floor, but it depends on constant sources and a perfect model.
+- **Model error dominates placement.** Wind errors ≥ 30° or a timing lag, and wrong source shapes, cancel placement and
+  memory gains (E12, E13, E17). E17's wrong-wind collapse is a transport floor.
+- **Self-diagnosis is moderate** (AUC 0.71 within configuration, 0.74 pooled). A common-mode bias is a structural
+  silent failure.
+- **Robust placement:** E15's tail gain is indistinguishable from chance.
 
-Gate-12-17 (2026-11-14): E12–E17 + E08/E11 64² audited, pass or pass with conditions; corrections applied (see any e12–e17 journal).
+## Audits
+- gate-07, b3, gate-09 and gate-10-11: all pass or pass with conditions.
+- gate-12-17 covers E12–E17 and the 64² runs of E08 (stage-2 reruns) and E11; all pass or pass with conditions.
+- Unaudited: the E16 VanLeer cells (added after gate-12-17) and the main E08 64² sweep tests (H1–H5).
 
-Known open items: E03 (fixed-sensor static inverse) remains rank deficient for structural reasons (sensor placement, 24 h window).
+## Open items
+- **Bugs:**
+  - E08 H5 log(inf) − log(inf) gives NaN;
+  - E14 omit1 designs know the omitted source;
+  - the E13 field-level rule lacks a check against the true-wind run;
+  - the E08/E17 rows have no true-strength forecast column.
+- **E10:** kf_qsel coverage and CRPS were never computed.
+- **E03:** remains rank deficient for structural reasons.
+- **Missing run records:** the E06, E08 pilot, E11 v2 pilot, E15 pilot and E17 32² pilot runs (see the evidence-matrix
+  caveats).
+- **Citations:** ERA5 and WorldPop are cited only in chapter text, not as bib entries.
+- **HPC:** verified 2026-11-12. Limits are in settings.yaml; the current policy is in memory and settings (one 64-CPU job,
+  heavy runs deferred).
 
 ## Experiments
 
@@ -42,18 +60,19 @@ Known open items: E03 (fixed-sensor static inverse) remains rank deficient for s
 | e05 | Temporal observability | smoke, 20 seeds, audited (gate-05) and rerun; exploratory support | [e05](experiments/e05.md) |
 | e06 | Placement algorithms | smoke done, audited (gate-06); 3 conditions before E07 reuse | [e06](experiments/e06.md) |
 | e07 | Cross-objective placement | closed: confirmatory supported in cells run; source_near beats dopt; gain shrinks with in-footprint sites excluded | [e07](experiments/e07.md) |
-| e08 | Sensor sufficiency | 64² sweep + reruns done; H5 reverses with all past data; audit pending | [e08](experiments/e08.md) |
+| e08 | Sensor sufficiency | 64² sweep + reruns done; H5 reverses with all past data; stage-2 audited (gate-12-17) | [e08](experiments/e08.md) |
 | e09 | Causal Kalman filter | 32² replay + gate-09 (pass w/ conditions): all-past-data MAP ≫ 24 h MAP; placement ordering flips | [e09](experiments/e09.md) |
 | e10 | Joint source–field assimilation | 32² pilot: q=0 best for constant sources; random-walk filter wins and is calibrated for time-varying ones | [e10](experiments/e10.md) |
 | e11 | Forecast placement | 64² (20 clusters): out-of-sample wind-robust design beats dopt under map24 (+0.34 at k = 8, 19/20); loses to source_near; worse under map_grow | [e11](experiments/e11.md) |
 | e12 | Wind mismatch | 32² pilot: direction/timing error destroys forecast skill; estimators compensate by distorting sources (good fit, wrong strengths) | [e12](experiments/e12.md) |
 | e13 | Model mismatch | 32² pilot: background offset fixable by estimating it (but indistinguishable from common-mode bias → silent failure); source-basis errors unfixable | [e13](experiments/e13.md) |
-| e14 | Reliability diagnostics | 32² pilot: truth-free warnings only moderate (AUC ≤ 0.71 overall); slow-wind and missing-source failures undetectable | [e14](experiments/e14.md) |
+| e14 | Reliability diagnostics | 32² pilot: truth-free warnings only moderate (AUC 0.71 within config, 0.74 pooled); speed errors and common bias undetectable; missing source missed by random networks | [e14](experiments/e14.md) |
 | e15 | Robust placement | 32² pilot: robust ≈ source_near under map24; small tail gain vs dopt only at k = 2; no gain under map_full; 64² deferred (low priority) | [e15](experiments/e15.md) |
 | e16 | Generalization/ablation | 32² pilot (8/8 cells): no conclusion reversed; memory flip in every cell; 64² deferred (≈2,760 CPU-h) | [e16](experiments/e16.md) |
 | e17 | Regional case (Belauri) | 64² done: placement beats random; dopt≈source_near; only map_grow beats persistence; a nearest-point wind cancels all gains | [e17](experiments/e17.md) |
 | e18 | Observational validation | gap assessment done: only 2 DoEnv PM2.5 stations within 100 km, sparse record; held-out test not defensible as validation; **not conducted** (user, 2026-11-14: no data available); gap assessment is the final artefact | [doc](../docs/research/observational-validation-audit.md) |
-| e19–e20 | synthesis, audit/release | not started | — |
+| e19 | Synthesis | done: evidence matrix (82 claims), validator, conclusions chapter, manuscript docs | [matrix](../reports/evidence-matrix.csv) |
+| e20 | Replication/release review | not started | — |
 
 ## Verified facts vs questions
 
@@ -67,7 +86,6 @@ Verified (smoke scale, synthetic; audited where a gate file exists):
 Open:
 - VanLeer is ~1 % non-linear (one test); its effect on G-based inference at 64² is unmeasured.
 - Everything at 1 g/s is exploratory (scale chosen after seeing data); confirmatory tests start with E07/E08 designed under the approved protocol.
-- Held-out (forecast / off-sensor) evaluation has not been run anywhere yet.
 
 ## Pointers
 

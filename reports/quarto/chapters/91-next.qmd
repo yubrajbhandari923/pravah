@@ -1,52 +1,44 @@
 # Next steps
 
-Sources: `state/STATUS.md`, `state/experiments/e05.md` and `e07.md`, plans 2 and 3. Nothing in this chapter is a result.
+Sources: `state/STATUS.md`, the experiment journals and plan 3. Nothing in this chapter is a result.
 
-## Immediately (E07 close-out, no new simulations)
+## Status
 
-Done: the user approved the confirmatory scope ("supported in the cells run"), and both follow-up controls finished
-(see the E07 chapter). One implication carries forward: placement must be judged with sensors kept out of the emission
-discs as well, and against unseen wind directions (E08, E15).
+- Plans 1 and 2 are complete as executed.
+- Plan 3 has results for E12–E17. E18 was not conducted, because no usable monitoring data exist. E19 (this synthesis)
+  is done.
+- Independent audits cover everything except the main E08 64² tests and the two E16 VanLeer cells.
 
-## Since the first draft
+## Next
 
-- E08's 64² sweep is done (job 205039). Its all-past-data and exclusion reruns are done too. Pending: a gate-08 audit.
-- E09 is done at 32² and audited (gate-09).
-- Gate-09 found that placement orderings depend on estimator memory. E10 and E11 will therefore declare memory length
-  as a factor, use the growing-window MAP as the baseline, and keep the 24 h window as a reference.
+1. **E20, independent replication and release review.** Rerun a sample of each experiment from a clean checkout, and
+   review the claims in `docs/research/manuscript-claims.md` against `reports/evidence-matrix.csv`.
+2. **Fix the four audit bugs:**
+   - E08 H5 returns NaN;
+   - E14's omit-one designs know the omitted source;
+   - E13's field-level rule needs a comparison against the true-wind run;
+   - the E08 and E17 rows need a true-strength forecast column.
 
-## Plan 2, remaining experiments
+   Also compute kf_qsel coverage and CRPS (E10).
+3. **Deferred 64² runs** (each plan is in its design note; one 64-CPU job at a time):
 
-| Exp | Question (plan 2) | Planned design (from journals) |
-|---|---|---|
-| **E08** Sensor sufficiency | How do k, source complexity, noise, sampling cadence and observation duration interact? | Preregistered from E05 v2: factor = number of distinct wind directions (constant control), W ∈ {24 h, 7 d}, N ∈ {2, 4, 8} plus an optimised arm, seed as unit with paired bootstrap, difference-in-differences primary contrast with a minimum meaningful effect, practical-rank thresholds 1σ and 3σ, equal-reading comparisons only, held-out forecast/off-sensor evaluation, AR(1) arm |
-| **E09** Causal filtering | Does a forecast–observe–update filter estimate and forecast the field better than a current-only batch inverse? | Kalman filter on the concentration state; calibration endpoints (coverage, CRPS) deferred here from E07 |
-| **E10** Joint assimilation | Can sequential observations update emission strengths and state together without spurious certainty? | Augmented-state Kalman, optional EnKF, DAPPER toy cross-check |
-| **E11** Forecast placement | Does source/D-opt or POD/QR placement remain optimal when the endpoint is one-step and multi-horizon forecast skill? | Causal evaluation loop across designs and horizons; uses E07's finding that training-wind D-opt does not transfer |
+   | Run | Estimated cost | Note |
+   |---|---|---|
+   | E12 | — | |
+   | E13 | about 616 CPU-h | |
+   | E14 | about 6 CPU-h | after E12 |
+   | E15 | about 130–160 CPU-h | after E12 |
+   | E16 | about 2,760 CPU-h | |
 
-## Plan 3 (E12–E20), not started
-
-Meteorological mismatch and source–transport compensation (E12); background, source-basis and realistic observation
-errors (E13); reliability diagnostics and uncertainty calibration (E14); nominal vs robust placement (E15, which
-inherits E07's hypothesis that designs tuned to training winds fail on unseen directions); generalisation and
-sensitivity consolidation (E16); optional regional transport case (E17) and real monitoring validation (E18); synthesis
-(E19) and independent replication (E20).
+   Priority: E12, then E14, then E16's diffusion cells. E16's diffusion cell is the only real diffusion test, because
+   32² upwind numerics swamp it.
+4. **Spatially varying wind in E17.** The ERA5 wind varies inside the box by about as much as its mean. This needs a
+   solver extension.
 
 ## Open decisions and known gaps
 
-- Confirmatory scope of E07 (above).
-- Whether to make `source_near` (or a wind-robust variant) the reference design going forward; this is outcome-driven
-  and must be preregistered for E11/E15, not adopted retroactively.
-- E03 remains rank-deficient for structural reasons; a configuration where the "identifiable recovery" half of its
-  hypothesis can be tested has not been run.
-- E04's spectrum-vs-coverage hypothesis has not been tested across seeds; the 1e-8 rank rule is applied on different
-  scales in two code paths (gate-04).
-- Study-boundary behaviour of both advection schemes has no independent check.
-- No held-out forecast evaluation outside E07; no wind error or model mismatch anywhere yet.
-
-## Real data (E17, E18)
-
-- **E17:** a regional case near Belauri, Kanchanpur, using ERA5 reanalysis winds and synthetic emissions. It tests
-  whether the method rankings survive realistic wind sequences. It is *not* a validation.
-- **E18:** not conducted. No usable public PM2.5 monitoring exists near Belauri: two Department of Environment stations
-  lie within 100 km, with short records. See `docs/research/observational-validation-audit.md`.
+- Whether to make a memory-matched reference design the default going forward. That would be a preregistered choice for
+  any new confirmatory test.
+- E03 remains rank deficient for structural reasons.
+- E04's spectrum-versus-coverage hypothesis is untested across seeds.
+- No experiment has used real concentration data. E17 uses real winds only, and E18 found no usable monitors.

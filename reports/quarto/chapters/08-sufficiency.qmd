@@ -6,8 +6,8 @@ Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or r
 interact? For each setting, what is the smallest network that is "sufficient"?
 
 **Evidence label.** 64² sweep (cluster job 205039, 20 scenarios per K): the five preregistered tests form one Holm
-family; everything else is exploratory. The 32² pilot (4 scenarios per K) is indicative only. Not yet independently
-audited.
+family; everything else is exploratory. The 32² pilot (4 scenarios per K) is indicative only. The stage-2 reruns were
+audited in gate-12-17; the main H1–H5 tests were not independently re-run.
 
 **Evidence.**
 - Design note: `docs/research/sufficiency-design.md`, committed alone before any E08 computation. Hypotheses H1–H5 come

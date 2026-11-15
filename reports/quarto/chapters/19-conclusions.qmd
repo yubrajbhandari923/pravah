@@ -1,0 +1,207 @@
+# Conclusions: answers to the central questions
+
+Simulated passive tracer only. Nothing in this chapter is evidence about ambient PM2.5, real sources, exposure or
+deployment, and no result has been validated against observations (E18 was not conducted).
+
+This chapter answers the five central questions of plan 3 (E19). Each answer gives effect sizes with their intervals,
+the sample unit, the experiment and the audit, and then alternative explanations and limits. Every claim has a row in
+`reports/evidence-matrix.csv` (claim ids in brackets), which links it to its table or figure, run record, commit and
+scheduler job. `scripts/validate_report.py` checks that those links resolve. Where an audit corrected a claim, the
+audit's wording is used.
+
+::: {.callout-important}
+## What scale each answer rests on
+- **64² (split VanLeer, protocol calendar):** E07 sweep (40 scenarios, 10 seeds per cell), E08 sweep and its stage-2
+  variants (60 scenarios), E11 sweep (20 clusters), E17 regional case (3 cases × 20 clusters), and gate-09's re-scoring
+  of E07's cached fields.
+- **32² pilots only (upwind numerics, 6 independent clusters, or n = 10 for E16):** E09, E10, E12, E13, E14, E15 and
+  E16. Their 64² runs are documented but were deferred, so these answers are **pilot-level**.
+- **Smoke scale, exploratory:** E02–E06 (the 1 g/s source scale was chosen after seeing data).
+- **Confirmatory:** one test only, E07's dopt vs random, and only in the 8 cells that were run.
+:::
+
+## 1. Sensor count, observation history and identifiability
+
+**Answer.** How many sensors are needed depends first on whether they are placed with knowledge of the source
+locations. How much history helps depends on whether the wind changes and how long the sources stay constant.
+
+- **Without placement knowledge, few fixed sensors cannot separate the sources.** With ≤ 8 fixed, non-optimised sensors
+  and a 24 h window, the sensitivity matrix was rank deficient in all 648 fits, at both source scales (E03, 32²;
+  gate-03: baseline not cleared) [E03-1]. This is a negative result. The "identifiable recovery" half of E03's
+  hypothesis was never tested.
+- **With location-aware placement, about one sensor per source is enough under a 24 h window.** At 64², the median
+  breakpoint k\*(0.2) for near-source and D-optimal designs was 2 / 4 / 8 for K = 2 / 4 / 8 sources. Random networks
+  needed 8 / 16 / 16, and coverage designs 8 / 8 / 8 (E08, 20 seeds per K) [E08-1]. The preregistered H1 (k\* grows
+  with K for D-optimal) was supported, with 19 wins, 0 losses and 1 tie [E08-2].
+- **Elapsed time alone adds nothing; a change of wind does.** Under an exactly constant wind, practical rank was the
+  same at 6, 24 and 168 h in every seed. Under veering wind, the window gain beyond the constant-wind gain was +0.37
+  (bootstrap CI 0.24–0.49, 16/17 non-tied seeds, p = 3e-4; drifting wind +0.11, p = 0.02) (E05 v2, 20 seeds, 32²;
+  gate-05) [E05-1, E05-2]. The v1 claims that a longer window improves rank steadily and can replace sensors were
+  withdrawn: the effect came from a drifting control wind [E05-W1].
+- **More sensors beat more readings, until the sources are covered.** For random networks, 4k sensors × 6 readings
+  beat k sensors × 24 readings (H4, 58/60). For location-aware designs this flips at large k: source_near 0/60 and
+  dopt 5/60 from k = 8 to 32 (E08, 64²) [E08-5].
+- **With all past data, sufficiency becomes trivial in this benchmark.** Using an estimator over all past data, every
+  strategy reached τ = 0.2 with k = 2 for every K (E08 stage 2, 64²; gate-12-17: a genuine floor, causality verified)
+  [E08-8].
+
+**Alternatives and limits.**
+- The all-past-data floor depends on strengths that are exactly constant for 60 days and on a perfect transport
+  model. Time-varying sources (E10), wrong winds (E12) and model mismatch (E13) each remove most of the memory gain.
+- Sensors within 1200 m of a source sit inside its emission disc. Excluding those sites roughly doubles k\* (source_near
+  4 / 8 / 8; random 16 / 24 / > 32) [E08-10].
+- The E05 identifiability results are 32², use random nested sites, and use a source scale chosen after seeing data.
+- k\* is defined with the held-out 1 h forecast and τ = 0.2. Other thresholds were not used as headlines.
+
+## 2. Which placement is best for which task
+
+**Answer.** Knowing the source locations is what matters most. Among location-aware designs, which one is "best"
+depends on the estimator's memory. It does not depend on the endpoint, which in this setup barely discriminates.
+
+- **Confirmatory (cells run).** In the 64² sweep, the D-optimal network cut held-out 1 h forecast RMSE against the mean
+  of 10 random networks by a median 42–84 % per cell. The 95 % percentile CI was above 10 % in 8/8 cells, the
+  distribution-free CI in 7/8 (veering, K = 2, k = 16 straddles), and the mean bootstrap in 8/8 (10 seeds per cell;
+  K ∈ {2, 4}, k ∈ {8, 16}; gate-07: pass with conditions; scope approved by the user) [E07-1]. K = 8, k = 32 and seeds
+  10–19 were not run, so at protocol level those cells are unresolved [E07-2]. **The gain over random is attributable
+  to knowing source locations, not to D-optimisation**: a locations-only control did better still under the
+  estimator of the test.
+- **Under a 24 h window, near-source beats D-optimal.** source_near won 115/120 paired comparisons (110 with AR(1)
+  noise, 118 with per-site σ), with a median margin of 0.41 (layout bootstrap CI 0.28–0.56) and 20/20 layouts
+  favouring it [E07-3]. E08 replicated this on 40 fresh scenarios (H5, 39/40) [E08-6]. Mechanism (exploratory): D-optimal
+  networks lose practical rank in held-out southerly windows, a direction absent from training. At k = 8 their
+  deficient-window fraction there is 0.37, against 0.01 for source_near, and 79 % of dopt's pooled squared error falls
+  in such windows [E07-4].
+- **With all past data, the ordering reverses.** D-optimal beat source_near in 103/120 pairs (median −0.25,
+  CI −0.38 to −0.18; 19/20 layouts), and dopt beat random under both estimators (117/120 and 120/120) (gate-09, 64²
+  cached fields) [E07-8]. E08 replicated the reversal on fresh scenarios (dopt 36/40, k = 2–16) [E08-9]. All 8 E16
+  ablation cells show the same flip, but those are pilot-level [E16-2].
+- **Forecast-optimised placement wins only under the memory it was built for.** Under a 24 h window, the wind-robust
+  forecast design beat dopt even with an out-of-sample prior: +0.34 (CI 0.15–0.40, 19/20 clusters, Holm p = 0.002) at
+  k = 8. It lost to source_near at k = 8 (−0.22, CI −0.54 to −0.08, 2/20, Holm p = 0.018). Under all past data it was
+  worse than dopt (−0.30, CI −0.40 to −0.12, 2/20) (E11, 64², exploratory Holm family of 72 contrasts; gate-12-17:
+  pass) [E11-2, E11-3, E11-4].
+- **The endpoints agree, but by construction.** The network best on forecast was also best on source error in 116/120
+  cases. All endpoints are functions of one static estimate under a perfect model, so this is not evidence against
+  "no single network wins" [E07-6].
+
+**Alternatives and limits.**
+- **Source-disc artefact.** With every site within 1200 m of a source excluded, near-source still beat D-optimal
+  (0.375, CI 0.31–0.45, 104/120). But D-optimal's gain over random fell from 0.71 to 0.20 (CI 0.15–0.33), and no cell
+  cleared the 10 % confirmatory threshold. The confirmatory verdict holds only for the protocol's candidate set
+  [E07-5].
+- The mechanism rests on one unseen wind direction; 12/40 scenarios show no southerly loss.
+- Every design is told the true source locations. No result here says how to place sensors when source locations are
+  unknown.
+- dopt and the forecast designs are local optima of their criteria (greedy + swap).
+
+## 3. Value of sequential updating and memory
+
+**Answer.** Memory, not filtering, carries the gain. With constant sources, using all past data cuts forecast error
+sharply. A filter that only corrects the field does almost nothing. Letting strengths drift helps only for short
+horizons, and only when the sources really change.
+
+- **Memory.** The augmented Kalman filter equals the batch MAP over all past data (to 4e-13). It cut 1 h forecast RMSE
+  against the 24 h window by a median 58–74 % (CIs 0.50–0.85; 10–12 of 12 scenarios per design; 6 independent
+  clusters; 32²). Gate-09's 2 × 2 control attributes a median 0.99 of the log-RMSE gain to the window, not the prior or
+  the sequential form (E09; gate-09: pass with conditions) [E09-1]. On E07's 64² fields the gain was 0.85–0.94 [E09-2].
+- **Field-only filtering.** A filter that corrects only the field was 1.6–13× worse than the 24 h MAP. Corrections
+  leave the domain with the wind within hours [E09-3].
+- **Drifting sources (pilot).** Under time-varying truth, the validation-selected random-walk filter cut 1 h RMSE at
+  k = 8 by 0.24–0.55 against all past data and by 0.30–0.42 against a validation-tuned window (6/6 clusters) [E10-2].
+  Under a diurnal cycle it was 12–15 % worse at 6 h and never improved source RMSE (gate-10/11) [E10-3]. With
+  constant sources, q = 0 was best [E10-1].
+- **Calibration.** Under white noise the all-past-data filter is calibrated (95 % coverage 0.97 at 32², 0.95 at 64²).
+  Under AR(1) noise it is overconfident (0.48), and NIS does not show it while the lag-1 autocorrelation does [E09-4].
+  The drifting filter's 0.91–0.98 coverage holds only for an oracle-matched q. The deployable filter's coverage was
+  never computed [E10-4].
+
+**Alternatives and limits.**
+- The memory gain is as large as it is because strengths are exactly constant for 60 days and the model is perfect.
+  Under any wind error tested it mostly vanished: 0.60–0.77 with the true wind fell to ≤ 0.06 (E12, pilot) [E12-3]. In
+  the regional case, a 40 % vector wind error removed it entirely [E17-4].
+- E10's time-varying truths come from the filter's own model, which favours the filter.
+- Everything in this answer except E09-2 and E07-8 is 32² upwind with 6 clusters.
+
+## 4. Reliability under wind and structural mismatch
+
+**Answer.** Model errors dominate placement differences, and truth-free checks catch only some of them. These are
+pilot results (32², 6 clusters). "Persistence" below is **oracle full-field persistence**, the true field at t carried
+to t + 1 everywhere, a bound no sensor network can reach. "Worse than persistence" is therefore not "worse than a naive
+forecast".
+
+- **Wind errors.** A direction error of 30° or more, a lag of 2 h or more, or AR(1) direction noise with sd 30° put
+  the 1 h forecast below the persistence bound in 0/6 clusters. Speed underestimation kept skill (6/6) (E12;
+  gate-12-17: pass with conditions) [E12-1]. For speed, +10° and AR 15° errors the sensor fit ratio stayed 1.01–1.33
+  while source RMSE rose up to 16× (compensation hidden in a good fit). Larger direction and timing errors degraded
+  the fit 1.6–4.3×, which is visible [E12-2]. Under the wrong wind, dopt and source_near were within a few per cent
+  of each other [E12-4].
+- **Background and sensor errors.** A known-background offset was fully repairable by estimating the background
+  (skill −3.5 → +0.94, coverage 0.96, 6/6) [E13-1]. A common-mode sensor bias produces readings identical to a
+  background offset (to 3.6e-15). The background term absorbs it into the forecast field while every truth-free check
+  stays nominal: a structural **silent failure** (skill −3.9) [E13-2].
+- **Source-basis errors** (shifted, wider or missing sources) were not repaired by any estimator. Shifts left strong
+  residual warnings (fit 1.3–3.5); wide footprints and a missing source left weak ones (1.12–1.27) [E13-3].
+- **Self-diagnosis.** The best truth-free early warning of forecast failure had within-configuration AUC 0.71
+  (CI 0.64–0.77; pooled 0.74), and 0.81–0.86 for large direction or timing errors (E14) [E14-1]. A × 0.8 speed error
+  was undetectable (AUC 0.44–0.57) [E14-2]. An omitted source was flagged (AUC 0.84–0.89) by networks that sample its
+  plume, but those networks were designed knowing the source. Random networks missed it [E14-3]. With a 30° direction
+  error, 90 % coverage fell to 0.07 [E14-5].
+- **Regional winds (64²).** With the ERA5 point nearest the site instead of the box mean, or a 30° veer, every forecast
+  was 1.8–3.7× the persistence bound. Forecasts using the *true* strengths were equally bad (0.047 vs 0.0465–0.0469),
+  so this is a transport floor that neither placement nor memory can remove (E17; gate-12-17) [E17-4].
+
+**Alternatives and limits.** The stress magnitudes are synthetic choices. The persistence baseline and E14's
+within-configuration AUC were added after seeing results. The E13 field-level silent-failure rule is post hoc and has
+an open bug: 46 of its 65 flags are low-skill configurations under the oracle wind too [E13-5]. E14's omitted-source
+detectability is biased upward by the design bug noted above. E12–E14 have no 64² runs.
+
+## 5. Robust placement and transfer (E15–E17)
+
+**Answer.** Scenario-robust placement bought no tail protection beyond chance. The main qualitative conclusions
+survived one-at-a-time physics changes at pilot scale. Under real-place winds, placement still beat random, but the
+D-optimal vs near-source distinction mostly disappeared.
+
+- **Robust placement (E15, 32² pilot) — negative.** The largest tail gain, CVaR-robust vs dopt at k = 2 under a 24 h
+  window (+0.09, CI 0.03–0.12, 6/6 clusters, p = 0.031 uncorrected), cannot be told apart from multiplicity: 9 of 648
+  tail contrasts came out 6/0, against about 10 expected by chance (gate-12-17) [E15-1]. Robust designs behaved like
+  source_near under a 24 h window [E15-2]. Built for the 24 h window, they lost badly under all past data (k = 2: CVaR
+  −0.46, 0/6) [E15-3]. Mean, CVaR and worst-case criteria were indistinguishable [E15-4].
+- **Generalization (E16, 32² pilot, n = 10 per cell, 35 uncorrected verdicts).** No ablation reversed any of the five
+  tested conclusions in 8 cells, two of which used VanLeer. D-optimal over random (nominal +0.79, CI 0.65–0.90) and the
+  memory gain held 10/10 in every cell [E16-1]. The memory flip appeared in every cell [E16-2]. Wider sources weakened
+  C1 (8/10). The "×20 diffusion" cell is only ×1.5 effective at 32² upwind, a weak test [E16-3]. The two VanLeer cells
+  finished after the gate-12-17 audit and are unaudited [E16-4].
+- **Regional transfer (E17, 64², 3 cases × 20 clusters; "synthetic tracer under ERA5 winds", not validation).** With
+  the box-mean wind, dopt and source_near beat random by 0.35–0.50 (24 h window) and 0.53–0.64 (all past data), 20/20
+  clusters at k = 8 [E17-1]. They tied in the cool season. In the unseen monsoon regime source_near was ahead (16/20,
+  median −0.06, p = 0.012), but this does not survive Holm correction over 18 tests. Under all past data they tied,
+  so gate-09's clear D-optimal win did not appear in calm, rotating winds [E17-2]. The 24 h-window forecasts were
+  1.2–1.4× the persistence bound; all-past-data forecasts beat it about 10× [E17-3].
+
+**Alternatives and limits.**
+- E15's ensembles leave out the test directions, which works against the robust designs.
+- E16 changes one physical setting at a time, at 32²; its 64² run (about 2,760 CPU-h) was not conducted.
+- In E17 the 20 clusters of a case share one wind history, so inference over wind histories rests on 3 cases. The
+  solver uses a spatially uniform wind; the within-box wind spread is comparable to the mean. Sources are Nepal-only,
+  and the cool-season boundary layer is far shallower than the model's.
+- E18 (observational validation) was not conducted: no usable monitoring data exist near the site [E18-1].
+
+## Claims a reviewer could reproduce
+
+The list of reproducible claims, with commands, inputs and expected numbers, is in
+`docs/research/manuscript-claims.md`. Every claim above maps to a row of `reports/evidence-matrix.csv`.
+
+## What remains open
+
+- **Pilot-only experiments.** E09, E10 and E12–E16 are 32² pilots with 6 clusters (n = 10 for E16). Their 64² plans
+  are written but were not run.
+- **Untested hypotheses.** E03's identifiable-recovery half was never tested. E04's spectrum-vs-coverage comparison was
+  not run across seeds.
+- **Open bugs** (gate-12-17):
+  - E08 H5 can be NaN when both designs are undefined;
+  - E14's omit-one designs know the omitted source;
+  - E13's field-level rule lacks an oracle condition;
+  - E08 and E17 rows lack a true-strength forecast column.
+- **Unmeasured calibration.** The deployable drifting filter (`kf_qsel`) was never scored for coverage.
+- **Real-world validity is untested.** Known source locations, uniform wind, constant or filter-generated emissions and
+  ideal sensors are all assumptions, not findings.
