@@ -136,3 +136,15 @@ def test_bg_column_recovers_offset(tiny):
     u, _ = M.map_masked(A, z, [T - 1], None, bg_col=M.BG_PRIOR_SD / sig[S])
     assert u[0, -1].mean() == pytest.approx(1.0, abs=.05)     # offset recovered (units of BG_PRIOR_SD = 1 ug m^-3)
     np.testing.assert_allclose(u[0, :2].mean(1), sc.truth.strengths_ug_s / 1e6, rtol=.1)
+
+
+def test_field_silent_failure_rule_needs_oracle_relative_condition():
+    import importlib.util, pandas as pd
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    sp = importlib.util.spec_from_file_location("e13", root / "scripts/e13_model_mismatch.py")
+    E13 = importlib.util.module_from_spec(sp)
+    sp.loader.exec_module(E13)
+    s, _, cex = E13.summarise(pd.read_csv(root / "reports/quarto/tables/e13-local-rows.csv"))
+    f = cex[cex.kind == "field_silent_failure"]
+    assert len(f) == 29 and (f.D_forecast > 1.5).all() and (f.D_fit < 1.1).all()   # audit: 65 unconditioned, 29 oracle-relative

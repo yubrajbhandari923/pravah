@@ -180,6 +180,12 @@ def summarise(df):
                    **{f"hi_{m}": float(g[m].max()) for m in ("cover95_a", "innov_ac1", "source_bias")},
                    **{f"D_{m}": float(np.median(v)) for m, v in D.items()})
         summ.append(row)
+        # post hoc field-level rule (2026-11-16): fit ratio < 1.1, |lag-1| < 0.1, worse than persistence, AND >1.5x the matched
+        # oracle forecast (so cells already worse than persistence under the nominal world are not flagged); cell-median level
+        if (spec != "oracle" and row["D_sensor_fit"] < 1.1 and abs(row["med_innov_ac1"]) < .1
+                and row["skill_h1"] < 0 and row["D_forecast_rmse_h1"] > 1.5):   # skill_h1 = median paired skill vs persistence
+            cex.append(dict(kind="field_silent_failure", spec=spec, k=k, design=des, estimator=est,
+                            D_fit=row["D_sensor_fit"], D_forecast=row["D_forecast_rmse_h1"], innov_ac1=row["med_innov_ac1"]))
         con.append(dict(contrast="skill_vs_persistence_h1", spec=spec, k=k, design=des, estimator=est, **sk))
         if spec == "oracle":
             continue

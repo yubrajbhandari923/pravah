@@ -37,13 +37,15 @@ that, so "worse than persistence" means worse than an unreachable bound, not wor
 
 - **Early warning works only moderately.** The best warning of forecast failure is the sensor skill over the previous
   day, with AUC 0.71 [0.64, 0.77]. It reaches 0.81–0.86 for large direction or timing errors. Spread, fit and NIS give
-  0.65–0.67. For coverage failure, the best AUC is 0.63–0.65.
+  0.63–0.65. For coverage failure, the best AUC is 0.63–0.65.
 - **Calibration depends on the wind.** With the true wind, 90 % coverage is 0.91–0.995, but 50 % coverage is only
   0.44–0.47. With a wrong wind it collapses: 0.07 for a 30° direction error.
 - **Failures nobody flags.**
   - A speed error of × 0.8 is undetectable (AUC 0.46–0.57).
-  - An omitted source is unflagged only for **random** networks. For D-optimal and near-source networks it shows clearly
-    (NIS ≈ 4, lag-1 0.41, AUC 0.84–0.89). Those networks were, however, designed knowing the omitted source.
+  - An omitted source is only weakly flagged by any network (AUC ≈ 0.64 for NIS and lag-1; median NIS 1.1–1.2,
+    lag-1 0.03–0.05). An earlier version reported clear detection by D-optimal and near-source networks (NIS ≈ 4,
+    AUC 0.84–0.89), but those designs had been built knowing the omitted source; with that bug fixed (2026-11-16) the
+    signal disappears.
   - NIS misses AR(1) noise. Lag-1 autocorrelation detects it (0.63 vs −0.03), but as a warning of forecast failure it is
     weak (AUC 0.58).
 

@@ -59,6 +59,7 @@ hpc:
   ssh_host_hint: <hpc-host>
   scheduler: slurm                        # Slurm 21.08; sinfo/sbatch need a login shell (`ssh host "bash -lc '...'"`).
   partition: defq                         # nodes: 96-128 CPUs, 0.5-1 TB RAM, A5000/A6000 GPUs (shared lab cluster)
+  allowed_nodes: [node001, node004]       # user 2026-11-16: submit only to these (sbatch -w node001 or --nodelist=node001,node004 / -x node003); never node003
   uv_binary: ~/.local/bin/uv              # not on PATH in non-login shells
   project_env: envs/main                  # UV_PROJECT_ENVIRONMENT, built with `uv sync --frozen` from a snapshot
   job_script: scripts/hpc/run.sbatch      # generic wrapper; run from code/snapshots/<rev>/

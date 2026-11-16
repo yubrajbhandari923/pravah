@@ -44,6 +44,9 @@ class GramScorer:
             r = truth_field[hrs].reshape(len(hrs), -1) - c_bg
             self.mats[name] = (np.einsum("kti,lti->tkl", Fi, Fi), np.einsum("kti,ti->tk", Fi, r), (r ** 2).sum(1))
 
+        # transport floor: forecast with the true strengths through the model-wind responses (estimation error = forecast_rmse - floor)
+        self.floor = float(np.sqrt(self.sse(np.tile(self.a_true, (len(issue), 1))).mean() / self.n_cell))
+
     def sse(self, a_hat, which="fc"):
         M, b, c = self.mats[which]
         return np.maximum(np.einsum("tk,tkl,tl->t", a_hat, M, a_hat) - 2 * (a_hat * b).sum(1) + c, 0.0)
@@ -51,7 +54,7 @@ class GramScorer:
     def __call__(self, u_hat):
         a = np.asarray(u_hat, float) * self.a_ref
         fc = self.sse(a)
-        out = dict(forecast_rmse=float(np.sqrt(fc.mean() / self.n_cell)),
+        out = dict(forecast_rmse=float(np.sqrt(fc.mean() / self.n_cell)), forecast_rmse_true_a=self.floor,
                    analysis_rmse=float(np.sqrt(self.sse(a, "an").mean() / self.n_cell)),
                    source_rmse=float(np.sqrt(np.mean((a - self.a_true) ** 2)) / self.a_ref))
         for g, m in self.groups.items():
@@ -195,3 +198,10 @@ def breakpoint(ks, nrmse, tau):
             break
         kstar = int(ks[i])
     return kstar
+
+
+def dlog(a, b):
+    """log(a) - log(b) for forecast RMSEs where undefined = inf (post hoc fix 2026-11-16): both inf -> 0 (tie), one inf -> +-inf (win/loss)."""
+    a, b = np.asarray(a, float), np.asarray(b, float)
+    with np.errstate(invalid="ignore"):
+        return np.where(np.isinf(a) & np.isinf(b), 0.0, np.log(a) - np.log(b))

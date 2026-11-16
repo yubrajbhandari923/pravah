@@ -143,8 +143,8 @@ forecast".
   residual warnings (fit 1.3–3.5); wide footprints and a missing source left weak ones (1.12–1.27) [E13-3].
 - **Self-diagnosis.** The best truth-free early warning of forecast failure had within-configuration AUC 0.71
   (CI 0.64–0.77; pooled 0.74), and 0.81–0.86 for large direction or timing errors (E14) [E14-1]. A × 0.8 speed error
-  was undetectable (AUC 0.44–0.57) [E14-2]. An omitted source was flagged (AUC 0.84–0.89) by networks that sample its
-  plume, but those networks were designed knowing the source. Random networks missed it [E14-3]. With a 30° direction
+  was undetectable (AUC 0.44–0.57) [E14-2]. An omitted source was only weakly flagged by any network (AUC ≈ 0.64);
+  an earlier strong signal came from designs that knew the omitted source and vanished once that was fixed [E14-3]. With a 30° direction
   error, 90 % coverage fell to 0.07 [E14-5].
 - **Regional winds (64²).** With the ERA5 point nearest the site instead of the box mean, or a 30° veer, every forecast
   was 1.8–3.7× the persistence bound. Forecasts using the *true* strengths were equally bad (0.047 vs 0.0465–0.0469),
@@ -197,11 +197,8 @@ The list of reproducible claims, with commands, inputs and expected numbers, is 
   are written but were not run.
 - **Untested hypotheses.** E03's identifiable-recovery half was never tested. E04's spectrum-vs-coverage comparison was
   not run across seeds.
-- **Open bugs** (gate-12-17):
-  - E08 H5 can be NaN when both designs are undefined;
-  - E14's omit-one designs know the omitted source;
-  - E13's field-level rule lacks an oracle condition;
-  - E08 and E17 rows lack a true-strength forecast column.
-- **Unmeasured calibration.** The deployable drifting filter (`kf_qsel`) was never scored for coverage.
+- **Audit bugs** (gate-12-17) were fixed on 2026-11-16 (E08 H5 ties, E14 omit-one designs, E13 oracle condition,
+  true-strength forecast column, `kf_qsel` coverage). The deployable filter under-covers under time-varying truth
+  (95 % coverage 0.81–0.93 at k = 8).
 - **Real-world validity is untested.** Known source locations, uniform wind, constant or filter-generated emissions and
   ideal sensors are all assumptions, not findings.

@@ -8,6 +8,7 @@ Report:  uv run python scripts/e14_reliability.py --report
 """
 import argparse, json, os, platform, subprocess, sys, time
 from concurrent.futures import ProcessPoolExecutor
+from dataclasses import replace
 from multiprocessing import get_context
 from pathlib import Path
 
@@ -48,9 +49,12 @@ def run_cluster(job):
     Ya = np.stack([X.readings(sc, sigma, "ar1", r, T) for r in range(R)], 2)
     T_train, seedp = len(sc.split_hours("train")), sc.cfg.seeds.streams(seed)["placement"]
     G3 = {n: X.site_responses(sc, F) for n, F in Fm.items()}
-    p0 = X.problem(X.design_input(sc, G3["oracle"], sigma))
-    designs = {(k, name, net): X.make_design(name, p0, k, T_train, seedp, net)[0]
-               for k in KS for name, net in [("random", j) for j in range(N_RAND)] + [("dopt", 0), ("source_near", 0)]}
+    def make(ks):   # design info = the sources the estimator knows (omit1 arm: the omitted source is unknown to the design too)
+        di = X.design_input(sc, G3["oracle"][:, :, ks], sigma)
+        p0 = X.problem(replace(di, source_xy=di.source_xy[ks]))
+        return {(k, name, net): X.make_design(name, p0, k, T_train, seedp, net)[0]
+                for k in KS for name, net in [("random", j) for j in range(N_RAND)] + [("dopt", 0), ("source_near", 0)]}
+    designs, designs_omit = make(slice(None)), make(slice(0, K - 1))
     issue = X.issue_times(sc)
     blocks = [issue[i:i + RL.W_H] for i in range(0, len(issue) - RL.W_H + 1, RL.W_H)]
     sd_act = 0.01 * float(np.median(sigma))
@@ -62,7 +66,7 @@ def run_cluster(job):
     for arm, fam, mag, resp, Y, ks in arms:
         Fr = a_ref * Fm[resp].reshape(K, T, N)[ks]
         G = G3[resp][:, :, ks]
-        for (k, name, net), S in designs.items():
+        for (k, name, net), S in (designs_omit if arm == "omit1" else designs).items():
             A = a_ref * G[S] / sigma[S][:, None, None]
             z = (Y[S] - cbg) / sigma[S][:, None, None]
             for est, win in ESTS.items():

@@ -13,13 +13,7 @@ Sources: `state/STATUS.md`, the experiment journals and plan 3. Nothing in this 
 
 1. **E20, independent replication and release review.** Rerun a sample of each experiment from a clean checkout, and
    review the claims in `docs/research/manuscript-claims.md` against `reports/evidence-matrix.csv`.
-2. **Fix the four audit bugs:**
-   - E08 H5 returns NaN;
-   - E14's omit-one designs know the omitted source;
-   - E13's field-level rule needs a comparison against the true-wind run;
-   - the E08 and E17 rows need a true-strength forecast column.
-
-   Also compute kf_qsel coverage and CRPS (E10).
+2. ~~Fix the four audit bugs and compute kf_qsel coverage~~ (done 2026-11-16; see the journals).
 3. **Deferred 64² runs** (each plan is in its design note; one 64-CPU job at a time):
 
    | Run | Estimated cost | Note |

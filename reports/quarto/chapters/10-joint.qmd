@@ -39,7 +39,9 @@ clusters. Independently audited (gate-10/11: pass with conditions).
   - Under time-varying truth, `map_full` is badly overconfident (95 % coverage 0.09–0.25).
   - The filter is calibrated (0.91–0.98) only when q matches the truth.
   - With q > 0 under constant truth, the bands are too wide (above 0.99).
-  - Coverage for the validation-selected q was not computed.
+  - With the validation-selected q (`kf_qsel`, computed 2026-11-16), 95 % coverage at k = 8 is 0.98 (constant),
+    0.93 (diurnal) and 0.81 (log random walk); CRPS 0.003 / 0.034 / 0.025. It under-covers under time-varying truth,
+    but far less than `map_full`.
 - **Placement × memory.** Under constant truth, the strategy ordering depends on memory, as E09 found. Under
   time-varying truth, near-source is as good or better at every q. D-optimal beats random under every estimator.
 - **Nonnegativity.** Weak designs produce negative mean strengths in up to 46 % of rows. Enforcing nonnegativity never

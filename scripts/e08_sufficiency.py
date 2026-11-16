@@ -168,12 +168,13 @@ def contrasts(d, ksd, sweep):
             for k in (2, 4, 8):
                 a = val(d[(d.arm == arm) & (d.schedule == s24) & (d.k == k) & (d.strategy == st)])
                 b = val(d[(d.arm == arm) & (d.schedule == s6) & (d.k == 4 * k) & (d.strategy == st)])
-                out.append({**_paired(f"H4 {st} W={W} k={k}->{4 * k}", np.log(a) - np.log(b), "scenario",
+                out.append({**_paired(f"H4 {st} W={W} k={k}->{4 * k}", S.dlog(a, b), "scenario",
                                       "log RMSE(k, n=24) - log RMSE(4k, n=6) > 0"), "primary": st == "random" and W == 168 and k == 2})
     # H5: source_near vs dopt on fresh scenarios
     for k in KS:
         q = ref[ref.k == k]
-        x = np.log(val(q[q.strategy == "dopt"])) - np.log(val(q[q.strategy == "source_near"]))
+        vd = val(q[q.strategy == "dopt"])
+        x = pd.Series(S.dlog(vd, val(q[q.strategy == "source_near"])), index=vd.index)
         fresh = np.array([not (sweep and E07_OVERLAP(K, s)) for K, s in x.index])
         out.append({**_paired(f"H5 k={k} fresh", x[fresh], "scenario", "log RMSE dopt - source_near > 0"), "primary": k == 8})
         if sweep:

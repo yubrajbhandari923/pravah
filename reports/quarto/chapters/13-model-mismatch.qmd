@@ -53,6 +53,8 @@ that, so "worse than persistence" means worse than an unreachable bound, not wor
 ## Limits
 
 - The stress magnitudes are synthetic choices, and n = 6.
-- The rule for field-level silent failure was added after seeing results. The audit found it flags 65 cells, 46 of which
-  are already worse than persistence with the true wind. It needs a comparison against the true-wind run.
+- The rule for field-level silent failure was added after seeing results. The audit found the first version flagged
+  65 cells, 46 of them already worse than persistence with the true wind. With the added condition "forecast more
+  than 1.5× the matched true-model run" it flags 29 cells (common bias 12, missing source 8, wide footprint 6, drift 2,
+  outages 1). It remains post hoc.
   The common-bias silent failure itself is structural and confirmed exactly.

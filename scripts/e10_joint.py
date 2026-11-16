@@ -158,6 +158,7 @@ def run_scenario(job):
                 sel["kf_qsel" + part] = dict(fc={hz: np.stack([s["fc"][hz][..., c] for c, s in enumerate(src)], 2)
                                                  for hz in src[0]["fc"]},
                                              a=np.stack([s["a"][..., c] for c, s in enumerate(src)], 2))
+            sel["kf_qsel"]["sd1"] = np.stack([est[qname(qs[j])]["sd1"] for j in pick], 2)
             est |= sel
             checks += [dict(**dk, check="qsel_column", variant=VARIANTS[c // R], draw=c % R, value=qs[j])
                        for c, j in enumerate(pick)]
@@ -202,12 +203,16 @@ def score(est, xt, av, issue, sig):
                 sd = np.sqrt(np.einsum("tkk->tk", e["C"]))
                 r["src_cov95"] = float(np.mean(np.abs(err) <= 1.96 * sd))
                 r["src_nees_k"] = float(np.median(np.einsum("rtk,tkl,rtl->rt", err, np.linalg.inv(e["C"]), err) / a.shape[1]))
-                sd1 = np.maximum(e["sd1"], 1e-12)
-                act = e["sd1"] >= SD_ACTIVE * sig
-                cv = [KF.coverage(e["fc"][1][:, :, c][act], sd1[act], tf[issue + 1][act]) for c in cols]
+            if "sd1" in e:      # sd1: (n_issue, N), or (n_issue, N, n_cols) for kf_qsel (q differs per data column)
+                sd1s = [e["sd1"][..., c] if e["sd1"].ndim == 3 else e["sd1"] for c in cols]
+                cv = []
+                for c, s1 in zip(cols, sd1s):
+                    act = s1 >= SD_ACTIVE * sig
+                    cv.append(KF.coverage(e["fc"][1][:, :, c][act], np.maximum(s1, 1e-12)[act], tf[issue + 1][act]))
                 for lv in (0.5, 0.8, 0.95):
                     r[f"cov{int(lv * 100)}_active"] = float(np.mean([x[lv] for x in cv]))
-                r["crps"] = float(np.mean([KF.gaussian_crps(e["fc"][1][:, :, c], sd1, tf[issue + 1]).mean() for c in cols]))
+                r["crps"] = float(np.mean([KF.gaussian_crps(e["fc"][1][:, :, c], np.maximum(s1, 1e-12), tf[issue + 1]).mean()
+                                           for c, s1 in zip(cols, sd1s)]))
             if "nis" in e:
                 th = np.arange(issue[0] + 1, issue[-1] + 2)
                 r["nis_test"] = float(np.nanmean(e["nis"][th][:, list(cols)] / np.maximum(e["kobs"][th], 1)[:, None]))

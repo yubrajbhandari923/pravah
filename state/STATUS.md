@@ -35,12 +35,8 @@
 - Unaudited: the E16 VanLeer cells (added after gate-12-17) and the main E08 64² sweep tests (H1–H5).
 
 ## Open items
-- **Bugs:**
-  - E08 H5 log(inf) − log(inf) gives NaN;
-  - E14 omit1 designs know the omitted source;
-  - the E13 field-level rule lacks a check against the true-wind run;
-  - the E08/E17 rows have no true-strength forecast column.
-- **E10:** kf_qsel coverage and CRPS were never computed.
+- **Bugs:** the gate-12-17 bugs and E10 kf_qsel coverage were fixed 2026-11-16 (old → new in journals e08, e10,
+  e12–e17). Main change: E14's omitted source is no longer detected by informed networks (AUC 0.84–0.89 → ≈ 0.64).
 - **E03:** remains rank deficient for structural reasons.
 - **Missing run records:** the E06, E08 pilot, E11 v2 pilot, E15 pilot and E17 32² pilot runs (see the evidence-matrix
   caveats).

@@ -39,6 +39,8 @@ def test_gram_scorer_equals_score():
     ref = X.score(u, F, tf, issue, a_true, 1e6, 5.0, np.full((nx, nx), 1 / nx ** 2))
     for c in ("forecast_rmse", "analysis_rmse", "source_rmse"):
         assert g[c] == pytest.approx(ref[c], rel=1e-10)
+    fl = X.score(np.tile(a_true / 1e6, (len(issue), 1)), F, tf, issue, a_true, 1e6, 5.0, np.full((nx, nx), 1 / nx ** 2))
+    assert g["forecast_rmse_true_a"] == pytest.approx(fl["forecast_rmse"], rel=1e-10)   # transport floor
     sub = X.score(u[:10], F, tf, issue[:10], a_true, 1e6, 5.0, np.ones((nx, nx)))
     assert g["fc_rmse_a"] == pytest.approx(sub["forecast_rmse"], rel=1e-10)
 
@@ -137,3 +139,8 @@ def test_exclusion_and_full_window_variants_run():
     used = {int(i) for d in drows if d.get("sites") for i in d["sites"].split()}
     assert used and used <= set(keep.tolist())
     assert all(np.isfinite(x["forecast_rmse"]) for x in rows if x["status"] == "ok")
+
+
+def test_dlog_handles_undefined_pairs():
+    r = S.dlog([np.inf, np.inf, 2.0, 2.0], [np.inf, 2.0, np.inf, 1.0])
+    assert r[0] == 0 and r[1] == np.inf and r[2] == -np.inf and r[3] == pytest.approx(np.log(2))

@@ -276,3 +276,11 @@ CIs), `e08-local-breakpoints.csv` (k*(τ)), `e08-local-contrasts.csv` (H1–H5 s
 10. **`--exclude-radius M`** (decision 8) is implemented by `cross_objective.exclude_near_sources`, as in E07: all four strategies place only on candidates farther than M of every true source (inclusive boundary excluded); scoring, estimator and schedules are unchanged. Outputs carry the tag `excl1200`.
 11. **`--estimator map_full`** (motivated by gate-09: the all-past-data MAP equals the augmented Kalman filter under a perfect model). Only the estimator changes: at every issue hour t the MAP (prior N(0, I), same whitening) uses all sampled readings from hour 0 to t instead of the W-hour window ending at t (`estimate_series(window=None)`). The schedule still decides which hours are read (cadence W/n), so S1, S4 and S7 (all hourly) become identical and the span W no longer enters the estimator; the identifiability descriptors (`prank`, `tti`) keep their nominal-W definition and are not comparable under this variant. Outputs carry the tag `mapfull`; H1-H5 are recomputed by `--report` on these rows as exploratory, never as verdicts, and never replace the reference run.
 12. **Erratum to section 9, H5:** "60 scenarios not used by E07" is wrong; K = 8 seeds 0-19 plus K = 2, 4 seeds 10-19 is 40 scenarios (the code uses 40).
+
+### Post hoc bug fix 2026-11-16 (H4/H5 undefined pairs)
+
+H5 (and H4) contrasts were `log(RMSE_a) - log(RMSE_b)` with undefined forecasts coded as inf, so a pair with both designs
+undefined gave inf - inf = NaN and a NaN median (only `excl1200` H5 k=32, one scenario). Rule now (`sufficiency.dlog`):
+both undefined = tie (0); exactly one undefined = +-inf (win/loss for the defined design); medians and sign tests then run over
+all pairs. Effect on the 64² tables: only `e08-sweep-excl1200-contrasts.csv` H5 k=32 fresh changed (median NaN -> 0.355,
+CI 0.101-0.774; wins/losses/ties 34/5/1 and p unchanged). No other reported number changed. Post hoc; not part of the preregistered analysis.

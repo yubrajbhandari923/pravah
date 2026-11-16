@@ -186,12 +186,14 @@ def evaluate(job):
     test_h = sc.split_hours("test")
     for spn, F in Fm.items():
         derr, sratio = U.wind_error(sc.truth.winds[test_h], case_winds(scale, case, _spec(spn))[test_h])
+        # transport floor: forecast with the TRUE strengths through this spec's (model-wind) responses; estimation error = forecast_rmse - floor
+        floor = X.score(np.tile(a_true / a_ref, (len(issue), 1)), F, tf, issue, a_true, a_ref, cbg, wpop)["forecast_rmse"]
         for (k, name, net), S in designs.items():
             A = a_ref * G3[spn][S] / sigma[S][:, None, None]
             for est, win in ESTS.items():
                 m = [X.score(X.estimate_series(A, (y[S] - cbg) / sigma[S][:, None], issue, window=win), F, tf, issue,
                              a_true, a_ref, cbg, wpop) for y in Y]
-                rows.append({**key, "spec": spn, "dir_err_deg": derr, "speed_ratio": sratio, "estimator": est, "k": k,
+                rows.append({**key, "spec": spn, "dir_err_deg": derr, "speed_ratio": sratio, "forecast_rmse_true_a": float(floor), "estimator": est, "k": k,
                              "strategy": name, "net": net, "sites": " ".join(map(str, S)),
                              **{c: float(np.mean([x[c] for x in m])) for c in m[0]}})
     tm = {**key, "n_cand": len(cand), "n_hours": T, "n_issue": len(issue), "superposition_rel_max": lin,
