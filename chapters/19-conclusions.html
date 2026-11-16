@@ -378,7 +378,7 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>Wind errors.</strong> A direction error of 30° or more, a lag of 2 h or more, or AR(1) direction noise with sd 30° put the 1 h forecast below the persistence bound in 0/6 clusters. Speed underestimation kept skill (6/6) (E12; gate-12-17: pass with conditions) [E12-1]. For speed, +10° and AR 15° errors the sensor fit ratio stayed 1.01–1.33 while source RMSE rose up to 16× (compensation hidden in a good fit). Larger direction and timing errors degraded the fit 1.6–4.3×, which is visible [E12-2]. Under the wrong wind, dopt and source_near were within a few per cent of each other [E12-4].</li>
 <li><strong>Background and sensor errors.</strong> A known-background offset was fully repairable by estimating the background (skill −3.5 → +0.94, coverage 0.96, 6/6) [E13-1]. A common-mode sensor bias produces readings identical to a background offset (to 3.6e-15). The background term absorbs it into the forecast field while every truth-free check stays nominal: a structural <strong>silent failure</strong> (skill −3.9) [E13-2].</li>
 <li><strong>Source-basis errors</strong> (shifted, wider or missing sources) were not repaired by any estimator. Shifts left strong residual warnings (fit 1.3–3.5); wide footprints and a missing source left weak ones (1.12–1.27) [E13-3].</li>
-<li><strong>Self-diagnosis.</strong> The best truth-free early warning of forecast failure had within-configuration AUC 0.71 (CI 0.64–0.77; pooled 0.74), and 0.81–0.86 for large direction or timing errors (E14) [E14-1]. A × 0.8 speed error was undetectable (AUC 0.44–0.57) [E14-2]. An omitted source was flagged (AUC 0.84–0.89) by networks that sample its plume, but those networks were designed knowing the source. Random networks missed it [E14-3]. With a 30° direction error, 90 % coverage fell to 0.07 [E14-5].</li>
+<li><strong>Self-diagnosis.</strong> The best truth-free early warning of forecast failure had within-configuration AUC 0.71 (CI 0.64–0.77; pooled 0.74), and 0.81–0.86 for large direction or timing errors (E14) [E14-1]. A × 0.8 speed error was undetectable (AUC 0.44–0.57) [E14-2]. An omitted source was only weakly flagged by any network (AUC ≈ 0.64); an earlier strong signal came from designs that knew the omitted source and vanished once that was fixed [E14-3]. With a 30° direction error, 90 % coverage fell to 0.07 [E14-5].</li>
 <li><strong>Regional winds (64²).</strong> With the ERA5 point nearest the site instead of the box mean, or a 30° veer, every forecast was 1.8–3.7× the persistence bound. Forecasts using the <em>true</em> strengths were equally bad (0.047 vs 0.0465–0.0469), so this is a transport floor that neither placement nor memory can remove (E17; gate-12-17) [E17-4].</li>
 </ul>
 <p><strong>Alternatives and limits.</strong> The stress magnitudes are synthetic choices. The persistence baseline and E14’s within-configuration AUC were added after seeing results. The E13 field-level silent-failure rule is post hoc and has an open bug: 46 of its 65 flags are low-skill configurations under the oracle wind too [E13-5]. E14’s omitted-source detectability is biased upward by the design bug noted above. E12–E14 have no 64² runs.</p>
@@ -402,14 +402,7 @@ ul.task-list li input[type="checkbox"] {
 <ul>
 <li><strong>Pilot-only experiments.</strong> E09, E10 and E12–E16 are 32² pilots with 6 clusters (n = 10 for E16). Their 64² plans are written but were not run.</li>
 <li><strong>Untested hypotheses.</strong> E03’s identifiable-recovery half was never tested. E04’s spectrum-vs-coverage comparison was not run across seeds.</li>
-<li><strong>Open bugs</strong> (gate-12-17):
-<ul>
-<li>E08 H5 can be NaN when both designs are undefined;</li>
-<li>E14’s omit-one designs know the omitted source;</li>
-<li>E13’s field-level rule lacks an oracle condition;</li>
-<li>E08 and E17 rows lack a true-strength forecast column.</li>
-</ul></li>
-<li><strong>Unmeasured calibration.</strong> The deployable drifting filter (<code>kf_qsel</code>) was never scored for coverage.</li>
+<li><strong>Audit bugs</strong> (gate-12-17) were fixed on 2026-11-16 (E08 H5 ties, E14 omit-one designs, E13 oracle condition, true-strength forecast column, <code>kf_qsel</code> coverage). The deployable filter under-covers under time-varying truth (95 % coverage 0.81–0.93 at k = 8).</li>
 <li><strong>Real-world validity is untested.</strong> Known source locations, uniform wind, constant or filter-generated emissions and ideal sensors are all assumptions, not findings.</li>
 </ul>
 
