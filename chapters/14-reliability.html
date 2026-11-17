@@ -287,6 +287,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#what-we-did" id="toc-what-we-did" class="nav-link active" data-scroll-target="#what-we-did"><span class="header-section-number">17.1</span> What we did</a></li>
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">17.2</span> Results</a></li>
   <li><a href="#limits" id="toc-limits" class="nav-link" data-scroll-target="#limits"><span class="header-section-number">17.3</span> Limits</a></li>
+  <li><a href="#sweep-2026-11-17" id="toc-sweep-2026-11-17" class="nav-link" data-scroll-target="#sweep-2026-11-17"><span class="header-section-number">17.4</span> 64² sweep (2026-11-17)</a></li>
   </ul>
 </nav>
     </div>
@@ -314,7 +315,7 @@ ul.task-list li input[type="checkbox"] {
 
 <p>Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.</p>
 <p><strong>Question (plan 3).</strong> Can a method tell, without knowing the truth, when its own forecast or uncertainty is unreliable?</p>
-<p><strong>Evidence label.</strong> Exploratory pilot: 32², 6 clusters. The within-config AUC was added after seeing results (deviation 1). Audited (gate-12-17: pass with conditions; claims below corrected). The 64² run is deferred.</p>
+<p><strong>Evidence label.</strong> Exploratory pilot: 32², 6 clusters. The within-config AUC was added after seeing results (deviation 1). Audited (gate-12-17: pass with conditions; claims below corrected). A 64² sweep (20 clusters, unaudited) is at the end of this chapter; it confirms the pilot and sharpens the intervals.</p>
 <p><strong>Evidence.</strong> - Design note <code>docs/research/reliability-design.md</code>. - Code <code>src/pravah/experiments/reliability.py</code>, driver <code>scripts/e14_reliability.py</code>. - Tables <code>tables/e14-local-*</code>; journal <code>state/experiments/e14.md</code>.</p>
 <section id="what-we-did" class="level2" data-number="17.1">
 <h2 data-number="17.1" class="anchored" data-anchor-id="what-we-did"><span class="header-section-number">17.1</span> What we did</h2>
@@ -381,6 +382,37 @@ Figure&nbsp;17.2: E14: interval coverage with the true and with a wrong wind.
 <li>The 6 clusters are dependent.</li>
 <li>The within-config AUC was chosen after seeing results. It lowers the best score (0.74 to 0.71) rather than flattering it.</li>
 <li>Together with E13’s silent failure, these results mean that truth-free checks cannot certify a map. They can only flag some failures.</li>
+</ul>
+</section>
+<section id="sweep-2026-11-17" class="level2" data-number="17.4">
+<h2 data-number="17.4" class="anchored" data-anchor-id="sweep-2026-11-17"><span class="header-section-number">17.4</span> 64² sweep (2026-11-17)</h2>
+<p><strong>Evidence label.</strong> Exploratory, 64² (E12 sweep fields; VanLeer), 20 clusters, k = 4/8/16, E12’s five wind errors plus noise × 2, AR(1) noise and an omitted source (with the 2026-11-16 design fix). 385,560 units. Job 206079 (node001, code 7ddd45f); no new solves. Not yet independently audited. Tables <code>tables/e14-sweep-*</code>.</p>
+<div id="fig-e14-sweep-roc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-e14-sweep-roc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figures/e14-sweep-roc.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-e14-sweep-roc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17.3: E14 64² sweep: ROC of each diagnostic.
+</figcaption>
+</figure>
+</div>
+<div id="fig-e14-sweep-cal" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-e14-sweep-cal-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figures/e14-sweep-calibration.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-e14-sweep-cal-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17.4: E14 64² sweep: interval coverage by arm.
+</figcaption>
+</figure>
+</div>
+<ul>
+<li><strong>Early warning of forecast failure is still moderate.</strong> Best is again the previous day’s sensor skill: within-config AUC 0.735 [0.706, 0.758] (pilot 0.71 [0.64, 0.77]). NIS, fit and leave-one-site-out give 0.67; lag-1 0.62.</li>
+<li><strong>Coverage failure is easier to flag at 64²:</strong> AUC 0.72–0.73 for NIS, fit, leave-one-site-out, drift and sensor skill (pilot 0.63–0.65).</li>
+<li><strong>By stress (within-config, forecast failure):</strong> large wind errors (+30°, 6 h lag, AR 30°) 0.79–0.90; +10° 0.66; <strong>speed × 0.6 0.50–0.55, i.e.&nbsp;undetectable</strong>, as in the pilot. Noise × 2 and AR(1) noise do not cause detectable forecast failure (≈ 0.5), but their coverage failure is flagged (NIS/fit 0.75 for noise × 2, lag-1 0.76 for AR(1)). An omitted source gives 0.67–0.70 (0.70–0.74 for coverage), a little higher than the pilot’s ≈ 0.64.</li>
+<li><strong>Calibration.</strong> With the true wind, 90 % coverage is 0.91 (24 h window) and 0.99 (all past data); 50 % coverage is 0.45–0.48. Under the wrong wind it collapses, and harder with all past data: +30° gives 0.13 vs 0.01; speed × 0.6 0.37 vs 0.06.</li>
+<li><strong>Caveat.</strong> In 4 blocks (0.9 % of evaluation units) the truth field does not change, so persistence error is exactly 0 and every forecast is labelled a failure. The effect on the AUCs is at most about 1 %; not re-scored.</li>
 </ul>
 
 
