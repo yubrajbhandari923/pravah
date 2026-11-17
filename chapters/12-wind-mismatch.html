@@ -287,6 +287,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#what-we-did" id="toc-what-we-did" class="nav-link active" data-scroll-target="#what-we-did"><span class="header-section-number">15.1</span> What we did</a></li>
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">15.2</span> Results</a></li>
   <li><a href="#limits" id="toc-limits" class="nav-link" data-scroll-target="#limits"><span class="header-section-number">15.3</span> Limits</a></li>
+  <li><a href="#sweep-2026-11-17" id="toc-sweep-2026-11-17" class="nav-link" data-scroll-target="#sweep-2026-11-17"><span class="header-section-number">15.4</span> 64² sweep (2026-11-17)</a></li>
   </ul>
 </nav>
     </div>
@@ -314,7 +315,7 @@ ul.task-list li input[type="checkbox"] {
 
 <p>Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.</p>
 <p><strong>Question (plan 3).</strong> How do errors in the wind given to the inverse model affect source estimates and forecasts? Can wrong source strengths absorb wind errors and still fit the sensors?</p>
-<p><strong>Evidence label.</strong> Exploratory pilot: 32², upwind operator, 6 clusters, k = 2/4/8. Audited (gate-12-17: pass with conditions; claims below corrected). The 64² run is deferred.</p>
+<p><strong>Evidence label.</strong> Exploratory pilot: 32², upwind operator, 6 clusters, k = 2/4/8. Audited (gate-12-17: pass with conditions; claims below corrected). The 64² sweep (20 clusters) is reported at the end of this chapter; it confirms the pilot’s conclusions, with one change: compensation is less hidden at 64².</p>
 <p><strong>Evidence.</strong> - Design note <code>docs/research/wind-mismatch-design.md</code>. - Code <code>src/pravah/uncertainty.py</code>, driver <code>scripts/e12_wind_mismatch.py</code>. - Tables <code>tables/e12-local-*</code>; journal <code>state/experiments/e12.md</code>.</p>
 <section id="what-we-did" class="level2" data-number="15.1">
 <h2 data-number="15.1" class="anchored" data-anchor-id="what-we-did"><span class="header-section-number">15.1</span> What we did</h2>
@@ -373,9 +374,32 @@ Figure&nbsp;15.1: E12: source-strength bias and forecast skill under each wind e
 <section id="limits" class="level2" data-number="15.3">
 <h2 data-number="15.3" class="anchored" data-anchor-id="limits"><span class="header-section-number">15.3</span> Limits</h2>
 <ul>
-<li>n = 6, upwind numerics and a short calendar.</li>
+<li>Pilot: n = 6, upwind numerics and a short calendar. The 64² sweep (n = 20) is not yet audited.</li>
 <li>The persistence baseline was added after seeing results.</li>
-<li>The 64² plan is in the design note.</li>
+<li>The 64² sweep used five of the eight wind errors.</li>
+</ul>
+</section>
+<section id="sweep-2026-11-17" class="level2" data-number="15.4">
+<h2 data-number="15.4" class="anchored" data-anchor-id="sweep-2026-11-17"><span class="header-section-number">15.4</span> 64² sweep (2026-11-17)</h2>
+<p><strong>Evidence label.</strong> Exploratory, 64², split VanLeer (A2), 20 clusters (K = 2/4 × 10 seeds), k = 4/8/16, five wind errors (+10°, +30°, speed × 0.6, 6 h lag, AR(1) 30°) plus the true wind. Run under job 205982 (node004, 64 CPUs, 19.9 h, ≈ 1,290 CPU-h of new solves; code d8c007b). Not yet independently audited. Tables <code>tables/e12-sweep-*</code>.</p>
+<div id="fig-e12-sweep" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-e12-sweep-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figures/e12-sweep-bias.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-e12-sweep-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.2: E12 64² sweep: forecast error and ratios to the true-wind run, k = 16.
+</figcaption>
+</figure>
+</div>
+<ul>
+<li><strong>Forecast skill (vs the persistence bound).</strong> +30°, a 6 h lag and AR 30° are worse than persistence in <strong>0/20</strong> clusters for every design, estimator and k (median skill −0.6 to −1.5). +10° is level (about 10/20 for informed networks; random 0–8/20). Speed × 0.6 keeps skill with informed networks (20/20; skill +0.3 to +0.4 at k = 16). Same picture as the pilot.</li>
+<li><strong>Compensation is less hidden at 64².</strong> The sensor-fit ratio to the true-wind run is 1.12–1.40 for speed × 0.6 and 1.29–1.65 for +10° (pilot: 1.01–1.33), and 1.9–6.2 for the large errors. Source RMSE still grows faster than the fit in nearly every cell (H2 gap &gt; 0, up to 20/20). 248 cluster-level “deceptive fit” cases remain (fit &lt; 1.1 while forecast &gt; 1.5×; speed 174, +10° 74).</li>
+<li><strong>Strengths.</strong> Speed × 0.6 biases strengths −35 % to −53 % (pilot −32 %). 95 % coverage of the strengths falls from 0.83–0.95 to 0.02–0.59.</li>
+<li><strong>Warning sign.</strong> Lag-1 innovation autocorrelation is 0.08–0.31 for speed and +10°, 0.37–0.71 for the large errors (true wind ≤ 0.03).</li>
+<li><strong>Memory.</strong> With the true wind, using all past data cuts 1 h forecast error by 89–97 % vs a 24 h window (20/20). Under every wind error the gain for informed networks is within ±0.1, and for speed × 0.6 memory <em>hurts</em> (−8 % to −16 % at k = 16, 15–17/20 clusters). Only random networks still gain. This is stronger than the pilot’s “mostly vanishes”.</li>
+<li><strong>Placement.</strong> Under the wrong wind, D-optimal and near-source differ by 0–5 % in absolute forecast error, except speed × 0.6 with all past data, where D-optimal is 5–13 % better (18–20/20). Ratio-based robustness rankings still flip with memory (denominator artefact). Random networks are worse than D-optimal everywhere (0–1/20 wins).</li>
+<li><strong>Not run at 64²:</strong> speed × 0.8, a 2 h lag and AR 15° (the pre-set sweep list <code>SWEEP_SPECS</code> has five errors).</li>
 </ul>
 
 
