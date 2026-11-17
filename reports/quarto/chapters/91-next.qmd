@@ -21,10 +21,10 @@ Sources: `state/STATUS.md`, the experiment journals and plan 3. Nothing in this 
    | E12 | done 2026-11-17 (≈ 1,290 CPU-h, job 205982) | audit pending |
    | E13 | about 616 CPU-h | |
    | E14 | done 2026-11-17 (job 206079; < 1 CPU-h of units + report) | audit pending |
-   | E15 | about 130–160 CPU-h | after E12 |
+   | E15 | done 2026-11-17 (job 206079; ≈ 110 CPU-h) | audit pending |
    | E16 | about 2,760 CPU-h | |
 
-   Priority: E14 and E15 (reuse E12's fields), then then E16's diffusion cells. E16's diffusion cell is the only real diffusion test, because
+   Priority: an audit of the E12/E14/E15 64² sweeps, then then E16's diffusion cells. E16's diffusion cell is the only real diffusion test, because
    32² upwind numerics swamp it.
 4. **Spatially varying wind in E17.** The ERA5 wind varies inside the box by about as much as its mean. This needs a
    solver extension.

@@ -7,14 +7,14 @@
 ## Current phase
 
 - **Plan 3 is nearly complete.**
-  - E12–E17 have results (32² pilots; E12, E14 and E17 also at 64²).
+  - E12–E17 have results (32² pilots; E12, E14, E15 and E17 also at 64²).
   - E18 was not conducted: no data (user, 2026-11-14).
   - E19 synthesis is done: `reports/evidence-matrix.csv`, `scripts/validate_report.py` (0 problems) and the
     conclusions chapter.
 - **Next: E20, independent replication and release review.**
 - **Heavy 64² sweeps are deferred** (user, 2026-11-13). Each design note documents its cluster plan. Done at 64²: E07,
-  E08 (and stage-2 reruns), E11, E12 (job 205982, 2026-11-17, unaudited) and E17. Next on the cluster (user-approved
-  item 3): E14 and E15 at 64², reusing E12's fields; node001/node004 only, one 64-CPU job.
+  E08 (and stage-2 reruns), E11, E12 (job 205982, 2026-11-17, unaudited) and E17. E14 and E15 also done at 64²
+  (job 206079, 2026-11-17, unaudited). Item 3 complete; next is an audit of these sweeps, then E20 (user: later).
 
 ## Key results (details in the journals and `reports/quarto`)
 
@@ -28,7 +28,8 @@
   memory gains (E12, E13, E17). E17's wrong-wind collapse is a transport floor.
 - **Self-diagnosis is moderate** (AUC 0.71 within configuration, 0.74 pooled; 64² sweep 0.735 [0.706, 0.758]). A common-mode bias is a structural
   silent failure.
-- **Robust placement:** E15's tail gain is indistinguishable from chance.
+- **Robust placement:** E15's tail gain is small: chance-level in the pilot; at 64², 3/144 Holm-significant gains of 3–5 % over
+  D-optimal and none over near-source.
 
 ## Audits
 - gate-07, b3, gate-09 and gate-10-11: all pass or pass with conditions.

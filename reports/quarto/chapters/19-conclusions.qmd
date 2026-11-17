@@ -12,10 +12,10 @@ audit's wording is used.
 ::: {.callout-important}
 ## What scale each answer rests on
 - **64² (split VanLeer, protocol calendar):** E07 sweep (40 scenarios, 10 seeds per cell), E08 sweep and its stage-2
-  variants (60 scenarios), E11 sweep (20 clusters), E12 sweep (20 clusters, five wind errors; unaudited), E14 sweep (20 clusters; unaudited), E17 regional case (3 cases × 20 clusters), and gate-09's re-scoring
+  variants (60 scenarios), E11 sweep (20 clusters), E12 sweep (20 clusters, five wind errors; unaudited), E14 and E15 sweeps (20 clusters each; unaudited), E17 regional case (3 cases × 20 clusters), and gate-09's re-scoring
   of E07's cached fields.
-- **32² pilots only (upwind numerics, 6 independent clusters, or n = 10 for E16):** E09, E10, E13, E15 and
-  E16 (E12 and E14 also have 64² sweeps). Their 64² runs are documented but were deferred, so these answers are **pilot-level**.
+- **32² pilots only (upwind numerics, 6 independent clusters, or n = 10 for E16):** E09, E10, E13 and
+  E16 (E12, E14 and E15 also have 64² sweeps). Their 64² runs are documented but were deferred, so these answers are **pilot-level**.
 - **Smoke scale, exploratory:** E02–E06 (the 1 g/s source scale was chosen after seeing data).
 - **Confirmatory:** one test only, E07's dopt vs random, and only in the 8 cells that were run.
 :::
@@ -154,7 +154,7 @@ forecast".
 **Alternatives and limits.** The stress magnitudes are synthetic choices. The persistence baseline and E14's
 within-configuration AUC were added after seeing results. The E13 field-level silent-failure rule is post hoc and has
 an open bug: 46 of its 65 flags are low-skill configurations under the oracle wind too [E13-5]. E14's omitted-source
-detectability is biased upward by the design bug noted above. E13 has no 64² run; the E12 and E14 64² sweeps are not yet audited.
+detectability is biased upward by the design bug noted above. E13 has no 64² run; the E12, E14 and E15 64² sweeps are not yet audited.
 
 ## 5. Robust placement and transfer (E15–E17)
 
@@ -166,7 +166,9 @@ D-optimal vs near-source distinction mostly disappeared.
   window (+0.09, CI 0.03–0.12, 6/6 clusters, p = 0.031 uncorrected), cannot be told apart from multiplicity: 9 of 648
   tail contrasts came out 6/0, against about 10 expected by chance (gate-12-17) [E15-1]. Robust designs behaved like
   source_near under a 24 h window [E15-2]. Built for the 24 h window, they lost badly under all past data (k = 2: CVaR
-  −0.46, 0/6) [E15-3]. Mean, CVaR and worst-case criteria were indistinguishable [E15-4].
+  −0.46, 0/6) [E15-3]. Mean, CVaR and worst-case criteria were indistinguishable [E15-4]. At 64² (20 clusters, unaudited) the
+  gain over dopt is resolvable but small (3/144 Holm-significant, 3–5 %, worst-case designs at k = 16), and no robust
+  design beats source_near on the tail [E15-5].
 - **Generalization (E16, 32² pilot, n = 10 per cell, 35 uncorrected verdicts).** No ablation reversed any of the five
   tested conclusions in 8 cells, two of which used VanLeer. D-optimal over random (nominal +0.79, CI 0.65–0.90) and the
   memory gain held 10/10 in every cell [E16-1]. The memory flip appeared in every cell [E16-2]. Wider sources weakened
@@ -194,7 +196,7 @@ The list of reproducible claims, with commands, inputs and expected numbers, is 
 
 ## What remains open
 
-- **Pilot-only experiments.** E09, E10, E13, E15 and E16 are 32² pilots with 6 clusters (n = 10 for E16); E12 and E14 also have unaudited 64² sweeps. Their 64² plans
+- **Pilot-only experiments.** E09, E10, E13 and E16 are 32² pilots with 6 clusters (n = 10 for E16); E12, E14 and E15 also have unaudited 64² sweeps. Their 64² plans
   are written but were not run.
 - **Untested hypotheses.** E03's identifiable-recovery half was never tested. E04's spectrum-vs-coverage comparison was
   not run across seeds.

@@ -236,11 +236,13 @@ def report(src=None, pre="e15-local"):
     key = summ[(summ.comparator == "dopt") & summ.metric.isin(["nominal", "cond_cvar", "cond_worst"])
                & summ.design.isin(["source_near", "fc_w24_rob_noSN"] + ROBUST)]
     print(key.pivot_table(index=["estimator", "k", "design"], columns="metric", values="median").round(3).to_string())
-    plot_pareto(summ, fig_dir / f"{pre.replace('-local', '')}-pareto-local.png")
-    plot_sites(df, fig_dir / f"{pre.replace('-local', '')}-sites.png")
+    what = "32² pilot" if df.scale.iloc[0] == "pilot" else "64² sweep"
+    n = df.groupby(["K", "seed"]).ngroups
+    plot_pareto(summ, fig_dir / ("e15-pareto-local.png" if pre == "e15-local" else f"{pre}-pareto.png"), f"{what} (exploratory): median over {n}")
+    plot_sites(df, fig_dir / f"{pre.replace('-local', '')}-sites.png", what)
 
 
-def plot_pareto(summ, path):
+def plot_pareto(summ, path, what="32² pilot (exploratory): median over 6"):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -266,14 +268,14 @@ def plot_pareto(summ, path):
             a.set_xlabel("nominal gain vs dopt (oracle wind, all test)")
         ax[i, 0].set_ylabel("tail gain vs dopt: CVaR0.8 over\n6 wind specs × 3 test regimes")
     fg.legend(fontsize=6, loc="lower center", ncol=6)
-    fg.suptitle("E15 32² pilot (exploratory): median over 6 (K, seed) clusters of (L_dopt − L_design)/L_dopt; "
+    fg.suptitle(f"E15 {what} (K, seed) clusters of (L_dopt − L_design)/L_dopt; "
                 "> 0 favours the design (random/coverage off-scale, in the table). o/^ = noSN6 w24/full; t/T = train3 w24/full", fontsize=8)
     fg.tight_layout(rect=(0, .08, 1, 1))
     fg.savefig(path, dpi=130)
     plt.close(fg)
 
 
-def plot_sites(df, path):
+def plot_sites(df, path, what="32² pilot"):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -291,7 +293,7 @@ def plot_sites(df, path):
         a.set_title(d, fontsize=8)
         a.set_aspect("equal")
         a.set_xticks([]); a.set_yticks([])
-    fg.suptitle(f"E15 32² sites (mixed training wind, K = {K}, seed {seed}, k = {k}); ★ sources", fontsize=9)
+    fg.suptitle(f"E15 {what} sites (mixed training wind, K = {K}, seed {seed}, k = {k}); ★ sources", fontsize=9)
     fg.tight_layout()
     fg.savefig(path, dpi=130)
     plt.close(fg)
