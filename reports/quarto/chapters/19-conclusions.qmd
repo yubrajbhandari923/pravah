@@ -12,10 +12,10 @@ audit's wording is used.
 ::: {.callout-important}
 ## What scale each answer rests on
 - **64² (split VanLeer, protocol calendar):** E07 sweep (40 scenarios, 10 seeds per cell), E08 sweep and its stage-2
-  variants (60 scenarios), E11 sweep (20 clusters), E17 regional case (3 cases × 20 clusters), and gate-09's re-scoring
+  variants (60 scenarios), E11 sweep (20 clusters), E12 sweep (20 clusters, five wind errors; unaudited), E17 regional case (3 cases × 20 clusters), and gate-09's re-scoring
   of E07's cached fields.
-- **32² pilots only (upwind numerics, 6 independent clusters, or n = 10 for E16):** E09, E10, E12, E13, E14, E15 and
-  E16. Their 64² runs are documented but were deferred, so these answers are **pilot-level**.
+- **32² pilots only (upwind numerics, 6 independent clusters, or n = 10 for E16):** E09, E10, E13, E14, E15 and
+  E16 (E12 also has a 64² sweep). Their 64² runs are documented but were deferred, so these answers are **pilot-level**.
 - **Smoke scale, exploratory:** E02–E06 (the 1 g/s source scale was chosen after seeing data).
 - **Confirmatory:** one test only, E07's dopt vs random, and only in the 8 cells that were run.
 :::
@@ -117,7 +117,7 @@ horizons, and only when the sources really change.
 
 **Alternatives and limits.**
 - The memory gain is as large as it is because strengths are exactly constant for 60 days and the model is perfect.
-  Under any wind error tested it mostly vanished: 0.60–0.77 with the true wind fell to ≤ 0.06 (E12, pilot) [E12-3]. In
+  Under any wind error tested it mostly vanished: 0.60–0.77 with the true wind fell to ≤ 0.06 (E12, pilot); at 64² the 0.89–0.97 gain fell to within ±0.1 and reversed for a speed error [E12-3]. In
   the regional case, a 40 % vector wind error removed it entirely [E17-4].
 - E10's time-varying truths come from the filter's own model, which favours the filter.
 - Everything in this answer except E09-2 and E07-8 is 32² upwind with 6 clusters.
@@ -130,10 +130,11 @@ to t + 1 everywhere, a bound no sensor network can reach. "Worse than persistenc
 forecast".
 
 - **Wind errors.** A direction error of 30° or more, a lag of 2 h or more, or AR(1) direction noise with sd 30° put
-  the 1 h forecast below the persistence bound in 0/6 clusters. Speed underestimation kept skill (6/6) (E12;
+  the 1 h forecast below the persistence bound in 0/6 clusters (0/20 at 64²). Speed underestimation kept skill (6/6) (E12;
   gate-12-17: pass with conditions) [E12-1]. For speed, +10° and AR 15° errors the sensor fit ratio stayed 1.01–1.33
   while source RMSE rose up to 16× (compensation hidden in a good fit). Larger direction and timing errors degraded
-  the fit 1.6–4.3×, which is visible [E12-2]. Under the wrong wind, dopt and source_near were within a few per cent
+  the fit 1.6–4.3×, which is visible [E12-2]. At 64² the small errors left a clearer fit signal (1.12–1.65), though 248
+  cluster-level cases still had a near-perfect fit with a much worse forecast. Under the wrong wind, dopt and source_near were within a few per cent
   of each other [E12-4].
 - **Background and sensor errors.** A known-background offset was fully repairable by estimating the background
   (skill −3.5 → +0.94, coverage 0.96, 6/6) [E13-1]. A common-mode sensor bias produces readings identical to a
@@ -153,7 +154,7 @@ forecast".
 **Alternatives and limits.** The stress magnitudes are synthetic choices. The persistence baseline and E14's
 within-configuration AUC were added after seeing results. The E13 field-level silent-failure rule is post hoc and has
 an open bug: 46 of its 65 flags are low-skill configurations under the oracle wind too [E13-5]. E14's omitted-source
-detectability is biased upward by the design bug noted above. E12–E14 have no 64² runs.
+detectability is biased upward by the design bug noted above. E13 and E14 have no 64² runs; E12's 64² sweep is not yet audited.
 
 ## 5. Robust placement and transfer (E15–E17)
 
@@ -193,7 +194,7 @@ The list of reproducible claims, with commands, inputs and expected numbers, is 
 
 ## What remains open
 
-- **Pilot-only experiments.** E09, E10 and E12–E16 are 32² pilots with 6 clusters (n = 10 for E16). Their 64² plans
+- **Pilot-only experiments.** E09, E10 and E13–E16 are 32² pilots with 6 clusters (n = 10 for E16); E12 also has an unaudited 64² sweep. Their 64² plans
   are written but were not run.
 - **Untested hypotheses.** E03's identifiable-recovery half was never tested. E04's spectrum-vs-coverage comparison was
   not run across seeds.

@@ -1,0 +1,62 @@
+{
+ "command": "OMP_NUM_THREADS=1 uv run python scripts/e12_wind_mismatch.py --sweep --fields $PRAVAH_HPC_ROOT/results/e07-sweep-dd2c51c/fields --out $PRAVAH_HPC_ROOT/results/e12-sweep-d8c007b --workers 64 --stage2-workers 32",
+ "git_rev": "d8c007b (git-archive snapshot; no .git on cluster)",
+ "git_dirty": false,
+ "host": "node004",
+ "python": "3.14.0",
+ "numpy": "2.5.4",
+ "slurm_job": "205982",
+ "design_note": "docs/research/wind-mismatch-design.md",
+ "scale": "sweep",
+ "specs": [
+  "oracle",
+  "dir10",
+  "dir30",
+  "spd0.6",
+  "lag6",
+  "ar30"
+ ],
+ "ks": [
+  4,
+  8,
+  16
+ ],
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9
+ ],
+ "Ks": [
+  2,
+  4
+ ],
+ "R": 3,
+ "n_random": 5,
+ "estimators": {
+  "map24": 24,
+  "map72": 72,
+  "map_full": null
+ },
+ "wind": "mixed",
+ "out": "$PRAVAH_HPC_ROOT/results/e12-sweep-d8c007b",
+ "fields": "$PRAVAH_HPC_ROOT/results/e07-sweep-dd2c51c/fields",
+ "workers": 64,
+ "total_wall_s": 71584.81286978722,
+ "stage1_cpu_s": 4991298.650149396,
+ "stage1_cpu_s_by_kind": {
+  "dir10": 785743.410379227,
+  "src": 840385.615757599,
+  "dir30": 775332.245050694,
+  "spd0.6": 775214.141812035,
+  "lag6": 775683.095968578,
+  "ar30": 779814.365664377,
+  "truth": 259125.775516886
+ }
+}

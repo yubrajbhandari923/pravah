@@ -1,19 +1,20 @@
 # PRAVAH — current status
 
-**Status recorded:** 2026-11-14 (after E19 synthesis and gate-12-17)
+**Status recorded:** 2026-11-17 (E12 64² sweep done; gate-12-17 bugs fixed)
 
 **Working plan:** `plans/plan-03-robustness-synthesis.yaml` (E12–E20). Plans 1 and 2 are complete as executed.
 
 ## Current phase
 
 - **Plan 3 is nearly complete.**
-  - E12–E17 have results (32² pilots; E17 also at 64²).
+  - E12–E17 have results (32² pilots; E12 and E17 also at 64²).
   - E18 was not conducted: no data (user, 2026-11-14).
   - E19 synthesis is done: `reports/evidence-matrix.csv`, `scripts/validate_report.py` (0 problems) and the
     conclusions chapter.
 - **Next: E20, independent replication and release review.**
 - **Heavy 64² sweeps are deferred** (user, 2026-11-13). Each design note documents its cluster plan. Done at 64²: E07,
-  E08 (and stage-2 reruns), E11 and E17.
+  E08 (and stage-2 reruns), E11, E12 (job 205982, 2026-11-17, unaudited) and E17. Next on the cluster (user-approved
+  item 3): E14 and E15 at 64², reusing E12's fields; node001/node004 only, one 64-CPU job.
 
 ## Key results (details in the journals and `reports/quarto`)
 

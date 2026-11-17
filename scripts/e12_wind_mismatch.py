@@ -284,7 +284,8 @@ def plot(summ, pre, persist):
     ax[0, 0].set_ylabel(f"median held-out 1 h forecast RMSE (µg m⁻³), k={k}")
     ax[1, 0].set_ylabel("ratio to oracle (map_full)\n▲ source RMSE   ■ sensor fit")
     ax[0, 0].legend(fontsize=6)
-    fg.suptitle(f"E12 32² pilot: wrong-wind inverse (6 clusters; medians). Solid map_full, dashed map24", fontsize=10)
+    what = "32² pilot (6 clusters" if pre == "local" else "64² sweep (20 clusters, VanLeer"
+    fg.suptitle(f"E12 {what}): wrong-wind inverse, medians. Solid map_full, dashed map24", fontsize=10)
     fg.tight_layout()
     fg.savefig(fig_dir / f"e12-{pre}-bias.png", dpi=130)
     plt.close(fg)
