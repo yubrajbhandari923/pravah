@@ -287,6 +287,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#what-we-did" id="toc-what-we-did" class="nav-link active" data-scroll-target="#what-we-did"><span class="header-section-number">18.1</span> What we did</a></li>
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">18.2</span> Results</a></li>
   <li><a href="#limits" id="toc-limits" class="nav-link" data-scroll-target="#limits"><span class="header-section-number">18.3</span> Limits</a></li>
+  <li><a href="#sweep-2026-11-17" id="toc-sweep-2026-11-17" class="nav-link" data-scroll-target="#sweep-2026-11-17"><span class="header-section-number">18.4</span> 64² sweep (2026-11-17)</a></li>
   </ul>
 </nav>
     </div>
@@ -314,7 +315,7 @@ ul.task-list li input[type="checkbox"] {
 
 <p>Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or real deployment.</p>
 <p><strong>Question (plan 3).</strong> Does choosing sites for the <em>average</em>, <em>tail</em> (CVaR) or <em>worst</em> case over an ensemble of wind scenarios give networks that hold up better under wind errors and unseen regimes?</p>
-<p><strong>Evidence label.</strong> Exploratory 32² pilot: 6 clusters, upwind numerics, no multiplicity correction. The 64² run is deferred. Audited (gate-12-17: pass with conditions).</p>
+<p><strong>Evidence label.</strong> Exploratory 32² pilot: 6 clusters, upwind numerics, no multiplicity correction. Audited (gate-12-17: pass with conditions). A 64² sweep (20 clusters, Holm-corrected, unaudited) is at the end of this chapter.</p>
 <p><strong>Evidence.</strong> - Design note <code>docs/research/robust-placement-design.md</code>, committed before any computation. - Code <code>src/pravah/experiments/robust_design.py</code> and <code>scripts/e15_robust_placement.py</code>. - Tables <code>tables/e15-local-*</code>; journal <code>state/experiments/e15.md</code>.</p>
 <section id="what-we-did" class="level2" data-number="18.1">
 <h2 data-number="18.1" class="anchored" data-anchor-id="what-we-did"><span class="header-section-number">18.1</span> What we did</h2>
@@ -365,7 +366,27 @@ Figure&nbsp;18.1: E15: nominal error against tail risk for each design (lower-le
 <li>n = 6, upwind numerics, and one training wind.</li>
 <li>Leaving N and S out of the ensemble was informed by the test set; this works against the robust designs.</li>
 <li>The optimiser finds local optima.</li>
-<li>The 64² plan is in the design note §10. It is cheapest (about 130–160 CPU-h) after E12’s 64² run.</li>
+<li>The 64² sweep (design note §10) cost about 110 CPU-h after E12’s 64² run.</li>
+</ul>
+</section>
+<section id="sweep-2026-11-17" class="level2" data-number="18.4">
+<h2 data-number="18.4" class="anchored" data-anchor-id="sweep-2026-11-17"><span class="header-section-number">18.4</span> 64² sweep (2026-11-17)</h2>
+<p><strong>Evidence label.</strong> Exploratory, 64² (split VanLeer), 20 clusters (K = 2/4 × 10 seeds), k = 4/8/16, R = 5. Tail scored over E12’s five 64² wind errors plus the true wind × 3 regimes. Job 206079 (node001, code 7ddd45f): 1,032 new design-prior solves (≈ 102 CPU-h) plus ≈ 7 CPU-h of evaluation, reusing the E07 and E12 fields. Holm correction within each pre-stated family (robust designs × tail metric × estimator × k = 144 contrasts per comparator). Not yet independently audited. Tables <code>tables/e15-sweep-*</code>.</p>
+<div id="fig-e15-sweep" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-e15-sweep-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figures/e15-sweep-pareto.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-e15-sweep-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18.2: E15 64² sweep: nominal gain against tail gain, relative to D-optimal.
+</figcaption>
+</figure>
+</div>
+<ul>
+<li><strong>The tail gain over D-optimal is real but small.</strong> Designs built for the 24 h window lower tail risk (CVaR or worst case) by a median 1.6–2.8 % (up to 7 %). 3 of 144 contrasts survive Holm, all worst-case designs with 16 sensors and a 24 h window: 3–5 %, 19/20 clusters. Designs built for all past data give no tail gain (≈ 0).</li>
+<li><strong>No gain over near-source.</strong> No robust design beats near-source on the tail. 25 of 144 contrasts are significantly <em>worse</em> than near-source (2–10 %, mostly designs built for all past data and scored with a 24 h window).</li>
+<li><strong>Memory decides again.</strong> Built for the 24 h window, robust designs match near-source nominally (14–53 % better than D-optimal with a 24 h window) but lose up to 36 % when scored with all past data. Built for all past data, they behave like D-optimal.</li>
+<li><strong>Compared with the pilot:</strong> the pilot’s 9–10 % gain at k = 2 was indistinguishable from chance. At 64² with 20 clusters, gains of 3–5 % are resolvable, but too small to matter next to the placement and memory effects above.</li>
 </ul>
 
 
