@@ -5,7 +5,8 @@ Simulated passive tracer only; nothing here is evidence about ambient PM2.5 or r
 **Question (plan 3).** Can a method tell, without knowing the truth, when its own forecast or uncertainty is unreliable?
 
 **Evidence label.** Exploratory pilot: 32², 6 clusters. The within-config AUC was added after seeing results (deviation
-1). Audited (gate-12-17: pass with conditions; claims below corrected). The 64² run is deferred.
+1). Audited (gate-12-17: pass with conditions; claims below corrected). A 64² sweep (20 clusters, unaudited) is at the end
+of this chapter; it confirms the pilot and sharpens the intervals.
 
 **Evidence.**
 - Design note `docs/research/reliability-design.md`.
@@ -55,3 +56,28 @@ that, so "worse than persistence" means worse than an unreachable bound, not wor
 - The within-config AUC was chosen after seeing results. It lowers the best score (0.74 to 0.71) rather than flattering it.
 - Together with E13's silent failure, these results mean that truth-free checks cannot certify a map. They can only flag
   some failures.
+
+## 64² sweep (2026-11-17)
+
+**Evidence label.** Exploratory, 64² (E12 sweep fields; VanLeer), 20 clusters, k = 4/8/16, E12's five wind errors plus
+noise × 2, AR(1) noise and an omitted source (with the 2026-11-16 design fix). 385,560 units. Job 206079 (node001,
+code 7ddd45f); no new solves. Not yet independently audited. Tables `tables/e14-sweep-*`.
+
+![E14 64² sweep: ROC of each diagnostic.](../figures/e14-sweep-roc.png){#fig-e14-sweep-roc}
+
+![E14 64² sweep: interval coverage by arm.](../figures/e14-sweep-calibration.png){#fig-e14-sweep-cal}
+
+- **Early warning of forecast failure is still moderate.** Best is again the previous day's sensor skill:
+  within-config AUC 0.735 [0.706, 0.758] (pilot 0.71 [0.64, 0.77]). NIS, fit and leave-one-site-out give 0.67;
+  lag-1 0.62.
+- **Coverage failure is easier to flag at 64²:** AUC 0.72–0.73 for NIS, fit, leave-one-site-out, drift and sensor skill
+  (pilot 0.63–0.65).
+- **By stress (within-config, forecast failure):** large wind errors (+30°, 6 h lag, AR 30°) 0.79–0.90; +10° 0.66;
+  **speed × 0.6 0.50–0.55, i.e. undetectable**, as in the pilot. Noise × 2 and AR(1) noise do not cause detectable
+  forecast failure (≈ 0.5), but their coverage failure is flagged (NIS/fit 0.75 for noise × 2, lag-1 0.76 for AR(1)).
+  An omitted source gives 0.67–0.70 (0.70–0.74 for coverage), a little higher than the pilot's ≈ 0.64.
+- **Calibration.** With the true wind, 90 % coverage is 0.91 (24 h window) and 0.99 (all past data); 50 % coverage is
+  0.45–0.48. Under the wrong wind it collapses, and harder with all past data: +30° gives 0.13 vs 0.01; speed × 0.6
+  0.37 vs 0.06.
+- **Caveat.** In 4 blocks (0.9 % of evaluation units) the truth field does not change, so persistence error is exactly
+  0 and every forecast is labelled a failure. The effect on the AUCs is at most about 1 %; not re-scored.

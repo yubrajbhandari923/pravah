@@ -12,10 +12,10 @@ audit's wording is used.
 ::: {.callout-important}
 ## What scale each answer rests on
 - **64² (split VanLeer, protocol calendar):** E07 sweep (40 scenarios, 10 seeds per cell), E08 sweep and its stage-2
-  variants (60 scenarios), E11 sweep (20 clusters), E12 sweep (20 clusters, five wind errors; unaudited), E17 regional case (3 cases × 20 clusters), and gate-09's re-scoring
+  variants (60 scenarios), E11 sweep (20 clusters), E12 sweep (20 clusters, five wind errors; unaudited), E14 sweep (20 clusters; unaudited), E17 regional case (3 cases × 20 clusters), and gate-09's re-scoring
   of E07's cached fields.
-- **32² pilots only (upwind numerics, 6 independent clusters, or n = 10 for E16):** E09, E10, E13, E14, E15 and
-  E16 (E12 also has a 64² sweep). Their 64² runs are documented but were deferred, so these answers are **pilot-level**.
+- **32² pilots only (upwind numerics, 6 independent clusters, or n = 10 for E16):** E09, E10, E13, E15 and
+  E16 (E12 and E14 also have 64² sweeps). Their 64² runs are documented but were deferred, so these answers are **pilot-level**.
 - **Smoke scale, exploratory:** E02–E06 (the 1 g/s source scale was chosen after seeing data).
 - **Confirmatory:** one test only, E07's dopt vs random, and only in the 8 cells that were run.
 :::
@@ -143,7 +143,7 @@ forecast".
 - **Source-basis errors** (shifted, wider or missing sources) were not repaired by any estimator. Shifts left strong
   residual warnings (fit 1.3–3.5); wide footprints and a missing source left weak ones (1.12–1.27) [E13-3].
 - **Self-diagnosis.** The best truth-free early warning of forecast failure had within-configuration AUC 0.71
-  (CI 0.64–0.77; pooled 0.74), and 0.81–0.86 for large direction or timing errors (E14) [E14-1]. A × 0.8 speed error
+  (CI 0.64–0.77; pooled 0.74), and 0.81–0.86 for large direction or timing errors (E14) [E14-1]; the 64² sweep gives 0.735 [0.706, 0.758] [E14-6]. A × 0.8 speed error
   was undetectable (AUC 0.44–0.57) [E14-2]. An omitted source was only weakly flagged by any network (AUC ≈ 0.64);
   an earlier strong signal came from designs that knew the omitted source and vanished once that was fixed [E14-3]. With a 30° direction
   error, 90 % coverage fell to 0.07 [E14-5].
@@ -154,7 +154,7 @@ forecast".
 **Alternatives and limits.** The stress magnitudes are synthetic choices. The persistence baseline and E14's
 within-configuration AUC were added after seeing results. The E13 field-level silent-failure rule is post hoc and has
 an open bug: 46 of its 65 flags are low-skill configurations under the oracle wind too [E13-5]. E14's omitted-source
-detectability is biased upward by the design bug noted above. E13 and E14 have no 64² runs; E12's 64² sweep is not yet audited.
+detectability is biased upward by the design bug noted above. E13 has no 64² run; the E12 and E14 64² sweeps are not yet audited.
 
 ## 5. Robust placement and transfer (E15–E17)
 
@@ -194,7 +194,7 @@ The list of reproducible claims, with commands, inputs and expected numbers, is 
 
 ## What remains open
 
-- **Pilot-only experiments.** E09, E10 and E13–E16 are 32² pilots with 6 clusters (n = 10 for E16); E12 also has an unaudited 64² sweep. Their 64² plans
+- **Pilot-only experiments.** E09, E10, E13, E15 and E16 are 32² pilots with 6 clusters (n = 10 for E16); E12 and E14 also have unaudited 64² sweeps. Their 64² plans
   are written but were not run.
 - **Untested hypotheses.** E03's identifiable-recovery half was never tested. E04's spectrum-vs-coverage comparison was
   not run across seeds.

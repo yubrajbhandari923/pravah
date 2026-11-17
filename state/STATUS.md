@@ -7,7 +7,7 @@
 ## Current phase
 
 - **Plan 3 is nearly complete.**
-  - E12–E17 have results (32² pilots; E12 and E17 also at 64²).
+  - E12–E17 have results (32² pilots; E12, E14 and E17 also at 64²).
   - E18 was not conducted: no data (user, 2026-11-14).
   - E19 synthesis is done: `reports/evidence-matrix.csv`, `scripts/validate_report.py` (0 problems) and the
     conclusions chapter.
@@ -26,7 +26,7 @@
   a genuine floor, but it depends on constant sources and a perfect model.
 - **Model error dominates placement.** Wind errors ≥ 30° or a timing lag, and wrong source shapes, cancel placement and
   memory gains (E12, E13, E17). E17's wrong-wind collapse is a transport floor.
-- **Self-diagnosis is moderate** (AUC 0.71 within configuration, 0.74 pooled). A common-mode bias is a structural
+- **Self-diagnosis is moderate** (AUC 0.71 within configuration, 0.74 pooled; 64² sweep 0.735 [0.706, 0.758]). A common-mode bias is a structural
   silent failure.
 - **Robust placement:** E15's tail gain is indistinguishable from chance.
 

@@ -25,6 +25,7 @@ from pravah.experiments import cross_objective as X  # noqa: E402
 from pravah.experiments import reliability as RL  # noqa: E402
 
 SCALE, KS_SRC, SEEDS, KS, N_RAND, R = "pilot", (2, 4), (0, 1, 2), (2, 4, 8), 5, 3
+PRE = "local"   # --sweep switches to the 64² E12 sweep world (design §10)
 ESTS = {"map24": 24, "map_full": None}
 EXTRA = ("noise_x2", "noise_ar1", "omit1")       # simple non-wind mismatches, oracle wind (design §2)
 N_VAL_BLOCKS = 2
@@ -36,7 +37,7 @@ def run_cluster(job):
     K, seed, fields = job
     specs = E12.SCALES[SCALE]["specs"]
     names = E12.field_names(SCALE, K, seed, specs)
-    dirs = [Path(fields) / "fields"]
+    dirs = [Path(d) / "fields" if (Path(d) / "fields").is_dir() else Path(d) for d in fields.split(",")]
     sc = B.generate_scenario(E7.make_cfg(SCALE, E12.WIND), seed, K, truth_field=np.load(E12._find(names["truth"][0][0], dirs)))
     Fm = {sp.name: np.stack([np.load(E12._find(n, dirs)) for n, _ in names[sp.name]]) for sp in specs}
     a_ref, cbg = sc.cfg.sources.reference_rate_ug_s, sc.cfg.sources.background_ug_m3
@@ -128,11 +129,11 @@ def summarise(df):
     return pd.DataFrame(auc), pd.DataFrame(fam), pd.DataFrame(thr), cal, pt, miss, int(anyflag.sum()), int(ev[lab].sum())
 
 
-def report():
-    df = pd.read_csv(tab / "e14-local-units.csv.gz")
+def report(units=None):
+    df = pd.read_csv(units or tab / f"e14-{PRE}-units.csv.gz")
     auc, fam, thr, cal, pit, miss, n_any, n_fail = summarise(df)
     for n, d in dict(auc=auc, auc_family=fam, thresholds=thr, calibration=cal, pit=pit, misses=miss).items():
-        d.to_csv(tab / f"e14-local-{n}.csv", index=False, float_format="%.4g")
+        d.to_csv(tab / f"e14-{PRE}-{n}.csv", index=False, float_format="%.4g")
     print(auc.to_string(index=False, float_format="%.3f"))
     print(f"units flagged by >=1 diagnostic: {n_any}; failing units (L1): {n_fail}; unflagged failures: {len(miss)} shown")
     plot(df, auc, fam, cal, pit)
@@ -166,9 +167,9 @@ def plot(df, auc, fam, cal, pit):
         ax[2].text(j, i, "–" if np.isnan(v) else f"{v:.2f}", ha="center", va="center", fontsize=6)
     ax[2].set_title("within-config AUC by arm (oracle + arm), worse-than-persistence", fontsize=9)
     fg.colorbar(im, ax=ax[2], shrink=.8)
-    fg.suptitle("E14 32² pilot: truth-free early warnings on held-out blocks (6 clusters; exploratory)", fontsize=10)
+    fg.suptitle(f"E14 {'32² pilot (6' if PRE == 'local' else '64² sweep (20'} clusters): truth-free early warnings on held-out blocks (exploratory)", fontsize=10)
     fg.tight_layout()
-    fg.savefig(fig_dir / "e14-local-roc.png", dpi=130)
+    fg.savefig(fig_dir / f"e14-{PRE}-roc.png", dpi=130)
     plt.close(fg)
 
     arms = list(cal[cal.estimator == "map_full"].sort_values("cov90", ascending=False).arm)
@@ -189,7 +190,7 @@ def plot(df, auc, fam, cal, pit):
     ax[1].set(xlabel="PIT", ylabel="fraction", title="PIT of field forecasts (active cells, both estimators)")
     ax[1].legend(fontsize=7)
     fg.tight_layout()
-    fg.savefig(fig_dir / "e14-local-calibration.png", dpi=130)
+    fg.savefig(fig_dir / f"e14-{PRE}-calibration.png", dpi=130)
     plt.close(fg)
 
 
@@ -203,21 +204,29 @@ def provenance():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--fields", default=str(root / ".cache/e14/e12pilot"))
+    ap.add_argument("--fields", default=str(root / ".cache/e14/e12pilot"), help="comma list of E12 field caches (sweep: E12 out, E07 fields)")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--report", action="store_true")
+    ap.add_argument("--sweep", action="store_true")
+    ap.add_argument("--out", default=None, help="where the (large) units table and meta go; default reports tables")
+    ap.add_argument("--units", default=None, help="--report: read this units table")
     a = ap.parse_args()
+    global SCALE, SEEDS, KS, PRE
+    if a.sweep:   # set before the fork pool so workers inherit it
+        SCALE, SEEDS, KS, PRE = "sweep", tuple(range(10)), (4, 8, 16), "sweep"
     if a.report:
-        return report()
+        return report(a.units)
     t0 = time.time()
     jobs = [(K, s, a.fields) for K in KS_SRC for s in SEEDS]
     with ProcessPoolExecutor(a.workers, mp_context=get_context("fork")) as ex:
         rows = [r for rs in ex.map(run_cluster, jobs) for r in rs]
-    pd.DataFrame(rows).to_csv(tab / "e14-local-units.csv.gz", index=False, float_format="%.6g")
-    meta = dict(**provenance(), Ks=KS_SRC, seeds=SEEDS, ks=KS, n_random=N_RAND, R=R, estimators=ESTS, extra_arms=EXTRA,
+    dest = Path(a.out) if a.out else tab
+    dest.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(rows).to_csv(dest / f"e14-{PRE}-units.csv.gz", index=False, float_format="%.6g")
+    meta = dict(**provenance(), scale=SCALE, Ks=KS_SRC, seeds=SEEDS, ks=KS, n_random=N_RAND, R=R, estimators=ESTS, extra_arms=EXTRA,
                 n_val_blocks=N_VAL_BLOCKS, block_h=RL.W_H, n_units=len(rows), wall_s=time.time() - t0, workers=a.workers)
-    (tab / "e14-local-meta.json").write_text(json.dumps(meta, indent=1, default=str))
-    report()
+    (dest / f"e14-{PRE}-meta.json").write_text(json.dumps(meta, indent=1, default=str))
+    report(dest / f"e14-{PRE}-units.csv.gz")
 
 
 if __name__ == "__main__":

@@ -20,7 +20,7 @@ Sources: `state/STATUS.md`, the experiment journals and plan 3. Nothing in this 
    |---|---|---|
    | E12 | done 2026-11-17 (≈ 1,290 CPU-h, job 205982) | audit pending |
    | E13 | about 616 CPU-h | |
-   | E14 | about 6 CPU-h | after E12 |
+   | E14 | done 2026-11-17 (job 206079; < 1 CPU-h of units + report) | audit pending |
    | E15 | about 130–160 CPU-h | after E12 |
    | E16 | about 2,760 CPU-h | |
 

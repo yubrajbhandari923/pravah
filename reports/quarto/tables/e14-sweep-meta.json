@@ -1,0 +1,49 @@
+{
+ "command": "OMP_NUM_THREADS=1 uv run python scripts/e14_reliability.py --sweep --fields $PRAVAH_HPC_ROOT/results/e12-sweep-d8c007b/fields,$PRAVAH_HPC_ROOT/results/e07-sweep-dd2c51c/fields --out $PRAVAH_HPC_ROOT/results/e14-sweep-7ddd45f --workers 20",
+ "git_rev": "7ddd45f (git-archive snapshot)",
+ "git_dirty": false,
+ "host": "node001",
+ "python": "3.14.0",
+ "numpy": "2.5.4",
+ "slurm_job": "206079",
+ "design_note": "docs/research/reliability-design.md",
+ "scale": "sweep",
+ "Ks": [
+  2,
+  4
+ ],
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9
+ ],
+ "ks": [
+  4,
+  8,
+  16
+ ],
+ "n_random": 5,
+ "R": 3,
+ "estimators": {
+  "map24": 24,
+  "map_full": null
+ },
+ "extra_arms": [
+  "noise_x2",
+  "noise_ar1",
+  "omit1"
+ ],
+ "n_val_blocks": 2,
+ "block_h": 24,
+ "n_units": 385560,
+ "wall_s": 405.4003577232361,
+ "workers": 20,
+ "units_table": "cluster $PRAVAH_HPC_ROOT/results/e14-sweep-7ddd45f (30 MB, not committed)"
+}
